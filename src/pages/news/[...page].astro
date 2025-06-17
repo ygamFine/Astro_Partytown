@@ -61,9 +61,17 @@ const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
         <!-- News Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {page.data.map(article => (
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col group">
+            <a href={`/news/${article.slug}`} class="bg-white rounded-lg shadow-lg overflow-hidden group block animate-fade-in">
               <div class="relative overflow-hidden">
-                <img src={article.image} alt={article.title} class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300" loading="lazy" decoding="async">
+                <img 
+                  src={article.image} 
+                  alt={article.title} 
+                  class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300" 
+                  loading="lazy" 
+                  decoding="async"
+                  width="400"
+                  height="224"
+                >
                 <div class="absolute top-4 left-4 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-full">{article.category}</div>
               </div>
               <div class="p-6 flex-grow flex flex-col">
@@ -75,7 +83,7 @@ const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
                   <span>发布于 {article.date}</span>
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
 
