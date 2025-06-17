@@ -151,6 +151,13 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         animation: none !important;
         will-change: auto !important;
       }
+
+      /* 全局键盘焦点样式 */
+      .focus-visible-ring:focus-visible {
+        outline: 2px solid #ef4444; /* red-500 */
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+      }
     </style>
     
     <title>{title}</title>
@@ -208,71 +215,14 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       }, 2000);
     </script>
 
-
-
-    <!-- 极致优化：延迟加载所有非关键资源 -->
     <script>
-      // 极速加载优化
-      const startTime = performance.now();
-      
-      // 立即隐藏加载屏幕，显示关键内容
-      document.addEventListener('DOMContentLoaded', function() {
+      // 简单的加载屏幕隐藏逻辑
+      window.addEventListener('load', () => {
         const loadingScreen = document.getElementById('loading-screen');
-        const mainContent = document.getElementById('main-content');
-        
-        // 极速显示关键内容
-        setTimeout(() => {
+        if (loadingScreen) {
           loadingScreen.classList.add('hidden');
-          mainContent.style.opacity = '1';
-          document.body.classList.add('loaded');
-          
-          const loadTime = performance.now() - startTime;
-          console.log(`⚡ 极速加载完成: ${loadTime.toFixed(2)}ms`);
-        }, 50); // 极短延迟
+        }
       });
-
-      // 延迟加载非关键CSS
-      setTimeout(() => {
-        const link1 = document.createElement('link');
-        link1.rel = 'stylesheet';
-        link1.href = '/src/styles/cls-optimization.css';
-        document.head.appendChild(link1);
-        
-        const link2 = document.createElement('link');
-        link2.rel = 'stylesheet';
-        link2.href = '/src/styles/ultra-performance.css';
-        document.head.appendChild(link2);
-        
-        const link3 = document.createElement('link');
-        link3.rel = 'stylesheet';
-        link3.href = '/src/styles/performance-animations.css';
-        document.head.appendChild(link3);
-      }, 80);
-
-
-
-      // 极致性能优化：立即清理will-change
-      setTimeout(() => {
-        document.querySelectorAll('*').forEach(el => {
-          if (el.style.willChange) {
-            el.style.willChange = 'auto';
-          }
-        });
-      }, 500);
-
-      // 预加载下一页面资源
-      setTimeout(() => {
-        const preloadImages = ['/company-building.svg', '/factory-panoramic.svg'];
-        preloadImages.forEach(src => {
-          const link = document.createElement('link');
-          link.rel = 'preload';
-          link.as = 'image';
-          link.href = src;
-          document.head.appendChild(link);
-        });
-      }, 300);
-
-
     </script>
   </body>
 </html> 

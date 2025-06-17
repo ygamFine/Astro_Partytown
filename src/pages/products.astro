@@ -27,12 +27,12 @@ const recommendedProducts = products.slice(0, 3);
           <h2 class="text-4xl font-bold text-gray-800">产品列表</h2>
           <p class="text-lg text-gray-600 mt-2">查看我们所有可用的产品</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {products.map(product => (
             <div class="bg-white rounded-lg shadow-lg overflow-hidden group">
-              <a href={`/products/${product.slug}`} class="block">
+              <a href={`/products/${product.slug}`} class="block focus-visible-ring rounded-lg" aria-label={`查看 ${product.name} 的详情`}>
                 <div class="relative overflow-hidden">
-                  <img src={product.image} alt={product.name} class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300">
+                  <img src={product.image} alt={`${product.name} 的产品图片`} class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300">
                   <div class="absolute top-4 left-4 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-full">{product.category}</div>
                 </div>
                 <div class="p-6">
@@ -58,8 +58,8 @@ const recommendedProducts = products.slice(0, 3);
         <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">明星产品推荐</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           {recommendedProducts.map(product => (
-            <a href={`/products/${product.slug}`} class="block bg-white rounded-lg shadow-lg overflow-hidden group">
-              <img src={product.image} alt={product.name} class="w-full h-64 object-cover">
+            <a href={`/products/${product.slug}`} class="block bg-white rounded-lg shadow-lg overflow-hidden group focus-visible-ring" aria-label={`了解更多关于 ${product.name} 的信息`}>
+              <img src={product.image} alt={`${product.name} 的推荐图片`} class="w-full h-64 object-cover">
               <div class="p-6">
                 <h3 class="text-2xl font-bold text-gray-800 mb-2">{product.name}</h3>
                 <p class="text-red-600 font-semibold mb-4">{product.category}</p>
