@@ -19,22 +19,19 @@ const { product } = Astro.props;
   <main class="bg-gray-50 py-12 md:py-20">
     <div class="container mx-auto px-4">
       <div class="bg-white p-8 rounded-2xl shadow-2xl">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <!-- Product Gallery -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <!-- Product Image -->
           <div>
-            <div class="mb-4">
-              <img id="main-image" src={product.gallery[0]} alt={product.name} class="w-full h-auto max-h-[500px] object-cover rounded-xl shadow-lg">
-            </div>
-            <div class="grid grid-cols-3 gap-4">
-              {product.gallery.map((img, index) => (
-                <button onclick=`document.getElementById('main-image').src='${img}'`>
-                  <img src={img} alt={`${product.name} thumbnail ${index + 1}`} class="w-full h-24 object-cover rounded-lg shadow-md cursor-pointer border-2 border-transparent hover:border-red-600 transition">
-                </button>
-              ))}
-            </div>
+            <img 
+              src={product.gallery[0]} 
+              alt={product.name} 
+              class="w-full rounded-lg shadow-lg object-cover"
+              loading="lazy"
+              decoding="async"
+            >
           </div>
 
-          <!-- Product Info -->
+          <!-- Product Details -->
           <div>
             <span class="inline-block bg-red-100 text-red-600 text-sm font-semibold px-3 py-1 rounded-full mb-4">{product.category}</span>
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">{product.name}</h1>

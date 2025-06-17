@@ -32,20 +32,12 @@ const navLinks = [
 
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
-        <button 
-          id="mobile-menu-button" 
-          class="text-gray-800 hover:text-red-600 focus:outline-none focus-visible-ring"
-          aria-expanded="false"
-          aria-controls="mobile-menu"
-          aria-label="打开导航菜单"
-        >
-          <svg id="menu-icon-open" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <title>菜单图标</title>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        <button id="mobile-menu-button" class="p-2 text-gray-800 hover:text-red-600 focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
+          <svg id="menu-open-icon" class="h-8 w-8" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
-          <svg id="menu-icon-close" class="w-8 h-8 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-             <title>关闭图标</title>
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          <svg id="menu-close-icon" class="h-8 w-8 hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>

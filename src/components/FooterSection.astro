@@ -1,3 +1,61 @@
-<footer class="w-full bg-[#23242a] text-white pt-10 pb-4 mt-10 animate-fade-in"> 
-  <input ... class="px-3 py-2 rounded bg-gray-100 text-gray-900 focus:outline-none focus:border-[#e60012] focus:shadow-md border transition-all duration-200" />
+---
+import SocialIcons from './SocialIcons.astro';
+---
+<footer class="bg-gray-800 text-gray-300 pt-16 pb-8 animate-fade-in">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Company Info -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-white">华智工业科技</h3>
+                <p class="text-gray-400 leading-relaxed max-w-sm">
+                    华智工业科技，您值得信赖的工程机械伙伴。我们提供创新、耐用的解决方案，助您轻松应对各种挑战。
+                </p>
+                <SocialIcons />
+            </div>
+
+            <!-- Quick Links -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white">快速链接</h3>
+                <ul class="space-y-2">
+                    <li><a href="/about" class="text-gray-300 hover:text-white transition-colors">关于我们</a></li>
+                    <li><a href="/products" class="text-gray-300 hover:text-white transition-colors">产品中心</a></li>
+                    <li><a href="/news" class="text-gray-300 hover:text-white transition-colors">新闻中心</a></li>
+                    <li><a href="/contact" class="text-gray-300 hover:text-white transition-colors">联系我们</a></li>
+                </ul>
+            </div>
+
+            <!-- Product Categories -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white">核心产品</h3>
+                <ul class="space-y-2">
+                    <li><a href="/products/skid-steer-loader" class="text-gray-300 hover:text-white transition-colors">滑移装载机</a></li>
+                    <li><a href="/products/telescopic-forklift" class="text-gray-300 hover:text-white transition-colors">伸缩臂叉车</a></li>
+                    <li><a href="/products/backhoe-loader" class="text-gray-300 hover:text-white transition-colors">挖掘装载机</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white">联系信息</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                        <span>山东省济宁市</span>
+                    </li>
+                    <li class="flex items-center">
+                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.518.759a11.03 11.03 0 004.28 4.28l.759-1.518a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+                        <span>+86 123 4567 8900</span>
+                    </li>
+                    <li class="flex items-center">
+                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                        <a href="mailto:sales@huazhi-ind.com" class="hover:text-white transition-colors">sales@huazhi-ind.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 mt-12 pt-8 border-t border-gray-700 text-center text-gray-400">
+            &copy; {new Date().getFullYear()} 华智工业科技有限公司. All Rights Reserved.
+        </div>
+    </div>
 </footer> 

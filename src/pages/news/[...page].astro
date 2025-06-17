@@ -63,7 +63,7 @@ const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
           {page.data.map(article => (
             <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col group">
               <div class="relative overflow-hidden">
-                <img src={article.image} alt={article.title} class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300">
+                <img src={article.image} alt={article.title} class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300" loading="lazy" decoding="async">
                 <div class="absolute top-4 left-4 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-full">{article.category}</div>
               </div>
               <div class="p-6 flex-grow flex flex-col">
@@ -81,16 +81,16 @@ const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
 
         <!-- Pagination -->
         <div class="flex justify-center mt-16">
-          <nav class="flex items-center space-x-2">
+          <nav class="flex items-center space-x-1 md:space-x-2">
             {page.url.prev ? (
-              <a href={page.url.prev} class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300">&laquo; 上一页</a>
+              <a href={page.url.prev} class="px-4 py-3 md:px-5 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300 text-sm focus-visible-ring">&laquo; 上一页</a>
             ) : (
-              <span class="px-4 py-2 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed">&laquo; 上一页</span>
+              <span class="px-4 py-3 md:px-5 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed text-sm">&laquo; 上一页</span>
             )}
             
             {Array.from({ length: page.lastPage }, (_, i) => i + 1).map(num => (
               <a href={`/news/${num === 1 ? '' : num}`} class:list={[
-                "px-4 py-2 rounded-lg shadow-md transition-colors duration-300",
+                "px-4 py-3 w-12 text-center rounded-lg shadow-md transition-colors duration-300 text-sm focus-visible-ring",
                 { "bg-red-600 text-white": num === page.currentPage, "bg-white text-gray-700 hover:bg-gray-200": num !== page.currentPage }
               ]}>
                 {num}
@@ -98,9 +98,9 @@ const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
             ))}
 
             {page.url.next ? (
-              <a href={page.url.next} class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300">下一页 &raquo;</a>
+              <a href={page.url.next} class="px-4 py-3 md:px-5 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300 text-sm focus-visible-ring">下一页 &raquo;</a>
             ) : (
-               <span class="px-4 py-2 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed">下一页 &raquo;</span>
+               <span class="px-4 py-3 md:px-5 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed text-sm">下一页 &raquo;</span>
             )}
           </nav>
         </div>

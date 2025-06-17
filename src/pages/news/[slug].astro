@@ -28,7 +28,13 @@ const { article } = Astro.props;
 
         <!-- Article Image -->
         <div class="mb-8">
-          <img src={article.image} alt={article.title} class="w-full h-auto max-h-[500px] object-cover rounded-2xl shadow-lg">
+          <img 
+            src={article.image} 
+            alt={article.title} 
+            class="w-full h-auto max-h-[500px] object-cover rounded-2xl shadow-lg"
+            loading="lazy"
+            decoding="async"
+          >
         </div>
 
         <!-- Article Content -->

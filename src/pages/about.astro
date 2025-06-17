@@ -81,18 +81,28 @@ const teamMembers = [
     </section>
     
     <!-- Team Introduction -->
-    <section class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <h2 class="text-4xl font-bold text-gray-800 mb-16 text-center">核心团队</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {teamMembers.map(member => (
-            <div class="text-center">
-              <img src={member.image} alt={member.name} class="w-48 h-48 rounded-full mx-auto mb-4 shadow-lg object-cover">
-              <h3 class="text-2xl font-bold text-gray-800">{member.name}</h3>
-              <p class="text-red-600 font-semibold mb-2">{member.role}</p>
-              <p class="text-gray-600 italic">"{member.quote}"</p>
-            </div>
-          ))}
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-12">核心团队</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Team Member 1 -->
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <img src="/images/team1.svg" alt="团队成员1" class="w-32 h-32 rounded-full mx-auto mb-4" loading="lazy" decoding="async">
+            <h3 class="text-xl font-bold text-gray-800">李建国</h3>
+            <p class="text-red-600">创始人 & CEO</p>
+          </div>
+          <!-- Team Member 2 -->
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <img src="/images/team2.svg" alt="团队成员2" class="w-32 h-32 rounded-full mx-auto mb-4" loading="lazy" decoding="async">
+            <h3 class="text-xl font-bold text-gray-800">王海峰</h3>
+            <p class="text-red-600">首席技术官 (CTO)</p>
+          </div>
+          <!-- Team Member 3 -->
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <img src="/images/team3.svg" alt="团队成员3" class="w-32 h-32 rounded-full mx-auto mb-4" loading="lazy" decoding="async">
+            <h3 class="text-xl font-bold text-gray-800">张敏</h3>
+            <p class="text-red-600">市场总监</p>
+          </div>
         </div>
       </div>
     </section>
