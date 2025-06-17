@@ -2,7 +2,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
-import image from '@astrojs/image';
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,7 +16,8 @@ export default defineConfig({
           'gtag',
           '_hmt.push',
           'CustomerService.init',
-          'CustomerService.showChat'
+          'CustomerService.showChat',
+          'hbspt.forms.create'
         ],
         // 启用更多优化选项
         logCalls: false,
@@ -28,7 +28,6 @@ export default defineConfig({
         logStackTraces: false
       },
     }),
-    image(),
   ],
   // 性能优化配置
   vite: {
