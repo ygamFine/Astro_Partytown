@@ -1,0 +1,112 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/FooterSection.astro';
+import { allNews } from '../../data/news.js';
+
+// 静态路径生成函数
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  // 按日期倒序排序新闻
+  const sortedNews = allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  // 使用 paginate 函数生成分页路径
+  return paginate(sortedNews, { 
+    pageSize: 6 
+  });
+}
+
+interface Page<T> {
+  data: T[];
+  // ... 其他分页属性
+  url: {
+    current: string;
+    prev?: string;
+    next?: string;
+  };
+  currentPage: number;
+  lastPage: number;
+}
+
+// 获取当前页面数据
+const { page } = Astro.props as { page: Page<(typeof allNews)[number]> };
+const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
+---
+
+<Layout title={`新闻中心 - 第 ${page.currentPage} 页 - 山东永安建设机械集团`}>
+  <Header />
+
+  <main>
+    <!-- Page Header -->
+    <section class="bg-gray-800 text-white py-20">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-5xl font-bold leading-tight">新闻中心</h1>
+        <p class="text-xl mt-4">获取最新的公司动态、行业资讯和客户案例</p>
+      </div>
+    </section>
+
+    <!-- News List -->
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <!-- Category Filter -->
+        <div class="flex justify-center mb-12">
+          <div class="flex space-x-2 bg-white p-2 rounded-full shadow-md">
+            {categories.map(cat => (
+              <button class="px-6 py-2 rounded-full text-gray-700 font-semibold transition-colors duration-300 hover:bg-red-600 hover:text-white focus:outline-none focus:bg-red-600 focus:text-white">
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        <!-- News Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {page.data.map(article => (
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col group">
+              <div class="relative overflow-hidden">
+                <img src={article.image} alt={article.title} class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300">
+                <div class="absolute top-4 left-4 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-full">{article.category}</div>
+              </div>
+              <div class="p-6 flex-grow flex flex-col">
+                <h3 class="text-xl font-bold text-gray-800 mb-2 flex-grow">
+                  <a href={`/news/${article.slug}`} class="hover:text-red-600 transition-colors duration-300">{article.title}</a>
+                </h3>
+                <p class="text-gray-600 mb-4">{article.excerpt}</p>
+                <div class="text-sm text-gray-500 mt-auto pt-4 border-t border-gray-200">
+                  <span>发布于 {article.date}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-16">
+          <nav class="flex items-center space-x-2">
+            {page.url.prev ? (
+              <a href={page.url.prev} class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300">&laquo; 上一页</a>
+            ) : (
+              <span class="px-4 py-2 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed">&laquo; 上一页</span>
+            )}
+            
+            {Array.from({ length: page.lastPage }, (_, i) => i + 1).map(num => (
+              <a href={`/news/${num === 1 ? '' : num}`} class:list={[
+                "px-4 py-2 rounded-lg shadow-md transition-colors duration-300",
+                { "bg-red-600 text-white": num === page.currentPage, "bg-white text-gray-700 hover:bg-gray-200": num !== page.currentPage }
+              ]}>
+                {num}
+              </a>
+            ))}
+
+            {page.url.next ? (
+              <a href={page.url.next} class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300">下一页 &raquo;</a>
+            ) : (
+               <span class="px-4 py-2 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed">下一页 &raquo;</span>
+            )}
+          </nav>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <Footer />
+</Layout> 

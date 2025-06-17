@@ -1,16 +1,30 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import HeroShowcase from '../components/HeroShowcase.astro';
+import ProductShowcase from '../components/ProductShowcase.astro';
+import CompanyIntro from '../components/CompanyIntro.astro';
+import Advantages from '../components/Advantages.astro';
+import HotProducts from '../components/HotProducts.astro';
+import CustomerNeeds from '../components/CustomerNeeds.astro';
+import CustomerCases from '../components/CustomerCases.astro';
+import NewsCenter from '../components/NewsCenter.astro';
+import FooterSection from '../components/FooterSection.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Yonan Machinery - 专业工程机械制造商">
+	<div class="animate-page-load">
+		<Header />
+		<main>
+			<HeroShowcase />
+			<ProductShowcase />
+			<CompanyIntro />
+			<Advantages />
+			<HotProducts />
+			<CustomerNeeds />
+			<CustomerCases />
+			<NewsCenter />
+		</main>
+		<FooterSection />
+	</div>
+</Layout>

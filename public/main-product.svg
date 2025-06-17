@@ -1,0 +1,18 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e60012;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8000e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#mainGrad)"/>
+  <text x="300" y="180" font-family="Arial, sans-serif" font-size="32" fill="white" text-anchor="middle" dominant-baseline="middle">
+    YN-S70 滑移装载机
+  </text>
+  <text x="300" y="220" font-family="Arial, sans-serif" font-size="18" fill="#ffcccc" text-anchor="middle" dominant-baseline="middle">
+    主力产品 - Main Product
+  </text>
+  <text x="300" y="250" font-family="Arial, sans-serif" font-size="14" fill="#ffeeee" text-anchor="middle" dominant-baseline="middle">
+    额定功率：55kW | 额定载重：700kg
+  </text>
+</svg> 

@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 引入性能优化的动画 */
+@import './performance-animations.css';
+
+/* 全局样式 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e60012;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b8000e;
+}
+
+/* 选择文本样式 */
+::selection {
+  background-color: rgba(230, 0, 18, 0.2);
+  color: #1a202c;
+}
+
+/* 焦点样式 */
+:focus-visible {
+  outline: 2px solid #e60012;
+  outline-offset: 2px;
+}
+
+/* 链接样式 */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 图片优化 */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 按钮基础样式 */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+/* 输入框样式 */
+input, textarea, select {
+  font-family: inherit;
+}
+
+/* 无障碍性 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 基础样式优化 */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* 优化选择样式 */
+  ::selection {
+    background-color: rgba(230, 0, 18, 0.2);
+    color: #1a202c;
+  }
+  
+  /* 优化焦点样式 */
+  :focus-visible {
+    outline: 2px solid #e60012;
+    outline-offset: 2px;
+  }
+}
+
+/* 组件样式 */
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* 优化的按钮样式 */
+  .btn-primary {
+    @apply bg-red-600 text-white px-6 py-3 rounded-lg font-semibold;
+    @apply hover-scale-optimized transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-gray-400 text-gray-700 px-6 py-3 rounded-lg font-semibold;
+    @apply hover:border-red-600 hover:text-red-600 hover-scale-optimized;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+  }
+  
+  /* 优化的卡片样式 */
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6;
+    @apply hover-lift-optimized transition-all duration-200;
+  }
+  
+  /* 性能优化的图片容器 */
+  .image-container {
+    @apply relative overflow-hidden rounded-lg;
+    contain: layout style paint;
+  }
+  
+  .image-container img {
+    @apply w-full h-full object-cover;
+    @apply hover-scale-optimized transition-transform duration-300;
+  }
+}
+
+/* 工具类 */
+@layer utilities {
+  /* 性能优化的文本渐变 */
+  .text-gradient {
+    background: linear-gradient(135deg, #e60012, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* 优化的阴影效果 */
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(230, 0, 18, 0.3);
+  }
+  
+  /* 性能监控辅助类 */
+  .contain-layout {
+    contain: layout;
+  }
+  
+  .contain-paint {
+    contain: paint;
+  }
+  
+  .contain-strict {
+    contain: strict;
+  }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+  
+  /* 移动端减少动画 */
+  .animate-float-optimized {
+    animation: none;
+  }
+}
+
+/* 打印样式优化 */
+@media print {
+  .decorative-element,
+  .animate-float-optimized {
+    display: none !important;
+  }
+} 

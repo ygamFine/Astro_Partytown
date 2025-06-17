@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/FooterSection.astro';
+
+const milestones = [
+  { year: "1998", event: "公司成立", description: "山东永安建设机械有限公司在济南成立，初期专注于小型装载机的研发与生产。" },
+  { year: "2005", event: "滑移装载机投产", description: "第一代滑移装载机成功下线，标志着公司进入新的发展阶段。" },
+  { year: "2012", event: "拓展国际市场", description: "产品首次出口到东南亚，开始全球化布局。" },
+  { year: "2018", event: "技术创新", description: "成立智能工程机械研究院，专注于电动化与智能化技术研发。" },
+  { year: "2023", event: "新基地落成", description: "现代化新生产基地落成，产能提升200%。" }
+];
+
+const teamMembers = [
+  { name: "王建国", role: "创始人 & CEO", image: "/team1.webp", quote: "质量是企业的生命，创新是发展的灵魂。" },
+  { name: "李秀英", role: "首席技术官 (CTO)", image: "/team2.webp", quote: "用技术驱动未来，让工程机械更智能。" },
+  { name: "张伟", role: "全球销售总监", image: "/team3.webp", quote: "我们的目标是将永安品牌带到世界的每个角落。" }
+];
+---
+
+<Layout title="关于我们 - 山东永安建设机械集团">
+  <Header />
+
+  <main>
+    <!-- Page Header -->
+    <section class="relative bg-gray-800 text-white py-32">
+      <div class="absolute inset-0">
+        <img src="/company-bg.webp" alt="公司背景" class="w-full h-full object-cover opacity-30">
+      </div>
+      <div class="container mx-auto px-4 relative">
+        <div class="max-w-3xl mx-auto text-center">
+          <h1 class="text-5xl font-bold leading-tight">关于永安</h1>
+          <p class="text-xl mt-4">致力于成为全球领先的工程机械解决方案提供商</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Company Mission -->
+    <section class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <h2 class="text-4xl font-bold text-gray-800">我们的使命与愿景</h2>
+            <p class="text-gray-700 leading-relaxed">
+              山东永安建设机械集团有限公司自1998年成立以来，始终秉持"质量为本，客户至上"的经营理念。我们致力于通过技术创新，为全球客户提供高效、可靠、智能的工程机械产品和全方位的服务支持。
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+              我们的愿景是打造世界一流的工程机械品牌，让"中国智造"在全球市场赢得尊重与信赖。
+            </p>
+          </div>
+          <div>
+            <img src="/company-building.svg" alt="公司大楼" class="w-full rounded-2xl shadow-2xl">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Development History Timeline -->
+    <section class="py-20 bg-gray-50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-gray-800 mb-16 text-center">发展历程</h2>
+        <div class="relative">
+          <!-- Timeline line -->
+          <div class="absolute left-1/2 w-0.5 h-full bg-red-300 -translate-x-1/2"></div>
+
+          {milestones.map((milestone, index) => (
+            <div class={`mb-12 flex items-center w-full ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+              <div class="w-1/2">
+                <div class={`p-6 rounded-lg shadow-lg bg-white ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                  <h3 class="text-2xl font-bold text-red-600 mb-2">{milestone.year}</h3>
+                  <h4 class="text-xl font-semibold text-gray-800 mb-2">{milestone.event}</h4>
+                  <p class="text-gray-600">{milestone.description}</p>
+                </div>
+              </div>
+              <!-- Timeline circle -->
+              <div class="absolute left-1/2 w-6 h-6 bg-red-600 rounded-full border-4 border-white -translate-x-1/2"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+    
+    <!-- Team Introduction -->
+    <section class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-gray-800 mb-16 text-center">核心团队</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {teamMembers.map(member => (
+            <div class="text-center">
+              <img src={member.image} alt={member.name} class="w-48 h-48 rounded-full mx-auto mb-4 shadow-lg object-cover">
+              <h3 class="text-2xl font-bold text-gray-800">{member.name}</h3>
+              <p class="text-red-600 font-semibold mb-2">{member.role}</p>
+              <p class="text-gray-600 italic">"{member.quote}"</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Company Culture -->
+    <section class="py-20 bg-gray-100">
+      <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-gray-800 mb-16 text-center">企业文化</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="p-8 bg-white rounded-lg shadow-lg text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">创新</h3>
+            <p class="text-gray-600">我们鼓励创新思维，不断探索新技术、新工艺，以应对不断变化的市场挑战。</p>
+          </div>
+          <div class="p-8 bg-white rounded-lg shadow-lg text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">合作</h3>
+            <p class="text-gray-600">我们相信团队的力量，倡导开放、透明的沟通，共同实现目标。</p>
+          </div>
+          <div class="p-8 bg-white rounded-lg shadow-lg text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">责任</h3>
+            <p class="text-gray-600">我们对客户、员工、社会和环境负责，坚持可持续发展。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <Footer />
+</Layout> 

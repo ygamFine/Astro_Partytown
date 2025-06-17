@@ -1,0 +1,278 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "山东永安建设机械集团有限公司 - 专业工程机械制造商" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO优化 -->
+    <meta name="keywords" content="滑移装载机,工程机械,建筑设备,山东永安,YONAN" />
+    <meta name="author" content="山东永安建设机械集团有限公司" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    
+    <!-- 性能优化 -->
+    <meta name="theme-color" content="#e60012" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="/product1.svg" as="image" />
+    <link rel="preload" href="/main-product.svg" as="image" />
+    
+    <!-- Partytown预连接优化 -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://hm.baidu.com" />
+    <link rel="preconnect" href="https://zz.bdstatic.com" />
+    
+    <!-- 关键CSS完全内联 - 极致优化 -->
+    <style>
+      /* 关键渲染路径CSS - 完全内联 */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      body { 
+        margin: 0; 
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* LCP关键元素 - 立即显示 */
+      .lcp-critical {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+        will-change: auto !important;
+        contain: layout style paint;
+      }
+      
+      /* 关键内容样式 - 内联 */
+      .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+      .font-bold { font-weight: 700; }
+      .text-gray-800 { color: #1f2937; }
+      .mb-4 { margin-bottom: 1rem; }
+      .text-center { text-align: center; }
+      .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+      .bg-gray-50 { background-color: #f9fafb; }
+      .container { max-width: 80rem; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+      .mx-auto { margin-left: auto; margin-right: auto; }
+      .px-4 { padding-left: 1rem; padding-right: 1rem; }
+      .mb-16 { margin-bottom: 4rem; }
+      .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+      .text-gray-600 { color: #4b5563; }
+      
+      /* 隐藏非关键内容直到加载完成 */
+      .non-critical {
+        opacity: 0;
+        visibility: hidden;
+      }
+      
+      .loaded .non-critical {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.3s ease-out;
+      }
+      
+      /* 加载屏幕优化 */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
+      }
+      
+      .loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #e60012;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* 关键布局样式 */
+      .grid { display: grid; }
+      .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+      .gap-12 { gap: 3rem; }
+      .items-center { align-items: center; }
+      .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 2rem; }
+      .leading-tight { line-height: 1.25; }
+      .text-red-600 { color: #dc2626; }
+      .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+      .leading-relaxed { line-height: 1.625; }
+      
+      @media (min-width: 1024px) {
+        .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .lg\\:text-left { text-align: left; }
+      }
+      
+      /* 极致优化：预定义关键元素样式 */
+      h1, h2, h3 {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        will-change: auto !important;
+      }
+    </style>
+    
+    <title>{title}</title>
+  </head>
+  <body>
+    <!-- 最小化加载屏幕 -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="spinner"></div>
+    </div>
+    
+    <!-- 主要内容 -->
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <!-- Partytown优化的第三方脚本 -->
+    
+    <!-- Google Analytics 4 - 使用Partytown优化 -->
+    <script type="text/partytown">
+      // Google Analytics 4 基础配置
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+    <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+
+    <!-- 百度统计 - 使用Partytown优化 -->
+    <script type="text/partytown">
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?YOUR_BAIDU_ANALYTICS_ID";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+
+    <!-- 客服系统 - 使用Partytown优化 -->
+    <script type="text/partytown">
+      // 模拟客服系统初始化
+      window.CustomerService = {
+        init: function() {
+          console.log('客服系统已通过Partytown初始化');
+          // 这里可以添加实际的客服系统代码
+        },
+        showChat: function() {
+          console.log('显示聊天窗口');
+        }
+      };
+      
+      // 延迟初始化客服系统
+      setTimeout(function() {
+        window.CustomerService.init();
+      }, 2000);
+    </script>
+
+
+
+    <!-- 极致优化：延迟加载所有非关键资源 -->
+    <script>
+      // 极速加载优化
+      const startTime = performance.now();
+      
+      // 立即隐藏加载屏幕，显示关键内容
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        
+        // 极速显示关键内容
+        setTimeout(() => {
+          loadingScreen.classList.add('hidden');
+          mainContent.style.opacity = '1';
+          document.body.classList.add('loaded');
+          
+          const loadTime = performance.now() - startTime;
+          console.log(`⚡ 极速加载完成: ${loadTime.toFixed(2)}ms`);
+        }, 50); // 极短延迟
+      });
+
+      // 延迟加载非关键CSS
+      setTimeout(() => {
+        const link1 = document.createElement('link');
+        link1.rel = 'stylesheet';
+        link1.href = '/src/styles/cls-optimization.css';
+        document.head.appendChild(link1);
+        
+        const link2 = document.createElement('link');
+        link2.rel = 'stylesheet';
+        link2.href = '/src/styles/ultra-performance.css';
+        document.head.appendChild(link2);
+        
+        const link3 = document.createElement('link');
+        link3.rel = 'stylesheet';
+        link3.href = '/src/styles/performance-animations.css';
+        document.head.appendChild(link3);
+      }, 80);
+
+
+
+      // 极致性能优化：立即清理will-change
+      setTimeout(() => {
+        document.querySelectorAll('*').forEach(el => {
+          if (el.style.willChange) {
+            el.style.willChange = 'auto';
+          }
+        });
+      }, 500);
+
+      // 预加载下一页面资源
+      setTimeout(() => {
+        const preloadImages = ['/company-building.svg', '/factory-panoramic.svg'];
+        preloadImages.forEach(src => {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = src;
+          document.head.appendChild(link);
+        });
+      }, 300);
+
+
+    </script>
+  </body>
+</html> 
