@@ -3,7 +3,7 @@ const mainProduct = {
   src: '/main-product.svg'
 };
 const mobileBanner = {
-  src: '/images/mobile-banner-fast.svg',
+  src: '/images/mobile-banner-tiny.svg',
   alt: '华智工业科技 - 专业滑移装载机制造商',
   width: 375,
   height: 200
@@ -11,12 +11,22 @@ const mobileBanner = {
 ---
 
 <section class="relative bg-white md:pt-24 md:pb-24 overflow-hidden mobile-hero">
-  <!-- 移动端Banner - 极致首屏优化 -->
+  <!-- 🚀 Speed Index极致优化 - 移动端Banner -->
   <div class="md:hidden mobile-banner-ultra mobile-critical">
-    <!-- 微型版本立即显示 - 内联背景 -->
-    <div class="inline-svg-bg mobile-banner-micro critical-path-image">
+    <!-- 立即显示红色背景+文字 - 0延迟 -->
+    <div class="mobile-banner-micro critical-path-image">
       华智工业科技
     </div>
+    <!-- 图片快速加载 -->
+    <img 
+      src={mobileBanner.src} 
+      alt={mobileBanner.alt}
+      width={mobileBanner.width}
+      height={mobileBanner.height}
+      class="mobile-banner-progressive"
+      loading="eager"
+      fetchpriority="high"
+    />
   </div>
 
   <!-- 桌面端内容 -->
@@ -90,4 +100,6 @@ const mobileBanner = {
       aspect-ratio: 320/170; /* 略微调整比例 */
     }
   }
-</style> 
+</style>
+
+<!-- 🚀 Speed Index极致优化 - 移除本地JavaScript，由Layout处理 --> 
