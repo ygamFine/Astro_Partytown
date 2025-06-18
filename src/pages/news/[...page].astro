@@ -41,7 +41,7 @@ const { currentPage, totalPages, news } = Astro.props;
 const sortedNews = news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---
 
-<Layout title="新闻中心 - 华智工业科技">
+<Layout title="新闻中心">
   <main>
     <!-- Page Header -->
     <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">

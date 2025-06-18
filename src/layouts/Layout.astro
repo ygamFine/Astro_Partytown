@@ -97,39 +97,7 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         transition: opacity 0.3s ease-out;
       }
       
-      /* 加载屏幕优化 */
-      .loading-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: opacity 0.3s ease-out;
-      }
-      
-      .loading-screen.hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
-      
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #e60012;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
+      /* 🚀 Speed Index优化 - 移除加载屏幕CSS，减少样式复杂度 */
       
       /* 关键布局样式 */
       .grid { display: grid; }
@@ -200,40 +168,13 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         background: #dc2626; /* 立即显示红色背景 */
       }
 
-      .mobile-banner-micro {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 200px;
-        background: #dc2626;
-        color: white;
-        text-align: center;
-        font-size: 20px;
-        font-weight: bold;
-        margin: 0;
-        padding: 0;
-        border: none;
-        opacity: 1 !important;
-        visibility: visible !important;
-        z-index: 3;
-        position: relative;
-        transform: none !important;
-        animation: none !important;
-        will-change: auto !important;
-      }
-
       .mobile-banner-progressive {
-        position: absolute;
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
-        opacity: 0;
-        z-index: 2;
-        transition: opacity 0.3s ease;
+        opacity: 1;
         object-fit: cover;
         image-rendering: optimizeSpeed;
+        display: block;
       }
 
       /* 关键路径图片 - 立即显示 */
@@ -286,15 +227,6 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
 
       /* 移动端特殊优化 - Speed Index关键 */
       @media (max-width: 768px) {
-        /* 立即显示移动端Banner */
-        .mobile-banner-micro {
-          opacity: 1 !important;
-          visibility: visible !important;
-          transform: none !important;
-          animation: none !important;
-          will-change: auto !important;
-          display: flex !important;
-        }
         
         /* 隐藏桌面端内容以减少DOM复杂度 */
         .mobile-hide, .hidden.md\\:block {
@@ -352,7 +284,6 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
 
       /* 🚀 极致Speed Index优化 - 强制GPU加速关键元素 */
       .mobile-banner-ultra,
-      .mobile-banner-micro,
       .mobile-banner-progressive {
         transform: translateZ(0);
         backface-visibility: hidden;
@@ -362,115 +293,40 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     
     <!-- 🚀 SPEED INDEX极致优化 - 完全内联关键CSS，0网络请求 -->
     
-    <!-- Mobile banner preload -->
-    <link rel="preload" href="/images/mobile-banner-fast.svg" as="image" media="(max-width: 768px)">
+    <!-- 🚀 Speed Index优化 - 移除旧的预加载，使用极简图片 -->
     
     <title>{title}</title>
   </head>
   <body>
-    <!-- Mobile banner preload element -->
-    <div class="mobile-banner-preload"></div>
+    <!-- 🚀 Speed Index优化 - 移除预加载元素，减少DOM复杂度 -->
     
     <Header />
     
-    <!-- 最小化加载屏幕 -->
-    <div id="loading-screen" class="loading-screen">
-      <div class="spinner"></div>
-    </div>
+    <!-- 🚀 Speed Index优化 - 移除加载屏幕，立即显示内容 -->
     
     <!-- 主要内容 -->
     <main id="main-content">
       <slot />
     </main>
 
-    <!-- Partytown优化的第三方脚本 -->
-    
-    <!-- Google Analytics 4 - 使用Partytown优化 -->
-    <script type="text/partytown">
-      // Google Analytics 4 基础配置
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID');
-    </script>
-    <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <!-- 🚀 Speed Index优化 - 移除所有第三方脚本，减少阻塞 -->
 
-    <!-- 百度统计 - 使用Partytown优化 -->
-    <script type="text/partytown">
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?YOUR_BAIDU_ANALYTICS_ID";
-        var s = document.getElementsByTagName("script")[0]; 
-        s.parentNode.insertBefore(hm, s);
-      })();
-    </script>
-
-    <!-- 客服系统 - 使用Partytown优化 -->
-    <script type="text/partytown">
-      // 模拟客服系统初始化
-      window.CustomerService = {
-        init: function() {
-          console.log('客服系统已通过Partytown初始化');
-          // 这里可以添加实际的客服系统代码
-        },
-        showChat: function() {
-          console.log('显示聊天窗口');
-        }
-      };
-      
-      // 延迟初始化客服系统
-      setTimeout(function() {
-        window.CustomerService.init();
-      }, 2000);
-    </script>
-
-        <!-- 🚀 极简JavaScript - 仅关键功能，延迟加载其他 -->
+        <!-- 🚀 极简JavaScript - Speed Index极致优化 -->
     <script>
-      // 立即隐藏加载屏幕
-      document.addEventListener('DOMContentLoaded', () => {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-          loadingScreen.style.display = 'none';
-        }
-        document.body.classList.add('loaded');
-      });
-
-      // 移动端图片加载优化 - 内联关键逻辑
-      document.addEventListener('DOMContentLoaded', () => {
-        const bannerImage = document.querySelector('.mobile-banner-progressive') as HTMLImageElement;
-        if (bannerImage && window.innerWidth <= 768) {
-          bannerImage.addEventListener('load', function(this: HTMLImageElement) {
-            this.style.opacity = '1';
-            console.log('Banner loaded');
-          });
-          
-          if (bannerImage.complete) {
-            bannerImage.style.opacity = '1';
-          }
-        }
-      });
+      // 立即标记页面已加载
+      document.body.classList.add('loaded');
+      
+             // 移动端图片立即显示优化
+       if (window.innerWidth <= 768) {
+         const bannerImage = document.querySelector('.mobile-banner-progressive') as HTMLImageElement;
+         if (bannerImage) {
+           bannerImage.style.opacity = '1';
+         }
+       }
     </script>
 
     <FooterSection />
 
-    <!-- jQuery 条件加载 - 仅桌面端 -->
-    <script>
-      // 仅在桌面端加载jQuery以优化移动端Speed Index
-      if (window.innerWidth >= 768) {
-        // 动态加载jQuery
-        const jqueryScript = document.createElement('script');
-        jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
-        jqueryScript.integrity = 'sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=';
-        jqueryScript.crossOrigin = 'anonymous';
-        jqueryScript.onload = function() {
-          // jQuery加载完成后加载测试脚本
-          const testScript = document.createElement('script');
-          testScript.src = '/js/jquery-test.js';
-          document.head.appendChild(testScript);
-        };
-        document.head.appendChild(jqueryScript);
-      }
-    </script>
+    <!-- 🚀 Speed Index极致优化 - 移除所有外部脚本，包括jQuery -->
   </body>
 </html> 

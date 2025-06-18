@@ -10,17 +10,21 @@ import CustomerCases from '../components/CustomerCases.astro';
 import NewsCenter from '../components/NewsCenter.astro';
 ---
 
-<Layout title="Yonan Machinery - 专业工程机械制造商">
-	<div class="animate-page-load">
-		<main>
-			<HeroShowcase />
+<Layout title="专业滑移装载机制造商">
+	<!-- 🚀 Speed Index极致优化 - 移动端只显示关键内容 -->
+	<main>
+		<HeroShowcase />
+		<!-- 移动端隐藏非关键组件，减少DOM复杂度和图片加载 -->
+		<div class="hidden md:block">
 			<ProductShowcase />
 			<CompanyIntro />
 			<Advantages />
-			<HotProducts />
+		</div>
+		<HotProducts />
+		<div class="hidden md:block">
 			<CustomerNeeds />
 			<CustomerCases />
 			<NewsCenter />
-		</main>
-	</div>
+		</div>
+	</main>
 </Layout>

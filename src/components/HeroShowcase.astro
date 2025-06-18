@@ -4,19 +4,15 @@ const mainProduct = {
 };
 const mobileBanner = {
   src: '/images/mobile-banner-tiny.svg',
-  alt: '华智工业科技 - 专业滑移装载机制造商',
+  alt: '专业滑移装载机制造商',
   width: 375,
   height: 200
 }
 ---
 
 <section class="relative bg-white md:pt-24 md:pb-24 overflow-hidden mobile-hero">
-  <!-- 🚀 Speed Index极致优化 - 移动端Banner -->
+  <!-- 🚀 移动端Banner - 仅显示图片 -->
   <div class="md:hidden mobile-banner-ultra mobile-critical">
-    <!-- 立即显示红色背景+文字 - 0延迟 -->
-    <div class="mobile-banner-micro critical-path-image">
-      华智工业科技
-    </div>
     <!-- 图片快速加载 -->
     <img 
       src={mobileBanner.src} 
@@ -26,6 +22,7 @@ const mobileBanner = {
       class="mobile-banner-progressive"
       loading="eager"
       fetchpriority="high"
+      style="opacity: 1;"
     />
   </div>
 
@@ -39,7 +36,7 @@ const mobileBanner = {
           <span class="text-red-600">引领行业未来</span>
         </h1>
         <p class="mt-6 text-lg md:text-xl text-gray-700 max-w-md mx-auto md:mx-0">
-          华智工业科技，致力于提供高效、可靠的工程机械解决方案。
+          致力于提供高效、可靠的工程机械解决方案。
         </p>
         <div class="mt-8 flex justify-center md:justify-start space-x-4">
           <a href="/products" class="bg-red-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform duration-300 transform hover:scale-105">
@@ -54,7 +51,7 @@ const mobileBanner = {
       <!-- 右侧图片 -->
       <div class="relative">
         <div class="relative w-full max-w-lg mx-auto md:max-w-none">
-          <img src={mainProduct.src} alt="华智工业YN-S70滑移装载机" width="600" height="400" class="w-full h-auto object-contain relative z-10">
+          <img src={mainProduct.src} alt="YN-S70滑移装载机" width="600" height="400" class="w-full h-auto object-contain relative z-10">
           <!-- 背景装饰图形 -->
           <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-500 rounded-full opacity-10"></div>
           <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-blue-500 rounded-full opacity-10"></div>
