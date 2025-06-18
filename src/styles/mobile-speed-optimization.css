@@ -1,0 +1,140 @@
+/* Mobile Speed Index Optimization - 极致首屏优化 */
+
+/* 关键移动端首屏样式 - 生产环境内联这些样式 */
+@media (max-width: 768px) {
+  /* 强制立即显示关键内容 */
+  .mobile-critical {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+    contain: layout style paint;
+  }
+  
+  /* 隐藏移动端非关键内容 */
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  /* 移动端Banner容器优化 - 无空白 */
+  .mobile-banner-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 0; /* 移除行高造成的空白 */
+    contain: layout style paint;
+    transform: translateZ(0); /* 硬件加速 */
+  }
+  
+  /* 优化移动端Banner - 完全填充 */
+  .mobile-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    vertical-align: top; /* 消除底部空白 */
+    image-rendering: optimizeSpeed;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0); /* 硬件加速 */
+    will-change: auto;
+  }
+  
+
+  
+  /* 减少移动端布局复杂度 */
+  .mobile-simple {
+    padding: 0.5rem !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  
+  /* 优化移动端字体 */
+  body {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+  }
+  
+  /* 完全移除移动端动画 */
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  
+  /* 优化移动端图片 */
+  img {
+    image-rendering: optimizeSpeed;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* 减少移动端复杂度 */
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+  }
+  
+  /* 移动端首屏关键路径 - 完全无间距 */
+  .mobile-hero {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+  
+  /* 移动端菜单交互优化 */
+  #mobile-menu-button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  #mobile-menu a {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+
+  
+
+  
+
+}
+
+/* 移动端Banner预加载优化 */
+.mobile-banner-preload {
+  content: url('/images/mobile-banner-fast.svg');
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 移动端关键资源预加载 */
+@media (max-width: 768px) {
+  /* 预加载移动端关键字体 */
+  @font-face {
+    font-family: 'system-ui-fallback';
+    src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont');
+    font-display: swap;
+  }
+} 

@@ -1,4 +1,7 @@
 ---
+import Header from '../components/Header.astro';
+import FooterSection from '../components/FooterSection.astro';
+
 export interface Props {
   title: string;
   description?: string;
@@ -28,17 +31,18 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- 预加载关键资源 -->
+    <!-- 移动端优先预加载策略 -->
+    <link rel="preload" href="/images/mobile-banner-fast.svg" as="image" media="(max-width: 768px)" fetchpriority="high" />
+    <link rel="preload" href="/main-product.svg" as="image" media="(min-width: 769px)" />
     <link rel="preload" href="/product1.svg" as="image" />
-    <link rel="preload" href="/main-product.svg" as="image" />
     
-    <!-- Partytown预连接优化 -->
+    <!-- DNS预连接优化 -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
     <link rel="preconnect" href="https://hm.baidu.com" />
     <link rel="preconnect" href="https://zz.bdstatic.com" />
     
-    <!-- 关键CSS完全内联 - 极致优化 -->
+    <!-- 移动端关键CSS内联 - 首屏渲染优化 -->
     <style>
       /* 关键渲染路径CSS - 完全内联 */
       * {
@@ -152,6 +156,29 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         will-change: auto !important;
       }
 
+      /* 移动端Banner关键样式 - 首屏立即渲染 */
+      @media (max-width: 768px) {
+        .mobile-banner-container {
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          line-height: 0;
+        }
+        
+        .mobile-banner {
+          display: block;
+          width: 100%;
+          height: auto;
+          margin: 0;
+          padding: 0;
+          border: none;
+          vertical-align: top;
+          image-rendering: optimizeSpeed;
+        }
+        
+
+      }
+
       /* 全局键盘焦点样式 */
       .focus-visible-ring:focus-visible {
         outline: 2px solid #ef4444; /* red-500 */
@@ -160,14 +187,27 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       }
     </style>
     
+    <!-- 移动端关键CSS - 高优先级 -->
+    <link rel="stylesheet" href="/styles/mobile-critical.css">
+    <link rel="stylesheet" href="/styles/mobile-speed-optimization.css">
+    
+    <!-- 其他CSS - 低优先级 -->
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/animations.css">
     <link rel="stylesheet" href="/styles/cls-optimization.css">
     <link rel="stylesheet" href="/styles/responsive-animations.css">
     
+    <!-- Mobile banner preload -->
+    <link rel="preload" href="/images/mobile-banner-fast.svg" as="image" media="(max-width: 768px)">
+    
     <title>{title}</title>
   </head>
   <body>
+    <!-- Mobile banner preload element -->
+    <div class="mobile-banner-preload"></div>
+    
+    <Header />
+    
     <!-- 最小化加载屏幕 -->
     <div id="loading-screen" class="loading-screen">
       <div class="spinner"></div>
@@ -228,6 +268,27 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           loadingScreen.classList.add('hidden');
         }
       });
+    </script>
+
+    <FooterSection />
+
+    <!-- jQuery 条件加载 - 仅桌面端 -->
+    <script>
+      // 仅在桌面端加载jQuery以优化移动端Speed Index
+      if (window.innerWidth >= 768) {
+        // 动态加载jQuery
+        const jqueryScript = document.createElement('script');
+        jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
+        jqueryScript.integrity = 'sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=';
+        jqueryScript.crossOrigin = 'anonymous';
+        jqueryScript.onload = function() {
+          // jQuery加载完成后加载测试脚本
+          const testScript = document.createElement('script');
+          testScript.src = '/js/jquery-test.js';
+          document.head.appendChild(testScript);
+        };
+        document.head.appendChild(jqueryScript);
+      }
     </script>
   </body>
 </html> 

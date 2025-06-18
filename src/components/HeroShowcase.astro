@@ -3,25 +3,33 @@ const mainProduct = {
   src: '/main-product.svg'
 };
 const mobileBanner = {
-  src: '/images/mobile-banner.svg'
+  src: '/images/mobile-banner-fast.svg',
+  alt: '华智工业科技 - 专业滑移装载机制造商',
+  width: 375,
+  height: 200
 }
 ---
-<section class="relative bg-white pt-20 md:pt-24 pb-16 md:pb-24 overflow-hidden">
-  <!-- Mobile Banner -->
-  <div class="md:hidden">
+
+<section class="relative bg-white md:pt-24 md:pb-24 overflow-hidden mobile-hero">
+  <!-- 移动端Banner - 关键首屏优化 -->
+  <div class="md:hidden mobile-critical mobile-banner-container">
+    <!-- 高优先级预加载的移动端Banner -->
     <img 
       src={mobileBanner.src} 
-      alt="华智工业科技滑移装载机移动端Banner"
-      width="375"
-      height="200"
-      class="w-full h-auto"
+      alt={mobileBanner.alt}
+      width={mobileBanner.width}
+      height={mobileBanner.height}
+      class="mobile-banner"
+      fetchpriority="high"
+      loading="eager"
+      decoding="sync"
     >
   </div>
 
-  <!-- Desktop Content -->
-  <div class="hidden md:block container mx-auto px-4 z-10 relative">
+  <!-- 桌面端内容 -->
+  <div class="hidden md:block container mx-auto px-4 z-10 relative mobile-hide">
     <div class="grid md:grid-cols-2 gap-8 items-center">
-      <!-- Left Content -->
+      <!-- 左侧内容 -->
       <div class="text-center md:text-left">
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-800 leading-tight tracking-tighter">
           滑移装载机 <br class="hidden md:block"/>
@@ -40,15 +48,53 @@ const mobileBanner = {
         </div>
       </div>
 
-      <!-- Right Image -->
+      <!-- 右侧图片 -->
       <div class="relative">
         <div class="relative w-full max-w-lg mx-auto md:max-w-none">
           <img src={mainProduct.src} alt="华智工业YN-S70滑移装载机" width="600" height="400" class="w-full h-auto object-contain relative z-10">
-          <!-- Background decorative shapes -->
+          <!-- 背景装饰图形 -->
           <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-500 rounded-full opacity-10"></div>
           <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-blue-500 rounded-full opacity-10"></div>
         </div>
       </div>
     </div>
   </div>
-</section> 
+</section>
+
+<style>
+  /* 移动端Banner容器样式 */
+  .mobile-banner-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 0; /* 移除行高造成的空白 */
+  }
+  
+  /* 移动端Banner图片优化 - 无空白 */
+  .mobile-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    vertical-align: top; /* 消除底部空白 */
+    image-rendering: optimizeSpeed;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  /* 移动端响应式调整 */
+  @media (max-width: 480px) {
+    .mobile-banner {
+      aspect-ratio: 375/200; /* 保持相同比例 */
+    }
+  }
+  
+  /* 超小屏幕优化 */
+  @media (max-width: 320px) {
+    .mobile-banner {
+      aspect-ratio: 320/170; /* 略微调整比例 */
+    }
+  }
+</style> 

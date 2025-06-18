@@ -1,120 +1,117 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/FooterSection.astro';
 import { allNews } from '../../data/news.js';
 
-// 静态路径生成函数
-export async function getStaticPaths({ paginate }: { paginate: any }) {
-  // 按日期倒序排序新闻
-  const sortedNews = allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+// 为分页生成静态路径
+export function getStaticPaths() {
+  const newsPerPage = 6; // 每页显示的新闻数量
+  const totalPages = Math.ceil(allNews.length / newsPerPage);
   
-  // 使用 paginate 函数生成分页路径
-  return paginate(sortedNews, { 
-    pageSize: 6 
+  // 生成分页路径
+  const paths = [];
+  
+  // 第一页 (可以用 /news 或 /news/1 访问)
+  paths.push({
+    params: { page: undefined },
+    props: { 
+      currentPage: 1,
+      totalPages,
+      news: allNews.slice(0, newsPerPage)
+    }
   });
+  
+  // 其他页面
+  for (let i = 2; i <= totalPages; i++) {
+    paths.push({
+      params: { page: i.toString() },
+      props: {
+        currentPage: i,
+        totalPages,
+        news: allNews.slice((i - 1) * newsPerPage, i * newsPerPage)
+      }
+    });
+  }
+  
+  return paths;
 }
 
-interface Page<T> {
-  data: T[];
-  // ... 其他分页属性
-  url: {
-    current: string;
-    prev?: string;
-    next?: string;
-  };
-  currentPage: number;
-  lastPage: number;
-}
+const { currentPage, totalPages, news } = Astro.props;
 
-// 获取当前页面数据
-const { page } = Astro.props as { page: Page<(typeof allNews)[number]> };
-const categories = ["全部", "公司新闻", "行业动态", "客户案例"];
+// 按日期倒序排序新闻
+const sortedNews = news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---
 
-<Layout title={`新闻中心 - 第 ${page.currentPage} 页 - 山东永安建设机械集团`}>
-  <Header />
-
+<Layout title="新闻中心 - 华智工业科技">
   <main>
     <!-- Page Header -->
-    <section class="bg-gray-800 text-white py-20">
+    <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
       <div class="container mx-auto px-4 text-center">
         <h1 class="text-5xl font-bold leading-tight">新闻中心</h1>
-        <p class="text-xl mt-4">获取最新的公司动态、行业资讯和客户案例</p>
+        <p class="text-xl mt-4">了解我们的最新动态和行业资讯</p>
       </div>
     </section>
 
-    <!-- News List -->
+    <!-- News Grid -->
     <section class="py-20 bg-gray-50">
       <div class="container mx-auto px-4">
-        <!-- Category Filter -->
-        <div class="flex justify-center mb-12">
-          <div class="flex space-x-2 bg-white p-2 rounded-full shadow-md">
-            {categories.map(cat => (
-              <button class="px-6 py-2 rounded-full text-gray-700 font-semibold transition-colors duration-300 hover:bg-red-600 hover:text-white focus:outline-none focus:bg-red-600 focus:text-white">
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        <!-- News Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {page.data.map(article => (
-            <a href={`/news/${article.slug}`} class="bg-white rounded-lg shadow-lg overflow-hidden group block animate-fade-in">
-              <div class="relative overflow-hidden">
-                <img 
-                  src={article.image} 
-                  alt={article.title} 
-                  class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-300" 
-                  loading="lazy" 
-                  decoding="async"
-                  width="400"
-                  height="224"
-                >
-                <div class="absolute top-4 left-4 bg-red-600 text-white text-sm font-semibold px-3 py-1 rounded-full">{article.category}</div>
-              </div>
-              <div class="p-6 flex-grow flex flex-col">
-                <h3 class="text-xl font-bold text-gray-800 mb-2 flex-grow">
-                  <a href={`/news/${article.slug}`} class="hover:text-red-600 transition-colors duration-300">{article.title}</a>
-                </h3>
-                <p class="text-gray-600 mb-4">{article.excerpt}</p>
-                <div class="text-sm text-gray-500 mt-auto pt-4 border-t border-gray-200">
-                  <span>发布于 {article.date}</span>
+          {sortedNews.map((news) => (
+            <article class="bg-white rounded-lg shadow-lg overflow-hidden group">
+              <a href={`/news/${news.slug}`} class="block focus-visible-ring rounded-lg" aria-label={`阅读文章：${news.title}`}>
+                <img src={news.image} alt={news.title} class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async">
+                <div class="p-6">
+                  <div class="flex items-center mb-3">
+                    <span class="bg-red-100 text-red-600 text-sm font-medium px-3 py-1 rounded-full">{news.category}</span>
+                    <span class="text-gray-500 text-sm ml-3">{news.date}</span>
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-red-600 transition-colors">{news.title}</h2>
+                  <p class="text-gray-600 leading-relaxed mb-4">{news.excerpt}</p>
+                  <span class="text-red-600 font-medium group-hover:underline">阅读更多 →</span>
                 </div>
-              </div>
-            </a>
+              </a>
+            </article>
           ))}
         </div>
 
-        <!-- Pagination -->
-        <div class="flex justify-center mt-16">
-          <nav class="flex items-center space-x-1 md:space-x-2">
-            {page.url.prev ? (
-              <a href={page.url.prev} class="px-4 py-3 md:px-5 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300 text-sm focus-visible-ring">&laquo; 上一页</a>
-            ) : (
-              <span class="px-4 py-3 md:px-5 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed text-sm">&laquo; 上一页</span>
+        <!-- 分页导航 -->
+        {totalPages > 1 && (
+          <div class="flex justify-center items-center mt-12 space-x-2">
+            {/* 上一页按钮 */}
+            {currentPage > 1 && (
+              <a 
+                href={currentPage === 2 ? '/news' : `/news/${currentPage - 1}`}
+                class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                ← 上一页
+              </a>
             )}
-            
-            {Array.from({ length: page.lastPage }, (_, i) => i + 1).map(num => (
-              <a href={`/news/${num === 1 ? '' : num}`} class:list={[
-                "px-4 py-3 w-12 text-center rounded-lg shadow-md transition-colors duration-300 text-sm focus-visible-ring",
-                { "bg-red-600 text-white": num === page.currentPage, "bg-white text-gray-700 hover:bg-gray-200": num !== page.currentPage }
-              ]}>
-                {num}
+
+            {/* 页码 */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+              <a
+                href={pageNum === 1 ? '/news' : `/news/${pageNum}`}
+                class={`px-4 py-2 rounded-lg transition-colors ${
+                  pageNum === currentPage
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {pageNum}
               </a>
             ))}
 
-            {page.url.next ? (
-              <a href={page.url.next} class="px-4 py-3 md:px-5 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300 text-sm focus-visible-ring">下一页 &raquo;</a>
-            ) : (
-               <span class="px-4 py-3 md:px-5 bg-gray-200 text-gray-400 rounded-lg shadow-md cursor-not-allowed text-sm">下一页 &raquo;</span>
+            {/* 下一页按钮 */}
+            {currentPage < totalPages && (
+              <a 
+                href={`/news/${currentPage + 1}`}
+                class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                下一页 →
+              </a>
             )}
-          </nav>
-        </div>
+          </div>
+        )}
       </div>
     </section>
   </main>
-  
-  <Footer />
 </Layout> 

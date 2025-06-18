@@ -1,0 +1,200 @@
+/* Mobile Critical Path CSS - 首屏关键样式 */
+@media (max-width: 768px) {
+  /* 移动端基础重置 */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* 移动端基础字体和布局 */
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* 移动端Banner容器 - 关键首屏元素，无空白 */
+  .mobile-banner-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 0; /* 移除行高造成的空白 */
+    contain: layout style paint;
+    transform: translateZ(0); /* 硬件加速 */
+  }
+  
+  /* 移动端关键Banner图片 - 完全填充 */
+  .mobile-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    vertical-align: top; /* 消除底部空白 */
+    image-rendering: optimizeSpeed;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0); /* 硬件加速 */
+  }
+  
+
+  
+  /* 移动端容器 */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 100%;
+  }
+  
+  /* 移动端标题优化 */
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-rendering: optimizeSpeed;
+  }
+  
+  /* 移动端段落 */
+  p {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    text-rendering: optimizeSpeed;
+  }
+  
+  /* 移动端按钮优化 */
+  button, .btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* 移动端链接 */
+  a {
+    min-height: 48px;
+    display: inline-block;
+    padding: 8px;
+    text-decoration: none;
+    color: #dc2626;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+
+  
+  /* 移动端导航优化 */
+  nav {
+    padding: 0.5rem 1rem;
+  }
+  
+  /* 移动端菜单按钮优化 */
+  #mobile-menu-button {
+    min-height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* 移动端菜单容器 */
+  #mobile-menu {
+    max-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 移动端菜单链接 */
+  #mobile-menu a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 移动端图片优化 */
+  img {
+    max-width: 100%;
+    height: auto;
+    image-rendering: optimizeSpeed;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  /* 移动端隐藏非关键内容 */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* 移动端显示 */
+  .mobile-only {
+    display: block !important;
+  }
+  
+  /* 移动端关键内容立即显示 */
+  .mobile-critical {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+    contain: layout style paint;
+  }
+  
+  /* 移动端简化布局 */
+  .mobile-simple {
+    padding: 0.5rem !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+  }
+  
+  /* 移动端首屏区域 - 无padding */
+  .mobile-hero {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+  
+  /* 移动端禁用所有动画 */
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  
+  /* 移动端小屏幕响应式 */
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.25rem;
+    }
+    
+    p {
+      font-size: 12px;
+    }
+  }
+} 

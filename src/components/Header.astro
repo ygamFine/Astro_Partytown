@@ -45,14 +45,14 @@ const navLinks = [
   </div>
 
   <!-- Mobile Navigation Menu -->
-  <div id="mobile-menu" class="hidden md:hidden">
-    <nav aria-label="移动端导航" class="px-4 pt-2 pb-4 space-y-2 border-t border-gray-200">
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-lg">
+    <nav aria-label="移动端导航" class="px-4 pt-2 pb-4 space-y-1">
       {navLinks.map(link => (
-        <a href={link.href} class="block text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg px-4 py-3 font-semibold transition-colors duration-300 focus-visible-ring">
+        <a href={link.href} class="block text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg px-4 py-3 font-semibold transition-all duration-300 focus-visible-ring touch-manipulation">
           {link.name}
         </a>
       ))}
-      <a href="/contact" class="block w-full text-center bg-red-600 text-white mt-4 px-5 py-3 rounded-lg font-bold hover:bg-red-700 transition-colors duration-300 focus-visible-ring">
+      <a href="/contact" class="block w-full text-center bg-red-600 text-white mt-4 px-5 py-3 rounded-lg font-bold hover:bg-red-700 transition-all duration-300 focus-visible-ring touch-manipulation">
         获取报价
       </a>
     </nav>
@@ -60,19 +60,83 @@ const navLinks = [
 </header>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  // 移动端菜单交互功能
+  function initMobileMenu() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
-    const openIcon = document.getElementById('menu-icon-open');
-    const closeIcon = document.getElementById('menu-icon-close');
+    const openIcon = document.getElementById('menu-open-icon');
+    const closeIcon = document.getElementById('menu-close-icon');
     
-    if (mobileMenuButton && mobileMenu && openIcon && closeIcon) {
-      mobileMenuButton.addEventListener('click', () => {
-        const isHidden = mobileMenu.classList.toggle('hidden');
-        mobileMenuButton.setAttribute('aria-expanded', String(!isHidden));
-        openIcon.classList.toggle('hidden');
-        closeIcon.classList.toggle('hidden');
+    console.log('初始化移动端菜单...', { mobileMenuButton, mobileMenu, openIcon, closeIcon });
+    
+    if (mobileMenuButton && mobileMenu) {
+      // 菜单按钮点击事件
+      mobileMenuButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+          // 显示菜单
+          mobileMenu.classList.remove('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', 'true');
+        } else {
+          // 隐藏菜单
+          mobileMenu.classList.add('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+        }
+        
+        // 切换图标显示
+        if (openIcon && closeIcon) {
+          if (isHidden) {
+            openIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+          } else {
+            openIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+          }
+        }
+        
+        console.log('菜单状态切换:', { isHidden, newState: !isHidden });
       });
+      
+      // 点击菜单链接时关闭菜单
+      const mobileLinks = mobileMenu.querySelectorAll('a');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+          if (openIcon && closeIcon) {
+            openIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+          }
+        });
+      });
+      
+      // 点击外部区域关闭菜单
+      document.addEventListener('click', (e) => {
+        const target = e.target as Node;
+        if (target && !mobileMenuButton.contains(target) && !mobileMenu.contains(target)) {
+          mobileMenu.classList.add('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+          if (openIcon && closeIcon) {
+            openIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+          }
+        }
+      });
+      
+      console.log('移动端菜单初始化完成');
+    } else {
+      console.error('移动端菜单元素未找到');
     }
-  });
+  }
+
+  // 确保DOM加载完成后初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileMenu);
+  } else {
+    initMobileMenu();
+  }
 </script> 
