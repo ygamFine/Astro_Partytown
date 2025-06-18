@@ -108,10 +108,48 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           display: block !important;
           animation: fadeInSlow 0.5s ease-out;
         }
+        
+        /* 移动端Header优化 */
+        .mobile-header-delayed {
+          display: none !important;
+        }
+        
+        .mobile-header-minimal {
+          display: block !important;
+        }
+        
+        .mobile-content-loaded .mobile-header-delayed {
+          display: block !important;
+        }
+        
+        .mobile-content-loaded .mobile-header-minimal {
+          display: none !important;
+        }
+        
+        /* 移动端Footer延迟 */
+        .mobile-footer-delayed {
+          display: none !important;
+        }
+        
+        .mobile-content-loaded .mobile-footer-delayed {
+          display: block !important;
+        }
       }
       
       @media (min-width: 769px) {
         .mobile-delayed-content {
+          display: block;
+        }
+        
+        .mobile-header-delayed {
+          display: block;
+        }
+        
+        .mobile-header-minimal {
+          display: none;
+        }
+        
+        .mobile-footer-delayed {
           display: block;
         }
       }
@@ -405,9 +443,22 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
   <body>
     <!-- 🚀 Speed Index优化 - 移除预加载元素，减少DOM复杂度 -->
     
-    <Header />
+    <!-- 🚀 激进Speed Index优化 - 移动端延迟Header -->
+    <div class="mobile-header-delayed">
+      <Header />
+    </div>
     
-    <!-- 🚀 Speed Index优化 - 移除加载屏幕，立即显示内容 -->
+    <!-- 移动端极简Header -->
+    <div class="mobile-header-minimal">
+      <header class="bg-white sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center justify-between h-16 px-4">
+          <a href="/" class="flex items-center space-x-2">
+            <span class="text-xl font-bold text-gray-800">永安重工</span>
+          </a>
+          <a href="/contact" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-sm">报价</a>
+        </div>
+      </header>
+    </div>
     
     <!-- 主要内容 -->
     <main id="main-content">
@@ -443,70 +494,48 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     </script>
     -->
 
-    <!-- 客服系统 - 使用Partytown优化 -->
-    <script type="text/partytown">
-      // 模拟客服系统初始化
-      window.CustomerService = {
-        init: function() {
-          console.log('客服系统已通过Partytown初始化');
-          // 这里可以添加实际的客服系统代码
-        },
-        showChat: function() {
-          console.log('显示聊天窗口');
-        }
-      };
-      
-      // 延迟初始化客服系统
-      setTimeout(function() {
-        window.CustomerService.init();
-      }, 2000);
-    </script>
-
-    <!-- HubSpot表单 - 使用Partytown优化 -->
-    <script type="text/partytown">
-      // HubSpot表单配置
-      window.hbspt = window.hbspt || {};
-      window.hbspt.forms = window.hbspt.forms || {};
-      window.hbspt.forms.create = function(options) {
-        console.log('HubSpot表单已通过Partytown初始化', options);
-        // 这里可以添加实际的HubSpot表单代码
-      };
-    </script>
-
-        <!-- 🚀 激进Speed Index优化 - 延迟加载策略 -->
+        <!-- 🚀 Speed Index极简JavaScript -->
     <script>
-      // 立即标记页面已加载
-      document.body.classList.add('loaded');
-      
-      // 移动端Banner图片智能加载
+      // 移动端极简逻辑
       if (window.innerWidth <= 768) {
-        const bannerImg = document.querySelector('.mobile-banner-optimized') as HTMLImageElement;
-        if (bannerImg) {
-          // 图片加载完成后显示
-          bannerImg.addEventListener('load', function() {
-            this.classList.add('loaded');
-          });
-          
-          // 如果图片已经缓存，立即显示
-          if (bannerImg.complete && bannerImg.naturalHeight !== 0) {
-            bannerImg.classList.add('loaded');
-          }
-          
-          // 兜底：1秒后强制显示图片
-          setTimeout(function() {
-            bannerImg.classList.add('loaded');
-          }, 1000);
-        }
+        // 立即显示Banner图片
+        setTimeout(function() {
+          const img = document.querySelector('.mobile-banner-optimized');
+          if (img) img.classList.add('loaded');
+        }, 100);
         
-        // 🚀 关键：移动端延迟5秒加载其他内容
+        // 延迟加载其他内容
         setTimeout(function() {
           document.body.classList.add('mobile-content-loaded');
-        }, 5000);
+        }, 3000);
       }
     </script>
 
-    <FooterSection />
+    <!-- 🚀 移动端延迟Footer -->
+    <div class="mobile-footer-delayed">
+      <FooterSection />
+    </div>
 
-    <!-- 🚀 Speed Index极致优化 - 移除所有外部脚本，包括jQuery -->
+    <!-- 🚀 Partytown脚本 - 延迟加载，不阻塞首屏 -->
+    
+    <!-- 客服系统 - 延迟2秒后通过Partytown加载 -->
+    <script>
+      setTimeout(function() {
+        const script1 = document.createElement('script');
+        script1.type = 'text/partytown';
+        script1.innerHTML = 'window.CustomerService = { init: function() { console.log("客服系统已通过Partytown初始化"); }, showChat: function() { console.log("显示聊天窗口"); } }; setTimeout(function() { window.CustomerService.init(); }, 2000);';
+        document.head.appendChild(script1);
+      }, 2000);
+    </script>
+
+    <!-- HubSpot表单 - 延迟2秒后通过Partytown加载 -->
+    <script>
+      setTimeout(function() {
+        const script2 = document.createElement('script');
+        script2.type = 'text/partytown';
+        script2.innerHTML = 'window.hbspt = window.hbspt || {}; window.hbspt.forms = window.hbspt.forms || {}; window.hbspt.forms.create = function(options) { console.log("HubSpot表单已通过Partytown初始化", options); };';
+        document.head.appendChild(script2);
+      }, 2000);
+    </script>
   </body>
 </html> 
