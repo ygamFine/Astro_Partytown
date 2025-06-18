@@ -22,3 +22,18 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# temporary files
+*.tmp
+*.temp
+*~
+
+# documentation files (keep only README.md and essential guides)
+*_REPORT.md
+*_GUIDE.md
+*_OPTIMIZATION.md
+*_STATUS.md
+*_FIX.md
+*_DIAGNOSIS.md
+!README.md
+!ANALYTICS_SETUP_GUIDE.md

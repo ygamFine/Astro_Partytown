@@ -11,8 +11,21 @@ const mobileBanner = {
 ---
 
 <section class="relative bg-white md:pt-24 md:pb-24 overflow-hidden mobile-hero">
-  <!-- 🚀 移动端Banner - 纯CSS背景，0网络请求 -->
-  <div class="md:hidden mobile-banner-css-only mobile-critical">
+  <!-- 🚀 移动端Banner - 图片居中显示 -->
+  <div class="md:hidden mobile-banner-container mobile-critical">
+    <!-- 立即显示CSS背景，然后加载图片覆盖 -->
+    <div class="mobile-banner-instant-bg"></div>
+    <img 
+      style="margin: 0 auto;"
+      src={mobileBanner.src} 
+      alt={mobileBanner.alt}
+      width={mobileBanner.width}
+      height={mobileBanner.height}
+      class="mobile-banner-optimized"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
   </div>
 
   <!-- 桌面端内容 -->

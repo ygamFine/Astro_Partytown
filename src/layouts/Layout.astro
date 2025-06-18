@@ -31,7 +31,8 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- 🚀 Speed Index终极优化 - 纯CSS背景无需预加载 -->
+    <!-- 🚀 Speed Index智能优化 - 关键图片高优先级预加载 -->
+    <link rel="preload" href="/images/mobile-banner-tiny.svg" as="image" media="(max-width: 768px)" fetchpriority="high" />
     <link rel="preload" href="/main-product.svg" as="image" media="(min-width: 769px)" fetchpriority="low" />
     
     <!-- 🚀 Partytown配置 - 第三方脚本优化 -->
@@ -162,31 +163,69 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         border-radius: 0.25rem;
       }
 
-      /* 🚀 SPEED INDEX终极优化 - 纯CSS背景，0网络请求 */
-      .mobile-banner-css-only {
+      /* 🚀 SPEED INDEX智能优化 - CSS背景+图片覆盖策略 */
+      .mobile-banner-container {
         width: 100%;
         height: 200px;
-        margin: 0;
+        margin: 0 auto;
         padding: 0;
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         position: relative;
         overflow: hidden;
         contain: layout style paint;
         transform: translateZ(0);
         backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .mobile-banner-css-only::before {
-        content: '';
+      .mobile-banner-instant-bg {
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 0;
-        background: 
-          radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
-        pointer-events: none;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        z-index: 1;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+      }
+      
+      .mobile-banner-instant-bg::after {
+        content: "专业工程机械";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+      }
+
+      .mobile-banner-optimized {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-banner-optimized.loaded {
+        opacity: 1;
+      }
+
+      .mobile-banner-optimized.loaded + .mobile-banner-instant-bg {
+        opacity: 0;
       }
 
       /* 关键路径图片 - 立即显示 */
@@ -240,12 +279,20 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       /* 移动端特殊优化 - Speed Index关键 */
       @media (max-width: 768px) {
         
-        /* 隐藏桌面端内容以减少DOM复杂度 */
-        .mobile-hide, .hidden.md\\:block {
-          display: none !important;
-          visibility: hidden !important;
-          height: 0 !important;
-          overflow: hidden !important;
+        /* 移动端响应式优化 - 保持所有内容可见 */
+        .mobile-optimized {
+          padding: 1rem !important;
+          margin-bottom: 2rem !important;
+        }
+        
+        /* 移动端组件间距优化 */
+        section {
+          padding: 2rem 1rem !important;
+        }
+        
+        .max-w-7xl {
+          padding-left: 1rem !important;
+          padding-right: 1rem !important;
         }
         
         /* 移动端图片立即优化 */
@@ -266,9 +313,15 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           transition-duration: 0s !important;
         }
 
-        /* CSS背景Banner无需过渡 */
-        .mobile-banner-css-only {
-          transition: none !important;
+        /* 移动端Banner智能加载优化 */
+        .mobile-banner-instant-bg {
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+        
+        .mobile-banner-optimized {
+          image-rendering: optimizeSpeed;
+          image-rendering: -webkit-optimize-contrast;
         }
       }
 
@@ -320,26 +373,32 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
 
     <!-- 🚀 Partytown优化的第三方脚本 - 在Web Worker中运行，不阻塞主线程 -->
     
-    <!-- Google Analytics 4 - 使用Partytown优化 -->
+    <!-- Google Analytics 4 - 暂时禁用，避免错误 -->
+    <!-- 
+    注意：请将GA_MEASUREMENT_ID替换为实际的Google Analytics ID
     <script type="text/partytown">
       // Google Analytics 4 基础配置
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID');
+      gtag('config', 'YOUR_ACTUAL_GA_ID');
     </script>
-    <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=YOUR_ACTUAL_GA_ID"></script>
+    -->
 
-    <!-- 百度统计 - 使用Partytown优化 -->
+    <!-- 百度统计 - 暂时禁用，避免CORS错误 -->
+    <!-- 
+    注意：请将YOUR_BAIDU_ANALYTICS_ID替换为实际的百度统计ID
     <script type="text/partytown">
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?YOUR_BAIDU_ANALYTICS_ID";
+        hm.src = "https://hm.baidu.com/hm.js?YOUR_ACTUAL_BAIDU_ID";
         var s = document.getElementsByTagName("script")[0]; 
         s.parentNode.insertBefore(hm, s);
       })();
     </script>
+    -->
 
     <!-- 客服系统 - 使用Partytown优化 -->
     <script type="text/partytown">
@@ -371,10 +430,26 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       };
     </script>
 
-        <!-- 🚀 极简JavaScript - Speed Index终极优化 -->
+        <!-- 🚀 智能JavaScript - CSS背景+图片优化 -->
     <script>
-      // 立即标记页面已加载 - 纯CSS背景无需图片加载
+      // 立即标记页面已加载
       document.body.classList.add('loaded');
+      
+      // 移动端Banner图片智能加载
+      if (window.innerWidth <= 768) {
+        const bannerImg = document.querySelector('.mobile-banner-optimized') as HTMLImageElement;
+        if (bannerImg) {
+          // 图片加载完成后显示
+          bannerImg.addEventListener('load', function() {
+            this.classList.add('loaded');
+          });
+          
+          // 如果图片已经缓存，立即显示
+          if (bannerImg.complete && bannerImg.naturalHeight !== 0) {
+            bannerImg.classList.add('loaded');
+          }
+        }
+      }
     </script>
 
     <FooterSection />
