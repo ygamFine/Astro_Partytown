@@ -2,9 +2,24 @@
 const mainProduct = {
   src: '/main-product.svg'
 };
+const mobileBanner = {
+  src: '/images/mobile-banner.svg'
+}
 ---
-<section class="relative bg-white pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-  <div class="container mx-auto px-4 z-10 relative">
+<section class="relative bg-white pt-20 md:pt-24 pb-16 md:pb-24 overflow-hidden">
+  <!-- Mobile Banner -->
+  <div class="md:hidden">
+    <img 
+      src={mobileBanner.src} 
+      alt="华智工业科技滑移装载机移动端Banner"
+      width="375"
+      height="200"
+      class="w-full h-auto"
+    >
+  </div>
+
+  <!-- Desktop Content -->
+  <div class="hidden md:block container mx-auto px-4 z-10 relative">
     <div class="grid md:grid-cols-2 gap-8 items-center">
       <!-- Left Content -->
       <div class="text-center md:text-left">
@@ -15,22 +30,23 @@ const mainProduct = {
         <p class="mt-6 text-lg md:text-xl text-gray-700 max-w-md mx-auto md:mx-0">
           华智工业科技，致力于提供高效、可靠的工程机械解决方案。
         </p>
-        <div class="flex space-x-4 non-critical">
-          <button class="bg-red-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover-scale-optimized transition-all duration-300 transform button-fixed animation-no-layout-shift">
-            立即咨询
-          </button>
-          <button class="border-2 border-gray-400 text-gray-700 px-8 py-4 rounded-lg text-lg font-semibold hover:border-red-600 hover:text-red-600 hover-scale-optimized transition-all duration-300 transform button-fixed animation-no-layout-shift">
-            查看详情
-          </button>
+        <div class="mt-8 flex justify-center md:justify-start space-x-4">
+          <a href="/products" class="bg-red-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform duration-300 transform hover:scale-105">
+            探索产品
+          </a>
+          <a href="/contact" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-300 transition-transform duration-300 transform hover:scale-105">
+            联系我们
+          </a>
         </div>
       </div>
-      
+
       <!-- Right Image -->
       <div class="relative">
         <div class="relative w-full max-w-lg mx-auto md:max-w-none">
           <img src={mainProduct.src} alt="华智工业YN-S70滑移装载机" width="600" height="400" class="w-full h-auto object-contain relative z-10">
           <!-- Background decorative shapes -->
           <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-500 rounded-full opacity-10"></div>
+          <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-blue-500 rounded-full opacity-10"></div>
         </div>
       </div>
     </div>
