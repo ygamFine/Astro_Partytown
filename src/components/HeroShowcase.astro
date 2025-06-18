@@ -11,19 +11,12 @@ const mobileBanner = {
 ---
 
 <section class="relative bg-white md:pt-24 md:pb-24 overflow-hidden mobile-hero">
-  <!-- 移动端Banner - 关键首屏优化 -->
-  <div class="md:hidden mobile-critical mobile-banner-container">
-    <!-- 高优先级预加载的移动端Banner -->
-    <img 
-      src={mobileBanner.src} 
-      alt={mobileBanner.alt}
-      width={mobileBanner.width}
-      height={mobileBanner.height}
-      class="mobile-banner"
-      fetchpriority="high"
-      loading="eager"
-      decoding="sync"
-    >
+  <!-- 移动端Banner - 极致首屏优化 -->
+  <div class="md:hidden mobile-banner-ultra mobile-critical">
+    <!-- 微型版本立即显示 - 内联背景 -->
+    <div class="inline-svg-bg mobile-banner-micro critical-path-image">
+      华智工业科技
+    </div>
   </div>
 
   <!-- 桌面端内容 -->

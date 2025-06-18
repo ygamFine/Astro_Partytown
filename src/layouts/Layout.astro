@@ -187,15 +187,18 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       }
     </style>
     
+    <!-- 极致图片优化CSS - 最高优先级 -->
+    <link rel="stylesheet" href="/src/styles/ultra-image-optimization.css" media="all" fetchpriority="high">
+    
     <!-- 移动端关键CSS - 高优先级 -->
-    <link rel="stylesheet" href="/styles/mobile-critical.css">
-    <link rel="stylesheet" href="/styles/mobile-speed-optimization.css">
+    <link rel="stylesheet" href="/src/styles/mobile-critical.css" media="(max-width: 768px)" fetchpriority="high">
+    <link rel="stylesheet" href="/src/styles/mobile-speed-optimization.css" media="(max-width: 768px)">
     
     <!-- 其他CSS - 低优先级 -->
-    <link rel="stylesheet" href="/styles/global.css">
-    <link rel="stylesheet" href="/styles/animations.css">
-    <link rel="stylesheet" href="/styles/cls-optimization.css">
-    <link rel="stylesheet" href="/styles/responsive-animations.css">
+    <link rel="stylesheet" href="/src/styles/global.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/src/styles/animations.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/src/styles/cls-optimization.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/src/styles/responsive-animations.css" media="print" onload="this.media='all'">
     
     <!-- Mobile banner preload -->
     <link rel="preload" href="/images/mobile-banner-fast.svg" as="image" media="(max-width: 768px)">
@@ -260,14 +263,48 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       }, 2000);
     </script>
 
+    <!-- 极致图片加载脚本 - 立即执行 -->
+    <script src="/src/scripts/ultra-image-loader.js" async></script>
+
     <script>
-      // 简单的加载屏幕隐藏逻辑
-      window.addEventListener('load', () => {
+      // 增强的加载屏幕逻辑 + 性能监控
+      document.addEventListener('DOMContentLoaded', () => {
+        // 立即隐藏加载屏幕以加快首屏渲染
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
           loadingScreen.classList.add('hidden');
         }
+
+        // 清理will-change属性以优化内存
+        setTimeout(() => {
+          const elementsWithWillChange = document.querySelectorAll('[style*="will-change"]');
+          elementsWithWillChange.forEach(el => {
+            if (el instanceof HTMLElement) {
+              el.style.willChange = 'auto';
+            }
+          });
+        }, 3000);
+
+                 // 性能报告
+         setTimeout(() => {
+           if (window.performance && window.performance.timing) {
+             const timing = window.performance.timing;
+             console.group('🚀 Performance Report');
+             console.log('DOM Content Loaded:', (timing.domContentLoadedEventEnd - timing.navigationStart) + 'ms');
+             console.log('Page Load Complete:', (timing.loadEventEnd - timing.navigationStart) + 'ms');
+             console.groupEnd();
+           }
+         }, 1000);
       });
+
+      // 立即优化：检测并隐藏非关键内容
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.classList.add('loaded');
+        });
+      } else {
+        document.body.classList.add('loaded');
+      }
     </script>
 
     <FooterSection />
