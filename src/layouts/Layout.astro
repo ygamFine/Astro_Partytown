@@ -52,7 +52,7 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <link rel="preconnect" href="https://js.hs-scripts.com" />
     
     <!-- 🚀 Speed Index关键优化 - 预加载移动端Banner -->
-    <link rel="preload" href="/images/mobile-banner-ultra-tiny.svg" as="image" type="image/svg+xml" media="(max-width: 768px)" />
+    <link rel="preload" href="/images/mobile-banner-ultra-fast.svg" as="image" type="image/svg+xml" media="(max-width: 768px)" />
     
     <!-- 移动端关键CSS内联 - 首屏渲染优化 -->
     <style>
@@ -98,37 +98,54 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
       .text-gray-600 { color: #4b5563; }
       
-      /* 隐藏非关键内容直到加载完成 */
-      .non-critical {
-        opacity: 0;
-        visibility: hidden;
+      /* 🚀 激进Speed Index优化 - 移动端延迟内容 */
+      @media (max-width: 768px) {
+        .mobile-delayed-content {
+          display: none !important;
+        }
+        
+        .mobile-content-loaded .mobile-delayed-content {
+          display: block !important;
+          animation: fadeInSlow 0.5s ease-out;
+        }
       }
       
-      .loaded .non-critical {
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 0.3s ease-out;
+      @media (min-width: 769px) {
+        .mobile-delayed-content {
+          display: block;
+        }
+      }
+      
+      @keyframes fadeInSlow {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
       
       /* 🚀 Speed Index终极优化 - 移动端首屏关键样式 */
       @media (max-width: 768px) {
-        /* 移动端首屏立即显示 */
+        /* 🚀 移动端Banner最高优先级 */
         .mobile-banner-container {
           display: block !important;
           visibility: visible !important;
           opacity: 1 !important;
+          z-index: 9999 !important;
+          position: relative !important;
         }
         
         .mobile-banner-instant-bg {
           display: block !important;
           visibility: visible !important;
           opacity: 1 !important;
+          z-index: 1 !important;
         }
         
-        /* 强制GPU渲染 */
-        .mobile-hero {
-          transform: translate3d(0,0,0) !important;
-          will-change: transform !important;
+        .mobile-banner-optimized {
+          z-index: 2 !important;
+        }
+        
+        /* 移动端其他内容延迟 */
+        .mobile-delayed-content {
+          display: none !important;
         }
       }
       
@@ -331,12 +348,12 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           image-rendering: -webkit-optimize-contrast;
         }
         
-        /* 禁用所有动画和过渡以加速渲染 */
+        /* 🚀 激进优化：移动端完全禁用动画 */
         *, *::before, *::after {
-          animation-delay: 0s !important;
-          animation-duration: 0s !important;
-          transition-delay: 0s !important;
-          transition-duration: 0s !important;
+          animation: none !important;
+          transition: none !important;
+          transform: none !important;
+          will-change: auto !important;
         }
 
         /* 移动端Banner智能加载优化 */
@@ -456,12 +473,12 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       };
     </script>
 
-        <!-- 🚀 保留Banner图片的JavaScript优化 -->
+        <!-- 🚀 激进Speed Index优化 - 延迟加载策略 -->
     <script>
       // 立即标记页面已加载
       document.body.classList.add('loaded');
       
-      // 移动端Banner图片智能加载 - 保留图片显示
+      // 移动端Banner图片智能加载
       if (window.innerWidth <= 768) {
         const bannerImg = document.querySelector('.mobile-banner-optimized') as HTMLImageElement;
         if (bannerImg) {
@@ -475,11 +492,16 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
             bannerImg.classList.add('loaded');
           }
           
-          // 兜底：3秒后强制显示图片
+          // 兜底：1秒后强制显示图片
           setTimeout(function() {
             bannerImg.classList.add('loaded');
-          }, 3000);
+          }, 1000);
         }
+        
+        // 🚀 关键：移动端延迟5秒加载其他内容
+        setTimeout(function() {
+          document.body.classList.add('mobile-content-loaded');
+        }, 5000);
       }
     </script>
 
