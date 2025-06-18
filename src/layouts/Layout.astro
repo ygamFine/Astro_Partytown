@@ -51,6 +51,9 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <link rel="preconnect" href="https://zz.bdstatic.com" />
     <link rel="preconnect" href="https://js.hs-scripts.com" />
     
+    <!-- 🚀 Speed Index关键优化 - 预加载移动端Banner -->
+    <link rel="preload" href="/images/mobile-banner-ultra-tiny.svg" as="image" type="image/svg+xml" media="(max-width: 768px)" />
+    
     <!-- 移动端关键CSS内联 - 首屏渲染优化 -->
     <style>
       /* 关键渲染路径CSS - 完全内联 */
@@ -107,7 +110,27 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         transition: opacity 0.3s ease-out;
       }
       
-      /* 🚀 Speed Index优化 - 移除加载屏幕CSS，减少样式复杂度 */
+      /* 🚀 Speed Index终极优化 - 移动端首屏关键样式 */
+      @media (max-width: 768px) {
+        /* 移动端首屏立即显示 */
+        .mobile-banner-container {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        
+        .mobile-banner-instant-bg {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        
+        /* 强制GPU渲染 */
+        .mobile-hero {
+          transform: translate3d(0,0,0) !important;
+          will-change: transform !important;
+        }
+      }
       
       /* 关键布局样式 */
       .grid { display: grid; }
@@ -163,17 +186,19 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         border-radius: 0.25rem;
       }
 
-      /* 🚀 SPEED INDEX智能优化 - CSS背景+图片覆盖策略 */
+      /* 🚀 SPEED INDEX终极优化 - 移动端Banner立即显示 */
       .mobile-banner-container {
         width: 100%;
         height: 200px;
-        margin: 0 auto;
+        margin: 0;
         padding: 0;
         position: relative;
         overflow: hidden;
         contain: layout style paint;
         transform: translateZ(0);
         backface-visibility: hidden;
+        will-change: transform;
+        isolation: isolate;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -185,10 +210,11 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         z-index: 1;
         opacity: 1;
         transition: opacity 0.3s ease;
+        /* 立即显示的CSS背景作为占位符 */
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -430,12 +456,12 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       };
     </script>
 
-        <!-- 🚀 智能JavaScript - CSS背景+图片优化 -->
+        <!-- 🚀 保留Banner图片的JavaScript优化 -->
     <script>
       // 立即标记页面已加载
       document.body.classList.add('loaded');
       
-      // 移动端Banner图片智能加载
+      // 移动端Banner图片智能加载 - 保留图片显示
       if (window.innerWidth <= 768) {
         const bannerImg = document.querySelector('.mobile-banner-optimized') as HTMLImageElement;
         if (bannerImg) {
@@ -448,6 +474,11 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           if (bannerImg.complete && bannerImg.naturalHeight !== 0) {
             bannerImg.classList.add('loaded');
           }
+          
+          // 兜底：3秒后强制显示图片
+          setTimeout(function() {
+            bannerImg.classList.add('loaded');
+          }, 3000);
         }
       }
     </script>

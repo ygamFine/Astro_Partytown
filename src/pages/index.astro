@@ -11,15 +11,20 @@ import NewsCenter from '../components/NewsCenter.astro';
 ---
 
 <Layout title="专业滑移装载机制造商">
-	<!-- 🚀 移动端完整内容 - 与PC端一致的模块，响应式布局 -->
+	<!-- 🚀 Speed Index极致优化 - 首屏优先，其他内容延迟加载 -->
 	<main>
+		<!-- 首屏关键内容 - 立即显示 -->
 		<HeroShowcase />
-		<ProductShowcase />
-		<CompanyIntro />
-		<Advantages />
-		<HotProducts />
-		<CustomerNeeds />
-		<CustomerCases />
-		<NewsCenter />
+		
+		<!-- 非首屏内容 - 延迟显示，减少首屏渲染阻塞 -->
+		<div class="non-critical">
+			<ProductShowcase />
+			<CompanyIntro />
+			<Advantages />
+			<HotProducts />
+			<CustomerNeeds />
+			<CustomerCases />
+			<NewsCenter />
+		</div>
 	</main>
 </Layout>
