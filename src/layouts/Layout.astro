@@ -476,6 +476,7 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-71JP66YM5X');
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-THD2HH89" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </script>
     <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
    
@@ -529,13 +530,25 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     </script>
 
     <!-- HubSpot表单 - 延迟2秒后通过Partytown加载 -->
-    <script>
+    <script type="text/partytown">
       setTimeout(function() {
         const script2 = document.createElement('script');
         script2.type = 'text/partytown';
         script2.innerHTML = 'window.hbspt = window.hbspt || {}; window.hbspt.forms = window.hbspt.forms || {}; window.hbspt.forms.create = function(options) { console.log("HubSpot表单已通过Partytown初始化", options); };';
         document.head.appendChild(script2);
       }, 2000);
+    </script>
+
+
+  <script>
+    var _hmt: any = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
+      hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
+        var s: any = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
     </script>
   </body>
 </html> 
