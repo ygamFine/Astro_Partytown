@@ -252,6 +252,63 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         contain: layout style paint;
         transform: translateZ(0);
         backface-visibility: hidden;
+      }
+      
+      /* 🚀 移动端极致性能优化 - Speed Index < 2.5s */
+      @media (max-width: 768px) {
+        /* 强制所有元素GPU加速 */
+        * {
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
+        }
+        
+        /* 移动端图片懒加载优化 */
+        img:not(.mobile-banner) {
+          loading: lazy;
+          decoding: async;
+          content-visibility: auto;
+          contain-intrinsic-size: 300px 200px;
+        }
+        
+        /* 移动端字体优化 */
+        body {
+          font-display: swap;
+          text-rendering: optimizeSpeed;
+          -webkit-font-smoothing: subpixel-antialiased;
+        }
+        
+        /* 移动端布局优化 */
+        .container, section, div {
+          contain: layout style;
+        }
+        
+        /* 移动端动画完全禁用 */
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-delay: -0.01ms !important;
+          transition-duration: 0.01ms !important;
+          transition-delay: 0s !important;
+        }
+        
+        /* 移动端滚动优化 */
+        html {
+          scroll-behavior: auto;
+        }
+        
+        /* 移动端内容分层渲染 */
+        .mobile-critical-content {
+          will-change: auto;
+          transform: translateZ(0);
+          opacity: 1;
+          visibility: visible;
+        }
+        
+        .mobile-non-critical {
+          content-visibility: auto;
+          contain-intrinsic-size: 0 500px;
+        }
+      }
         will-change: transform;
         isolation: isolate;
         display: flex;
@@ -541,39 +598,48 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
 	<script is:inline>
 		console.log('🔍 开始脚本加载检测...');
 		
-		// 简单设备检测
-		const isMobile = window.innerWidth <= 768;
-		console.log('设备类型:', isMobile ? '移动端' : '桌面端');
+		// 强化移动端检测 - 多重判断确保准确性
+		const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+		                 window.innerWidth <= 768 || 
+		                 ('ontouchstart' in window);
 		
-		// if (!isMobile) {
-			// 仅桌面端加载脚本
-			console.log('✅ 桌面端 - 开始加载第三方脚本');
+		console.log('🔍 设备检测结果:', isMobile ? '📱 移动端' : '🖥️ 桌面端');
+		console.log('📏 屏幕宽度:', window.innerWidth);
+		console.log('🔧 User Agent:', navigator.userAgent.substring(0, 50) + '...');
+		
+		if (!isMobile) {
+			// 仅桌面端加载第三方脚本
+			console.log('✅ 桌面端确认 - 开始加载第三方脚本');
 			
-			// Google Analytics
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', 'G-71JP66YM5X');
+			// Google Analytics - 延迟加载
+			setTimeout(() => {
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'G-71JP66YM5X');
+				
+				const ga = document.createElement('script');
+				ga.async = true;
+				ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+				document.head.appendChild(ga);
+				console.log('📊 Google Analytics 脚本已添加');
+			}, 2000);
 			
-			// 创建GA脚本
-			const ga = document.createElement('script');
-			ga.async = true;
-			ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
-			document.head.appendChild(ga);
-			console.log('📊 Google Analytics 脚本已添加');
+			// 华智云客服系统 - 更长延迟
+			setTimeout(() => {
+				var _hmt = _hmt || [];
+				var hm = document.createElement("script");
+				hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
+				hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
+				var s = document.getElementsByTagName("script")[0];
+				s.parentNode.insertBefore(hm, s);
+				console.log('💬 客服系统脚本已添加');
+			}, 5000);
 			
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
-        hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
-        var s = document.getElementsByTagName("script")[0];
-        setTimeout(function (){s.parentNode.insertBefore(hm, s);},5000);
-      })();
-			
-		// } else {
-		// 	console.log('📱 移动端 - 跳过第三方脚本');
-		// }
+		} else {
+			console.log('📱 移动端确认 - 完全跳过所有第三方脚本以获得极致性能');
+			console.log('⚡ 移动端性能优化: 零第三方脚本加载');
+		}
 	</script>
   </body>
 </html> 
