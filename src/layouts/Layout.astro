@@ -31,32 +31,24 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- 🚀 Speed Index智能优化 - 关键图片高优先级预加载 -->
+    <!-- 🚀 关键图片预加载 -->
     <link rel="preload" href="/images/mobile-banner-tiny.svg" as="image" media="(max-width: 768px)" fetchpriority="high" />
-    <link rel="preload" href="/main-product.svg" as="image" media="(min-width: 769px)" fetchpriority="low" />
     
-    <!-- 🚀 Partytown配置 - 第三方脚本优化 -->
+    <!-- 🚀 Partytown配置 -->
     <script is:inline>
-      // Partytown配置
       window.partytown = {
-        forward: ['dataLayer.push', 'gtag', '_hmt.push', 'CustomerService.init', 'CustomerService.showChat', 'hbspt.forms.create'],
+        forward: ['dataLayer.push', 'gtag', '_hmt.push', 'CustomerService.init', 'CustomerService.showChat'],
         debug: false
       };
     </script>
     
-    <!-- DNS预连接优化 - 第三方服务 -->
+    <!-- DNS预连接优化 -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
-    <link rel="preconnect" href="https://hm.baidu.com" />
-    <link rel="preconnect" href="https://zz.bdstatic.com" />
-    <link rel="preconnect" href="https://js.hs-scripts.com" />
     
-    <!-- 🚀 Speed Index关键优化 - 预加载移动端Banner -->
-    <link rel="preload" href="/images/mobile-banner-ultra-fast.svg" as="image" type="image/svg+xml" media="(max-width: 768px)" />
-    
-    <!-- 移动端关键CSS内联 - 首屏渲染优化 -->
+    <!-- 🚀 移动端关键CSS优化 -->
     <style>
-      /* 关键渲染路径CSS - 完全内联 */
+      /* 基础重置 */
       * {
         box-sizing: border-box;
         margin: 0;
@@ -69,21 +61,9 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         line-height: 1.6;
         color: #333;
         background: #fff;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
       }
       
-      /* LCP关键元素 - 立即显示 */
-      .lcp-critical {
-        opacity: 1 !important;
-        transform: none !important;
-        animation: none !important;
-        transition: none !important;
-        will-change: auto !important;
-        contain: layout style paint;
-      }
-      
-      /* 关键内容样式 - 内联 */
+      /* 关键内容样式 */
       .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
       .font-bold { font-weight: 700; }
       .text-gray-800 { color: #1f2937; }
@@ -97,8 +77,24 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       .mb-16 { margin-bottom: 4rem; }
       .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
       .text-gray-600 { color: #4b5563; }
+      .text-red-600 { color: #dc2626; }
+      .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+      .leading-relaxed { line-height: 1.625; }
+      .leading-tight { line-height: 1.25; }
       
-      /* 🚀 激进Speed Index优化 - 移动端延迟内容 */
+      /* 布局样式 */
+      .grid { display: grid; }
+      .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+      .gap-12 { gap: 3rem; }
+      .items-center { align-items: center; }
+      .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 2rem; }
+      
+      @media (min-width: 1024px) {
+        .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .lg\\:text-left { text-align: left; }
+      }
+      
+      /* 移动端延迟内容 */
       @media (max-width: 768px) {
         .mobile-delayed-content {
           display: none !important;
@@ -106,10 +102,8 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         
         .mobile-content-loaded .mobile-delayed-content {
           display: block !important;
-          animation: fadeInSlow 0.5s ease-out;
         }
         
-        /* 移动端Header优化 */
         .mobile-header-delayed {
           display: none !important;
         }
@@ -126,7 +120,6 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           display: none !important;
         }
         
-        /* 移动端Footer延迟 */
         .mobile-footer-delayed {
           display: none !important;
         }
@@ -134,114 +127,32 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         .mobile-content-loaded .mobile-footer-delayed {
           display: block !important;
         }
+        
+        /* 移动端性能优化 */
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+        
+        img:not(.mobile-banner) {
+          loading: lazy;
+          decoding: async;
+        }
       }
       
       @media (min-width: 769px) {
-        .mobile-delayed-content {
-          display: block;
-        }
-        
-        .mobile-header-delayed {
+        .mobile-delayed-content,
+        .mobile-header-delayed,
+        .mobile-footer-delayed {
           display: block;
         }
         
         .mobile-header-minimal {
           display: none;
         }
-        
-        .mobile-footer-delayed {
-          display: block;
-        }
       }
       
-      @keyframes fadeInSlow {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      
-      /* 🚀 Speed Index终极优化 - 移动端首屏关键样式 */
-      @media (max-width: 768px) {
-        /* 🚀 移动端Banner最高优先级 */
-        .mobile-banner-container {
-          display: block !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          z-index: 9999 !important;
-          position: relative !important;
-        }
-        
-        .mobile-banner-instant-bg {
-          display: block !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          z-index: 1 !important;
-        }
-        
-        .mobile-banner-optimized {
-          z-index: 2 !important;
-        }
-        
-        /* 移动端其他内容延迟 */
-        .mobile-delayed-content {
-          display: none !important;
-        }
-      }
-      
-      /* 关键布局样式 */
-      .grid { display: grid; }
-      .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-      .gap-12 { gap: 3rem; }
-      .items-center { align-items: center; }
-      .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 2rem; }
-      .leading-tight { line-height: 1.25; }
-      .text-red-600 { color: #dc2626; }
-      .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-      .leading-relaxed { line-height: 1.625; }
-      
-      @media (min-width: 1024px) {
-        .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .lg\\:text-left { text-align: left; }
-      }
-      
-      /* 极致优化：预定义关键元素样式 */
-      h1, h2, h3 {
-        opacity: 1 !important;
-        transform: none !important;
-        animation: none !important;
-        will-change: auto !important;
-      }
-
-      /* 移动端Banner关键样式 - 首屏立即渲染 */
-      @media (max-width: 768px) {
-        .mobile-banner-container {
-          width: 100%;
-          margin: 0;
-          padding: 0;
-          line-height: 0;
-        }
-        
-        .mobile-banner {
-          display: block;
-          width: 100%;
-          height: auto;
-          margin: 0;
-          padding: 0;
-          border: none;
-          vertical-align: top;
-          image-rendering: optimizeSpeed;
-        }
-        
-
-      }
-
-      /* 全局键盘焦点样式 */
-      .focus-visible-ring:focus-visible {
-        outline: 2px solid #ef4444; /* red-500 */
-        outline-offset: 2px;
-        border-radius: 0.25rem;
-      }
-
-      /* 🚀 SPEED INDEX终极优化 - 移动端Banner立即显示 */
+      /* Banner优化 */
       .mobile-banner-container {
         width: 100%;
         height: 200px;
@@ -249,73 +160,11 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         padding: 0;
         position: relative;
         overflow: hidden;
-        contain: layout style paint;
-        transform: translateZ(0);
-        backface-visibility: hidden;
-      }
-      
-      /* 🚀 移动端极致性能优化 - Speed Index < 2.5s */
-      @media (max-width: 768px) {
-        /* 强制所有元素GPU加速 */
-        * {
-          transform: translateZ(0);
-          backface-visibility: hidden;
-          perspective: 1000px;
-        }
-        
-        /* 移动端图片懒加载优化 */
-        img:not(.mobile-banner) {
-          loading: lazy;
-          decoding: async;
-          content-visibility: auto;
-          contain-intrinsic-size: 300px 200px;
-        }
-        
-        /* 移动端字体优化 */
-        body {
-          font-display: swap;
-          text-rendering: optimizeSpeed;
-          -webkit-font-smoothing: subpixel-antialiased;
-        }
-        
-        /* 移动端布局优化 */
-        .container, section, div {
-          contain: layout style;
-        }
-        
-        /* 移动端动画完全禁用 */
-        *, *::before, *::after {
-          animation-duration: 0.01ms !important;
-          animation-delay: -0.01ms !important;
-          transition-duration: 0.01ms !important;
-          transition-delay: 0s !important;
-        }
-        
-        /* 移动端滚动优化 */
-        html {
-          scroll-behavior: auto;
-        }
-        
-        /* 移动端内容分层渲染 */
-        .mobile-critical-content {
-          will-change: auto;
-          transform: translateZ(0);
-          opacity: 1;
-          visibility: visible;
-        }
-        
-        .mobile-non-critical {
-          content-visibility: auto;
-          contain-intrinsic-size: 0 500px;
-        }
-      }
-        will-change: transform;
-        isolation: isolate;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-
+      
       .mobile-banner-instant-bg {
         position: absolute;
         top: 0;
@@ -323,9 +172,6 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         width: 100%;
         height: 100%;
         z-index: 1;
-        opacity: 1;
-        transition: opacity 0.3s ease;
-        /* 立即显示的CSS背景作为占位符 */
         background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         display: flex;
         align-items: center;
@@ -333,18 +179,12 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         color: white;
         font-size: 20px;
         font-weight: bold;
-        text-align: center;
       }
       
       .mobile-banner-instant-bg::after {
         content: "专业工程机械";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        white-space: nowrap;
       }
-
+      
       .mobile-banner-optimized {
         position: absolute;
         top: 0;
@@ -352,155 +192,27 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center center;
         z-index: 2;
         opacity: 0;
         transition: opacity 0.3s ease;
       }
-
+      
       .mobile-banner-optimized.loaded {
         opacity: 1;
       }
-
-      .mobile-banner-optimized.loaded + .mobile-banner-instant-bg {
-        opacity: 0;
-      }
-
-      /* 关键路径图片 - 立即显示 */
-      .critical-path-image {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: none !important;
-        animation: none !important;
-        will-change: auto !important;
-        contain: layout style paint;
-      }
-
-      /* 产品图片极致优化 */
-      .product-image-ultra {
-        width: 100%;
-        height: 200px;
-        background: #f9fafb;
-        border-radius: 8px;
-        overflow: hidden;
-        contain: layout style paint;
-        position: relative;
-      }
-
-      .product-image-micro {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6b7280;
-        font-size: 14px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-      }
-
-      .product-image-full {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0;
-        z-index: 2;
-        transition: opacity 0.3s ease;
-      }
-
-      /* 移动端特殊优化 - Speed Index关键 */
-      @media (max-width: 768px) {
-        
-        /* 移动端响应式优化 - 保持所有内容可见 */
-        .mobile-optimized {
-          padding: 1rem !important;
-          margin-bottom: 2rem !important;
-        }
-        
-        /* 移动端组件间距优化 */
-        section {
-          padding: 2rem 1rem !important;
-        }
-        
-        .max-w-7xl {
-          padding-left: 1rem !important;
-          padding-right: 1rem !important;
-        }
-        
-        /* 移动端图片立即优化 */
-        .mobile-image-optimized {
-          max-width: 100vw;
-          width: 100%;
-          height: auto;
-          object-fit: cover;
-          image-rendering: optimizeSpeed;
-          image-rendering: -webkit-optimize-contrast;
-        }
-        
-        /* 🚀 激进优化：移动端完全禁用动画 */
-        *, *::before, *::after {
-          animation: none !important;
-          transition: none !important;
-          transform: none !important;
-          will-change: auto !important;
-        }
-
-        /* 移动端Banner智能加载优化 */
-        .mobile-banner-instant-bg {
-          opacity: 1 !important;
-          visibility: visible !important;
-        }
-        
-        .mobile-banner-optimized {
-          image-rendering: optimizeSpeed;
-          image-rendering: -webkit-optimize-contrast;
-        }
-      }
-
-      /* 延迟加载图片 - 简化版本 */
-      .lazy-image {
-        opacity: 0;
-        transition: opacity 0.2s ease;
-      }
-
-      .lazy-image.loaded {
-        opacity: 1;
-      }
-
-      /* 骨架屏占位符 - 简化版本 */
-      .skeleton-image {
-        background: #f0f0f0;
-        animation: none; /* 移动端禁用动画 */
-      }
-
-      /* 内存优化 */
-      .memory-efficient-image {
-        content-visibility: auto;
-        contain-intrinsic-size: 200px;
-      }
-
-      /* 🚀 极致Speed Index优化 - CSS背景已内置GPU加速 */
-      .mobile-banner-css-only {
-        /* GPU加速已在主样式中定义 */
+      
+      /* 焦点样式 */
+      .focus-visible-ring:focus-visible {
+        outline: 2px solid #ef4444;
+        outline-offset: 2px;
+        border-radius: 0.25rem;
       }
     </style>
-    
-    <!-- 🚀 SPEED INDEX极致优化 - 完全内联关键CSS，0网络请求 -->
-    
-    <!-- 🚀 Speed Index优化 - 移除旧的预加载，使用极简图片 -->
     
     <title>{title}</title>
   </head>
   <body>
-    <!-- 🚀 Speed Index优化 - 移除预加载元素，减少DOM复杂度 -->
-    
-    <!-- 🚀 激进Speed Index优化 - 移动端延迟Header -->
+    <!-- 🚀 移动端延迟Header -->
     <div class="mobile-header-delayed">
       <Header />
     </div>
@@ -522,124 +234,75 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       <slot />
     </main>
 
-    <!-- 🚀 Partytown优化的第三方脚本 - 在Web Worker中运行，不阻塞主线程 -->
-    
-         <!-- 🚀 移动端零第三方脚本策略 - 极致性能优化 -->
-     <script>
-     // 检测移动端
-     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-     
-     if (isMobile) {
-       console.log('📱 移动端检测到，跳过所有第三方脚本以优化性能');
-       // 设置移动端标记，阻止后续第三方脚本执行
-       			(window as any).isMobileDevice = true;
-     } else {
-       console.log('🖥️ 桌面端检测到，准备加载第三方脚本');
-       			(window as any).isMobileDevice = false;
-     }
-     </script>
+    <!-- 🚀 简化版脚本加载 -->
+    <script is:inline>
+      console.log('🔍 开始脚本加载检测...');
+      
+      // 强化移动端检测 - 多重判断确保准确性
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                       window.innerWidth <= 768 || 
+                       ('ontouchstart' in window);
+      
+      console.log('🔍 设备检测结果:', isMobile ? '📱 移动端' : '🖥️ 桌面端');
+      console.log('📏 屏幕宽度:', window.innerWidth);
+      console.log('🔧 User Agent:', navigator.userAgent.substring(0, 50) + '...');
+      
+      if (!isMobile) {
+        // 仅桌面端加载第三方脚本
+        console.log('✅ 桌面端确认 - 开始加载第三方脚本');
+        
+        // Google Analytics - 延迟加载
+        setTimeout(() => {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-71JP66YM5X');
+          
+          const ga = document.createElement('script');
+          ga.async = true;
+          ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+          document.head.appendChild(ga);
+          console.log('📊 Google Analytics 脚本已添加');
+        }, 2000);
+        
+        // 华智云客服系统 - 更长延迟
+        setTimeout(() => {
+          var _hmt = _hmt || [];
+          var hm = document.createElement("script");
+          hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
+          hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+          console.log('💬 客服系统脚本已添加');
+        }, 5000);
+        
+      } else {
+        console.log('📱 移动端确认 - 完全跳过所有第三方脚本以获得极致性能');
+        console.log('⚡ 移动端性能优化: 零第三方脚本加载');
+      }
+    </script>
 
-          <!-- Google Analytics - 临时禁用所有第三方脚本 -->
-     <!-- <script type="text/partytown">
-     // 检测桌面端
-     if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768)) {
-       // Google Analytics 4 基础配置
-       window.dataLayer = window.dataLayer || [];
-       function gtag(){dataLayer.push(arguments);}
-       gtag('js', new Date());
-       gtag('config', 'G-71JP66YM5X');
-       console.log('✅ Google Analytics 已在桌面端通过Partytown加载');
-     }
-     </script> -->
-
-         <!-- 🚀 Speed Index极简JavaScript -->
-     <script>
-       // 移动端极简逻辑
-       if (window.innerWidth <= 768) {
-         // 立即显示Banner图片
-         setTimeout(function() {
-           const img = document.querySelector('.mobile-banner-optimized');
-           if (img) img.classList.add('loaded');
-         }, 100);
-         
-         // 延迟加载其他内容
-         setTimeout(function() {
-           document.body.classList.add('mobile-content-loaded');
-         }, 3000);
-       }
-     </script>
+    <!-- 🚀 Speed Index极简JavaScript -->
+    <script>
+      // 移动端极简逻辑
+      if (window.innerWidth <= 768) {
+        // 立即显示Banner图片
+        setTimeout(function() {
+          const img = document.querySelector('.mobile-banner-optimized');
+          if (img) img.classList.add('loaded');
+        }, 100);
+        
+        // 延迟加载其他内容
+        setTimeout(function() {
+          document.body.classList.add('mobile-content-loaded');
+        }, 3000);
+      }
+    </script>
 
     <!-- 🚀 移动端延迟Footer -->
     <div class="mobile-footer-delayed">
       <FooterSection />
     </div>
 
-     <!-- 华智云客服系统 - 临时禁用所有第三方脚本 -->
-     <!-- <script type="text/partytown">
-     // 检测桌面端
-     if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768)) {
-       setTimeout(function() {
-         var _hmt = _hmt || [];
-         (function() {
-           var hm = document.createElement("script");
-           hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time=" + new Date().getTime();
-           hm.setAttribute('_extID', "1141-1153-lAj5UiTG");
-           var s = document.getElementsByTagName("script")[0]; 
-           if (s && s.parentNode) {
-             s.parentNode.insertBefore(hm, s);
-           }
-           console.log('✅ 客服系统已在桌面端通过Partytown加载');
-         })();
-       }, 5000); // 延迟5秒加载
-     }
-     </script> -->
-
-	<!-- 🚀 简化版脚本加载 -->
-	<script is:inline>
-		console.log('🔍 开始脚本加载检测...');
-		
-		// 强化移动端检测 - 多重判断确保准确性
-		const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-		                 window.innerWidth <= 768 || 
-		                 ('ontouchstart' in window);
-		
-		console.log('🔍 设备检测结果:', isMobile ? '📱 移动端' : '🖥️ 桌面端');
-		console.log('📏 屏幕宽度:', window.innerWidth);
-		console.log('🔧 User Agent:', navigator.userAgent.substring(0, 50) + '...');
-		
-		if (!isMobile) {
-			// 仅桌面端加载第三方脚本
-			console.log('✅ 桌面端确认 - 开始加载第三方脚本');
-			
-			// Google Analytics - 延迟加载
-			setTimeout(() => {
-				window.dataLayer = window.dataLayer || [];
-				function gtag(){dataLayer.push(arguments);}
-				gtag('js', new Date());
-				gtag('config', 'G-71JP66YM5X');
-				
-				const ga = document.createElement('script');
-				ga.async = true;
-				ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
-				document.head.appendChild(ga);
-				console.log('📊 Google Analytics 脚本已添加');
-			}, 2000);
-			
-			// 华智云客服系统 - 更长延迟
-			setTimeout(() => {
-				var _hmt = _hmt || [];
-				var hm = document.createElement("script");
-				hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
-				hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
-				var s = document.getElementsByTagName("script")[0];
-				s.parentNode.insertBefore(hm, s);
-				console.log('💬 客服系统脚本已添加');
-			}, 5000);
-			
-		} else {
-			console.log('📱 移动端确认 - 完全跳过所有第三方脚本以获得极致性能');
-			console.log('⚡ 移动端性能优化: 零第三方脚本加载');
-		}
-	</script>
   </body>
 </html> 
