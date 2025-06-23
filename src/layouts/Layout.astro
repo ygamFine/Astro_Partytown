@@ -34,17 +34,33 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <!-- 🚀 关键图片预加载 -->
     <link rel="preload" href="/images/mobile-banner-tiny.svg" as="image" media="(max-width: 768px)" fetchpriority="high" />
     
-    <!-- 🚀 Partytown配置 -->
+    <!-- 🚀 Partytown配置 - 基础配置，详细配置在 astro.config.mjs -->
     <script is:inline>
-      window.partytown = {
-        forward: ['dataLayer.push', 'gtag', '_hmt.push', 'CustomerService.init', 'CustomerService.showChat'],
-        debug: false
-      };
+      // 基础配置会被astro.config.mjs中的配置扩展
+      window.partytown = window.partytown || {};
     </script>
     
     <!-- DNS预连接优化 -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://cdn.huazhi.cloud" />
+    <link rel="preconnect" href="https://huazhicloud.oss-cn-beijing.aliyuncs.com" />
+    
+    <!-- 🚀 华智云客服系统CSS预加载 - 解决Partytown样式丢失问题 -->
+    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fapp.css" as="style" />
+    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fchunk-vendors.css" as="style" />
+    
+    <!-- 直接在主线程加载华智云CSS样式 -->
+    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fapp.css" />
+    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fchunk-vendors.css" />
+    
+    <!-- 🚀 移动端CSS预加载 -->
+    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fapp.css" as="style" />
+    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fchunk-vendors.css" as="style" />
+    
+    <!-- 移动端华智云CSS样式 -->
+    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fapp.css" media="screen and (max-width: 768px)" />
+    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fchunk-vendors.css" media="screen and (max-width: 768px)" />
     
     <!-- 🚀 移动端关键CSS优化 -->
     <style>
@@ -207,6 +223,87 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         outline-offset: 2px;
         border-radius: 0.25rem;
       }
+      
+      /* 🚀 华智云客服系统基础样式 - 确保在主线程可用 */
+      #hz_chat_app, #huazhi_chat_app {
+        position: fixed !important;
+        top: 0;
+        right: 20px;
+        bottom: 0;
+        width: 376px;
+        z-index: 199999;
+        pointer-events: none;
+        font-family: Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      #hz_chat_app .hz-launcher {
+        position: absolute;
+        bottom: 25px;
+        right: 0;
+        min-width: 48px;
+        height: 48px;
+        border-radius: 48px;
+        cursor: pointer;
+        pointer-events: auto;
+        background: #428bca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        box-shadow: 0 0 15px 0 rgba(0,0,0,.2);
+        transition: all 0.3s ease;
+      }
+      
+      #hz_chat_app .hz-launcher:hover {
+        background: #357abd;
+        transform: scale(1.05);
+      }
+      
+      #hz_chat_app .hz-wechat-main {
+        pointer-events: auto;
+        width: 376px;
+        position: absolute;
+        right: 0;
+        height: 80%;
+        bottom: 100px;
+        max-height: 650px;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+        opacity: 1;
+        box-shadow: 0 0 15px 0 rgba(0,0,0,.2);
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      
+      #hz_chat_app .hz-wechat-main.show {
+        transform: translateY(0);
+      }
+      
+      /* 移动端华智云适配 */
+      @media (max-width: 768px) {
+        #hz_chat_app {
+          width: 100%;
+          right: 0;
+        }
+        
+        #hz_chat_app .hz-wechat-main {
+          width: 100%;
+          height: 100%;
+          bottom: 0;
+          max-height: 100vh;
+          border-radius: 0;
+        }
+        
+        #hz_chat_app .hz-launcher {
+          bottom: 70px;
+        }
+      }
     </style>
     
     <title>{title}</title>
@@ -234,52 +331,49 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       <slot />
     </main>
 
-    <!-- 🚀 简化版脚本加载 -->
+    <!-- 🚀 Partytown设备检测脚本 -->
     <script is:inline>
-      console.log('🔍 开始脚本加载检测...');
+      console.log('🔍 设备检测...');
       
-      // 强化移动端检测 - 多重判断确保准确性
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                        window.innerWidth <= 768 || 
                        ('ontouchstart' in window);
       
-      console.log('🔍 设备检测结果:', isMobile ? '📱 移动端' : '🖥️ 桌面端');
-      console.log('📏 屏幕宽度:', window.innerWidth);
-      console.log('🔧 User Agent:', navigator.userAgent.substring(0, 50) + '...');
+      console.log('🔍 设备类型:', isMobile ? '📱 移动端' : '🖥️ 桌面端');
+      console.log('✅ 所有第三方脚本将通过Partytown在Web Worker中运行');
+    </script>
+
+    <!-- 🚀 Google Analytics - 通过Partytown运行 -->
+    <script type="text/partytown">
+      // Google Analytics 4
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-71JP66YM5X');
       
-      if (!isMobile) {
-        // 仅桌面端加载第三方脚本
-        console.log('✅ 桌面端确认 - 开始加载第三方脚本');
-        
-        // Google Analytics - 延迟加载
-        setTimeout(() => {
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-71JP66YM5X');
-          
-          const ga = document.createElement('script');
-          ga.async = true;
-          ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
-          document.head.appendChild(ga);
-          console.log('📊 Google Analytics 脚本已添加');
-        }, 2000);
-        
-        // 华智云客服系统 - 更长延迟
-        setTimeout(() => {
-          var _hmt = _hmt || [];
-          var hm = document.createElement("script");
-          hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
-          hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
-          var s = document.getElementsByTagName("script")[0];
+      // 加载GA脚本
+      const gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+      document.head.appendChild(gaScript);
+      
+      console.log('📊 Google Analytics 已通过Partytown加载');
+    </script>
+
+    <!-- 🚀 华智云客服系统 - 通过Partytown运行 -->
+    <script type="text/partytown">
+      // 延迟加载客服系统，避免阻塞首屏
+      setTimeout(() => {
+        var _hmt = _hmt || [];
+        var hm = document.createElement("script");
+        hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time=" + new Date().getTime();
+        hm.setAttribute('_extID', "1141-1153-lAj5UiTG");
+        var s = document.getElementsByTagName("script")[0];
+        if (s && s.parentNode) {
           s.parentNode.insertBefore(hm, s);
-          console.log('💬 客服系统脚本已添加');
-        }, 5000);
-        
-      } else {
-        console.log('📱 移动端确认 - 完全跳过所有第三方脚本以获得极致性能');
-        console.log('⚡ 移动端性能优化: 零第三方脚本加载');
-      }
+        }
+        console.log('💬 华智云客服系统已通过Partytown加载');
+      }, 3000); // 延迟3秒加载
     </script>
 
     <!-- 🚀 Speed Index极简JavaScript -->
