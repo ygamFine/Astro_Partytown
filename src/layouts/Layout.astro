@@ -465,88 +465,75 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       <slot />
     </main>
 
-    <!-- 🚀 Partytown优化的第三方脚本 - 在Web Worker中运行，不阻塞主线程 -->
-    
-    <!-- Google Analytics 4 - 暂时禁用，避免错误 -->
-    
-    <!-- 注意：请将GA_MEASUREMENT_ID替换为实际的Google Analytics ID -->
-    <script type="text/partytown">
-      // Google Analytics 4 基础配置
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-71JP66YM5X');
-      // <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-THD2HH89" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    </script>
-    <!-- <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script> -->
-    <!-- 百度统计 - 暂时禁用，避免CORS错误 -->
-    <!-- 
-    注意：请将YOUR_BAIDU_ANALYTICS_ID替换为实际的百度统计ID
-    <script type="text/partytown">
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?YOUR_ACTUAL_BAIDU_ID";
-        var s = document.getElementsByTagName("script")[0]; 
-        s.parentNode.insertBefore(hm, s);
-      })();
-    </script>
-    -->
+    <!-- 🚀 移动端性能优化 - 仅桌面端加载第三方脚本 -->
+<script>
+// 检测设备类型
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-        <!-- 🚀 Speed Index极简JavaScript -->
+// 如果是移动端，跳过所有第三方脚本加载
+if (isMobile) {
+  console.log('🚀 移动端检测到，跳过第三方脚本加载以优化性能');
+}
+</script>
+
+<!-- 🚀 Partytown优化的第三方脚本 - 仅桌面端加载 -->
+    
+    <!-- 🚀 移动端零第三方脚本策略 - 极致性能优化 -->
     <script>
-      // 移动端极简逻辑
-      if (window.innerWidth <= 768) {
-        // 立即显示Banner图片
-        setTimeout(function() {
-          const img = document.querySelector('.mobile-banner-optimized');
-          if (img) img.classList.add('loaded');
-        }, 100);
-        
-        // 延迟加载其他内容
-        setTimeout(function() {
-          document.body.classList.add('mobile-content-loaded');
-        }, 3000);
-      }
+    // 检测移动端
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    
+    if (!isMobile) {
+      // 仅桌面端加载第三方脚本
+      console.log('🖥️ 桌面端检测到，加载完整功能');
+      
+      // 动态加载Google Analytics
+      const gaScript = document.createElement('script');
+      gaScript.type = 'text/partytown';
+      gaScript.innerHTML = `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-71JP66YM5X');
+      `;
+      document.head.appendChild(gaScript);
+      
+      // 动态加载客服系统
+      setTimeout(function() {
+        const chatScript = document.createElement('script');
+        chatScript.type = 'text/partytown';
+        chatScript.innerHTML = `
+          var _hmt = _hmt || [];
+          (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
+            hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+          })();
+        `;
+        document.head.appendChild(chatScript);
+      }, 3000);
+      
+    } else {
+      // 移动端极简模式
+      console.log('📱 移动端检测到，启用极简模式以优化性能');
+      
+      // 移动端极简JavaScript
+      setTimeout(function() {
+        const img = document.querySelector('.mobile-banner-optimized');
+        if (img) img.classList.add('loaded');
+      }, 100);
+      
+      setTimeout(function() {
+        document.body.classList.add('mobile-content-loaded');
+      }, 3000);
+    }
     </script>
 
     <!-- 🚀 移动端延迟Footer -->
     <div class="mobile-footer-delayed">
       <FooterSection />
     </div>
-
-    <!-- 🚀 Partytown脚本 - 延迟加载，不阻塞首屏 -->
-    
-    <!-- 客服系统 - 延迟2秒后通过Partytown加载 -->
-    <script>
-      setTimeout(function() {
-        const script1 = document.createElement('script');
-        script1.type = 'text/partytown';
-        script1.innerHTML = 'window.CustomerService = { init: function() { console.log("客服系统已通过Partytown初始化"); }, showChat: function() { console.log("显示聊天窗口"); } }; setTimeout(function() { window.CustomerService.init(); }, 2000);';
-        document.head.appendChild(script1);
-      }, 2000);
-    </script>
-
-    <!-- HubSpot表单 - 延迟2秒后通过Partytown加载 -->
-    <script type="text/partytown">
-      setTimeout(function() {
-        const script2 = document.createElement('script');
-        script2.type = 'text/partytown';
-        script2.innerHTML = 'window.hbspt = window.hbspt || {}; window.hbspt.forms = window.hbspt.forms || {}; window.hbspt.forms.create = function(options) { console.log("HubSpot表单已通过Partytown初始化", options); };';
-        document.head.appendChild(script2);
-      }, 2000);
-    </script>
-
-
-  <script  type="text/partytown">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time="+new Date().getTime();
-      hm.setAttribute('_extID',"1141-1153-lAj5UiTG");
-        var s = document.getElementsByTagName("script")[0]; 
-        s.parentNode.insertBefore(hm, s);
-      })();
-    </script>
   </body>
 </html> 

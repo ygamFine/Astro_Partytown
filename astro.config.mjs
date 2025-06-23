@@ -10,6 +10,7 @@ export default defineConfig({
     partytown({
       config: {
         debug: false,
+        // 🚀 移动端性能优化 - 移除CORS代理，简化配置
         // 转发第三方脚本需要的全局变量和函数
         forward: [
           'dataLayer.push',
