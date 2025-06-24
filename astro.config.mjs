@@ -12,25 +12,12 @@ export default defineConfig({
       debug: false, // 关闭调试模式
         forward: [
           'dataLayer.push',
-          'gtag',
-          '_hmt.push',
-          'CustomerService.init',
-          'CustomerService.showChat',
-          'hbspt.forms.create'
+          'gtag'
         ],
-        // 🚀 CORS解决方案：配置代理URL解析
+        // 🚀 简化配置：JS脚本直接加载
         resolveUrl: function(url, location, type) {
-          // 华智云域名的所有资源（JS、CSS等）通过代理加载
-          if (url.hostname === 'matomocdn.huazhi.cloud' || 
-              url.hostname === 'cdn.huazhi.cloud' ||
-              url.hostname === 'huazhicloud.oss-cn-beijing.aliyuncs.com' ||
-              url.hostname === 'api.huazhi.cloud') {
-            const proxyUrl = new URL('/api/proxy', location.origin);
-            proxyUrl.searchParams.set('url', url.href);
-            return proxyUrl;
-          }
-          
-          // 其他脚本正常加载
+          // 所有脚本直接加载，不使用代理
+          console.log(`📥 Partytown加载脚本: ${url.href}`);
           return url;
         },
         logCalls: false,

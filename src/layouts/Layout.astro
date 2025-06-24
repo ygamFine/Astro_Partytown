@@ -1,16 +1,19 @@
 ---
-import Header from '../components/Header.astro';
-import FooterSection from '../components/FooterSection.astro';
+import Header from "../components/Header.astro";
+import FooterSection from "../components/FooterSection.astro";
 
 export interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = "山东永安建设机械集团有限公司 - 专业工程机械制造商" } = Astro.props;
+const {
+  title,
+  description = "山东永安建设机械集团有限公司 - 专业工程机械制造商",
+} = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -18,50 +21,48 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    
+
     <!-- SEO优化 -->
-    <meta name="keywords" content="滑移装载机,工程机械,建筑设备,山东永安,YONAN" />
+    <meta
+      name="keywords"
+      content="滑移装载机,工程机械,建筑设备,山东永安,YONAN"
+    />
     <meta name="author" content="山东永安建设机械集团有限公司" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    
+
     <!-- 性能优化 -->
     <meta name="theme-color" content="#e60012" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
+
     <!-- 🚀 关键图片预加载 -->
-    <link rel="preload" href="/images/mobile-banner-tiny.svg" as="image" media="(max-width: 768px)" fetchpriority="high" />
-    
+    <link
+      rel="preload"
+      href="/images/mobile-banner-tiny.svg"
+      as="image"
+      media="(max-width: 768px)"
+      fetchpriority="high"
+    />
+
     <!-- 🚀 Partytown配置 - 基础配置，详细配置在 astro.config.mjs -->
     <script is:inline>
       // 基础配置会被astro.config.mjs中的配置扩展
       window.partytown = window.partytown || {};
     </script>
-    
+
     <!-- DNS预连接优化 -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
     <link rel="preconnect" href="https://cdn.huazhi.cloud" />
-    <link rel="preconnect" href="https://huazhicloud.oss-cn-beijing.aliyuncs.com" />
-    
-    <!-- 🚀 华智云客服系统CSS预加载 - 解决Partytown样式丢失问题 -->
-    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fapp.css" as="style" />
-    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fchunk-vendors.css" as="style" />
-    
-    <!-- 直接在主线程加载华智云CSS样式 -->
-    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fapp.css" />
-    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_pc_livechat%2Fcss%2Fchunk-vendors.css" />
-    
-    <!-- 🚀 移动端CSS预加载 -->
-    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fapp.css" as="style" />
-    <link rel="preload" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fchunk-vendors.css" as="style" />
-    
-    <!-- 移动端华智云CSS样式 -->
-    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fapp.css" media="screen and (max-width: 768px)" />
-    <link rel="stylesheet" href="/api/proxy?url=https%3A%2F%2Fcdn.huazhi.cloud%2Fhz_mobile_livechat%2Fcss%2Fchunk-vendors.css" media="screen and (max-width: 768px)" />
-    
+    <link
+      rel="preconnect"
+      href="https://huazhicloud.oss-cn-beijing.aliyuncs.com"
+    />
+
+    <!-- 🚀 华智云CSS将通过客户端动态加载 -->
+
     <!-- 🚀 移动端关键CSS优化 -->
     <style>
       /* 基础重置 */
@@ -70,104 +71,167 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         margin: 0;
         padding: 0;
       }
-      
-      body { 
-        margin: 0; 
-        font-family: system-ui, -apple-system, sans-serif;
+
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
         line-height: 1.6;
         color: #333;
         background: #fff;
       }
-      
+
       /* 关键内容样式 */
-      .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
-      .font-bold { font-weight: 700; }
-      .text-gray-800 { color: #1f2937; }
-      .mb-4 { margin-bottom: 1rem; }
-      .text-center { text-align: center; }
-      .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
-      .bg-gray-50 { background-color: #f9fafb; }
-      .container { max-width: 80rem; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
-      .mx-auto { margin-left: auto; margin-right: auto; }
-      .px-4 { padding-left: 1rem; padding-right: 1rem; }
-      .mb-16 { margin-bottom: 4rem; }
-      .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
-      .text-gray-600 { color: #4b5563; }
-      .text-red-600 { color: #dc2626; }
-      .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-      .leading-relaxed { line-height: 1.625; }
-      .leading-tight { line-height: 1.25; }
-      
-      /* 布局样式 */
-      .grid { display: grid; }
-      .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-      .gap-12 { gap: 3rem; }
-      .items-center { align-items: center; }
-      .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 2rem; }
-      
-      @media (min-width: 1024px) {
-        .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .lg\\:text-left { text-align: left; }
+      .text-4xl {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
       }
-      
+      .font-bold {
+        font-weight: 700;
+      }
+      .text-gray-800 {
+        color: #1f2937;
+      }
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .py-20 {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+      }
+      .bg-gray-50 {
+        background-color: #f9fafb;
+      }
+      .container {
+        max-width: 80rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .mb-16 {
+        margin-bottom: 4rem;
+      }
+      .text-xl {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+      }
+      .text-gray-600 {
+        color: #4b5563;
+      }
+      .text-red-600 {
+        color: #dc2626;
+      }
+      .text-lg {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+      }
+      .leading-relaxed {
+        line-height: 1.625;
+      }
+      .leading-tight {
+        line-height: 1.25;
+      }
+
+      /* 布局样式 */
+      .grid {
+        display: grid;
+      }
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      .gap-12 {
+        gap: 3rem;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+        margin-top: 2rem;
+      }
+
+      @media (min-width: 1024px) {
+        .lg\\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .lg\\:text-left {
+          text-align: left;
+        }
+      }
+
       /* 移动端延迟内容 */
       @media (max-width: 768px) {
         .mobile-delayed-content {
           display: none !important;
         }
-        
+
         .mobile-content-loaded .mobile-delayed-content {
           display: block !important;
         }
-        
+
         .mobile-header-delayed {
           display: none !important;
         }
-        
+
         .mobile-header-minimal {
           display: block !important;
         }
-        
+
         .mobile-content-loaded .mobile-header-delayed {
           display: block !important;
         }
-        
+
         .mobile-content-loaded .mobile-header-minimal {
           display: none !important;
         }
-        
+
         .mobile-footer-delayed {
           display: none !important;
         }
-        
+
         .mobile-content-loaded .mobile-footer-delayed {
           display: block !important;
         }
-        
+
         /* 移动端性能优化 */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
           animation-duration: 0.01ms !important;
           transition-duration: 0.01ms !important;
         }
-        
+
         img:not(.mobile-banner) {
           loading: lazy;
           decoding: async;
         }
       }
-      
+
       @media (min-width: 769px) {
         .mobile-delayed-content,
         .mobile-header-delayed,
         .mobile-footer-delayed {
           display: block;
         }
-        
+
         .mobile-header-minimal {
           display: none;
         }
       }
-      
+
       /* Banner优化 */
       .mobile-banner-container {
         width: 100%;
@@ -180,7 +244,7 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         align-items: center;
         justify-content: center;
       }
-      
+
       .mobile-banner-instant-bg {
         position: absolute;
         top: 0;
@@ -196,11 +260,11 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         font-size: 20px;
         font-weight: bold;
       }
-      
+
       .mobile-banner-instant-bg::after {
         content: "专业工程机械";
       }
-      
+
       .mobile-banner-optimized {
         position: absolute;
         top: 0;
@@ -212,20 +276,21 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         opacity: 0;
         transition: opacity 0.3s ease;
       }
-      
+
       .mobile-banner-optimized.loaded {
         opacity: 1;
       }
-      
+
       /* 焦点样式 */
       .focus-visible-ring:focus-visible {
         outline: 2px solid #ef4444;
         outline-offset: 2px;
         border-radius: 0.25rem;
       }
-      
+
       /* 🚀 华智云客服系统基础样式 - 确保在主线程可用 */
-      #hz_chat_app, #huazhi_chat_app {
+      #hz_chat_app,
+      #huazhi_chat_app {
         position: fixed !important;
         top: 0;
         right: 20px;
@@ -237,7 +302,7 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      
+
       #hz_chat_app .hz-launcher {
         position: absolute;
         bottom: 25px;
@@ -253,15 +318,15 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         justify-content: center;
         color: white;
         font-size: 24px;
-        box-shadow: 0 0 15px 0 rgba(0,0,0,.2);
+        box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
       }
-      
+
       #hz_chat_app .hz-launcher:hover {
         background: #357abd;
         transform: scale(1.05);
       }
-      
+
       #hz_chat_app .hz-wechat-main {
         pointer-events: auto;
         width: 376px;
@@ -273,25 +338,25 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
         border-radius: 8px 8px 0 0;
         overflow: hidden;
         opacity: 1;
-        box-shadow: 0 0 15px 0 rgba(0,0,0,.2);
+        box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.2);
         display: flex;
         flex-direction: column;
         background: #fff;
         transform: translateY(100%);
         transition: transform 0.3s ease;
       }
-      
+
       #hz_chat_app .hz-wechat-main.show {
         transform: translateY(0);
       }
-      
+
       /* 移动端华智云适配 */
       @media (max-width: 768px) {
         #hz_chat_app {
           width: 100%;
           right: 0;
         }
-        
+
         #hz_chat_app .hz-wechat-main {
           width: 100%;
           height: 100%;
@@ -299,21 +364,22 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           max-height: 100vh;
           border-radius: 0;
         }
-        
+
         #hz_chat_app .hz-launcher {
           bottom: 70px;
         }
       }
     </style>
-    
+
     <title>{title}</title>
   </head>
   <body>
+
     <!-- 🚀 移动端延迟Header -->
     <div class="mobile-header-delayed">
       <Header />
     </div>
-    
+
     <!-- 移动端极简Header -->
     <div class="mobile-header-minimal">
       <header class="bg-white sticky top-0 z-50 shadow-sm">
@@ -321,11 +387,15 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
           <a href="/" class="flex items-center space-x-2">
             <span class="text-xl font-bold text-gray-800">永安重工</span>
           </a>
-          <a href="/contact" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-sm">报价</a>
+          <a
+            href="/contact"
+            class="bg-red-600 text-white px-4 py-2 rounded font-bold text-sm"
+            >报价</a
+          >
         </div>
       </header>
     </div>
-    
+
     <!-- 主要内容 -->
     <main id="main-content">
       <slot />
@@ -333,47 +403,65 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
 
     <!-- 🚀 Partytown设备检测脚本 -->
     <script is:inline>
-      console.log('🔍 设备检测...');
-      
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                       window.innerWidth <= 768 || 
-                       ('ontouchstart' in window);
-      
-      console.log('🔍 设备类型:', isMobile ? '📱 移动端' : '🖥️ 桌面端');
-      console.log('✅ 所有第三方脚本将通过Partytown在Web Worker中运行');
+      console.log("🔍 设备检测...");
+
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        ) ||
+        window.innerWidth <= 768 ||
+        "ontouchstart" in window;
+
+      console.log("🔍 设备类型:", isMobile ? "📱 移动端" : "🖥️ 桌面端");
+      console.log("✅ 所有第三方脚本将通过Partytown在Web Worker中运行");
     </script>
 
     <!-- 🚀 Google Analytics - 通过Partytown运行 -->
     <script type="text/partytown">
       // Google Analytics 4
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-71JP66YM5X');
-      
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-71JP66YM5X");
+
       // 加载GA脚本
-      const gaScript = document.createElement('script');
+      const gaScript = document.createElement("script");
       gaScript.async = true;
-      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+      gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X";
       document.head.appendChild(gaScript);
-      
-      console.log('📊 Google Analytics 已通过Partytown加载');
+
+      console.log("📊 Google Analytics 已通过Partytown加载");
     </script>
 
     <!-- 🚀 华智云客服系统 - 通过Partytown运行 -->
-    <script type="text/partytown">
-      // 延迟加载客服系统，避免阻塞首屏
-      setTimeout(() => {
-        var _hmt = _hmt || [];
-        var hm = document.createElement("script");
-        hm.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?time=" + new Date().getTime();
-        hm.setAttribute('_extID', "1141-1153-lAj5UiTG");
-        var s = document.getElementsByTagName("script")[0];
-        if (s && s.parentNode) {
-          s.parentNode.insertBefore(hm, s);
+    <script>
+      // 华智云客服系统 - 优化版本
+      console.log("🚀 开始加载华智云客服系统...");
+      
+      // 延迟加载华智云客服
+      setTimeout(function() {
+        try {
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?v=" + Date.now();
+          script.setAttribute('_extID', "1141-1153-lAj5UiTG");
+          
+          // 添加错误处理
+          script.onerror = function() {
+            console.warn("⚠️ 华智云客服脚本加载失败，尝试备用方案");
+          };
+          
+          script.onload = function() {
+            console.log("✅ 华智云客服系统加载成功");
+          };
+          
+          document.head.appendChild(script);
+        } catch (error) {
+          console.error("❌ 华智云客服加载错误:", error);
         }
-        console.log('💬 华智云客服系统已通过Partytown加载');
-      }, 3000); // 延迟3秒加载
+      }, 3000);
     </script>
 
     <!-- 🚀 Speed Index极简JavaScript -->
@@ -381,14 +469,14 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
       // 移动端极简逻辑
       if (window.innerWidth <= 768) {
         // 立即显示Banner图片
-        setTimeout(function() {
-          const img = document.querySelector('.mobile-banner-optimized');
-          if (img) img.classList.add('loaded');
+        setTimeout(function () {
+          const img = document.querySelector(".mobile-banner-optimized");
+          if (img) img.classList.add("loaded");
         }, 100);
-        
+
         // 延迟加载其他内容
-        setTimeout(function() {
-          document.body.classList.add('mobile-content-loaded');
+        setTimeout(function () {
+          document.body.classList.add("mobile-content-loaded");
         }, 3000);
       }
     </script>
@@ -397,6 +485,6 @@ const { title, description = "山东永安建设机械集团有限公司 - 专�
     <div class="mobile-footer-delayed">
       <FooterSection />
     </div>
-
   </body>
-</html> 
+</html>
+
