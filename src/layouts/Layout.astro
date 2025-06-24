@@ -33,7 +33,9 @@ const {
     <meta property="og:type" content="website" />
 
     <!-- LCP关键图片预加载 - 最高优先级 -->
-    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high">
+    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)">
+    <!-- 移动端Banner预加载 -->
+    <link rel="preload" href="/images/mobile-banner-tiny.svg" as="image" fetchpriority="high" media="(max-width: 768px)">
     
     <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
     <style>
