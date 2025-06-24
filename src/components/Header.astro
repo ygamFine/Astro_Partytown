@@ -11,7 +11,7 @@ const navLinks = [
   <div class="container mx-auto px-4">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
-      <a href="/" class="flex items-center space-x-2 mobile-no-animation">
+      <a href="/" class="flex items-center space-x-2">
         <img src="/favicon.svg" alt="Yonan Logo" class="h-10 w-10">
         <span class="text-2xl font-bold text-gray-800">永安重工</span>
       </a>
@@ -20,18 +20,18 @@ const navLinks = [
       <nav aria-label="主要导航" class="hidden md:flex items-center space-x-8">
         {navLinks.map((link, index) => (
           <a href={link.href} 
-             class="text-gray-600 hover:text-red-600 font-semibold mobile-no-animation focus-visible-ring">
+             class="text-gray-600 hover:text-red-600 font-semibold focus-visible-ring">
             {link.name}
           </a>
         ))}
-        <a href="/contact" class="bg-red-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-red-700 mobile-no-animation focus-visible-ring">
+        <a href="/contact" class="bg-red-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-red-700 focus-visible-ring">
           获取报价
         </a>
       </nav>
 
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
-        <button id="mobile-menu-button" class="p-2 text-gray-800 mobile-no-animation focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
+        <button id="mobile-menu-button" class="p-2 text-gray-800 focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
           <svg id="menu-open-icon" class="h-8 w-8" stroke="currentColor" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
@@ -47,52 +47,18 @@ const navLinks = [
   <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-lg">
     <nav aria-label="移动端导航" class="px-4 pt-2 pb-4 space-y-1">
       {navLinks.map(link => (
-        <a href={link.href} class="block text-gray-700 mobile-no-animation rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation">
+        <a href={link.href} class="block text-gray-700 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation">
           {link.name}
         </a>
       ))}
-      <a href="/contact" class="block w-full text-center bg-red-600 text-white mt-4 px-5 py-3 rounded-lg font-bold mobile-no-animation focus-visible-ring touch-manipulation">
+      <a href="/contact" class="block w-full text-center bg-red-600 text-white mt-4 px-5 py-3 rounded-lg font-bold focus-visible-ring touch-manipulation">
         获取报价
       </a>
     </nav>
   </div>
 </header>
 
-<style>
-  /* 🚀 移动端性能优化 - 禁用所有动画 */
-  @media (max-width: 768px) {
-    .mobile-no-animation,
-    .mobile-no-animation * {
-      animation: none !important;
-      transition: none !important;
-      transform: none !important;
-      will-change: auto !important;
-    }
-    
-    /* 移动端悬停效果简化 */
-    .mobile-no-animation:hover {
-      transform: none !important;
-      transition: none !important;
-    }
-    
-    /* 移动端Header背景简化 */
-    header {
-      backdrop-filter: none !important;
-      background: #ffffff !important;
-    }
-  }
-  
-  /* 桌面端保持动画 */
-  @media (min-width: 769px) {
-    .mobile-no-animation {
-      animation: inherit;
-      transition: inherit;
-    }
-  }
-</style>
-
 <script>
-  // 🚀 移动端菜单极简交互 - 性能优化版本
   function initMobileMenu() {
     const btn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
