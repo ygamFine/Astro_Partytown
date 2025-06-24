@@ -35,74 +35,255 @@ const {
     <!-- LCP关键图片预加载 - 最高优先级 -->
     <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high">
     
-    <!-- 移动端关键CSS内联 - 防止CSS阻塞渲染 -->
+    <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
     <style>
-      /* 移动端关键样式 - 立即渲染 */
-      @media (max-width: 768px) {
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-        }
-        
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          background: #fff;
-          -webkit-text-size-adjust: 100%;
-        }
-        
-        /* 移动端Header基础样式 */
-        header {
-          background: #fff;
-          position: sticky;
-          top: 0;
-          z-index: 50;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        /* 移动端Hero区域 */
-        .hero-mobile {
-          padding: 2rem 1rem;
-          text-align: center;
-          background: #fff;
-        }
-        
-        /* 移动端标题 */
-        h1 {
-          font-size: 1.75rem;
-          font-weight: 800;
-          color: #1f2937;
-          line-height: 1.2;
-          margin-bottom: 1rem;
-        }
-        
-        /* 移动端图片容器 */
-        .img-container {
-          width: 100%;
-          height: auto;
-          max-width: 100%;
-        }
-        
-        /* 移动端按钮 */
-        .btn-primary {
-          background: #dc2626;
-          color: white;
-          padding: 0.75rem 1.5rem;
-          border-radius: 0.5rem;
-          font-weight: 600;
-          text-decoration: none;
-          display: inline-block;
-          margin: 0.5rem;
-        }
+      /* 全局重置和基础样式 */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
       
-      /* 桌面端保持原有字体 */
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+      }
+      
+      /* 桌面端字体 */
       @media (min-width: 769px) {
         body {
           font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
+      }
+      
+      /* 关键布局样式 */
+      .container {
+        max-width: 80rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      .grid {
+        display: grid;
+      }
+      
+      .md\\:grid-cols-2 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      
+      .gap-8 {
+        gap: 2rem;
+      }
+      
+      .items-center {
+        align-items: center;
+      }
+      
+      /* Header样式 */
+      header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Hero区域关键样式 */
+      .hero-mobile {
+        position: relative;
+        background: #fff;
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+        overflow: hidden;
+      }
+      
+      @media (max-width: 768px) {
+        .hero-mobile {
+          padding: 2rem 1rem;
+          text-align: center;
+        }
+      }
+      
+      /* 标题样式 */
+      h1 {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+        font-weight: 800;
+        color: #1f2937;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+      }
+      
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 3rem;
+          line-height: 1;
+        }
+      }
+      
+      @media (min-width: 1024px) {
+        h1 {
+          font-size: 3.75rem;
+          line-height: 1;
+        }
+      }
+      
+      .text-red-600 {
+        color: #dc2626;
+      }
+      
+      /* 图片容器优化 */
+      .img-container {
+        position: relative;
+        width: 100%;
+        max-width: 32rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      @media (min-width: 768px) {
+        .img-container {
+          max-width: none;
+        }
+      }
+      
+      .img-container img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        position: relative;
+        z-index: 10;
+      }
+      
+      /* 移动端图片优化 */
+      @media (max-width: 768px) {
+        .img-container img {
+          max-width: 280px;
+          margin: 1rem auto;
+        }
+        
+        /* 隐藏装饰元素 */
+        .decorative {
+          display: none;
+        }
+      }
+      
+      /* 按钮样式 */
+      .btn-primary {
+        background: #dc2626;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s;
+      }
+      
+      .btn-primary:hover {
+        background: #b91c1c;
+      }
+      
+      .btn-secondary {
+        background: #e5e7eb;
+        color: #1f2937;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s;
+      }
+      
+      .btn-secondary:hover {
+        background: #d1d5db;
+      }
+      
+      /* 文本样式 */
+      .text-lg {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+      }
+      
+      @media (min-width: 768px) {
+        .text-lg {
+          font-size: 1.25rem;
+          line-height: 1.75rem;
+        }
+      }
+      
+      .text-gray-700 {
+        color: #374151;
+      }
+      
+      .mt-6 {
+        margin-top: 1.5rem;
+      }
+      
+      .mt-8 {
+        margin-top: 2rem;
+      }
+      
+      .max-w-md {
+        max-width: 28rem;
+      }
+      
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:mx-0 {
+          margin-left: 0;
+          margin-right: 0;
+        }
+        
+        .md\\:text-left {
+          text-align: left;
+        }
+      }
+      
+      .text-center {
+        text-align: center;
+      }
+      
+      .flex {
+        display: flex;
+      }
+      
+      .justify-center {
+        justify-content: center;
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:justify-start {
+          justify-content: flex-start;
+        }
+      }
+      
+      .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+        margin-left: 1rem;
       }
     </style>
 
@@ -115,30 +296,41 @@ const {
       <slot />
     </main>
 
-    <!-- Google Analytics - 异步加载 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
+    <!-- Google Analytics - 延迟加载 -->
     <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-71JP66YM5X');
+      // 延迟加载GA，避免阻塞首屏渲染
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var gaScript = document.createElement('script');
+          gaScript.async = true;
+          gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+          document.head.appendChild(gaScript);
+          
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-71JP66YM5X');
+        }, 2000);
+      });
     </script>
 
-    <!-- 华智云客服系统 - 延迟加载 -->
+    <!-- 华智云客服系统 - 延迟加载但保持功能 -->
     <script is:inline>
-      // 延迟3秒加载客服系统，避免阻塞主线程
-      setTimeout(function() {
-        var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=" + new Date().getTime();
-          hm.setAttribute("_extID", "309-313-7n1iAECE");
-          var s = document.getElementsByTagName("script")[0]; 
-          if (s && s.parentNode) {
-            s.parentNode.insertBefore(hm, s);
-          }
-        })();
-      }, 3000);
+      // 页面加载完成后3秒加载客服系统，不影响LCP但保证功能可用
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var _hmt = _hmt || [];
+          (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=" + new Date().getTime();
+            hm.setAttribute("_extID", "309-313-7n1iAECE");
+            var s = document.getElementsByTagName("script")[0]; 
+            if (s && s.parentNode) {
+              s.parentNode.insertBefore(hm, s);
+            }
+          })();
+        }, 3000); // 3秒后加载，确保不影响LCP性能
+      });
     </script>
 
     <FooterSection />
