@@ -1,18 +1,6 @@
 ---
-import { getMenusWithFallback, formatMenus } from '../lib/strapi.js';
-
-// 获取菜单数据（完全依赖Strapi API）
-let navLinks = [];
-try {
-  const menus = await getMenusWithFallback();
-  navLinks = formatMenus(menus);
-  console.log(`📋 成功加载 ${navLinks.length} 个菜单项`);
-} catch (error) {
-  console.error('❌ 无法获取菜单数据:', error.message);
-  console.error('⚠️ 网站将无法正常显示菜单，请检查Strapi连接');
-  // 不提供任何后备菜单，强制依赖API
-  navLinks = [];
-}
+// 使用智能菜单组件，支持30秒缓存和自动更新
+import SmartMenu from './SmartMenu.astro';
 ---
 <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 shadow-md">
   <div class="container mx-auto px-4">
@@ -25,12 +13,7 @@ try {
 
       <!-- Desktop Navigation -->
       <nav aria-label="主要导航" class="hidden md:flex items-center space-x-8">
-        {navLinks.map((link) => (
-          <a href={link.url} 
-             class="text-gray-600 hover:text-red-600 font-semibold focus-visible-ring">
-            {link.title}
-          </a>
-        ))}
+        <SmartMenu />
         <a href="/contact" class="bg-red-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-red-700 focus-visible-ring">
           获取报价
         </a>
@@ -53,11 +36,9 @@ try {
   <!-- Mobile Navigation Menu -->
   <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-lg">
     <nav aria-label="移动端导航" class="px-4 pt-2 pb-4 space-y-1">
-      {navLinks.map(link => (
-        <a href={link.url} class="block text-gray-700 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation">
-          {link.title}
-        </a>
-      ))}
+      <div id="mobile-smart-menu" class="space-y-1">
+        <!-- 移动端菜单将通过JavaScript动态加载 -->
+      </div>
       <a href="/contact" class="block w-full text-center bg-red-600 text-white mt-4 px-5 py-3 rounded-lg font-bold focus-visible-ring touch-manipulation">
         获取报价
       </a>

@@ -1,0 +1,196 @@
+---
+// 智能菜单组件 - 使用公共ISR缓存管理器
+// 支持30秒缓存和自动更新，类似Next.js ISR功能
+---
+
+<div id="smart-menu" class="menu-container">
+  <div class="loading-indicator">
+    <div class="flex items-center space-x-2">
+      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+      <span>加载菜单中...</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { isrCache } from '../lib/isr-cache.js';
+  
+  class SmartMenuRenderer {
+    constructor() {
+      this.init();
+    }
+    
+    async init() {
+      try {
+        // 使用公共ISR缓存管理器获取菜单数据
+        const menuData = await isrCache.getData('menus');
+        this.renderMenu(menuData);
+        
+        // 监听ISR更新事件
+        this.setupUpdateListener();
+        
+      } catch (error) {
+        console.error('菜单加载失败:', error);
+        this.renderError();
+      }
+    }
+    
+    renderMenu(menuData) {
+      const container = document.getElementById('smart-menu');
+      const mobileContainer = document.getElementById('mobile-smart-menu');
+      
+      if (!container && !mobileContainer) return;
+      
+      // 桌面端菜单
+      if (container) {
+        const desktopMenuHTML = menuData.map(item => `
+          <a href="${item.path}" 
+             class="menu-item text-gray-600 hover:text-red-600 font-semibold focus-visible-ring transition-all duration-200">
+            ${item.name}
+          </a>
+        `).join('');
+        
+        container.innerHTML = desktopMenuHTML;
+      }
+      
+      // 移动端菜单
+      if (mobileContainer) {
+        const mobileMenuHTML = menuData.map(item => `
+          <a href="${item.path}" 
+             class="block text-gray-700 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation mobile-menu-item">
+            ${item.name}
+          </a>
+        `).join('');
+        
+        mobileContainer.innerHTML = mobileMenuHTML;
+        
+        // 为移动端菜单项添加点击关闭事件
+        this.setupMobileMenuClose(mobileContainer);
+      }
+      
+      // 添加更新动画
+      if (container) {
+        container.classList.add('updated');
+        setTimeout(() => {
+          container.classList.remove('updated');
+        }, 500);
+      }
+    }
+    
+    setupMobileMenuClose(mobileContainer) {
+      mobileContainer.querySelectorAll('.mobile-menu-item').forEach(link => {
+        link.addEventListener('click', () => {
+          const mobileMenu = document.getElementById('mobile-menu');
+          const menuButton = document.getElementById('mobile-menu-button');
+          const openIcon = document.getElementById('menu-open-icon');
+          const closeIcon = document.getElementById('menu-close-icon');
+          
+          if (mobileMenu) {
+            mobileMenu.classList.add('hidden');
+            if (menuButton) menuButton.setAttribute('aria-expanded', 'false');
+            if (openIcon) openIcon.classList.remove('hidden');
+            if (closeIcon) closeIcon.classList.add('hidden');
+          }
+        });
+      });
+    }
+    
+    setupUpdateListener() {
+      // 监听ISR更新事件
+      document.addEventListener('isr-update', (event) => {
+        if (event.detail.endpoint === 'menus') {
+          console.log('📡 收到菜单更新事件，重新渲染...');
+          this.renderMenu(event.detail.newData);
+        }
+      });
+    }
+    
+    renderError() {
+      const container = document.getElementById('smart-menu');
+      if (!container) return;
+      
+      container.innerHTML = `
+        <div class="error-message">
+          <span class="text-red-500">⚠️ 菜单加载失败</span>
+          <button onclick="window.smartMenuRenderer.init()" class="retry-btn">
+            重试
+          </button>
+        </div>
+      `;
+    }
+  }
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', () => {
+    window.smartMenuRenderer = new SmartMenuRenderer();
+  });
+</script>
+
+<style>
+  .menu-container {
+    min-height: 40px;
+    transition: all 0.3s ease;
+  }
+  
+  .menu-container.updated {
+    transform: scale(1.02);
+  }
+  
+  .loading-indicator {
+    color: #6b7280;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+  }
+  
+  .menu-item {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s;
+  }
+  
+  .menu-item:hover::before {
+    left: 100%;
+  }
+  
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+  }
+  
+  .retry-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .retry-btn:hover {
+    background: #2563eb;
+  }
+  
+  /* 移动端优化 */
+  @media (max-width: 768px) {
+    .menu-item {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+  }
+</style> 
