@@ -32,8 +32,8 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
-    <!-- 移动端关键图片预加载 -->
-    <link rel="preload" href="/main-product.svg" as="image" media="(min-width: 768px)" fetchpriority="high">
+    <!-- LCP关键图片预加载 - 最高优先级 -->
+    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high">
     
     <!-- 移动端关键CSS内联 - 防止CSS阻塞渲染 -->
     <style>
@@ -115,7 +115,7 @@ const {
       <slot />
     </main>
 
-    <!-- Google Analytics -->
+    <!-- Google Analytics - 异步加载 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -124,18 +124,21 @@ const {
       gtag('config', 'G-71JP66YM5X');
     </script>
 
-    <!-- 华智云客服系统 -->
+    <!-- 华智云客服系统 - 延迟加载 -->
     <script is:inline>
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=" + new Date().getTime();
-        hm.setAttribute("_extID", "309-313-7n1iAECE");
-        var s = document.getElementsByTagName("script")[0]; 
-        if (s && s.parentNode) {
-          s.parentNode.insertBefore(hm, s);
-        }
-      })();
+      // 延迟3秒加载客服系统，避免阻塞主线程
+      setTimeout(function() {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=" + new Date().getTime();
+          hm.setAttribute("_extID", "309-313-7n1iAECE");
+          var s = document.getElementsByTagName("script")[0]; 
+          if (s && s.parentNode) {
+            s.parentNode.insertBefore(hm, s);
+          }
+        })();
+      }, 3000);
     </script>
 
     <FooterSection />

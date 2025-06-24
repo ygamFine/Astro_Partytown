@@ -26,19 +26,19 @@ const mainProduct = {
         </div>
       </div>
 
-      <!-- 右侧图片 - 移动端优化 -->
+      <!-- 右侧图片 - LCP关键元素 -->
       <div class="relative img-container">
         <div class="relative w-full max-w-lg mx-auto md:max-w-none">
-          <!-- 移动端：延迟加载，桌面端：立即加载 -->
+          <!-- LCP关键图片 - 立即加载 -->
           <img 
             src={mainProduct.src} 
             alt="YN-S70滑移装载机" 
             width="600" 
             height="400" 
             class="w-full h-auto object-contain relative z-10"
-            loading="lazy"
-            decoding="async"
-            fetchpriority="low"
+            loading="eager"
+            decoding="sync"
+            fetchpriority="high"
           >
           <!-- 背景装饰图形 -->
           <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-500 rounded-full opacity-10"></div>
@@ -62,14 +62,6 @@ const mainProduct = {
     .absolute.bg-red-500,
     .absolute.bg-blue-500 {
       display: none;
-    }
-  }
-  
-  /* 桌面端图片立即加载 */
-  @media (min-width: 769px) {
-    .img-container img {
-      loading: eager !important;
-      fetchpriority: high !important;
     }
   }
 </style> 
