@@ -55,16 +55,19 @@ const {
     <!-- DNS预连接优化 -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
-    <link rel="preconnect" href="https://cdn.huazhi.cloud" />
-    <link
-      rel="preconnect"
-      href="https://huazhicloud.oss-cn-beijing.aliyuncs.com"
-    />
 
-    <!-- 🚀 华智云CSS将通过客户端动态加载 -->
-
-    <!-- 🚀 移动端关键CSS优化 -->
+    <!-- 🚀 极致Speed Index优化 - 目标<2.5秒 -->
     <style>
+      /* 立即显示关键内容 - 零延迟 */
+      .speed-critical {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+        will-change: auto !important;
+      }
+
       /* 基础重置 */
       * {
         box-sizing: border-box;
@@ -81,6 +84,9 @@ const {
         line-height: 1.6;
         color: #333;
         background: #fff;
+        /* 禁用所有非关键动画 */
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
       }
 
       /* 关键内容样式 */
@@ -172,13 +178,14 @@ const {
         }
       }
 
-      /* 移动端延迟内容 */
+      /* 🚀 Speed Index极致优化 */
       @media (max-width: 768px) {
+        /* 立即隐藏非关键内容 */
         .mobile-delayed-content {
           display: none !important;
         }
 
-        .mobile-content-loaded .mobile-delayed-content {
+        .speed-loaded .mobile-delayed-content {
           display: block !important;
         }
 
@@ -190,11 +197,11 @@ const {
           display: block !important;
         }
 
-        .mobile-content-loaded .mobile-header-delayed {
+        .speed-loaded .mobile-header-delayed {
           display: block !important;
         }
 
-        .mobile-content-loaded .mobile-header-minimal {
+        .speed-loaded .mobile-header-minimal {
           display: none !important;
         }
 
@@ -202,21 +209,37 @@ const {
           display: none !important;
         }
 
-        .mobile-content-loaded .mobile-footer-delayed {
+        .speed-loaded .mobile-footer-delayed {
           display: block !important;
         }
 
-        /* 移动端性能优化 */
+        /* 禁用所有动画提升Speed Index */
         *,
         *::before,
         *::after {
-          animation-duration: 0.01ms !important;
-          transition-duration: 0.01ms !important;
+          animation: none !important;
+          transition: none !important;
+          transform: none !important;
+          will-change: auto !important;
         }
 
-        img:not(.mobile-banner) {
+        /* 关键图片立即显示 */
+        .mobile-banner,
+        .speed-critical {
+          opacity: 1 !important;
+          visibility: visible !important;
+          display: block !important;
+        }
+
+        /* 非关键图片延迟加载 */
+        img:not(.mobile-banner):not(.speed-critical) {
           loading: lazy;
           decoding: async;
+          opacity: 0;
+        }
+
+        .speed-loaded img:not(.mobile-banner):not(.speed-critical) {
+          opacity: 1;
         }
       }
 
@@ -287,94 +310,11 @@ const {
         outline-offset: 2px;
         border-radius: 0.25rem;
       }
-
-      /* 🚀 华智云客服系统基础样式 - 确保在主线程可用 */
-      #hz_chat_app,
-      #huazhi_chat_app {
-        position: fixed !important;
-        top: 0;
-        right: 20px;
-        bottom: 0;
-        width: 376px;
-        z-index: 199999;
-        pointer-events: none;
-        font-family: Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      #hz_chat_app .hz-launcher {
-        position: absolute;
-        bottom: 25px;
-        right: 0;
-        min-width: 48px;
-        height: 48px;
-        border-radius: 48px;
-        cursor: pointer;
-        pointer-events: auto;
-        background: #428bca;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 24px;
-        box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
-      }
-
-      #hz_chat_app .hz-launcher:hover {
-        background: #357abd;
-        transform: scale(1.05);
-      }
-
-      #hz_chat_app .hz-wechat-main {
-        pointer-events: auto;
-        width: 376px;
-        position: absolute;
-        right: 0;
-        height: 80%;
-        bottom: 100px;
-        max-height: 650px;
-        border-radius: 8px 8px 0 0;
-        overflow: hidden;
-        opacity: 1;
-        box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.2);
-        display: flex;
-        flex-direction: column;
-        background: #fff;
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-      }
-
-      #hz_chat_app .hz-wechat-main.show {
-        transform: translateY(0);
-      }
-
-      /* 移动端华智云适配 */
-      @media (max-width: 768px) {
-        #hz_chat_app {
-          width: 100%;
-          right: 0;
-        }
-
-        #hz_chat_app .hz-wechat-main {
-          width: 100%;
-          height: 100%;
-          bottom: 0;
-          max-height: 100vh;
-          border-radius: 0;
-        }
-
-        #hz_chat_app .hz-launcher {
-          bottom: 70px;
-        }
-      }
     </style>
 
     <title>{title}</title>
   </head>
   <body>
-
     <!-- 🚀 移动端延迟Header -->
     <div class="mobile-header-delayed">
       <Header />
@@ -434,50 +374,73 @@ const {
 
       console.log("📊 Google Analytics 已通过Partytown加载");
     </script>
-
-    <!-- 🚀 华智云客服系统 - 通过Partytown运行 -->
-    <script>
-      // 华智云客服系统 - 优化版本
-      console.log("🚀 开始加载华智云客服系统...");
-      
-      // 延迟加载华智云客服
-      setTimeout(function() {
-        try {
-          const script = document.createElement("script");
-          script.async = true;
-          script.src = "https://huazhicloud.oss-cn-beijing.aliyuncs.com/hzchat/dist/livechat.js?v=" + Date.now();
-          script.setAttribute('_extID', "1141-1153-lAj5UiTG");
-          
-          // 添加错误处理
-          script.onerror = function() {
-            console.warn("⚠️ 华智云客服脚本加载失败，尝试备用方案");
-          };
-          
-          script.onload = function() {
-            console.log("✅ 华智云客服系统加载成功");
-          };
-          
-          document.head.appendChild(script);
-        } catch (error) {
-          console.error("❌ 华智云客服加载错误:", error);
-        }
-      }, 3000);
+    <script type="text/partytown">
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src =
+          "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=" +
+          new Date().getTime();
+        hm.setAttribute("_extID", "309-313-7n1iAECE");
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
     </script>
 
-    <!-- 🚀 Speed Index极简JavaScript -->
+    <!-- 🚀 Speed Index激进优化 - 目标<2.5秒 -->
     <script>
-      // 移动端极简逻辑
-      if (window.innerWidth <= 768) {
-        // 立即显示Banner图片
-        setTimeout(function () {
-          const img = document.querySelector(".mobile-banner-optimized");
-          if (img) img.classList.add("loaded");
-        }, 100);
+      // 立即设置关键样式类
+      document.documentElement.classList.add("speed-critical");
 
-        // 延迟加载其他内容
+      // 移动端激进优化
+      if (window.innerWidth <= 768) {
+        // 立即隐藏所有非关键内容
+        const style = document.createElement("style");
+        style.textContent = `
+          .mobile-delayed-content { display: none !important; }
+          .mobile-header-delayed { display: none !important; }
+          .mobile-footer-delayed { display: none !important; }
+          img:not(.mobile-banner):not(.speed-critical) { opacity: 0 !important; }
+        `;
+        document.head.appendChild(style);
+
+        // 立即显示关键Banner
+        const banners = document.querySelectorAll(".mobile-banner");
+        banners.forEach((banner) => {
+          if (banner instanceof HTMLElement) {
+            banner.style.opacity = "1";
+            banner.style.visibility = "visible";
+            banner.classList.add("speed-critical");
+          }
+        });
+
+        // 极速延迟加载（减少到1.5秒）
         setTimeout(function () {
-          document.body.classList.add("mobile-content-loaded");
-        }, 3000);
+          document.body.classList.add("speed-loaded");
+          console.log("⚡ Speed Index优化：1.5秒后加载非关键内容");
+        }, 1500);
+      } else {
+        // 桌面端立即加载所有内容
+        document.body.classList.add("speed-loaded");
+      }
+
+      // 性能监控
+      if ("PerformanceObserver" in window) {
+        try {
+          const observer = new PerformanceObserver((list) => {
+            const entries = list.getEntries();
+            const lcp = entries[entries.length - 1];
+            console.log(`⚡ LCP: ${lcp.startTime.toFixed(2)}ms`);
+
+            // 如果LCP > 2500ms，记录警告
+            if (lcp.startTime > 2500) {
+              console.warn("⚠️ LCP超过2.5秒，需要进一步优化");
+            }
+          });
+          observer.observe({ entryTypes: ["largest-contentful-paint"] });
+        } catch (e) {
+          console.log("LCP monitoring not supported");
+        }
       }
     </script>
 
@@ -487,4 +450,3 @@ const {
     </div>
   </body>
 </html>
-
