@@ -4,7 +4,7 @@ const mainProduct = {
 };
 ---
 
-<section class="relative bg-white pt-24 pb-24 overflow-hidden">
+<section class="relative bg-white pt-24 pb-24 overflow-hidden hero-mobile">
   <div class="container mx-auto px-4">
     <div class="grid md:grid-cols-2 gap-8 items-center">
       <!-- 左侧内容 -->
@@ -17,7 +17,7 @@ const mainProduct = {
           致力于提供高效、可靠的工程机械解决方案。
         </p>
         <div class="mt-8 flex justify-center md:justify-start space-x-4">
-          <a href="/products" class="bg-red-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform duration-300 transform hover:scale-105">
+          <a href="/products" class="btn-primary bg-red-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform duration-300 transform hover:scale-105">
             探索产品
           </a>
           <a href="/contact" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-300 transition-transform duration-300 transform hover:scale-105">
@@ -26,10 +26,20 @@ const mainProduct = {
         </div>
       </div>
 
-      <!-- 右侧图片 -->
-      <div class="relative">
+      <!-- 右侧图片 - 移动端优化 -->
+      <div class="relative img-container">
         <div class="relative w-full max-w-lg mx-auto md:max-w-none">
-          <img src={mainProduct.src} alt="YN-S70滑移装载机" width="600" height="400" class="w-full h-auto object-contain relative z-10">
+          <!-- 移动端：延迟加载，桌面端：立即加载 -->
+          <img 
+            src={mainProduct.src} 
+            alt="YN-S70滑移装载机" 
+            width="600" 
+            height="400" 
+            class="w-full h-auto object-contain relative z-10"
+            loading="lazy"
+            decoding="async"
+            fetchpriority="low"
+          >
           <!-- 背景装饰图形 -->
           <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-500 rounded-full opacity-10"></div>
           <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-blue-500 rounded-full opacity-10"></div>
@@ -37,4 +47,29 @@ const mainProduct = {
       </div>
     </div>
   </div>
-</section> 
+</section>
+
+<style>
+  /* 移动端图片优化 */
+  @media (max-width: 768px) {
+    .img-container img {
+      max-width: 280px;
+      height: auto;
+      margin: 1rem auto;
+    }
+    
+    /* 移动端隐藏装饰元素 */
+    .absolute.bg-red-500,
+    .absolute.bg-blue-500 {
+      display: none;
+    }
+  }
+  
+  /* 桌面端图片立即加载 */
+  @media (min-width: 769px) {
+    .img-container img {
+      loading: eager !important;
+      fetchpriority: high !important;
+    }
+  }
+</style> 
