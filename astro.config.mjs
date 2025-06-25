@@ -5,7 +5,7 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static', // 改为SSG模式
+  output: 'server', // 服务器模式支持API端点
   adapter: vercel({
     webAnalytics: { enabled: true }
   }),
