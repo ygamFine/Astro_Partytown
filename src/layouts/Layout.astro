@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import FooterSection from "../components/FooterSection.astro";
+import RealtimeDataSync from "../components/RealtimeDataSync.astro";
 
 export interface Props {
   title: string;
@@ -297,6 +298,9 @@ const {
     <main id="main-content">
       <slot />
     </main>
+    
+    <!-- 实时数据同步组件 -->
+    <RealtimeDataSync />
 
     <!-- Google Analytics - 延迟加载 -->
     <script is:inline>

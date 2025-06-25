@@ -1,0 +1,206 @@
+---
+// 实时数据同步组件 - 解决静态站点数据更新问题
+---
+
+<script type="module">
+  // Strapi 配置
+  const STRAPI_BASE_URL = 'http://47.251.126.80/api';
+  const STRAPI_TOKEN = '2980bc69d09c767b2ca2e1c211a285c9f48985775a3f1d1313025838a611abbfe6d892a29b3417407ddd798d69a9f67f063c27d13827c1765f96b4bc19601295ac11fb9552f4a16ede2745813e3b536827069875ae8c5089a36da57cf69d08b252093e2100e0cc88ac700ca6cd6ebd196f0002bd5fb8219222ed778f8858ad21';
+  
+  // 存储构建时间
+  const BUILD_TIME = document.documentElement.getAttribute('data-build-time') || Date.now();
+  
+  // 检查数据是否有更新
+  async function checkForUpdates() {
+    try {
+      const response = await fetch(`${STRAPI_BASE_URL}/menus`, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-cache'
+      });
+      
+      if (!response.ok) {
+        console.log('⚠️ 无法连接到Strapi API');
+        return false;
+      }
+      
+      const data = await response.json();
+      const menus = data.data || [];
+      
+      // 检查是否有新的更新时间
+      const latestUpdate = Math.max(...menus.map(item => 
+        new Date(item.updatedAt || item.publishedAt).getTime()
+      ));
+      
+      return latestUpdate > BUILD_TIME;
+      
+    } catch (error) {
+      console.log('⚠️ 数据检查失败:', error.message);
+      return false;
+    }
+  }
+  
+  // 更新菜单数据
+  async function updateMenuData() {
+    try {
+      const response = await fetch(`${STRAPI_BASE_URL}/menus`, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-cache'
+      });
+      
+      if (!response.ok) return false;
+      
+      const data = await response.json();
+      const menus = data.data?.map(item => ({
+        name: item.name,
+        path: item.path,
+        publishedAt: item.publishedAt
+      })) || [];
+      
+      // 更新桌面端菜单
+      const desktopMenu = document.querySelector('.hidden.md\\:flex.items-center.space-x-6');
+      if (desktopMenu && menus.length > 0) {
+        desktopMenu.innerHTML = menus.map(menu => 
+          `<a href="${menu.path}" class="text-gray-700 hover:text-red-600 transition-colors duration-200 font-medium">${menu.name}</a>`
+        ).join('');
+      }
+      
+      // 更新移动端菜单
+      const mobileMenu = document.getElementById('mobile-smart-menu');
+      if (mobileMenu && menus.length > 0) {
+        mobileMenu.innerHTML = menus.map(menu => 
+          `<a href="${menu.path}" class="block px-3 py-2 text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors font-medium">${menu.name}</a>`
+        ).join('');
+      }
+      
+      // 显示更新提示
+      showUpdateNotification(menus.length);
+      
+      return true;
+      
+    } catch (error) {
+      console.log('⚠️ 菜单更新失败:', error.message);
+      return false;
+    }
+  }
+  
+  // 显示数据更新通知
+  function showUpdateNotification(menuCount) {
+    // 创建通知元素
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300';
+    notification.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <span>数据已更新 (${menuCount}个菜单)</span>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 3秒后自动消失
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }
+    }, 3000);
+  }
+  
+  // 显示过期数据提示
+  function showDataOutdatedNotification() {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-4 bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 cursor-pointer';
+    notification.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+        </svg>
+        <span>数据可能过期，点击刷新</span>
+      </div>
+    `;
+    
+    notification.addEventListener('click', () => {
+      window.location.reload();
+    });
+    
+    document.body.appendChild(notification);
+    
+    // 10秒后自动消失
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }
+    }, 10000);
+  }
+  
+  // 主要同步逻辑
+  async function syncData() {
+    console.log('🔄 检查数据更新...');
+    
+    const hasUpdates = await checkForUpdates();
+    
+    if (hasUpdates) {
+      console.log('📥 发现数据更新，正在同步...');
+      const success = await updateMenuData();
+      
+      if (!success) {
+        showDataOutdatedNotification();
+      }
+    } else {
+      console.log('✅ 数据已是最新');
+    }
+  }
+  
+  // 初始化实时同步
+  function initRealtimeSync() {
+    // 设置构建时间到HTML
+    if (!document.documentElement.getAttribute('data-build-time')) {
+      document.documentElement.setAttribute('data-build-time', Date.now());
+    }
+    
+    // 页面加载后立即检查一次
+    setTimeout(syncData, 2000);
+    
+    // 每2分钟检查一次更新
+    setInterval(syncData, 120000);
+    
+    // 页面焦点恢复时检查更新
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        setTimeout(syncData, 1000);
+      }
+    });
+    
+    console.log('🚀 实时数据同步已启动');
+  }
+  
+  // DOM加载完成后启动
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRealtimeSync);
+  } else {
+    initRealtimeSync();
+  }
+</script>
+
+<!-- 在HTML中标记构建时间 -->
+<script is:inline>
+  document.documentElement.setAttribute('data-build-time', Date.now());
+</script> 
