@@ -1,6 +1,9 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "framework": "astro"
+  "framework": "astro",
+  "functions": {
+    "src/pages/api/**/*.js": {
+      "maxDuration": 10
+    }
+  }
 }

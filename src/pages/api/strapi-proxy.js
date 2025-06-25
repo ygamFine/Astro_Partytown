@@ -111,7 +111,8 @@ export async function GET({ url }) {
     return new Response(JSON.stringify({ 
       error: '代理请求失败',
       message: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      endpoint: endpoint
     }), {
       status: 500,
       headers: {

@@ -9,11 +9,11 @@
   // 存储构建时间
   const BUILD_TIME = document.documentElement.getAttribute('data-build-time') || Date.now();
   
-  // 检查数据是否有更新 (使用公共API)
+  // 检查数据是否有更新 (使用代理API)
   async function checkForUpdates() {
     try {
-      // 尝试访问公共API，不使用Token
-      const response = await fetch(`${PUBLIC_API_BASE}/menus?populate=*`, {
+      // 使用Vercel API代理
+      const response = await fetch('/api/strapi-proxy?endpoint=menus', {
         method: 'GET',
         cache: 'no-cache'
       });
@@ -23,17 +23,16 @@
         return false;
       }
       
-      const data = await response.json();
-      const menus = data.data || [];
+      const menus = await response.json();
       
-      if (menus.length === 0) {
+      if (!Array.isArray(menus) || menus.length === 0) {
         console.log('⚠️ 未获取到菜单数据');
         return false;
       }
       
       // 检查是否有新的更新时间
       const latestUpdate = Math.max(...menus.map(item => 
-        new Date(item.updatedAt || item.publishedAt).getTime()
+        new Date(item.publishedAt).getTime()
       ));
       
       return latestUpdate > BUILD_TIME;
