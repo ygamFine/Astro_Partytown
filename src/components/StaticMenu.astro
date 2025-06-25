@@ -1,0 +1,105 @@
+---
+// SSG静态菜单组件 - 构建时获取菜单数据
+import { getMenus } from '../lib/strapi.js';
+
+// 在构建时获取菜单数据
+let menuItems = [];
+try {
+  menuItems = await getMenus();
+  console.log(`✅ 构建时获取到 ${menuItems.length} 个菜单项`);
+} catch (error) {
+  console.warn('⚠️ 构建时获取菜单失败，使用默认菜单:', error.message);
+  // 默认菜单作为降级方案
+  menuItems = [
+    { name: '首页', path: '/' },
+    { name: '产品中心', path: '/products' },
+    { name: '新闻中心', path: '/news' },
+    { name: '关于我们', path: '/about' },
+    { name: '联系我们', path: '/contact' }
+  ];
+}
+---
+
+<!-- 桌面端菜单 -->
+<nav class="hidden md:flex items-center space-x-8" aria-label="主要导航">
+  {menuItems.map((item) => (
+    <a 
+      href={item.path} 
+      class="menu-item text-gray-600 hover:text-red-600 font-semibold focus-visible-ring transition-all duration-200"
+    >
+      {item.name}
+    </a>
+  ))}
+</nav>
+
+<!-- 移动端菜单内容 -->
+<div id="mobile-menu-items" class="hidden">
+  {menuItems.map((item) => (
+    <a 
+      href={item.path} 
+      class="block text-gray-700 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation mobile-menu-item"
+    >
+      {item.name}
+    </a>
+  ))}
+</div>
+
+<script>
+  // 客户端增强：将静态菜单复制到移动端容器
+  document.addEventListener('DOMContentLoaded', () => {
+    const mobileMenuItems = document.getElementById('mobile-menu-items');
+    const mobileContainer = document.getElementById('mobile-smart-menu');
+    
+    if (mobileMenuItems && mobileContainer) {
+      // 复制菜单项到移动端容器
+      mobileContainer.innerHTML = mobileMenuItems.innerHTML;
+      
+      // 为移动端菜单项添加点击关闭事件
+      mobileContainer.querySelectorAll('.mobile-menu-item').forEach(link => {
+        link.addEventListener('click', () => {
+          const mobileMenu = document.getElementById('mobile-menu');
+          const menuButton = document.getElementById('mobile-menu-button');
+          const openIcon = document.getElementById('menu-open-icon');
+          const closeIcon = document.getElementById('menu-close-icon');
+          
+          if (mobileMenu) {
+            mobileMenu.classList.add('hidden');
+            if (menuButton) menuButton.setAttribute('aria-expanded', 'false');
+            if (openIcon) openIcon.classList.remove('hidden');
+            if (closeIcon) closeIcon.classList.add('hidden');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+<style>
+  .menu-item {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
+    transition: left 0.5s;
+  }
+  
+  .menu-item:hover::before {
+    left: 100%;
+  }
+  
+  /* 移动端优化 */
+  @media (max-width: 768px) {
+    .mobile-menu-item {
+      padding: 12px 16px;
+      font-size: 16px;
+    }
+  }
+</style> 

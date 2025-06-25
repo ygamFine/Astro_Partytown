@@ -1,6 +1,6 @@
 ---
-// 使用智能菜单组件，支持30秒缓存和自动更新
-import SmartMenu from './SmartMenu.astro';
+// 使用静态菜单组件，构建时获取菜单数据（SSG模式）
+import StaticMenu from './StaticMenu.astro';
 ---
 <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 shadow-md">
   <div class="container mx-auto px-4">
@@ -12,12 +12,12 @@ import SmartMenu from './SmartMenu.astro';
       </a>
 
       <!-- Desktop Navigation -->
-      <nav aria-label="主要导航" class="hidden md:flex items-center space-x-8">
-        <SmartMenu />
+      <div class="hidden md:flex items-center space-x-8">
+        <StaticMenu />
         <a href="/contact" class="bg-red-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-red-700 focus-visible-ring">
           获取报价
         </a>
-      </nav>
+      </div>
 
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
