@@ -1,0 +1,39 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87ceeb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0f6ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#skyGrad)"/>
+  
+  <!-- 建筑物 -->
+  <rect x="50" y="200" width="500" height="150" fill="#4a5568"/>
+  <rect x="70" y="220" width="460" height="130" fill="#718096"/>
+  
+  <!-- 窗户 -->
+  <rect x="100" y="240" width="40" height="30" fill="#2d3748"/>
+  <rect x="160" y="240" width="40" height="30" fill="#2d3748"/>
+  <rect x="220" y="240" width="40" height="30" fill="#2d3748"/>
+  <rect x="280" y="240" width="40" height="30" fill="#2d3748"/>
+  <rect x="340" y="240" width="40" height="30" fill="#2d3748"/>
+  <rect x="400" y="240" width="40" height="30" fill="#2d3748"/>
+  <rect x="460" y="240" width="40" height="30" fill="#2d3748"/>
+  
+  <!-- 大门 -->
+  <rect x="270" y="300" width="60" height="50" fill="#2d3748"/>
+  
+  <!-- 公司标志 -->
+  <rect x="200" y="180" width="200" height="40" fill="#e60012"/>
+  <text x="300" y="205" font-family="Arial, sans-serif" font-size="18" fill="white" text-anchor="middle" dominant-baseline="middle">
+    YONAN MACHINERY
+  </text>
+  
+  <!-- 标题 -->
+  <text x="300" y="50" font-family="Arial, sans-serif" font-size="24" fill="#2d3748" text-anchor="middle" dominant-baseline="middle">
+    现代化生产基地
+  </text>
+  <text x="300" y="80" font-family="Arial, sans-serif" font-size="16" fill="#4a5568" text-anchor="middle" dominant-baseline="middle">
+    山东永安建设机械集团有限公司
+  </text>
+</svg> 

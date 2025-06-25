@@ -95,33 +95,59 @@ export class ISRCacheManager {
   }
   
   /**
-   * 从API获取数据
+   * 从API获取数据 (通过代理)
    */
   async fetchFromAPI(endpoint, params = {}) {
-    const url = new URL(`${this.baseUrl}/${endpoint}`);
+    // 在浏览器环境中使用API代理
+    const isClient = typeof window !== 'undefined';
     
-    // 添加查询参数
-    Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.append(key, value);
-    });
+    let url;
+    let headers = {};
+    
+    if (isClient) {
+      // 客户端：使用API代理
+      url = new URL('/api/strapi-proxy', window.location.origin);
+      url.searchParams.append('endpoint', endpoint);
+      
+      // 添加其他查询参数
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+      
+      headers = {
+        'Content-Type': 'application/json'
+      };
+    } else {
+      // 服务端：直接访问Strapi
+      url = new URL(`${this.baseUrl}/${endpoint}`);
+      
+      // 添加查询参数
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+      
+      headers = {
+        'Authorization': `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      };
+    }
     
     let lastError;
     
     // 重试机制
     for (let i = 0; i < this.retryTimes; i++) {
       try {
-        const response = await fetch(url.toString(), {
-          headers: {
-            'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        this.log(`🔄 ${isClient ? '代理' : '直接'}请求 (${i + 1}/${this.retryTimes}): ${endpoint}`);
+        
+        const response = await fetch(url.toString(), { headers });
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        this.log(`✅ 请求成功: ${endpoint}`);
+        return data;
         
       } catch (error) {
         lastError = error;
