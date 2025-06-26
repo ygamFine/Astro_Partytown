@@ -7,7 +7,7 @@ on:
     types: [webhook-trigger]
   workflow_dispatch:
   schedule:
-    # 每10分钟检查一次更新 (UTC时间)
+    # 每10分钟自动重新构建 (确保数据同步)
     - cron: '*/10 * * * *'
 
 jobs:

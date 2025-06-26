@@ -1,9 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "framework": "astro",
-  "functions": {
-    "src/pages/api/**/*.js": {
-      "maxDuration": 10
-    }
-  }
+  "outputDirectory": "dist",
+  "framework": "astro"
 }

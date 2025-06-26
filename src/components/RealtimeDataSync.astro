@@ -1,29 +1,28 @@
 ---
-// SSG标准数据同步组件 - 显示数据更新提示
+// 纯SSG数据更新检查组件 - 仅提示，不修改DOM
 ---
 
 <script type="module">
-  // 公共API endpoint (无需Token的只读接口)
-  const PUBLIC_API_BASE = 'http://47.251.126.80/api';
-  
-  // 存储构建时间
+  // 构建时间戳 (用于比较数据新旧)
   const BUILD_TIME = document.documentElement.getAttribute('data-build-time') || Date.now();
   
-  // 检查数据是否有更新 (使用代理API)
+  // 检查是否有数据更新 (纯SSG方式)
   async function checkForUpdates() {
     try {
-      // 使用Vercel API代理
-      const response = await fetch('/api/strapi-proxy?endpoint=menus', {
+      // 尝试访问Strapi公共API (如果可用)
+      const response = await fetch('http://47.251.126.80/api/menus?populate=*', {
         method: 'GET',
-        cache: 'no-cache'
+        cache: 'no-cache',
+        mode: 'cors'
       });
       
       if (!response.ok) {
-        console.log('⚠️ 无法连接到API，可能需要刷新页面');
+        console.log('⚠️ 无法连接到Strapi API，建议刷新页面');
         return false;
       }
       
-      const menus = await response.json();
+      const data = await response.json();
+      const menus = data.data || [];
       
       if (!Array.isArray(menus) || menus.length === 0) {
         console.log('⚠️ 未获取到菜单数据');
@@ -32,7 +31,7 @@
       
       // 检查是否有新的更新时间
       const latestUpdate = Math.max(...menus.map(item => 
-        new Date(item.publishedAt).getTime()
+        new Date(item.updatedAt || item.publishedAt).getTime()
       ));
       
       return latestUpdate > BUILD_TIME;
@@ -78,37 +77,51 @@
   
 
   
-  // SSG标准同步逻辑
-  async function syncData() {
-    console.log('🔄 检查数据更新...');
+  // 显示SSG模式信息
+  function showSSGInfo() {
+    console.log(`
+🏗️ 静态站点生成模式 (SSG)
+✅ 构建时间: ${new Date(BUILD_TIME).toLocaleString()}
+✅ 所有内容在构建时预生成
+✅ 数据更新通过重新构建网站实现
+⏰ 每10分钟自动检查并重新构建
+    `);
+  }
+  
+  // SSG同步逻辑 (仅检查和提示)
+  async function checkDataUpdates() {
+    console.log('🔄 SSG模式：检查数据更新...');
     
     const hasUpdates = await checkForUpdates();
     
     if (hasUpdates) {
-      console.log('📥 发现数据更新，提示用户刷新页面');
+      console.log('📥 发现数据更新，建议刷新页面获取最新构建版本');
       showRefreshNotification();
     } else {
-      console.log('✅ 数据已是最新');
+      console.log('✅ 当前显示的是最新数据');
     }
   }
   
-  // 初始化SSG标准数据检查
-  function initDataChecker() {
-    // 设置构建时间到HTML
+  // 初始化SSG数据检查器
+  function initSSGChecker() {
+    // 显示SSG模式信息
+    showSSGInfo();
+    
+    // 设置构建时间标记
     if (!document.documentElement.getAttribute('data-build-time')) {
       document.documentElement.setAttribute('data-build-time', Date.now());
     }
     
-    // 页面加载后5秒检查一次 (避免影响性能)
-    setTimeout(syncData, 5000);
+    // 延迟检查 (不影响首屏性能)
+    setTimeout(checkDataUpdates, 10000);
     
-    // 每10分钟检查一次更新 (符合SSG实践)
-    setInterval(syncData, 600000);
+    // 定期检查 (频率较低，符合SSG实践)
+    setInterval(checkDataUpdates, 900000); // 15分钟
     
-    // 页面焦点恢复时检查更新 (用户重新访问时)
+    // 用户重新访问时检查
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
-        setTimeout(syncData, 3000);
+        setTimeout(checkDataUpdates, 5000);
       }
     });
     
@@ -117,9 +130,9 @@
   
   // DOM加载完成后启动
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDataChecker);
+    document.addEventListener('DOMContentLoaded', initSSGChecker);
   } else {
-    initDataChecker();
+    initSSGChecker();
   }
 </script>
 
