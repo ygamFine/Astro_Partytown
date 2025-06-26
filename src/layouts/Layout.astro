@@ -315,44 +315,53 @@ const {
         }, 2000);
       });
     </script>
-    <!-- 华智云客服系统 - 只加载一次，避免重复初始化 -->
-    <script is:inline>
-      (function() {
-        // 使用更可靠的全局标识符，避免重复加载
-        if (window.huazhiCloudInitialized || document.querySelector('script[_extID="309-313-7n1iAECE"]')) {
-          return;
-        }
+    <!-- 华智云客服系统 - 只加载一次，避免重复初始化  is:inline -->
+    <script >
+      // (function() {
+      //   // 使用更可靠的全局标识符，避免重复加载
+      //   if (window.huazhiCloudInitialized || document.querySelector('script[_extID="309-313-7n1iAECE"]')) {
+      //     return;
+      //   }
         
-        // 立即标记，防止并发加载
-        window.huazhiCloudInitialized = true;
+      //   // 立即标记，防止并发加载
+      //   window.huazhiCloudInitialized = true;
         
-        // 页面加载完成后3秒加载客服系统，不影响LCP但保证功能可用
-        function initHuazhiCloud() {
-          if (document.querySelector('script[_extID="309-313-7n1iAECE"]')) {
-            return; // 已存在，跳过
-          }
+      //   // 页面加载完成后3秒加载客服系统，不影响LCP但保证功能可用
+      //   function initHuazhiCloud() {
+      //     if (document.querySelector('script[_extID="309-313-7n1iAECE"]')) {
+      //       return; // 已存在，跳过
+      //     }
           
-          var _hmt = _hmt || [];
-          var hm = document.createElement("script");
-          hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js";
-          hm.setAttribute("_extID", "309-313-7n1iAECE");
-          var s = document.getElementsByTagName("script")[0]; 
-          if (s && s.parentNode) {
-            s.parentNode.insertBefore(hm, s);
-          }
-        }
+          // var _hmt = _hmt || [];
+          // var hm = document.createElement("script");
+          // hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js";
+          // hm.setAttribute("_extID", "309-313-7n1iAECE");
+          // var s = document.getElementsByTagName("script")[0]; 
+          // if (s && s.parentNode) {
+          //   s.parentNode.insertBefore(hm, s);
+          // }
+        // }
         
-        // 延迟初始化
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initHuazhiCloud, 3000);
-          });
-        } else {
-          setTimeout(initHuazhiCloud, 3000);
-        }
-      })();
+      //   // 延迟初始化
+      //   if (document.readyState === 'loading') {
+      //     document.addEventListener('DOMContentLoaded', function() {
+      //       setTimeout(initHuazhiCloud, 3000);
+      //     });
+      //   } else {
+      //     setTimeout(initHuazhiCloud, 3000);
+      //   }
+      // })();
     </script>
-
+<script type="text/partytown">
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
+  hm.setAttribute('_extID',"309-313-7n1iAECE");
+    var s = document.getElementsByTagName("script")[0]; 
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
     <FooterSection />
   </body>
 </html>
