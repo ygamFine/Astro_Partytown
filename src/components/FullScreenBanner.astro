@@ -1,0 +1,348 @@
+---
+// FullScreenBanner.astro
+---
+
+<section class="relative w-full h-screen overflow-hidden">
+  <!-- Banner Carousel -->
+  <div class="banner-carousel absolute inset-0">
+    <!-- Banner 1 -->
+    <div class="banner-slide active absolute inset-0">
+      <img 
+        src="/images/banner3.jpg" 
+        alt="Banner 1" 
+        class="w-full h-full object-cover"
+        loading="eager"
+      />
+    </div>
+    
+    <!-- Banner 2 -->
+    <div class="banner-slide absolute inset-0">
+      <img 
+        src="/images/banner222.jpg" 
+        alt="Banner 2" 
+        class="w-full h-full object-cover"
+        loading="lazy"
+      />
+    </div>
+    
+    <!-- Banner 3 -->
+    <div class="banner-slide absolute inset-0">
+      <img 
+        src="/images/banner.jpg" 
+        alt="Banner 3" 
+        class="w-full h-full object-cover"
+        loading="lazy"
+      />
+    </div>
+  </div>
+  
+  <!-- Progress Bar Controller -->
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center space-x-8 z-10">
+    <!-- PREV Label -->
+    <button id="prev-label" class="slide-label text-white text-lg font-medium tracking-wider flex items-center justify-center">PREV</button>
+    
+    <!-- Progress Bar Background -->
+    <div class="relative w-96 flex items-center justify-center" style="height: 2px; background-color: rgba(255,255,255,0.2)">
+      <!-- Progress Fill -->
+      <div id="progress-fill" class="absolute left-0 top-0 h-full" style="width: 0%; background-color: rgba(255,255,255,1)"></div>
+    </div>
+    
+    <!-- NEXT Label -->
+    <button id="next-label" class="slide-label text-white text-lg font-medium tracking-wider flex items-center justify-center">NEXT</button>
+  </div>
+  
+
+</section>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.banner-slide');
+  const progressFill = document.getElementById('progress-fill');
+  const totalSlides = slides.length;
+  const slideInterval = 3000; // 3 seconds
+  let autoSlideInterval: ReturnType<typeof setInterval> | undefined;
+  let progressInterval: ReturnType<typeof setInterval> | undefined;
+  let progressStartTime = 0;
+  let pausedProgress = 0; // Store paused progress
+  let isPaused = false;
+
+  // Show specific slide
+  function showSlide(index: number) {
+    // Remove active class from all slides
+    slides.forEach(slide => slide.classList.remove('active'));
+    
+    // Add active class to current slide
+    slides[index].classList.add('active');
+    
+    currentSlide = index;
+    resetProgress();
+  }
+
+  // Reset and start progress bar
+  function resetProgress() {
+    if (progressFill) {
+      progressFill.style.width = '0%';
+      console.log('Progress reset to 0%');
+    }
+    pausedProgress = 0;
+    stopProgress();
+    startProgress();
+  }
+
+  // Start progress bar animation
+  function startProgress() {
+    if (!progressFill) {
+      console.log('Progress fill element not found!');
+      return;
+    }
+    
+    console.log('Starting progress bar animation from:', pausedProgress);
+    isPaused = false;
+    progressStartTime = Date.now() - (pausedProgress * slideInterval / 100);
+    progressInterval = setInterval(() => {
+      const elapsed = Date.now() - progressStartTime;
+      const progress = Math.min((elapsed / slideInterval) * 100, 100);
+      progressFill.style.width = `${progress}%`;
+      
+      if (progress >= 100) {
+        stopProgress();
+      }
+    }, 16); // ~60fps for smooth animation
+  }
+
+  // Stop progress bar
+  function stopProgress() {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = undefined;
+    }
+  }
+
+  // Pause progress bar
+  function pauseProgress() {
+    if (progressInterval && !isPaused) {
+      const elapsed = Date.now() - progressStartTime;
+      pausedProgress = Math.min((elapsed / slideInterval) * 100, 100);
+      console.log('Pausing progress at:', pausedProgress);
+      isPaused = true;
+      stopProgress();
+    }
+  }
+
+  // Resume progress bar
+  function resumeProgress() {
+    if (isPaused) {
+      console.log('Resuming progress from:', pausedProgress);
+      startProgress();
+    }
+  }
+
+  // Next slide
+  function nextSlide() {
+    const next = (currentSlide + 1) % totalSlides;
+    showSlide(next);
+  }
+
+  // Previous slide
+  function prevSlide() {
+    const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(prev);
+  }
+
+  // Auto slide
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(nextSlide, slideInterval);
+    startProgress();
+  }
+
+  function stopAutoSlide() {
+    if (autoSlideInterval) {
+      clearInterval(autoSlideInterval);
+      autoSlideInterval = undefined;
+    }
+    stopProgress();
+  }
+
+  // Touch and swipe functionality
+  let startX = 0;
+  let startY = 0;
+  let isDragging = false;
+
+  function handleTouchStart(e: TouchEvent) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    stopAutoSlide();
+  }
+
+  function handleTouchMove(e: TouchEvent) {
+    if (!isDragging) return;
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = startX - currentX;
+    const diffY = startY - currentY;
+    
+    // Prevent vertical scrolling if horizontal swipe is detected
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      e.preventDefault();
+    }
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    if (!isDragging) return;
+    
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = startX - endX;
+    const diffY = startY - endY;
+    
+    // Only trigger if horizontal swipe is more significant than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        // Swiped left - next slide
+        nextSlide();
+      } else {
+        // Swiped right - previous slide
+        prevSlide();
+      }
+    }
+    
+    isDragging = false;
+    startAutoSlide(); // Restart auto slide
+  }
+
+  // Mouse drag functionality for desktop
+  function handleMouseDown(e: MouseEvent) {
+    startX = e.clientX;
+    startY = e.clientY;
+    isDragging = true;
+    stopAutoSlide();
+    e.preventDefault();
+  }
+
+  function handleMouseMove(e: MouseEvent) {
+    if (!isDragging) return;
+    e.preventDefault();
+  }
+
+  function handleMouseUp(e: MouseEvent) {
+    if (!isDragging) return;
+    
+    const endX = e.clientX;
+    const endY = e.clientY;
+    const diffX = startX - endX;
+    const diffY = startY - endY;
+    
+    // Only trigger if horizontal drag is more significant than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        // Dragged left - next slide
+        nextSlide();
+      } else {
+        // Dragged right - previous slide
+        prevSlide();
+      }
+    }
+    
+    isDragging = false;
+    startAutoSlide(); // Restart auto slide
+  }
+
+
+
+  // Add click listeners for PREV/NEXT labels
+  const prevLabel = document.getElementById('prev-label');
+  const nextLabel = document.getElementById('next-label');
+  
+  if (prevLabel) {
+    prevLabel.addEventListener('click', () => {
+      prevSlide();
+      stopAutoSlide();
+      startAutoSlide(); // Restart auto slide
+    });
+  }
+  
+  if (nextLabel) {
+    nextLabel.addEventListener('click', () => {
+      nextSlide();
+      stopAutoSlide();
+      startAutoSlide(); // Restart auto slide
+    });
+  }
+
+  // Add event listeners for touch and mouse events
+  const carousel = document.querySelector('.banner-carousel') as HTMLElement;
+  if (carousel) {
+    // Touch events
+    carousel.addEventListener('touchstart', handleTouchStart as EventListener, { passive: false });
+    carousel.addEventListener('touchmove', handleTouchMove as EventListener, { passive: false });
+    carousel.addEventListener('touchend', handleTouchEnd as EventListener, { passive: false });
+    
+    // Mouse events for desktop
+    carousel.addEventListener('mousedown', handleMouseDown as EventListener);
+    carousel.addEventListener('mousemove', handleMouseMove as EventListener);
+    carousel.addEventListener('mouseup', handleMouseUp as EventListener);
+    carousel.addEventListener('mouseleave', handleMouseUp as EventListener); // Handle mouse leaving area
+    
+
+  }
+
+  // Debug: Check if elements are found
+  console.log('Progress fill element:', progressFill);
+  console.log('Slides found:', slides.length);
+
+  // Start auto slide
+  startAutoSlide();
+</script>
+
+<style>
+  /* Ensure the banner takes full viewport height */
+  section {
+    min-height: 100vh;
+  }
+  
+  /* Banner slide transitions */
+  .banner-slide {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .banner-slide.active {
+    opacity: 1;
+  }
+  
+
+  
+  /* Add cursor pointer for carousel to indicate it's interactive */
+  .banner-carousel {
+    cursor: grab;
+  }
+  
+  .banner-carousel:active {
+    cursor: grabbing;
+  }
+  
+  /* Progress bar styling */
+  #progress-fill {
+    background: white;
+  }
+  
+  /* Slide labels styling */
+  .slide-label {
+    background: none;
+    border: none;
+    color: white;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .slide-label:hover {
+    opacity: 0.8;
+  }
+</style> 

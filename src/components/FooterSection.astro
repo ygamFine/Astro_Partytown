@@ -1,61 +1,226 @@
 ---
 import SocialIcons from './SocialIcons.astro';
 ---
-<footer class="bg-gray-800 text-gray-300 pt-16 pb-8 animate-fade-in">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Company Info -->
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold text-white">山东永安建设机械</h3>
-                <p class="text-gray-400 leading-relaxed max-w-sm">
-                    您值得信赖的工程机械伙伴。我们提供创新、耐用的解决方案，助您轻松应对各种挑战。
-                </p>
-                <SocialIcons />
-            </div>
+<footer class="bg-gray-800 text-gray-300 pt-16 pb-8">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+      
+      <!-- About Section -->
+      <div class="space-y-6">
+        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">About</h3>
+        <div class="space-y-4">
+          <a href="/about" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Advantages</a>
+        </div>
+        
+        <!-- Company Logo -->
+        <div class="mt-8">
+          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="h-16 w-auto">
+        </div>
+      </div>
 
-            <!-- Quick Links -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white">快速链接</h3>
-                <ul class="space-y-2">
-                    <li><a href="/about" class="text-gray-300 hover:text-white transition-colors">关于我们</a></li>
-                    <li><a href="/products" class="text-gray-300 hover:text-white transition-colors">产品中心</a></li>
-                    <li><a href="/news" class="text-gray-300 hover:text-white transition-colors">新闻中心</a></li>
-                    <li><a href="/contact" class="text-gray-300 hover:text-white transition-colors">联系我们</a></li>
-                </ul>
-            </div>
+      <!-- Products Section -->
+      <div class="space-y-6">
+        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">Products</h3>
+        <div class="space-y-4">
+          <a href="/products?category=挖掘装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Backhoe Loader</a>
+          <a href="/products/pile-driver" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Pile Driver</a>
+          <a href="/products?category=伸缩臂叉装车" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Telehandler</a>
+          <a href="/products?category=滑移装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Skid Steer Loader</a>
+          <a href="/products/telescopic-forklift" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Telescopic Forklift</a>
+          <a href="/products/truck-parts" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Truck Parts</a>
+        </div>
+      </div>
 
-            <!-- Product Categories -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white">核心产品</h3>
-                <ul class="space-y-2">
-                    <li><a href="/products/skid-steer-loader" class="text-gray-300 hover:text-white transition-colors">滑移装载机</a></li>
-                    <li><a href="/products/telescopic-forklift" class="text-gray-300 hover:text-white transition-colors">伸缩臂叉车</a></li>
-                    <li><a href="/products/backhoe-loader" class="text-gray-300 hover:text-white transition-colors">挖掘装载机</a></li>
-                </ul>
-            </div>
-            
-            <!-- Contact Info -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white">联系信息</h3>
-                <ul class="space-y-3">
-                    <li class="flex items-center">
-                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                        <span>山东省济宁市</span>
-                    </li>
-                    <li class="flex items-center">
-                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.518.759a11.03 11.03 0 004.28 4.28l.759-1.518a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
-                        <span>+86 123 4567 8900</span>
-                    </li>
-                    <li class="flex items-center">
-                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                        <a href="mailto:sales@huazhi-ind.com" class="hover:text-white transition-colors">sales@huazhi-ind.com</a>
-                    </li>
-                </ul>
-            </div>
+      <!-- Contact Us Section -->
+      <div class="space-y-6">
+        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">Contact Us</h3>
+        <div class="space-y-4">
+          <div class="text-3xl">
+            <p class="text-gray-300">Contact: <span class="text-white">Mr. Lei</span></p>
+          </div>
+          <div class="text-3xl">
+            <p class="text-gray-300">Phone: <span class="text-white">+8615069038877</span></p>
+          </div>
+          <div class="text-3xl">
+            <p class="text-gray-300">WhatsApp: <span class="text-white">+8618353161619</span></p>
+          </div>
+          <div class="text-3xl">
+            <p class="text-gray-300">Email: <span class="text-white">leiyang0501@163.com</span></p>
+          </div>
+          <div class="text-3xl">
+            <p class="text-gray-300">Address: <span class="text-white">No.12300 Longquan Road,</span></p>
+            <p class="text-white ml-0">Zaoyuan Street, Zhangqiu District, Jinan</p>
+            <p class="text-white ml-0">City, Shandong Province, China</p>
+          </div>
         </div>
 
-        <div class="container mx-auto px-4 mt-12 pt-8 border-t border-gray-700 text-center text-gray-400">
-            &copy; {new Date().getFullYear()} 山东永安建设机械集团有限公司. All Rights Reserved.
+        <!-- Social Icons -->
+        <div class="flex space-x-4 mt-6">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+            </svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </a>
         </div>
+      </div>
+
+      <!-- Request a Quote Form -->
+      <div class="space-y-6">
+        <div class="bg-gray-700 p-6 rounded-lg">
+          <h3 class="text-4xl font-bold text-white uppercase tracking-wide mb-6 text-center">Request a Quote</h3>
+          <form class="space-y-4" id="quote-form">
+            <input 
+              type="text" 
+              name="name" 
+              placeholder="Name" 
+              required
+              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+            />
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="Email" 
+              required
+              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+            />
+            <input 
+              type="tel" 
+              name="phone" 
+              placeholder="Telephone" 
+              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+            />
+            <textarea 
+              name="message" 
+              placeholder="Message" 
+              rows="4"
+              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+            ></textarea>
+            <button 
+              type="submit"
+              class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md transition-colors duration-200 uppercase tracking-wide"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
-</footer> 
+
+    <!-- Footer Bottom -->
+    <div class="mt-16 pt-8 border-t border-gray-700">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div class="text-center md:text-left">
+          <p class="text-gray-400 text-2xl">Copyright © 2024-2025 Shandong Yongan construction Machinery Group Co.,LTD All rights reserved.</p>
+          <p class="text-gray-400 mt-1 text-2xl">Technical Support: Huazhi</p>
+        </div>
+        
+        <!-- Language Selector -->
+                  <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM0Mjg1RjQiLz4KPHBhdGggZD0iTTIgMTBoMTZNMTAgMmExNS4zIDE1LjMgMCAwIDEgNCA5IDE1LjMgMTUuMyAwIDAgMS00IDkgMTUuMyAxNS4zIDAgMCAxLTQtOSAxNS4zIDE1LjMgMCAwIDEgNC05eiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=" alt="Globe" class="w-7 h-7">
+              <span class="text-white font-medium text-2xl">英</span>
+              <span class="text-gray-400 text-2xl">|</span>
+              <span class="text-gray-400 text-2xl">中</span>
+              <span class="text-gray-400 text-2xl">|</span>
+              <span class="text-gray-400 text-2xl">日</span>
+            </div>
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top Button - Fixed Position -->
+<button 
+  id="back-to-top"
+  class="fixed bottom-12 right-6 z-50 bg-gray-300 hover:bg-gray-400 text-red-600 hover:text-red-500 p-4 rounded-full shadow-lg transition-all duration-300"
+  aria-label="Back to top"
+>
+  <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+  </svg>
+</button>
+
+<script>
+  // Quote form submission
+  const quoteForm = document.getElementById('quote-form') as HTMLFormElement;
+  quoteForm?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Here you would typically send the data to your backend
+    console.log('Quote request:', data);
+    
+    // Show success message
+    alert('Thank you for your inquiry! We will contact you soon.');
+    
+    // Reset form
+    this.reset();
+  });
+
+  // Back to top functionality
+  document.getElementById('back-to-top')?.addEventListener('click', function() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // Show/hide back to top button based on scroll
+  window.addEventListener('scroll', function() {
+    const backToTop = document.getElementById('back-to-top');
+    if (backToTop) {
+      if (window.scrollY > 300) {
+        backToTop.style.opacity = '1';
+        backToTop.style.visibility = 'visible';
+      } else {
+        backToTop.style.opacity = '0';
+        backToTop.style.visibility = 'hidden';
+      }
+    }
+  });
+
+
+</script>
+
+<style>
+  #back-to-top {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  /* Form styling improvements */
+  #quote-form input:focus,
+  #quote-form textarea:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+  
+  /* Chat button animation */
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  #chat-button {
+    animation: pulse 2s infinite;
+  }
+  
+  #chat-button:hover {
+    animation: none;
+  }
+</style> 

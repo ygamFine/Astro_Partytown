@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Layout from '../layouts/Layout.astro';
+import FullScreenBanner from '../components/FullScreenBanner.astro';
 import HeroShowcase from '../components/HeroShowcase.astro';
 import ProductShowcase from '../components/ProductShowcase.astro';
 import CompanyIntro from '../components/CompanyIntro.astro';
@@ -13,6 +14,7 @@ import NewsCenter from '../components/NewsCenter.astro';
 
 <Layout title="专业滑移装载机制造商">
 	<main>
+		<FullScreenBanner />
 		<HeroShowcase />
 			<ProductShowcase />
 			<CompanyIntro />
