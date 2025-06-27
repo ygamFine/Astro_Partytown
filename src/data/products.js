@@ -1,8 +1,8 @@
 export const products = [
   {
     id: 1,
-    slug: "skid-steer-loader-s850",
-    name: "滑移装载机 YN-S850",
+    slug: "backhoe-loader-b120",
+    name: "滑移装载机 YN-S850232",
     category: "滑移装载机",
     image: "/product1.svg",
     price: "¥ 180,000",

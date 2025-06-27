@@ -7,8 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "echo '⚠️  Vercel适配器不支持astro preview' && echo '✅ 请使用: npm run preview:local' && echo '🌐 或者直接部署到Vercel测试'",
-    "preview:local": "npm run build && serve dist/client -l 4321",
-    "preview:static": "serve dist/client -l 4321",
+    "preview:local": "npm run build && serve dist -l 4321",
+    "preview:static": "serve dist -l 4321",
     "test:api": "node scripts/test-api.js",
     "astro": "astro"
   },
