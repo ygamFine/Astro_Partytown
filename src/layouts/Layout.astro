@@ -384,7 +384,9 @@ const {
         
         var s = document.getElementsByTagName("script")[0];
         if (s && s.parentNode) {
-        s.parentNode.insertBefore(hm, s);
+        setTimeout(() => {
+          s.parentNode.insertBefore(hm, s);
+        }, 1000);
         }
       })();
     </script>
