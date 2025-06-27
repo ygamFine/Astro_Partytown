@@ -50,6 +50,7 @@ const {
       
       html {
         scroll-behavior: smooth;
+        font-size: 10px; /* 根字体大小设置为10px */
       }
 
       body {
@@ -108,7 +109,18 @@ const {
         top: 0;
         z-index: 50;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
+      }
+      
+      /* 防止菜单闪动 */
+      .bg-red-600 {
+        visibility: visible !important;
+      }
+      
+      /* 确保导航菜单立即可见 */
+      nav[aria-label="主要导航"] {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
       
       /* Hero区域关键样式 */
       .hero-mobile {

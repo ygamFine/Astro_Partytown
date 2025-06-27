@@ -9,6 +9,7 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 10px; /* 根字体大小设置为10px，与tevismachinery.com保持一致 */
 }
 
 /* 移动端字体优化 - 使用系统字体 */
@@ -104,4 +105,23 @@ input, textarea, select {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* 响应式容器宽度 */
+@media (min-width: 1200px) {
+    .container {
+        width: 1200px;
+    }
+}
+
+@media (min-width: 1500px) {
+    .container {
+        width: 1400px;
+    }
+}
+
+@media (min-width: 1700px) {
+    body .container {
+        width: 1600px;
+    }
 } 

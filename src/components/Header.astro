@@ -1,46 +1,142 @@
 ---
 import StaticMenu from './StaticMenu.astro';
 ---
-<header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 shadow-md">
-  <div class="container mx-auto px-4">
-    <div class="flex items-center justify-between h-20">
-      <!-- Logo -->
-      <a href="/" class="flex items-center space-x-2">
-        <img src="/favicon.svg" alt="Yonan Logo" class="h-10 w-10">
-        <span class="text-2xl font-bold text-gray-800">永安重工</span>
-      </a>
-
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center space-x-8">
-        <StaticMenu />
-        <a href="/contact" class="bg-red-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-red-700 focus-visible-ring">
-          获取报价
+<!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
+<header class="relative z-50">
+  <!-- Main Header Row (Will scroll with page) -->
+  <div id="main-header" class="bg-gray-800 text-white">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between" style="height: 9.9rem;">
+        <!-- TEVIS Logo -->
+        <a href="/" class="flex items-center">
+          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="h-23 w-auto">
         </a>
-      </div>
 
-      <!-- Mobile Menu Button -->
-      <div class="md:hidden">
-        <button id="mobile-menu-button" class="p-2 text-gray-800 focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
-          <svg id="menu-open-icon" class="h-8 w-8" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-          <svg id="menu-close-icon" class="h-8 w-8 hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+        <!-- Desktop Contact Info & Quote Button -->
+        <div class="hidden lg:flex items-center space-x-8">
+          <!-- Contact Items Group -->
+          <div class="flex items-center space-x-6">
+            <!-- Contact Details -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+              </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">Contact details:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">+86 156 2892 0918</p>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-l border-gray-600 h-12"></div>
+            
+            <!-- Phone/WhatsApp -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+              </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">Phone/Whatsapp:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">+86 183 5318 1619</p>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-l border-gray-600 h-12"></div>
+            
+            <!-- Email -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">E-mail:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">tevis@yonancn.com</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Request Quote Button -->
+          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-4 ml-3 font-bold transition-colors duration-200 flex items-center justify-center space-x-3" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            <span>REQUEST A QUOTE</span>
+          </a>
+        </div>
+
+        <!-- Medium screens - Simplified contact -->
+        <div class="hidden md:flex lg:hidden items-center space-x-3 text-xs">
+          <div class="flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+            <span class="text-white font-medium text-xs">+86 156 2892 0918</span>
+          </div>
+          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-3 font-bold transition-colors duration-200 flex items-center justify-center" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+            <span>REQUEST A QUOTE</span>
+          </a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+          <button id="mobile-menu-button" class="p-2 text-white focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
+            <svg id="menu-open-icon" class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg id="menu-close-icon" class="h-6 w-6 hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar (Will become sticky when banner scrolls away) -->
+  <div id="nav-menu" class="bg-red-600 border-red-500" style="color: #e81a1a; box-shadow: 0 7px 16px 0 rgba(0, 0, 0, .64); transform: translateY(0); transition: transform 0.3s ease-in-out;">
+    <div class="container mx-auto px-4">
+      <div class="hidden md:flex items-center justify-center" style="height: 6rem;">
+        <StaticMenu />
       </div>
     </div>
   </div>
 
   <!-- Mobile Navigation Menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-lg">
+  <div id="mobile-menu" class="hidden md:hidden bg-gray-800 border-gray-600 relative z-40">
     <nav aria-label="移动端导航" class="px-4 pt-2 pb-4 space-y-1">
       <div id="mobile-smart-menu" class="space-y-1">
         <!-- 移动端菜单将通过JavaScript动态加载 -->
       </div>
-      <a href="/contact" class="block w-full text-center bg-red-600 text-white mt-4 px-5 py-3 rounded-lg font-bold focus-visible-ring touch-manipulation">
-        获取报价
-      </a>
+      <!-- Mobile Contact Information -->
+      <div class="mt-4 pt-4 border-gray-600 space-y-2">
+        <div class="text-sm text-gray-300 space-y-2">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+            <span class="text-white">+86 156 2892 0918</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+            <span class="text-white">+86 159 5318 1619</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            <span class="text-white">tevis@yonancn.com</span>
+          </div>
+        </div>
+        <a href="/contact" class="block mx-auto bg-red-600 text-white mt-4 px-5 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors" style="height: 5.9rem; width: 24.2rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+          REQUEST A QUOTE
+        </a>
+      </div>
     </nav>
   </div>
 </header>
@@ -83,10 +179,95 @@ import StaticMenu from './StaticMenu.astro';
     }
   }
 
+  function initScrollHeader() {
+    const mainHeader = document.getElementById('main-header');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (!mainHeader || !navMenu) return;
+    
+    let lastScrollY = window.scrollY;
+    const headerHeight = mainHeader.offsetHeight; // 主banner高度
+    let isMenuFixed = false; // 跟踪菜单状态
+    
+    function handleScroll() {
+      const currentScrollY = window.scrollY;
+      
+      // 再次检查元素是否存在
+      if (!mainHeader || !navMenu) return;
+      
+      // 当滚动超过banner高度时，隐藏banner并固定菜单
+      if (currentScrollY > headerHeight && !isMenuFixed) {
+        // 隐藏主banner
+        mainHeader.style.display = 'none';
+        
+        // 临时禁用过渡，快速设置初始位置
+        navMenu.style.transition = 'none';
+        navMenu.style.position = 'fixed';
+        navMenu.style.top = '0';
+        navMenu.style.left = '0';
+        navMenu.style.right = '0';
+        navMenu.style.zIndex = '50';
+        navMenu.style.width = '100%';
+        navMenu.style.transform = 'translateY(-100%)';
+        
+        // 强制重绘，然后启用过渡并触发滑入动画
+        navMenu.offsetHeight; // 强制重绘
+        navMenu.style.transition = 'transform 0.3s ease-in-out';
+        
+        // 稍微延迟确保过渡设置生效
+        requestAnimationFrame(() => {
+          navMenu.style.transform = 'translateY(0)';
+        });
+        
+        isMenuFixed = true;
+      } else if (currentScrollY <= headerHeight && isMenuFixed) {
+        // 显示主banner
+        mainHeader.style.display = 'block';
+        
+        // 直接恢复菜单常规定位，无动画
+        navMenu.style.transition = 'none';
+        navMenu.style.position = 'relative';
+        navMenu.style.top = 'auto';
+        navMenu.style.left = 'auto';
+        navMenu.style.right = 'auto';
+        navMenu.style.width = 'auto';
+        navMenu.style.transform = 'translateY(0)';
+        
+        // 恢复过渡设置
+        requestAnimationFrame(() => {
+          navMenu.style.transition = 'transform 0.3s ease-in-out';
+        });
+        
+        isMenuFixed = false;
+      }
+      
+      lastScrollY = currentScrollY;
+    }
+    
+    // 监听滚动事件，使用节流优化性能
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    
+    // 初始状态检查
+    handleScroll();
+  }
+
   // DOM就绪后初始化
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileMenu);
+    document.addEventListener('DOMContentLoaded', () => {
+      initMobileMenu();
+      initScrollHeader();
+    });
   } else {
     initMobileMenu();
+    initScrollHeader();
   }
 </script> 
