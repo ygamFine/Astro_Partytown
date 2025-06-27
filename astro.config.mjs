@@ -11,9 +11,9 @@ export default defineConfig({
     tailwind(),
     partytown({
       // 配置Partytown
-          config: {
+      config: {
         // 允许的第三方脚本域名
-        forward: ['dataLayer.push', 'gtag', '_hmt.push'],
+        forward: ['dataLayer.push', 'gtag', '_hmt.push', 'HzChat'],
         // 调试模式（生产环境可以关闭）
         debug: false,
         // 允许的脚本域名
@@ -22,9 +22,9 @@ export default defineConfig({
           if (url.hostname === 'www.googletagmanager.com') {
             return url;
           }
-          // 华智云客服
-          if (url.hostname === 'cdn.huazhi.cloud') {
-          return url;
+          // 华智云客服 - 更新为正确的域名
+          if (url.hostname === 'oss.huazhi.cloud') {
+            return url;
           }
           // 其他第三方脚本
           return url;
