@@ -5,14 +5,18 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: {
+          600: '#dc2626', // 主品牌色
+          700: '#b91c1c',
+        },
+      },
       animation: {
         'fade-in': 'fadeIn 1s ease-out',
         'slide-up': 'slideUp 1s cubic-bezier(0.4,0,0.2,1)',
         'slide-in-left': 'slideInLeft 1s cubic-bezier(0.4,0,0.2,1)',
         'slide-in-right': 'slideInRight 1s cubic-bezier(0.4,0,0.2,1)',
         'bounce-in': 'bounceIn 1.2s cubic-bezier(0.68,-0.55,0.265,1.55)',
-        'float': 'float 3s ease-in-out infinite',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
       },
       keyframes: {
@@ -38,10 +42,6 @@ module.exports = {
           '70%': { transform: 'scale(0.9)' },
           '100%': { opacity: 1, transform: 'scale(1)' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
         glow: {
           '0%': { boxShadow: '0 0 5px rgba(230, 0, 18, 0.5)' },
           '100%': { boxShadow: '0 0 20px rgba(230, 0, 18, 0.8)' },
@@ -50,8 +50,22 @@ module.exports = {
     },
   },
   plugins: [],
+  // 性能优化配置
   corePlugins: {
-    preflight: true,
+    preflight: true, // 保留重置样式
+    container: true,
+    // 禁用不常用的插件以减少CSS大小
+    accessibility: false,
+    backgroundOpacity: false,
+    borderOpacity: false,
+    boxShadowColor: false,
+    divideOpacity: false,
+    placeholderOpacity: false,
+    ringOpacity: false,
+    textOpacity: false,
+    // 禁用过时的功能
+    float: false,
+    clear: false,
   },
 }
 

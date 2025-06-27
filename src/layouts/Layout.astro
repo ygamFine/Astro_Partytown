@@ -289,16 +289,88 @@ const {
       .space-x-4 > :not([hidden]) ~ :not([hidden]) {
         margin-left: 1rem;
       }
+
+      /* 首屏加载指示器 */
+      .loading-placeholder {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      /* 隐藏非关键内容直到CSS加载完成 */
+      .defer-content {
+        opacity: 0;
+        transition: opacity 0.3s ease-in;
+      }
+
+      .defer-content.loaded {
+        opacity: 1;
+      }
     </style>
 
     <title>{title}</title>
   </head>
   <body>
-      <Header />
+    <Header />
     
     <main id="main-content">
       <slot />
     </main>
+
+    <!-- 延迟加载非关键CSS - 避免阻塞渲染 -->
+    <script>
+      // 页面加载完成后再加载非关键CSS
+      (function() {
+        function loadNonCriticalCSS() {
+          // 智能检测当前页面需要的CSS
+          var currentPath = window.location.pathname;
+          var cssToLoad = [];
+          
+          // 根据页面路径确定需要加载的CSS
+          if (currentPath.indexOf('/about') !== -1) {
+            cssToLoad.push('/_astro/about.DIuhrmay.css');
+          } else if (currentPath.indexOf('/products') !== -1) {
+            cssToLoad.push('/_astro/index.0KiwQODs.css');
+          } else if (currentPath.indexOf('/news') !== -1) {
+            cssToLoad.push('/_astro/index.0KiwQODs.css');
+          } else if (currentPath.indexOf('/contact') !== -1) {
+            cssToLoad.push('/_astro/index.0KiwQODs.css');
+          } else {
+            // 首页和其他页面
+            cssToLoad.push('/_astro/index.0KiwQODs.css');
+          }
+          
+                     // 延迟加载CSS文件
+          for (var i = 0; i < cssToLoad.length; i++) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = cssToLoad[i];
+            link.media = 'print';
+            link.onload = function() {
+              link.media = 'all';
+            };
+            document.head.appendChild(link);
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(loadNonCriticalCSS, 100);
+          });
+        } else {
+          setTimeout(loadNonCriticalCSS, 100);
+        }
+      })();
+    </script>
 
     <!-- Google Analytics - 使用Partytown在Web Worker中运行 -->
     <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>

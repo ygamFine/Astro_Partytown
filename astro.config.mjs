@@ -11,7 +11,7 @@ export default defineConfig({
     tailwind(),
     partytown({
       // 配置Partytown
-      config: {
+          config: {
         // 允许的第三方脚本域名
         forward: ['dataLayer.push', 'gtag', '_hmt.push'],
         // 调试模式（生产环境可以关闭）
@@ -24,7 +24,7 @@ export default defineConfig({
           }
           // 华智云客服
           if (url.hostname === 'cdn.huazhi.cloud') {
-            return url;
+          return url;
           }
           // 其他第三方脚本
           return url;
