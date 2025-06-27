@@ -34,8 +34,10 @@ const {
 
     <!-- LCP关键图片预加载 - 最高优先级 -->
     <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)">
-    <!-- 移动端Banner预加载 -->
-    <link rel="preload" href="/shouji-banner1.jpg" as="image" fetchpriority="high" media="(max-width: 768px)">
+    <!-- 移动端Banner预加载 - WebP优先 -->
+    <link rel="preload" href="/shouji-banner1.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
+    <!-- 移动端Banner预加载 - JPEG后备 -->
+    <link rel="preload" href="/shouji-banner1.jpg" as="image" type="image/jpeg" fetchpriority="high" media="(max-width: 768px) and (not (image-type: webp))">
 
     <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
     <style>
