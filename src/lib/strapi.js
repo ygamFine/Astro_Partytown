@@ -42,36 +42,7 @@ export async function getMenus() {
   }
 }
 
-/**
- * 客户端获取最新菜单数据 (用于实时更新)
- */
-export async function getMenusClient() {
-  try {
-    const response = await fetch(`${STRAPI_BASE_URL}/menus`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      cache: 'no-cache'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    
-    return data.data?.map(item => ({
-      name: item.name,
-      path: item.path,
-      publishedAt: item.publishedAt
-    })) || [];
-    
-  } catch (error) {
-    console.error('❌ 客户端获取菜单失败:', error);
-    return [];
-  }
-}
+// SSG模式下不需要客户端实时更新，已删除getMenusClient方法
 
 /**
  * 测试API连接 (构建时)

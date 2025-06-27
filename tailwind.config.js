@@ -17,7 +17,6 @@ module.exports = {
         'slide-in-left': 'slideInLeft 1s cubic-bezier(0.4,0,0.2,1)',
         'slide-in-right': 'slideInRight 1s cubic-bezier(0.4,0,0.2,1)',
         'bounce-in': 'bounceIn 1.2s cubic-bezier(0.68,-0.55,0.265,1.55)',
-        'glow': 'glow 2s ease-in-out infinite alternate',
       },
       keyframes: {
         fadeIn: {
@@ -42,10 +41,7 @@ module.exports = {
           '70%': { transform: 'scale(0.9)' },
           '100%': { opacity: 1, transform: 'scale(1)' },
         },
-        glow: {
-          '0%': { boxShadow: '0 0 5px rgba(230, 0, 18, 0.5)' },
-          '100%': { boxShadow: '0 0 20px rgba(230, 0, 18, 0.8)' },
-        },
+
       },
     },
   },

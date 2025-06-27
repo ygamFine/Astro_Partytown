@@ -6,9 +6,7 @@ import { getMenus } from '../lib/strapi.js';
 let menuItems = [];
 try {
   menuItems = await getMenus();
-  console.log(`✅ 构建时获取到 ${menuItems.length} 个菜单项`);
 } catch (error) {
-  console.warn('⚠️ 构建时获取菜单失败，使用默认菜单:', error.message);
   // 默认菜单作为降级方案
   menuItems = [
     { name: '首页', path: '/' },
