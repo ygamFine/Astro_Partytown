@@ -1,327 +1,482 @@
 ---
-// FullScreenBanner.astro - 移动端优化版本
+// FullScreenBanner.astro
 ---
 
-<!-- Preload critical banner images for LCP optimization -->
-<link rel="preload" as="image" href="/images/optimized/banner3-optimized.webp" type="image/webp" fetchpriority="high">
-<link rel="preload" as="image" href="/images/optimized/banner3.jpg" type="image/jpeg" fetchpriority="high">
+<!-- Preload critical banner image - WebP优化版本 -->
+<link rel="preload" as="image" href="/images/optimized/banner3.webp" type="image/webp" fetchpriority="high">
 
-<section class="banner-container" id="banner-section">
+<section class="relative w-full overflow-hidden mobile-full-width" id="mobile-banner" style="height: 400px;">
   <!-- Banner Carousel -->
-  <div class="banner-carousel">
-    <!-- Banner 1 - LCP关键元素 -->
-    <div class="banner-slide active">
-      <picture>
-        <source media="(max-width: 768px)" srcset="/images/optimized/banner3-mobile.webp" type="image/webp">
-        <source srcset="/images/optimized/banner3-optimized.webp" type="image/webp">
-        <img 
-          src="/images/optimized/banner3.jpg" 
-          alt="Banner 1" 
-          class="banner-image"
-          loading="eager"
-          fetchpriority="high"
-          decoding="sync"
-          width="1920"
-          height="400"
-          style="content-visibility: auto;"
-        />
-      </picture>
+  <div class="banner-carousel absolute inset-0">
+    <!-- Banner 1 -->
+    <div class="banner-slide active absolute inset-0">
+      <img 
+        src="/images/optimized/banner3.webp" 
+        alt="Banner 1" 
+        class="w-full h-full object-cover"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        width="1920"
+        height="400"
+      />
     </div>
     
     <!-- Banner 2 -->
-    <div class="banner-slide">
-      <picture>
-        <source media="(max-width: 768px)" srcset="/images/optimized/banner222-mobile.webp" type="image/webp">
-        <source srcset="/images/optimized/banner222.webp" type="image/webp">
-        <img 
-          src="/images/optimized/banner222.jpg" 
-          alt="Banner 2" 
-          class="banner-image"
-          loading="lazy"
-          decoding="async"
-          width="1920"
-          height="400"
-        />
-      </picture>
+    <div class="banner-slide absolute inset-0">
+      <img 
+        src="/images/optimized/banner222.webp" 
+        alt="Banner 2" 
+        class="w-full h-full object-cover"
+        loading="lazy"
+        decoding="async"
+        width="1920"
+        height="400"
+      />
     </div>
     
     <!-- Banner 3 -->
-    <div class="banner-slide">
-      <picture>
-        <source media="(max-width: 768px)" srcset="/images/optimized/banner-mobile.webp" type="image/webp">
-        <source srcset="/images/optimized/banner.webp" type="image/webp">
-        <img 
-          src="/images/optimized/banner.jpg" 
-          alt="Banner 3" 
-          class="banner-image"
-          loading="lazy"
-          decoding="async"
-          width="1920"
-          height="400"
-        />
-      </picture>
+    <div class="banner-slide absolute inset-0">
+      <img 
+        src="/images/optimized/banner.webp" 
+        alt="Banner 3" 
+        class="w-full h-full object-cover"
+        loading="lazy"
+        decoding="async"
+        width="1920"
+        height="400"
+      />
     </div>
   </div>
   
-  <!-- Desktop Progress Bar Controller -->
-  <div class="progress-controller">
-    <button id="prev-label" class="slide-label">PREV</button>
-    <div class="progress-bar">
-      <div id="progress-fill" class="progress-fill"></div>
+  <!-- Progress Bar Controller - 在移动端隐藏 -->
+  <div class="progress-controller absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center space-x-8 z-10 hidden md:flex">
+    <!-- PREV Label -->
+    <button id="prev-label" class="slide-label text-white text-lg font-medium tracking-wider flex items-center justify-center">PREV</button>
+    
+    <!-- Progress Bar Background -->
+    <div class="relative w-96 flex items-center justify-center" style="height: 2px; background-color: rgba(255,255,255,0.2)">
+      <!-- Progress Fill -->
+      <div id="progress-fill" class="absolute left-0 top-0 h-full" style="width: 0%; background-color: rgba(255,255,255,1)"></div>
     </div>
-    <button id="next-label" class="slide-label">NEXT</button>
+    
+    <!-- NEXT Label -->
+    <button id="next-label" class="slide-label text-white text-lg font-medium tracking-wider flex items-center justify-center">NEXT</button>
   </div>
+
+
+  
+
 </section>
 
 <script>
-  class BannerCarousel {
-    private currentSlide = 0;
-    private slides: NodeListOf<HTMLElement>;
-    private progressFill: HTMLElement | null;
-    private totalSlides: number;
-    private slideInterval = 3000;
-    private autoSlideTimer: ReturnType<typeof setInterval> | null = null;
-    private progressTimer: ReturnType<typeof requestAnimationFrame> | null = null;
-    private progressStartTime = 0;
-    private pausedProgress = 0;
-    private isPaused = false;
-    private isDragging = false;
-    private startX = 0;
-    private startY = 0;
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.banner-slide');
+  const progressFill = document.getElementById('progress-fill');
+  const totalSlides = slides.length;
+  const slideInterval = 3000; // 3 seconds
+  let autoSlideInterval: ReturnType<typeof setInterval> | undefined;
+  let progressInterval: ReturnType<typeof setInterval> | undefined;
+  let progressStartTime = 0;
+  let pausedProgress = 0; // Store paused progress
+  let isPaused = false;
 
-    constructor() {
-      this.slides = document.querySelectorAll('.banner-slide');
-      this.progressFill = document.getElementById('progress-fill');
-      this.totalSlides = this.slides.length;
-      this.init();
-    }
-
-    private init() {
-      this.setupEventListeners();
-      this.startAutoSlide();
-    }
-
-    private setupEventListeners() {
-      // Desktop controls
-      const prevBtn = document.getElementById('prev-label');
-      const nextBtn = document.getElementById('next-label');
-      
-      prevBtn?.addEventListener('click', () => this.prevSlide());
-      nextBtn?.addEventListener('click', () => this.nextSlide());
-
-      // Touch events for mobile
-      const carousel = document.querySelector('.banner-carousel') as HTMLElement;
-      if (carousel) {
-        carousel.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-        carousel.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        carousel.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
-        
-        // Mouse events for desktop
-        carousel.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        carousel.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        carousel.addEventListener('mouseup', this.handleMouseUp.bind(this));
-        carousel.addEventListener('mouseleave', this.handleMouseUp.bind(this));
-      }
-
-      // Visibility change handling
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          this.stopAutoSlide();
+  // Show specific slide
+  function showSlide(index: number) {
+    if (window.innerWidth <= 768) {
+      // 移动端：使用display控制，高度自适应
+      slides.forEach((slide, i) => {
+        const slideElement = slide as HTMLElement;
+        slideElement.style.display = i === index ? 'block' : 'none';
+        if (i === index) {
+          slide.classList.add('active');
         } else {
-          this.startAutoSlide();
+          slide.classList.remove('active');
         }
       });
+    } else {
+      // 桌面端：使用opacity控制
+      slides.forEach(slide => slide.classList.remove('active'));
+      slides[index].classList.add('active');
     }
+    
+    currentSlide = index;
+    resetProgress();
+  }
 
-    private showSlide(index: number) {
-      this.slides.forEach((slide, i) => {
-        slide.classList.toggle('active', i === index);
-      });
+  // Reset and start progress bar
+  function resetProgress() {
+    if (progressFill) {
+      progressFill.style.width = '0%';
+      console.log('Progress reset to 0%');
+    }
+    pausedProgress = 0;
+    stopProgress();
+    startProgress();
+  }
+
+  // Start progress bar animation - 优化性能
+  function startProgress() {
+    if (!progressFill) return;
+    
+    isPaused = false;
+    progressStartTime = Date.now() - (pausedProgress * slideInterval / 100);
+    
+    // 使用requestAnimationFrame替代setInterval，性能更好
+    function updateProgress() {
+      if (isPaused || !progressFill) return;
       
-      this.currentSlide = index;
-      this.resetProgress();
-    }
-
-    private nextSlide() {
-      const next = (this.currentSlide + 1) % this.totalSlides;
-      this.showSlide(next);
-    }
-
-    private prevSlide() {
-      const prev = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-      this.showSlide(prev);
-    }
-
-    private startAutoSlide() {
-      this.stopAutoSlide();
-      this.autoSlideTimer = setInterval(() => this.nextSlide(), this.slideInterval);
-      this.startProgress();
-    }
-
-    private stopAutoSlide() {
-      if (this.autoSlideTimer) {
-        clearInterval(this.autoSlideTimer);
-        this.autoSlideTimer = null;
-      }
-      this.stopProgress();
-    }
-
-    private startProgress() {
-      if (!this.progressFill) return;
+      const elapsed = Date.now() - progressStartTime;
+      const progress = Math.min((elapsed / slideInterval) * 100, 100);
+      progressFill.style.width = `${progress}%`;
       
-      this.isPaused = false;
-      this.progressStartTime = Date.now() - (this.pausedProgress * this.slideInterval / 100);
-      
-      const updateProgress = () => {
-        if (this.isPaused || !this.progressFill) return;
-        
-        const elapsed = Date.now() - this.progressStartTime;
-        const progress = Math.min((elapsed / this.slideInterval) * 100, 100);
-        
-        this.progressFill.style.transform = `scaleX(${progress / 100})`;
-        
-        if (progress >= 100) {
-          this.stopProgress();
-        } else {
-          this.progressTimer = requestAnimationFrame(updateProgress);
-        }
-      };
-      
-      this.progressTimer = requestAnimationFrame(updateProgress);
-    }
-
-    private stopProgress() {
-      if (this.progressTimer) {
-        cancelAnimationFrame(this.progressTimer);
-        this.progressTimer = null;
+      if (progress >= 100) {
+        stopProgress();
+      } else {
+        requestAnimationFrame(updateProgress);
       }
     }
+    
+    requestAnimationFrame(updateProgress);
+  }
 
-    private resetProgress() {
-      if (this.progressFill) {
-        this.progressFill.style.transform = 'scaleX(0)';
-      }
-      this.pausedProgress = 0;
-      this.stopProgress();
-      this.startProgress();
-    }
-
-    private handleTouchStart(e: TouchEvent) {
-      this.startX = e.touches[0].clientX;
-      this.startY = e.touches[0].clientY;
-      this.isDragging = true;
-      this.stopAutoSlide();
-    }
-
-    private handleTouchMove(e: TouchEvent) {
-      if (!this.isDragging) return;
-      
-      const currentX = e.touches[0].clientX;
-      const currentY = e.touches[0].clientY;
-      const diffX = this.startX - currentX;
-      const diffY = this.startY - currentY;
-      
-      // Prevent vertical scrolling if horizontal swipe is detected
-      if (Math.abs(diffX) > Math.abs(diffY)) {
-        e.preventDefault();
-      }
-    }
-
-    private handleTouchEnd(e: TouchEvent) {
-      if (!this.isDragging) return;
-      
-      const endX = e.changedTouches[0].clientX;
-      const diffX = this.startX - endX;
-      
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          this.nextSlide();
-        } else {
-          this.prevSlide();
-        }
-      }
-      
-      this.isDragging = false;
-      this.startAutoSlide();
-    }
-
-    private handleMouseDown(e: MouseEvent) {
-      this.startX = e.clientX;
-      this.isDragging = true;
-      this.stopAutoSlide();
-      e.preventDefault();
-    }
-
-    private handleMouseMove(e: MouseEvent) {
-      if (!this.isDragging) return;
-      e.preventDefault();
-    }
-
-    private handleMouseUp(e: MouseEvent) {
-      if (!this.isDragging) return;
-      
-      const endX = e.clientX;
-      const diffX = this.startX - endX;
-      
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          this.nextSlide();
-        } else {
-          this.prevSlide();
-        }
-      }
-      
-      this.isDragging = false;
-      this.startAutoSlide();
+  // Stop progress bar
+  function stopProgress() {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = undefined;
     }
   }
 
-  // Initialize when DOM is ready
+  // Pause progress bar
+  function pauseProgress() {
+    if (!isPaused) {
+      const elapsed = Date.now() - progressStartTime;
+      pausedProgress = Math.min((elapsed / slideInterval) * 100, 100);
+      isPaused = true;
+    }
+  }
+
+  // Resume progress bar
+  function resumeProgress() {
+    if (isPaused) {
+      startProgress();
+    }
+  }
+
+  // Next slide
+  function nextSlide() {
+    const next = (currentSlide + 1) % totalSlides;
+    showSlide(next);
+  }
+
+  // Previous slide
+  function prevSlide() {
+    const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(prev);
+  }
+
+  // Auto slide
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(nextSlide, slideInterval);
+    startProgress();
+  }
+
+  function stopAutoSlide() {
+    if (autoSlideInterval) {
+      clearInterval(autoSlideInterval);
+      autoSlideInterval = undefined;
+    }
+    stopProgress();
+  }
+
+  // Touch and swipe functionality
+  let startX = 0;
+  let startY = 0;
+  let isDragging = false;
+
+  function handleTouchStart(e: TouchEvent) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    stopAutoSlide();
+  }
+
+  function handleTouchMove(e: TouchEvent) {
+    if (!isDragging) return;
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = startX - currentX;
+    const diffY = startY - currentY;
+    
+    // Prevent vertical scrolling if horizontal swipe is detected
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      e.preventDefault();
+    }
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    if (!isDragging) return;
+    
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = startX - endX;
+    const diffY = startY - endY;
+    
+    // Only trigger if horizontal swipe is more significant than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        // Swiped left - next slide
+        nextSlide();
+      } else {
+        // Swiped right - previous slide
+        prevSlide();
+      }
+    }
+    
+    isDragging = false;
+    startAutoSlide(); // Restart auto slide
+  }
+
+  // Mouse drag functionality for desktop
+  function handleMouseDown(e: MouseEvent) {
+    startX = e.clientX;
+    startY = e.clientY;
+    isDragging = true;
+    stopAutoSlide();
+    e.preventDefault();
+  }
+
+  function handleMouseMove(e: MouseEvent) {
+    if (!isDragging) return;
+    e.preventDefault();
+  }
+
+  function handleMouseUp(e: MouseEvent) {
+    if (!isDragging) return;
+    
+    const endX = e.clientX;
+    const endY = e.clientY;
+    const diffX = startX - endX;
+    const diffY = startY - endY;
+    
+    // Only trigger if horizontal drag is more significant than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        // Dragged left - next slide
+        nextSlide();
+      } else {
+        // Dragged right - previous slide
+        prevSlide();
+      }
+    }
+    
+    isDragging = false;
+    startAutoSlide(); // Restart auto slide
+  }
+
+
+
+  // Add click listeners for PREV/NEXT labels
+  const prevLabel = document.getElementById('prev-label');
+  const nextLabel = document.getElementById('next-label');
+  
+  if (prevLabel) {
+    prevLabel.addEventListener('click', () => {
+      prevSlide();
+      stopAutoSlide();
+      startAutoSlide(); // Restart auto slide
+    });
+  }
+  
+  if (nextLabel) {
+    nextLabel.addEventListener('click', () => {
+      nextSlide();
+      stopAutoSlide();
+      startAutoSlide(); // Restart auto slide
+    });
+  }
+
+  // Add event listeners for touch and mouse events
+  const carousel = document.querySelector('.banner-carousel') as HTMLElement;
+  if (carousel) {
+    // Touch events
+    carousel.addEventListener('touchstart', handleTouchStart as EventListener, { passive: false });
+    carousel.addEventListener('touchmove', handleTouchMove as EventListener, { passive: false });
+    carousel.addEventListener('touchend', handleTouchEnd as EventListener, { passive: false });
+    
+    // Mouse events for desktop
+    carousel.addEventListener('mousedown', handleMouseDown as EventListener);
+    carousel.addEventListener('mousemove', handleMouseMove as EventListener);
+    carousel.addEventListener('mouseup', handleMouseUp as EventListener);
+    carousel.addEventListener('mouseleave', handleMouseUp as EventListener); // Handle mouse leaving area
+    
+
+  }
+
+  // Add click listeners for mobile indicators
+  const indicators = document.querySelectorAll('.indicator');
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => {
+      showSlide(index);
+      stopAutoSlide();
+      startAutoSlide(); // Restart auto slide
+    });
+  });
+
+  // 确保移动端100%宽度显示，高度自适应
+  function ensureMobileFullWidth() {
+    if (window.innerWidth <= 768) {
+      const banner = document.getElementById('mobile-banner') as HTMLElement;
+      
+      if (banner) {
+        banner.style.cssText = `
+          position: relative !important;
+          width: 100vw !important;
+          height: auto !important;
+          left: 50% !important;
+          margin-left: -50vw !important;
+          margin-right: -50vw !important;
+          padding: 0 !important;
+          max-width: none !important;
+          overflow: hidden !important;
+        `;
+        
+        // 设置第一张图片显示，其他隐藏
+        const slides = banner.querySelectorAll('.banner-slide') as NodeListOf<HTMLElement>;
+        slides.forEach((slide, index) => {
+          slide.style.display = index === 0 ? 'block' : 'none';
+        });
+      }
+    }
+  }
+
+  // 页面加载时执行 - 延迟非关键操作
   function initBanner() {
-    new BannerCarousel();
+    ensureMobileFullWidth();
+    window.addEventListener('resize', ensureMobileFullWidth);
+    
+    // 延迟启动自动播放，让页面先渲染
+    requestAnimationFrame(() => {
+      startAutoSlide();
+    });
   }
-
+  
+  // 使用更高效的初始化方式
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initBanner);
   } else {
-    initBanner();
+    // 如果DOM已加载，延迟执行避免阻塞渲染
+    setTimeout(initBanner, 0);
   }
 </script>
 
 <style>
-  /* 基础容器样式 - 优化性能 */
-  .banner-container {
-    position: relative;
+  /* Banner基础样式 */
+  section {
     width: 100%;
     height: 400px;
-    overflow: hidden;
-    background-color: #f3f4f6; /* 预设背景色避免CLS */
-    contain: layout style; /* 性能优化 */
   }
-
-  /* 移动端优化 */
-  @media (max-width: 768px) {
-    .banner-container {
-      width: 100vw;
-      height: 250px;
-      left: 50%;
-      margin-left: -50vw;
-      position: relative;
-    }
+  
+  /* 移动端全屏显示 - 突破父容器限制 */
+  .mobile-full-width {
+    box-sizing: border-box;
   }
-
-  /* 轮播容器 */
-  .banner-carousel {
-    position: relative;
+  
+  /* Banner slide transitions - 使用transform优化性能 */
+  .banner-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transform: translateZ(0); /* 启用硬件加速 */
+    transition: opacity 0.8s ease-in-out;
+    will-change: opacity; /* 提示浏览器优化 */
+  }
+  
+  .banner-slide.active {
+    opacity: 1;
+  }
+  
+  /* Banner images - 确保移动端完全覆盖 */
+  .banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: translateZ(0); /* 硬件加速 */
+    backface-visibility: hidden; /* 避免重绘 */
+  }
+  
+  /* 移动端优化 - 宽度100%，高度自适应 */
+  @media (max-width: 768px) {
+    .mobile-full-width {
+      position: relative !important;
+      width: 100vw !important;
+      height: auto !important;
+      left: 50% !important;
+      margin-left: -50vw !important;
+      margin-right: -50vw !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      max-width: none !important;
+      z-index: 1 !important;
+    }
+    
+    .banner-carousel {
+      position: relative !important;
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .banner-slide {
+      position: relative !important;
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: none !important;
+    }
+    
+    .banner-slide.active {
+      display: block !important;
+    }
+    
+    .banner-slide img {
+      width: 100% !important;
+      height: auto !important;
+      object-fit: contain !important;
+      object-position: center !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+    }
+    
+    /* 移动端隐藏桌面版进度条控制器 */
+    .progress-controller {
+      display: none !important;
+    }
+    
+
+  }
+  
+  /* Add cursor pointer for carousel to indicate it's interactive */
+  .banner-carousel {
     cursor: grab;
   }
-
+  
   .banner-carousel:active {
     cursor: grabbing;
   }
-
+  
+  /* 移动端取消抓取光标 */
   @media (max-width: 768px) {
     .banner-carousel {
       cursor: default;
@@ -331,104 +486,112 @@
       cursor: default;
     }
   }
-
-  /* 轮播项 - 性能优化 */
-  .banner-slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-    will-change: opacity;
-    transform: translate3d(0, 0, 0); /* GPU加速 */
+  
+  /* Progress bar styling */
+  #progress-fill {
+    background: white;
   }
-
-  .banner-slide.active {
-    opacity: 1;
-  }
-
-  /* 图片样式 - 优化渲染 */
-  .banner-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    transform: translate3d(0, 0, 0); /* GPU加速 */
-  }
-
-  /* 桌面端进度条控制器 */
-  .progress-controller {
-    position: absolute;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    z-index: 10;
-  }
-
-  @media (max-width: 768px) {
-    .progress-controller {
-      display: none;
-    }
-  }
-
-  /* 进度条 */
-  .progress-bar {
-    width: 384px;
-    height: 2px;
-    background-color: rgba(255, 255, 255, 0.2);
-    position: relative;
-  }
-
-  .progress-fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 1);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: none;
-    will-change: transform;
-  }
-
-  /* 控制按钮 */
+  
+  /* Slide labels styling */
   .slide-label {
     background: none;
     border: none;
     color: white;
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 0.05em;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    padding: 0;
+    margin: 0;
     cursor: pointer;
     user-select: none;
-    transition: opacity 0.2s ease;
   }
-
+  
   .slide-label:hover {
     opacity: 0.8;
   }
-
-  /* 性能优化 */
-  .banner-slide,
-  .banner-image {
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-  }
-
-  /* 移动端触摸优化 */
+  
+  /* 确保移动端触摸友好 */
   @media (max-width: 768px) {
-    .banner-container {
-      touch-action: pan-x;
+    
+    /* 额外确保移动端100%宽度 */
+    body .mobile-full-width {
+      position: relative !important;
+      width: 100vw !important;
+      left: 50% !important;
+      margin-left: -50vw !important;
     }
     
-    .banner-carousel {
-      -webkit-overflow-scrolling: touch;
+    /* 防止父容器限制宽度 */
+    * {
+      box-sizing: border-box;
+    }
+  }
+  
+  /* 小屏幕设备额外优化 */
+  @media (max-width: 480px) {
+    .mobile-full-width {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      transform: none !important;
+    }
+  }
+  
+  /* 全局重置 - 确保移动端无边距 */
+  @media (max-width: 768px) {
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      overflow-x: hidden !important;
+    }
+    
+    main {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+    
+    #main-content {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+    
+    /* 重置所有可能影响宽度的父容器 */
+    .mobile-full-width * {
+      max-width: none !important;
+    }
+    
+    /* 强制重置容器样式 */
+    .container, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
+      max-width: none !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    /* 简化的移动端宽度100%解决方案 */
+    .mobile-full-width {
+      width: 100vw !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
+    }
+    
+    /* 确保图片100%宽度显示 */
+    .mobile-full-width .banner-slide img {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      object-fit: cover !important;
     }
   }
 </style> 

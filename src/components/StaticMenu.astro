@@ -29,10 +29,7 @@ try {
         { name: 'Backhoe Loader', path: '/products?category=挖掘装载机' },
         { name: 'Telescopic Handler', path: '/products?category=伸缩臂叉装车' },
         { name: 'Electric Machinery', path: '/products?category=电动工程机械' },
-        { name: 'Pile Driver', path: '/products/pile-driver' },
-        { name: 'Truck Parts & Accessories', path: '/products/truck-parts' },
-        { name: 'Construction Equipment', path: '/products/construction' },
-        { name: 'Mining Equipment', path: '/products/mining' }
+        { name: 'Electric Machinery', path: '/products?category=电动工程机械' }
       ]
     },
     { name: 'Case', path: '/case' },
@@ -48,16 +45,16 @@ try {
   <nav class="flex items-center" aria-label="主要导航">
     {menuItems.map((item, index) => (
       <div class="relative dropdown-container">
-        <a 
-          href={item.path} 
+    <a 
+      href={item.path} 
           class={`menu-item text-white font-semibold text-center py-4 ${
             (currentPath === item.path) || (currentPath === '/' && item.path === '/') ? 'active' : ''
           } ${item.children ? 'has-dropdown' : ''}`}
           style="font-size: 2rem; width: 15rem; display: flex; align-items: center; justify-content: center;"
           data-path={item.path}
           data-index={index}
-        >
-          {item.name}
+    >
+      {item.name}
           {item.children && (
             <svg class="w-4 h-4 ml-2 dropdown-arrow transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -138,8 +135,8 @@ try {
           </div>
         )}
       </div>
-    ))}
-  </nav>
+  ))}
+</nav>
 
   <!-- 右侧功能区 -->
   <div class="flex items-center space-x-4">

@@ -22,52 +22,342 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- DNS预连接优化 -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    
     <!-- 性能提示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 - LCP优化，移动端优先 -->
-    <link rel="preload" href="/images/optimized/banner3-mobile.webp" as="image" type="image/webp" media="(max-width: 768px)" fetchpriority="high" />
-    <link rel="preload" href="/images/optimized/banner3-optimized.webp" as="image" type="image/webp" media="(min-width: 769px)" fetchpriority="high" />
-    <link rel="preload" href="/images/optimized/banner3.jpg" as="image" type="image/jpeg" fetchpriority="high" />
-    
-    <!-- DNS预连接优化 - 立即执行 -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-    <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="//cdn.jsdelivr.net" crossorigin />
+    <!-- 关键资源预加载 -->
+    <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/optimized/banner3.jpg" as="image" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/shouji-banner1.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
     
     <!-- SEO优化 -->
-    <meta name="keywords" content="滑移装载机,工程机械,建筑设备,山东永安,YONAN" />
+    <meta
+      name="keywords"
+      content="滑移装载机,工程机械,建筑设备,山东永安,YONAN"
+    />
     <meta name="author" content="山东永安建设机械集团有限公司" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
-    <!-- 超级精简的关键CSS - 仅LCP和CLS -->
+    <!-- LCP关键图片预加载 - 最高优先级 -->
+    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)">
+    <!-- 移动端Banner预加载 - WebP优先 -->
+    <link rel="preload" href="/shouji-banner1.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
+    <!-- 移动端Banner预加载 - JPEG后备 -->
+    <link rel="preload" href="/shouji-banner1.jpg" as="image" type="image/jpeg" fetchpriority="high" media="(max-width: 768px) and (not (image-type: webp))">
+
+    <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
     <style>
-      *{margin:0;padding:0;box-sizing:border-box}
-      html{font-size:10px;font-display:swap}
-      body{font-family:system-ui,sans-serif;line-height:1.5;color:#333;background:#fff;font-display:swap}
+      /* 全局重置和基础样式 */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
       
-      /* Banner关键样式 - LCP优化 */
-      .banner-container{position:relative;width:100%;height:400px;overflow:hidden;background:#f5f5f5;contain:layout style paint;transform:translateZ(0)}
-      @media (max-width:768px){.banner-container{height:250px}}
-      .banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;will-change:opacity}
-      .banner-slide.active{opacity:1}
-      .banner-slide img{width:100%;height:100%;object-fit:cover;display:block;transform:translateZ(0)}
+      html {
+        scroll-behavior: smooth;
+        font-size: 10px; /* 根字体大小设置为10px */
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+        font-display: swap; /* 优化字体加载 */
+      }
       
-      /* Header基础 - 避免CLS */
-      .tevis-header{position:relative;z-index:50;contain:layout}
-      .main-header{background:#374151;color:#fff;height:99px}
-      @media (max-width:768px){.main-header{background:#334155;height:60px}}
-      .header-content{display:flex;align-items:center;justify-content:space-between;height:100%}
-      .nav-menu{background:#dc2626;height:60px}
-      .mobile-menu.hidden{display:none}
+      /* 桌面端字体 */
+      @media (min-width: 769px) {
+        body {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      }
       
-      /* 性能优化 */
-      .loading{opacity:0;pointer-events:none}
-      img{image-rendering:optimizequality}
+      /* 关键布局样式 */
+      .container {
+        max-width: 80rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      /* Banner关键样式 - 避免CLS */
+      .mobile-full-width {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+      }
+      
+      @media (max-width: 768px) {
+        .mobile-full-width {
+          width: 100vw;
+          height: auto;
+          left: 50%;
+          margin-left: -50vw;
+        }
+      }
+      
+      .banner-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+      }
+      
+      .banner-slide.active {
+        opacity: 1;
+      }
+      
+      .banner-slide img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+      }
+      
+      .grid {
+        display: grid;
+      }
+      
+      .md\\:grid-cols-2 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      
+      .gap-8 {
+        gap: 2rem;
+      }
+      
+      .items-center {
+        align-items: center;
+      }
+      
+      /* Header样式 */
+      header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+      
+      /* 防止菜单闪动 */
+      .bg-red-600 {
+        visibility: visible !important;
+      }
+      
+      /* 确保导航菜单立即可见 */
+      nav[aria-label="主要导航"] {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      /* Hero区域关键样式 */
+      .hero-mobile {
+        position: relative;
+        background: #fff;
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+        overflow: hidden;
+      }
+      
+      @media (max-width: 768px) {
+        .hero-mobile {
+          padding: 2rem 1rem;
+          text-align: center;
+        }
+      }
+      
+      /* 标题样式 */
+      h1 {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+        font-weight: 800;
+        color: #1f2937;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        }
+
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 3rem;
+          line-height: 1;
+        }
+      }
+      
+      @media (min-width: 1024px) {
+        h1 {
+          font-size: 3.75rem;
+          line-height: 1;
+        }
+        }
+
+      .text-red-600 {
+        color: #dc2626;
+        }
+
+      /* 图片容器优化 */
+      .img-container {
+        position: relative;
+        width: 100%;
+        max-width: 32rem;
+        margin-left: auto;
+        margin-right: auto;
+        }
+
+      @media (min-width: 768px) {
+        .img-container {
+          max-width: none;
+        }
+      }
+      
+      .img-container img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        position: relative;
+        z-index: 10;
+        }
+      
+      /* 移动端图片优化 */
+      @media (max-width: 768px) {
+        .img-container img {
+          max-width: 280px;
+          margin: 1rem auto;
+        }
+
+        /* 隐藏装饰元素 */
+        .decorative {
+          display: none;
+        }
+      }
+
+      /* 按钮样式 */
+      .btn-primary {
+        background: #dc2626;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s;
+      }
+      
+      .btn-primary:hover {
+        background: #b91c1c;
+      }
+      
+      .btn-secondary {
+        background: #e5e7eb;
+        color: #1f2937;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s;
+      }
+
+      .btn-secondary:hover {
+        background: #d1d5db;
+      }
+
+      /* 文本样式 */
+      .text-lg {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+      }
+
+      @media (min-width: 768px) {
+        .text-lg {
+          font-size: 1.25rem;
+          line-height: 1.75rem;
+        }
+      }
+      
+      .text-gray-700 {
+        color: #374151;
+      }
+
+      .mt-6 {
+        margin-top: 1.5rem;
+      }
+      
+      .mt-8 {
+        margin-top: 2rem;
+      }
+      
+      .max-w-md {
+        max-width: 28rem;
+      }
+      
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:mx-0 {
+          margin-left: 0;
+          margin-right: 0;
+      }
+
+        .md\\:text-left {
+          text-align: left;
+      }
+      }
+      
+      .text-center {
+        text-align: center;
+      }
+      
+      .flex {
+        display: flex;
+      }
+      
+      .justify-center {
+        justify-content: center;
+      }
+
+      @media (min-width: 768px) {
+        .md\\:justify-start {
+          justify-content: flex-start;
+        }
+      }
+      
+      .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+        margin-left: 1rem;
+      }
+
+      /* CSS延迟加载优化 - 保留核心功能 */
     </style>
 
     <title>{title}</title>
@@ -79,79 +369,108 @@ const {
       <slot />
     </main>
 
-    <FooterSection />
-
-    <!-- 极速优化加载策略 -->
+    <!-- 延迟加载非关键CSS - 避免阻塞渲染 -->
     <script>
-      // 立即加载关键CSS
-      var criticalCSS = document.createElement('link');
-      criticalCSS.rel = 'stylesheet';
-      criticalCSS.href = '/_astro/index.css';
-      criticalCSS.media = 'print';
-      criticalCSS.onload = function() { 
-        criticalCSS.media = 'all'; 
-        criticalCSS.onload = null; 
-      };
-      document.head.appendChild(criticalCSS);
-      
-      // 页面可见后再加载脚本
-      if (document.readyState !== 'loading') {
-        loadScripts();
-      } else {
-        document.addEventListener('DOMContentLoaded', loadScripts);
-      }
-      
-      function loadScripts() {
-        // 使用requestIdleCallback延迟加载脚本
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(function() {
-            loadComponentScripts();
+      // 页面加载完成后再加载非关键CSS
+      (function() {
+        function loadNonCriticalCSS() {
+          // 智能检测当前页面需要的CSS
+          var currentPath = window.location.pathname;
+          var cssToLoad = [];
+          
+          // 根据页面路径确定需要加载的CSS
+          if (currentPath.indexOf('/about') !== -1) {
+            cssToLoad.push('/_astro/about.DUuG_13O.css');
+          } else {
+            // 首页和其他页面使用同一个CSS文件
+            cssToLoad.push('/_astro/index.0KiwQODs.css');
+          }
+          
+                     // 延迟加载CSS文件
+          for (var i = 0; i < cssToLoad.length; i++) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = cssToLoad[i];
+            link.media = 'print';
+            link.onload = function() {
+              link.media = 'all';
+            };
+            document.head.appendChild(link);
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(loadNonCriticalCSS, 100);
           });
         } else {
-          setTimeout(loadComponentScripts, 100);
+          setTimeout(loadNonCriticalCSS, 100);
         }
-      }
-      
-      function loadComponentScripts() {
-        var scripts = ['/_astro/header.js', '/_astro/banner.js', '/_astro/footer.js'];
-        scripts.forEach(function(src, index) {
-          setTimeout(function() {
-            var script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            document.head.appendChild(script);
-          }, index * 50);
-        });
-      }
-      
-      // Partytown脚本 - 在Web Worker中运行，不阻塞主线程
-      setTimeout(function() {
-        // Google Analytics - 使用Partytown在Web Worker中运行
-        var ga = document.createElement('script');
-        ga.async = true;
-        ga.type = 'text/partytown';
-        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
-        document.head.appendChild(ga);
-        
-        var gaConfig = document.createElement('script');
-        gaConfig.type = 'text/partytown';
-        gaConfig.innerHTML = `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-71JP66YM5X', {
-            page_title: document.title,
-            page_location: window.location.href
-          });
-        `;
-        document.head.appendChild(gaConfig);
-        
-        // 华智云客服系统 - 延迟加载但在主线程运行
-        var cs = document.createElement("script");
-        cs.src = "https://oss.huazhi.cloud/hzchat/dist/livechat.js";
-        cs.async = true;
-        document.head.appendChild(cs);
-      }, 5000);
+      })();
     </script>
+
+    <!-- Google Analytics - 使用Partytown在Web Worker中运行 -->
+    <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
+    <script type="text/partytown">
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-71JP66YM5X', {
+        page_title: document.title,
+        page_location: window.location.href
+      });
+      </script>
+
+    <!-- 华智云客服系统 - 主线程延迟加载方案 -->
+    <script>
+      // 华智云客服系统 - 在主线程中延迟加载以确保样式正常
+      (function() {
+        // 防止重复加载
+        if ((window as any).huazhiCloudInitialized || document.querySelector('script[_extID="309-313-7n1iAECE"]')) {
+          return;
+        }
+        
+        (window as any).huazhiCloudInitialized = true;
+        
+        // 延迟加载客服脚本
+        function loadCustomerService() {
+          console.log('开始加载华智云客服脚本...');
+          
+          var script = document.createElement("script");
+          script.src = "https://oss.huazhi.cloud/hzchat/dist/livechat.js";
+          script.setAttribute("_extID", "309-313-7n1iAECE");
+          script.async = true;
+          
+          script.onload = function() {
+            console.log('华智云客服脚本加载成功');
+          };
+          
+          script.onerror = function() {
+            console.error('华智云客服脚本加载失败，请检查网络连接');
+          };
+          
+          // 插入到head中
+          document.head.appendChild(script);
+        }
+        
+        // 页面完全加载后延迟加载客服
+        function initCustomerService() {
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+              // 页面加载完成后3秒再加载客服，减少对页面性能的影响
+              setTimeout(loadCustomerService, 3000);
+            });
+          } else {
+            // 如果页面已经加载完成，立即延迟加载
+            setTimeout(loadCustomerService, 3000);
+        }
+        }
+        
+        // 开始初始化
+        initCustomerService();
+        
+      })();
+    </script>
+      <FooterSection />
   </body>
 </html>

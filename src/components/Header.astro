@@ -1,144 +1,144 @@
 ---
 import StaticMenu from './StaticMenu.astro';
 ---
-<!-- TEVIS Header Design - 移动端优化版本 -->
-<header class="tevis-header">
-  <!-- Main Header Row -->
-  <div id="main-header" class="main-header">
-    <div class="container mx-auto px-4">
-      <div class="header-content">
-        <!-- TEVIS Logo -->
-        <a href="/" class="logo-link">
-          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="logo-image">
-        </a>
+<!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
+<header class="relative z-50">
+  <!-- Main Header Row (Will scroll with page) -->
+  <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white">
+  <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between md:h-[9.9rem] h-24">
+      <!-- TEVIS Logo -->
+      <a href="/" class="flex items-center">
+          <img src="/images/logo.webp" alt="TEVIS Logo" class="md:h-23 h-8 w-auto">
+      </a>
 
-        <!-- Desktop Contact Info & Quote Button -->
-        <div class="desktop-contact">
+      <!-- Desktop Contact Info & Quote Button -->
+        <div class="hidden lg:flex items-center space-x-8">
           <!-- Contact Items Group -->
-          <div class="contact-group">
-            <!-- Contact Details -->
-            <div class="contact-item">
-              <svg class="contact-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-              </svg>
-              <div class="contact-info">
-                <p class="contact-label">Contact details:</p>
-                <p class="contact-value">+86 156 2892 0918</p>
+          <div class="flex items-center space-x-6">
+        <!-- Contact Details -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">Contact details:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">+86 156 2892 0918</p>
               </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="contact-divider"></div>
-            
-            <!-- Phone/WhatsApp -->
-            <div class="contact-item">
-              <svg class="contact-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-              </svg>
-              <div class="contact-info">
-                <p class="contact-label">Phone/Whatsapp:</p>
-                <p class="contact-value">+86 183 5318 1619</p>
-              </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="contact-divider"></div>
-            
-            <!-- Email -->
-            <div class="contact-item">
-              <svg class="contact-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-              </svg>
-              <div class="contact-info">
-                <p class="contact-label">E-mail:</p>
-                <p class="contact-value">tevis@yonancn.com</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Request Quote Button -->
-          <a href="/contact" class="quote-button">
-            <svg class="quote-icon" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-            </svg>
-            <span>REQUEST A QUOTE</span>
-          </a>
         </div>
 
-        <!-- Medium screens - Simplified contact -->
-        <div class="medium-contact">
-          <div class="medium-contact-item">
-            <svg class="medium-icon" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-            </svg>
-            <span class="medium-text">+86 156 2892 0918</span>
-          </div>
-          <a href="/contact" class="medium-quote-button">
-            <span>REQUEST A QUOTE</span>
-          </a>
+            <!-- Divider -->
+            <div class="border-l border-gray-600 h-12"></div>
+        
+        <!-- Phone/WhatsApp -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">Phone/Whatsapp:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">+86 183 5318 1619</p>
+              </div>
         </div>
+
+            <!-- Divider -->
+            <div class="border-l border-gray-600 h-12"></div>
+        
+        <!-- Email -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">E-mail:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">tevis@yonancn.com</p>
+              </div>
+            </div>
+        </div>
+        
+        <!-- Request Quote Button -->
+          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-4 ml-3 font-bold transition-colors duration-200 flex items-center justify-center space-x-3" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+            <span>REQUEST A QUOTE</span>
+        </a>
+      </div>
+
+      <!-- Medium screens - Simplified contact -->
+        <div class="hidden md:flex lg:hidden items-center space-x-3 text-xs">
+          <div class="flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+            <span class="text-white font-medium text-xs">+86 156 2892 0918</span>
+        </div>
+          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-3 font-bold transition-colors duration-200 flex items-center justify-center" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+            <span>REQUEST A QUOTE</span>
+        </a>
+      </div>
 
         <!-- Mobile - Right side icons and menu button -->
-        <div class="mobile-controls">
+        <div class="md:hidden flex items-center space-x-4">
           <!-- Search Icon -->
-          <button class="mobile-icon-button" aria-label="搜索">
-            <svg class="mobile-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button class="p-2 text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </button>
           
           <!-- Globe Icon -->
-          <button class="mobile-icon-button" aria-label="语言选择">
-            <svg class="mobile-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+          <button class="p-2 text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
             </svg>
           </button>
           
           <!-- Menu Button -->
-          <button id="mobile-menu-button" class="mobile-menu-button" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
-            <svg id="menu-open-icon" class="mobile-icon" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-            <svg id="menu-close-icon" class="mobile-icon hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+          <button id="mobile-menu-button" class="p-2 bg-red-600 text-white focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
+          <svg id="menu-open-icon" class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg id="menu-close-icon" class="h-6 w-6 hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Navigation Bar -->
-  <div id="nav-menu" class="nav-menu">
+  <!-- Navigation Bar (Will become sticky when banner scrolls away) -->
+  <div id="nav-menu" class="bg-red-600 border-red-500" style="color: #e81a1a; box-shadow: 0 7px 16px 0 rgba(0, 0, 0, .64); transform: translateY(0); transition: transform 0.3s ease-in-out;">
     <div class="container mx-auto px-4">
-      <div class="nav-content">
+      <div class="hidden md:flex items-center justify-center" style="height: 6rem;">
         <StaticMenu />
       </div>
     </div>
   </div>
 
   <!-- Mobile Navigation Menu -->
-  <div id="mobile-menu" class="mobile-menu hidden">
-    <nav aria-label="移动端导航" class="mobile-nav">
+  <div id="mobile-menu" class="hidden md:hidden bg-slate-700 border-gray-600 relative z-40">
+    <nav aria-label="移动端导航" class="px-4 pt-4 pb-4 space-y-3">
       <!-- Navigation Links -->
-      <div class="mobile-nav-links">
-        <a href="/" class="mobile-nav-link">Home</a>
-        <a href="/about" class="mobile-nav-link">About</a>
-        <a href="/products" class="mobile-nav-link">Products</a>
-        <a href="/case" class="mobile-nav-link">Case</a>
-        <a href="/news" class="mobile-nav-link">News</a>
-        <a href="/contact" class="mobile-nav-link">Contact</a>
+      <div class="space-y-3">
+        <a href="/" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Home</a>
+        <a href="/about" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">About</a>
+        <a href="/products" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Products</a>
+        <a href="/case" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Case</a>
+        <a href="/news" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">News</a>
+        <a href="/contact" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Contact</a>
       </div>
       
       <!-- Language Selector -->
-      <div class="mobile-language">
-        <div class="mobile-language-selector">
-          <svg class="language-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="mt-6 pt-4 border-t border-gray-600">
+        <div class="flex items-center space-x-2 text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
           </svg>
-          <select class="language-select">
+          <select class="bg-transparent text-white border-none focus:outline-none">
             <option value="en">🇺🇸 English</option>
             <option value="zh">🇨🇳 中文</option>
             <option value="es">🇪🇸 Español</option>
@@ -154,29 +154,29 @@ import StaticMenu from './StaticMenu.astro';
       </div>
       
       <!-- Mobile Contact Information -->
-      <div class="mobile-contact-info">
-        <div class="mobile-contact-list">
-          <div class="mobile-contact-item">
-            <svg class="mobile-contact-icon" fill="currentColor" viewBox="0 0 20 20">
+      <div class="mt-6 pt-4 border-t border-gray-600 space-y-3">
+        <div class="text-sm text-gray-300 space-y-3">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
             </svg>
-            <span class="mobile-contact-text">+86 156 2892 0918</span>
+            <span class="text-white">+86 156 2892 0918</span>
           </div>
-          <div class="mobile-contact-item">
-            <svg class="mobile-contact-icon" fill="currentColor" viewBox="0 0 20 20">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
             </svg>
-            <span class="mobile-contact-text">+86 159 5318 1619</span>
+            <span class="text-white">+86 159 5318 1619</span>
           </div>
-          <div class="mobile-contact-item">
-            <svg class="mobile-contact-icon" fill="currentColor" viewBox="0 0 20 20">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
             </svg>
-            <span class="mobile-contact-text">tevis@yonancn.com</span>
+            <span class="text-white">tevis@yonancn.com</span>
           </div>
         </div>
-        <a href="/contact" class="mobile-quote-button">
+        <a href="/contact" class="block w-full bg-red-600 text-white mt-4 py-3 px-6 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors text-center rounded">
           REQUEST A QUOTE
         </a>
       </div>
@@ -184,381 +184,133 @@ import StaticMenu from './StaticMenu.astro';
   </div>
 </header>
 
-<!-- Header JavaScript 延迟加载 -->
 <script>
-  // 最小化立即执行的脚本 - 仅关键交互
-  (window as any).headerReady = false;
-</script>
-
-<style>
-  /* 基础样式 */
-  .tevis-header {
-    position: relative;
-    z-index: 50;
-  }
-
-  /* 主Header */
-  .main-header {
-    background-color: #374151; /* Desktop: gray-700 */
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    .main-header {
-      background-color: #334155; /* Mobile: slate-700 */
+  function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+    const openIcon = document.getElementById('menu-open-icon');
+    const closeIcon = document.getElementById('menu-close-icon');
+    
+    if (btn && menu) {
+      // 菜单切换
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isHidden = menu.classList.contains('hidden');
+        
+        // 切换菜单显示
+        menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        
+        // 切换图标
+        if (openIcon && closeIcon) {
+          openIcon.classList.toggle('hidden');
+          closeIcon.classList.toggle('hidden');
+        }
+      });
+      
+      // 点击链接关闭菜单
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+          if (openIcon && closeIcon) {
+            openIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+          }
+        });
+      });
     }
   }
 
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 9.9rem;
-  }
-
-  @media (max-width: 768px) {
-    .header-content {
-      height: 6rem;
-    }
-  }
-
-  /* Logo */
-  .logo-link {
-    display: flex;
-    align-items: center;
-  }
-
-  .logo-image {
-    height: 5.75rem; /* h-23 */
-    width: auto;
-  }
-
-  @media (max-width: 768px) {
-    .logo-image {
-      height: 2rem; /* h-8 */
-    }
-  }
-
-  /* Desktop Contact */
-  .desktop-contact {
-    display: none;
-  }
-
-  @media (min-width: 1024px) {
-    .desktop-contact {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-  }
-
-  .contact-group {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .contact-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .contact-icon {
-    width: 4rem;
-    height: 4rem;
-    color: #dc2626; /* red-600 */
-    flex-shrink: 0;
-  }
-
-  .contact-info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .contact-label {
-    color: #9ca3af; /* gray-400 */
-    font-size: 2rem;
-  }
-
-  .contact-value {
-    font-weight: 600;
-    font-size: 3rem;
-    letter-spacing: 0.05em;
-    color: #a9aaab;
-  }
-
-  .contact-divider {
-    border-left: 1px solid #4b5563; /* gray-600 */
-    height: 3rem;
-  }
-
-  .quote-button {
-    background-color: #dc2626; /* red-600 */
-    color: white;
-    padding: 0 1rem;
-    margin-left: 0.75rem;
-    font-weight: 700;
-    font-size: 1.8rem;
-    height: 5.9rem;
-    width: 24.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    transition: background-color 0.2s;
-  }
-
-  .quote-button:hover {
-    background-color: #b91c1c; /* red-700 */
-  }
-
-  .quote-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  /* Medium screens contact */
-  .medium-contact {
-    display: none;
-  }
-
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .medium-contact {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.75rem;
-    }
-  }
-
-  .medium-contact-item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .medium-icon {
-    width: 0.875rem;
-    height: 0.875rem;
-    color: #dc2626;
-  }
-
-  .medium-text {
-    color: white;
-    font-weight: 500;
-    font-size: 0.75rem;
-  }
-
-  .medium-quote-button {
-    background-color: #dc2626;
-    color: white;
-    padding: 0 0.75rem;
-    font-weight: 700;
-    font-size: 1.8rem;
-    height: 5.9rem;
-    width: 24.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-  }
-
-  .medium-quote-button:hover {
-    background-color: #b91c1c;
-  }
-
-  /* Mobile controls */
-  .mobile-controls {
-    display: none;
-  }
-
-  @media (max-width: 767px) {
-    .mobile-controls {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-  }
-
-  .mobile-icon-button {
-    padding: 0.5rem;
-    color: white;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .mobile-menu-button {
-    padding: 0.5rem;
-    background-color: #dc2626;
-    color: white;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-  }
-
-  .mobile-icon {
-    height: 1.5rem;
-    width: 1.5rem;
-  }
-
-  /* Navigation Bar */
-  .nav-menu {
-    background-color: #dc2626; /* red-600 */
-    border-color: #dc2626;
-    color: #e81a1a;
-    box-shadow: 0 7px 16px 0 rgba(0, 0, 0, 0.64);
-    transform: translateY(0);
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .nav-content {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    height: 6rem;
-  }
-
-  @media (min-width: 768px) {
-    .nav-content {
-      display: flex;
-    }
-  }
-
-  /* Mobile Menu */
-  .mobile-menu {
-    display: none;
-    background-color: #334155; /* slate-700 */
-    border-color: #4b5563; /* gray-600 */
-    position: relative;
-    z-index: 40;
-  }
-
-  @media (max-width: 767px) {
-    .mobile-menu.hidden {
-      display: none;
+  function initScrollHeader() {
+    const mainHeader = document.getElementById('main-header');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (!mainHeader || !navMenu) return;
+    
+    let lastScrollY = window.scrollY;
+    const headerHeight = mainHeader.offsetHeight; // 主banner高度
+    let isMenuFixed = false; // 跟踪菜单状态
+    
+    function handleScroll() {
+      const currentScrollY = window.scrollY;
+      
+      // 再次检查元素是否存在
+      if (!mainHeader || !navMenu) return;
+      
+      // 当滚动超过banner高度时，隐藏banner并固定菜单
+      if (currentScrollY > headerHeight && !isMenuFixed) {
+        // 隐藏主banner
+        mainHeader.style.display = 'none';
+        
+        // 临时禁用过渡，快速设置初始位置
+        navMenu.style.transition = 'none';
+        navMenu.style.position = 'fixed';
+        navMenu.style.top = '0';
+        navMenu.style.left = '0';
+        navMenu.style.right = '0';
+        navMenu.style.zIndex = '50';
+        navMenu.style.width = '100%';
+        navMenu.style.transform = 'translateY(-100%)';
+        
+        // 强制重绘，然后启用过渡并触发滑入动画
+        navMenu.offsetHeight; // 强制重绘
+        navMenu.style.transition = 'transform 0.3s ease-in-out';
+        
+        // 稍微延迟确保过渡设置生效
+        requestAnimationFrame(() => {
+          navMenu.style.transform = 'translateY(0)';
+        });
+        
+        isMenuFixed = true;
+      } else if (currentScrollY <= headerHeight && isMenuFixed) {
+        // 显示主banner
+        mainHeader.style.display = 'block';
+        
+        // 直接恢复菜单常规定位，无动画
+        navMenu.style.transition = 'none';
+        navMenu.style.position = 'relative';
+        navMenu.style.top = 'auto';
+        navMenu.style.left = 'auto';
+        navMenu.style.right = 'auto';
+        navMenu.style.width = 'auto';
+        navMenu.style.transform = 'translateY(0)';
+        
+        // 恢复过渡设置
+        requestAnimationFrame(() => {
+          navMenu.style.transition = 'transform 0.3s ease-in-out';
+        });
+        
+        isMenuFixed = false;
+      }
+      
+      lastScrollY = currentScrollY;
     }
     
-    .mobile-menu:not(.hidden) {
-      display: block;
-    }
+    // 监听滚动事件，使用节流优化性能
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    
+    // 初始状态检查
+    handleScroll();
   }
 
-  .mobile-nav {
-    padding: 1rem;
+  // DOM就绪后初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initMobileMenu();
+      initScrollHeader();
+    });
+  } else {
+    initMobileMenu();
+    initScrollHeader();
   }
-
-  .mobile-nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .mobile-nav-link {
-    display: block;
-    color: white;
-    font-size: 1.125rem;
-    font-weight: 500;
-    padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid #4b5563;
-    transition: color 0.2s;
-  }
-
-  .mobile-nav-link:hover {
-    color: #f87171; /* red-400 */
-  }
-
-  /* Mobile Language Selector */
-  .mobile-language {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #4b5563;
-  }
-
-  .mobile-language-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: white;
-  }
-
-  .language-icon {
-    height: 1.25rem;
-    width: 1.25rem;
-  }
-
-  .language-select {
-    background: transparent;
-    color: white;
-    border: none;
-    outline: none;
-  }
-
-  /* Mobile Contact Info */
-  .mobile-contact-info {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #4b5563;
-  }
-
-  .mobile-contact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-
-  .mobile-contact-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .mobile-contact-icon {
-    width: 1rem;
-    height: 1rem;
-    color: #dc2626;
-  }
-
-  .mobile-contact-text {
-    color: white;
-    font-size: 0.875rem;
-  }
-
-  .mobile-quote-button {
-    display: block;
-    width: 100%;
-    background-color: #dc2626;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    font-weight: 700;
-    text-align: center;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s;
-  }
-
-  .mobile-quote-button:hover {
-    background-color: #b91c1c;
-  }
-
-  /* Performance optimizations */
-  .tevis-header {
-    contain: layout style;
-  }
-
-  .mobile-menu {
-    will-change: auto;
-  }
-
-  /* Touch-friendly improvements */
-  @media (max-width: 768px) {
-    .mobile-icon-button,
-    .mobile-menu-button,
-    .mobile-nav-link,
-    .mobile-quote-button {
-      min-height: 44px; /* iOS recommended touch target */
-      touch-action: manipulation;
-    }
-  }
-</style> 
+</script> 

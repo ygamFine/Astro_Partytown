@@ -4,7 +4,6 @@ const mainProduct = {
 };
 const mobileBanner = {
   webpSrc: '/shouji-banner1.webp', // WebP格式 - 59KB
-  jpegSrc: '/shouji-banner1.jpg',  // JPEG后备 - 372KB
   alt: '专业滑移装载机制造商',
   width: 375,
   height: 200
@@ -14,26 +13,17 @@ const mobileBanner = {
 <section class="hero-mobile">
   <!-- 移动端Banner - WebP优化版本 -->
   <div class="mobile-banner-container">
-    <picture>
-      <!-- WebP格式 - 现代浏览器优先 -->
-      <source 
-        srcset={mobileBanner.webpSrc} 
-        type="image/webp"
-      />
-      
-      <!-- JPEG格式 - 后备方案 -->
-      <img 
-        src={mobileBanner.jpegSrc}
-        alt={mobileBanner.alt}
-        width={mobileBanner.width}
-        height={mobileBanner.height}
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-        class="mobile-banner"
-        style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
-      />
-    </picture>
+    <img 
+      src={mobileBanner.webpSrc}
+      alt={mobileBanner.alt}
+      width={mobileBanner.width}
+      height={mobileBanner.height}
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      class="mobile-banner"
+      style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+    />
   </div>
 
   <!-- 桌面端内容 -->
