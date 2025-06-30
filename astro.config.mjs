@@ -72,10 +72,6 @@ export default defineConfig({
     domains: ['localhost'],
   },
   
-  experimental: {
-    optimizeHoistedScript: true,
-  },
-  
   server: {
     port: 4321,
     host: true,
