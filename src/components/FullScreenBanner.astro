@@ -2,37 +2,60 @@
 // FullScreenBanner.astro
 ---
 
+<!-- Preload critical banner image - 优化版本 -->
+<link rel="preload" as="image" href="/images/optimized/banner3.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="/images/optimized/banner3.jpg" fetchpriority="high">
+
 <section class="relative w-full overflow-hidden mobile-full-width" id="mobile-banner" style="height: 400px;">
   <!-- Banner Carousel -->
   <div class="banner-carousel absolute inset-0">
     <!-- Banner 1 -->
     <div class="banner-slide active absolute inset-0">
-      <img 
-        src="/images/banner3.jpg" 
-        alt="Banner 1" 
-        class="w-full h-full object-cover"
-        loading="eager"
-      />
+      <picture>
+        <source srcset="/images/optimized/banner3.webp" type="image/webp">
+        <img 
+          src="/images/optimized/banner3.jpg" 
+          alt="Banner 1" 
+          class="w-full h-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          width="1920"
+          height="400"
+        />
+      </picture>
     </div>
     
     <!-- Banner 2 -->
     <div class="banner-slide absolute inset-0">
-      <img 
-        src="/images/banner222.jpg" 
-        alt="Banner 2" 
-        class="w-full h-full object-cover"
-        loading="lazy"
-      />
+      <picture>
+        <source srcset="/images/optimized/banner222.webp" type="image/webp">
+        <img 
+          src="/images/optimized/banner222.jpg" 
+          alt="Banner 2" 
+          class="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+          width="1920"
+          height="400"
+        />
+      </picture>
     </div>
     
     <!-- Banner 3 -->
     <div class="banner-slide absolute inset-0">
-      <img 
-        src="/images/banner.jpg" 
-        alt="Banner 3" 
-        class="w-full h-full object-cover"
-        loading="lazy"
-      />
+      <picture>
+        <source srcset="/images/optimized/banner.webp" type="image/webp">
+        <img 
+          src="/images/optimized/banner.jpg" 
+          alt="Banner 3" 
+          class="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+          width="1920"
+          height="400"
+        />
+      </picture>
     </div>
   </div>
   
@@ -70,11 +93,22 @@
 
   // Show specific slide
   function showSlide(index: number) {
-    // Remove active class from all slides
-    slides.forEach(slide => slide.classList.remove('active'));
-    
-    // Add active class to current slide
-    slides[index].classList.add('active');
+    if (window.innerWidth <= 768) {
+      // 移动端：使用display控制，高度自适应
+      slides.forEach((slide, i) => {
+        const slideElement = slide as HTMLElement;
+        slideElement.style.display = i === index ? 'block' : 'none';
+        if (i === index) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+    } else {
+      // 桌面端：使用opacity控制
+      slides.forEach(slide => slide.classList.remove('active'));
+      slides[index].classList.add('active');
+    }
     
     currentSlide = index;
     resetProgress();
@@ -91,25 +125,29 @@
     startProgress();
   }
 
-  // Start progress bar animation
+  // Start progress bar animation - 优化性能
   function startProgress() {
-    if (!progressFill) {
-      console.log('Progress fill element not found!');
-      return;
-    }
+    if (!progressFill) return;
     
-    console.log('Starting progress bar animation from:', pausedProgress);
     isPaused = false;
     progressStartTime = Date.now() - (pausedProgress * slideInterval / 100);
-    progressInterval = setInterval(() => {
+    
+    // 使用requestAnimationFrame替代setInterval，性能更好
+    function updateProgress() {
+      if (isPaused || !progressFill) return;
+      
       const elapsed = Date.now() - progressStartTime;
       const progress = Math.min((elapsed / slideInterval) * 100, 100);
       progressFill.style.width = `${progress}%`;
       
       if (progress >= 100) {
         stopProgress();
+      } else {
+        requestAnimationFrame(updateProgress);
       }
-    }, 16); // ~60fps for smooth animation
+    }
+    
+    requestAnimationFrame(updateProgress);
   }
 
   // Stop progress bar
@@ -122,19 +160,16 @@
 
   // Pause progress bar
   function pauseProgress() {
-    if (progressInterval && !isPaused) {
+    if (!isPaused) {
       const elapsed = Date.now() - progressStartTime;
       pausedProgress = Math.min((elapsed / slideInterval) * 100, 100);
-      console.log('Pausing progress at:', pausedProgress);
       isPaused = true;
-      stopProgress();
     }
   }
 
   // Resume progress bar
   function resumeProgress() {
     if (isPaused) {
-      console.log('Resuming progress from:', pausedProgress);
       startProgress();
     }
   }
@@ -300,7 +335,7 @@
     });
   });
 
-  // 确保移动端100%宽度显示
+  // 确保移动端100%宽度显示，高度自适应
   function ensureMobileFullWidth() {
     if (window.innerWidth <= 768) {
       const banner = document.getElementById('mobile-banner') as HTMLElement;
@@ -309,7 +344,7 @@
         banner.style.cssText = `
           position: relative !important;
           width: 100vw !important;
-          height: 250px !important;
+          height: auto !important;
           left: 50% !important;
           margin-left: -50vw !important;
           margin-right: -50vw !important;
@@ -317,22 +352,34 @@
           max-width: none !important;
           overflow: hidden !important;
         `;
+        
+        // 设置第一张图片显示，其他隐藏
+        const slides = banner.querySelectorAll('.banner-slide') as NodeListOf<HTMLElement>;
+        slides.forEach((slide, index) => {
+          slide.style.display = index === 0 ? 'block' : 'none';
+        });
       }
-      
-      console.log('移动端100%宽度设置完成');
     }
   }
 
-  // 页面加载时执行
-  ensureMobileFullWidth();
-  window.addEventListener('resize', ensureMobileFullWidth);
-
-  // Debug: Check if elements are found
-  console.log('Progress fill element:', progressFill);
-  console.log('Slides found:', slides.length);
-
-  // Start auto slide
-  startAutoSlide();
+  // 页面加载时执行 - 延迟非关键操作
+  function initBanner() {
+    ensureMobileFullWidth();
+    window.addEventListener('resize', ensureMobileFullWidth);
+    
+    // 延迟启动自动播放，让页面先渲染
+    requestAnimationFrame(() => {
+      startAutoSlide();
+    });
+  }
+  
+  // 使用更高效的初始化方式
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBanner);
+  } else {
+    // 如果DOM已加载，延迟执行避免阻塞渲染
+    setTimeout(initBanner, 0);
+  }
 </script>
 
 <style>
@@ -347,10 +394,17 @@
     box-sizing: border-box;
   }
   
-  /* Banner slide transitions */
+  /* Banner slide transitions - 使用transform优化性能 */
   .banner-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    transform: translateZ(0); /* 启用硬件加速 */
+    transition: opacity 0.8s ease-in-out;
+    will-change: opacity; /* 提示浏览器优化 */
   }
   
   .banner-slide.active {
@@ -363,14 +417,16 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+    transform: translateZ(0); /* 硬件加速 */
+    backface-visibility: hidden; /* 避免重绘 */
   }
   
-  /* 移动端优化 - 只要求宽度100%显示 */
+  /* 移动端优化 - 宽度100%，高度自适应 */
   @media (max-width: 768px) {
     .mobile-full-width {
       position: relative !important;
       width: 100vw !important;
-      height: 250px !important;
+      height: auto !important;
       left: 50% !important;
       margin-left: -50vw !important;
       margin-right: -50vw !important;
@@ -382,29 +438,30 @@
     }
     
     .banner-carousel {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
+      position: relative !important;
       width: 100% !important;
-      height: 100% !important;
+      height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
     }
     
     .banner-slide {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
+      position: relative !important;
       width: 100% !important;
-      height: 100% !important;
+      height: auto !important;
       margin: 0 !important;
       padding: 0 !important;
+      display: none !important;
+    }
+    
+    .banner-slide.active {
+      display: block !important;
     }
     
     .banner-slide img {
       width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
+      height: auto !important;
+      object-fit: contain !important;
       object-position: center !important;
       max-width: none !important;
       margin: 0 !important;

@@ -22,6 +22,21 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- DNS预连接优化 -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    
+    <!-- 性能提示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#dc2626" />
+    <meta name="color-scheme" content="light" />
+    
+    <!-- 关键资源预加载 -->
+    <link rel="preload" href="/images/logo.png.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/optimized/banner3.jpg" as="image" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/shouji-banner1.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    
     <!-- SEO优化 -->
     <meta
       name="keywords"
@@ -61,6 +76,7 @@ const {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-text-size-adjust: 100%;
+        font-display: swap; /* 优化字体加载 */
       }
       
       /* 桌面端字体 */
@@ -77,6 +93,45 @@ const {
         margin-right: auto;
         padding-left: 1rem;
         padding-right: 1rem;
+      }
+      
+      /* Banner关键样式 - 避免CLS */
+      .mobile-full-width {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+      }
+      
+      @media (max-width: 768px) {
+        .mobile-full-width {
+          width: 100vw;
+          height: auto;
+          left: 50%;
+          margin-left: -50vw;
+        }
+      }
+      
+      .banner-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+      }
+      
+      .banner-slide.active {
+        opacity: 1;
+      }
+      
+      .banner-slide img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+        display: block;
       }
       
       .grid {
