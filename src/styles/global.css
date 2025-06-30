@@ -7,9 +7,22 @@
   box-sizing: border-box;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* 防止水平滚动条 */
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 10px; /* 根字体大小设置为10px，与tevismachinery.com保持一致 */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 /* 移动端字体优化 - 使用系统字体 */

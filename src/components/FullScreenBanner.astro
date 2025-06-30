@@ -2,7 +2,7 @@
 // FullScreenBanner.astro
 ---
 
-<section class="relative w-full h-screen overflow-hidden">
+<section class="relative w-full overflow-hidden mobile-full-width" id="mobile-banner" style="height: 400px;">
   <!-- Banner Carousel -->
   <div class="banner-carousel absolute inset-0">
     <!-- Banner 1 -->
@@ -36,8 +36,8 @@
     </div>
   </div>
   
-  <!-- Progress Bar Controller -->
-  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center space-x-8 z-10">
+  <!-- Progress Bar Controller - 在移动端隐藏 -->
+  <div class="progress-controller absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center space-x-8 z-10 hidden md:flex">
     <!-- PREV Label -->
     <button id="prev-label" class="slide-label text-white text-lg font-medium tracking-wider flex items-center justify-center">PREV</button>
     
@@ -50,6 +50,8 @@
     <!-- NEXT Label -->
     <button id="next-label" class="slide-label text-white text-lg font-medium tracking-wider flex items-center justify-center">NEXT</button>
   </div>
+
+
   
 
 </section>
@@ -288,6 +290,43 @@
 
   }
 
+  // Add click listeners for mobile indicators
+  const indicators = document.querySelectorAll('.indicator');
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => {
+      showSlide(index);
+      stopAutoSlide();
+      startAutoSlide(); // Restart auto slide
+    });
+  });
+
+  // 确保移动端100%宽度显示
+  function ensureMobileFullWidth() {
+    if (window.innerWidth <= 768) {
+      const banner = document.getElementById('mobile-banner') as HTMLElement;
+      
+      if (banner) {
+        banner.style.cssText = `
+          position: relative !important;
+          width: 100vw !important;
+          height: 250px !important;
+          left: 50% !important;
+          margin-left: -50vw !important;
+          margin-right: -50vw !important;
+          padding: 0 !important;
+          max-width: none !important;
+          overflow: hidden !important;
+        `;
+      }
+      
+      console.log('移动端100%宽度设置完成');
+    }
+  }
+
+  // 页面加载时执行
+  ensureMobileFullWidth();
+  window.addEventListener('resize', ensureMobileFullWidth);
+
   // Debug: Check if elements are found
   console.log('Progress fill element:', progressFill);
   console.log('Slides found:', slides.length);
@@ -297,9 +336,15 @@
 </script>
 
 <style>
-  /* Ensure the banner takes full viewport height */
+  /* Banner基础样式 */
   section {
-    min-height: 100vh;
+    width: 100%;
+    height: 400px;
+  }
+  
+  /* 移动端全屏显示 - 突破父容器限制 */
+  .mobile-full-width {
+    box-sizing: border-box;
   }
   
   /* Banner slide transitions */
@@ -312,7 +357,68 @@
     opacity: 1;
   }
   
+  /* Banner images - 确保移动端完全覆盖 */
+  .banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  
+  /* 移动端优化 - 只要求宽度100%显示 */
+  @media (max-width: 768px) {
+    .mobile-full-width {
+      position: relative !important;
+      width: 100vw !important;
+      height: 250px !important;
+      left: 50% !important;
+      margin-left: -50vw !important;
+      margin-right: -50vw !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      max-width: none !important;
+      z-index: 1 !important;
+    }
+    
+    .banner-carousel {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .banner-slide {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .banner-slide img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+    }
+    
+    /* 移动端隐藏桌面版进度条控制器 */
+    .progress-controller {
+      display: none !important;
+    }
+    
 
+  }
   
   /* Add cursor pointer for carousel to indicate it's interactive */
   .banner-carousel {
@@ -321,6 +427,17 @@
   
   .banner-carousel:active {
     cursor: grabbing;
+  }
+  
+  /* 移动端取消抓取光标 */
+  @media (max-width: 768px) {
+    .banner-carousel {
+      cursor: default;
+    }
+    
+    .banner-carousel:active {
+      cursor: default;
+    }
   }
   
   /* Progress bar styling */
@@ -344,5 +461,90 @@
   
   .slide-label:hover {
     opacity: 0.8;
+  }
+  
+  /* 确保移动端触摸友好 */
+  @media (max-width: 768px) {
+    
+    /* 额外确保移动端100%宽度 */
+    body .mobile-full-width {
+      position: relative !important;
+      width: 100vw !important;
+      left: 50% !important;
+      margin-left: -50vw !important;
+    }
+    
+    /* 防止父容器限制宽度 */
+    * {
+      box-sizing: border-box;
+    }
+  }
+  
+  /* 小屏幕设备额外优化 */
+  @media (max-width: 480px) {
+    .mobile-full-width {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      transform: none !important;
+    }
+  }
+  
+  /* 全局重置 - 确保移动端无边距 */
+  @media (max-width: 768px) {
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      overflow-x: hidden !important;
+    }
+    
+    main {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+    
+    #main-content {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+    
+    /* 重置所有可能影响宽度的父容器 */
+    .mobile-full-width * {
+      max-width: none !important;
+    }
+    
+    /* 强制重置容器样式 */
+    .container, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
+      max-width: none !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    /* 简化的移动端宽度100%解决方案 */
+    .mobile-full-width {
+      width: 100vw !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
+    }
+    
+    /* 确保图片100%宽度显示 */
+    .mobile-full-width .banner-slide img {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      object-fit: cover !important;
+    }
   }
 </style> 

@@ -4,12 +4,12 @@ import StaticMenu from './StaticMenu.astro';
 <!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
 <header class="relative z-50">
   <!-- Main Header Row (Will scroll with page) -->
-  <div id="main-header" class="bg-gray-800 text-white">
+  <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white">
     <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between" style="height: 9.9rem;">
+      <div class="flex items-center justify-between md:h-[9.9rem] h-24">
         <!-- TEVIS Logo -->
         <a href="/" class="flex items-center">
-          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="h-23 w-auto">
+          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="md:h-23 h-8 w-auto">
         </a>
 
         <!-- Desktop Contact Info & Quote Button -->
@@ -80,9 +80,24 @@ import StaticMenu from './StaticMenu.astro';
           </a>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <div class="md:hidden">
-          <button id="mobile-menu-button" class="p-2 text-white focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
+        <!-- Mobile - Right side icons and menu button -->
+        <div class="md:hidden flex items-center space-x-4">
+          <!-- Search Icon -->
+          <button class="p-2 text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+          
+          <!-- Globe Icon -->
+          <button class="p-2 text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+            </svg>
+          </button>
+          
+          <!-- Menu Button -->
+          <button id="mobile-menu-button" class="p-2 bg-red-600 text-white focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
             <svg id="menu-open-icon" class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
@@ -105,14 +120,42 @@ import StaticMenu from './StaticMenu.astro';
   </div>
 
   <!-- Mobile Navigation Menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-gray-800 border-gray-600 relative z-40">
-    <nav aria-label="移动端导航" class="px-4 pt-2 pb-4 space-y-1">
-      <div id="mobile-smart-menu" class="space-y-1">
-        <!-- 移动端菜单将通过JavaScript动态加载 -->
+  <div id="mobile-menu" class="hidden md:hidden bg-slate-700 border-gray-600 relative z-40">
+    <nav aria-label="移动端导航" class="px-4 pt-4 pb-4 space-y-3">
+      <!-- Navigation Links -->
+      <div class="space-y-3">
+        <a href="/" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Home</a>
+        <a href="/about" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">About</a>
+        <a href="/products" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Products</a>
+        <a href="/case" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Case</a>
+        <a href="/news" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">News</a>
+        <a href="/contact" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Contact</a>
       </div>
+      
+      <!-- Language Selector -->
+      <div class="mt-6 pt-4 border-t border-gray-600">
+        <div class="flex items-center space-x-2 text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+          </svg>
+          <select class="bg-transparent text-white border-none focus:outline-none">
+            <option value="en">🇺🇸 English</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="pt">🇧🇷 Português</option>
+          </select>
+        </div>
+      </div>
+      
       <!-- Mobile Contact Information -->
-      <div class="mt-4 pt-4 border-gray-600 space-y-2">
-        <div class="text-sm text-gray-300 space-y-2">
+      <div class="mt-6 pt-4 border-t border-gray-600 space-y-3">
+        <div class="text-sm text-gray-300 space-y-3">
           <div class="flex items-center space-x-2">
             <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
@@ -133,7 +176,7 @@ import StaticMenu from './StaticMenu.astro';
             <span class="text-white">tevis@yonancn.com</span>
           </div>
         </div>
-        <a href="/contact" class="block mx-auto bg-red-600 text-white mt-4 px-5 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors" style="height: 5.9rem; width: 24.2rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+        <a href="/contact" class="block w-full bg-red-600 text-white mt-4 py-3 px-6 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors text-center rounded">
           REQUEST A QUOTE
         </a>
       </div>

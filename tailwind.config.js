@@ -11,6 +11,9 @@ module.exports = {
           700: '#b91c1c',
         },
       },
+      height: {
+        '23': '5.75rem', // 92px
+      },
       animation: {
         'fade-in': 'fadeIn 1s ease-out',
         'slide-up': 'slideUp 1s cubic-bezier(0.4,0,0.2,1)',
