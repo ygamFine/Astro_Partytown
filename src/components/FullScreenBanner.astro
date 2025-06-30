@@ -3,26 +3,27 @@
 ---
 
 <!-- Preload critical banner images for LCP optimization -->
-<link rel="preload" as="image" href="/images/optimized/banner3.webp" type="image/webp" fetchpriority="high">
-<link rel="preload" as="image" href="/images/optimized/banner222.webp" type="image/webp" fetchpriority="low">
-<link rel="preload" as="image" href="/images/optimized/banner.webp" type="image/webp" fetchpriority="low">
+<link rel="preload" as="image" href="/images/optimized/banner3-optimized.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="/images/optimized/banner3.jpg" type="image/jpeg" fetchpriority="high">
 
 <section class="banner-container" id="banner-section">
   <!-- Banner Carousel -->
   <div class="banner-carousel">
-    <!-- Banner 1 -->
+    <!-- Banner 1 - LCP关键元素 -->
     <div class="banner-slide active">
       <picture>
-        <source srcset="/images/optimized/banner3.webp" type="image/webp">
+        <source media="(max-width: 768px)" srcset="/images/optimized/banner3-mobile.webp" type="image/webp">
+        <source srcset="/images/optimized/banner3-optimized.webp" type="image/webp">
         <img 
           src="/images/optimized/banner3.jpg" 
           alt="Banner 1" 
           class="banner-image"
           loading="eager"
           fetchpriority="high"
-          decoding="async"
+          decoding="sync"
           width="1920"
           height="400"
+          style="content-visibility: auto;"
         />
       </picture>
     </div>
@@ -30,6 +31,7 @@
     <!-- Banner 2 -->
     <div class="banner-slide">
       <picture>
+        <source media="(max-width: 768px)" srcset="/images/optimized/banner222-mobile.webp" type="image/webp">
         <source srcset="/images/optimized/banner222.webp" type="image/webp">
         <img 
           src="/images/optimized/banner222.jpg" 
@@ -46,6 +48,7 @@
     <!-- Banner 3 -->
     <div class="banner-slide">
       <picture>
+        <source media="(max-width: 768px)" srcset="/images/optimized/banner-mobile.webp" type="image/webp">
         <source srcset="/images/optimized/banner.webp" type="image/webp">
         <img 
           src="/images/optimized/banner.jpg" 

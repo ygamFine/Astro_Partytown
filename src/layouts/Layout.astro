@@ -26,8 +26,16 @@ const {
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 - LCP优化 -->
-    <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" />
+    <!-- 关键资源预加载 - LCP优化，移动端优先 -->
+    <link rel="preload" href="/images/optimized/banner3-mobile.webp" as="image" type="image/webp" media="(max-width: 768px)" fetchpriority="high" />
+    <link rel="preload" href="/images/optimized/banner3-optimized.webp" as="image" type="image/webp" media="(min-width: 769px)" fetchpriority="high" />
+    <link rel="preload" href="/images/optimized/banner3.jpg" as="image" type="image/jpeg" fetchpriority="high" />
+    
+    <!-- DNS预连接优化 - 立即执行 -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="//cdn.jsdelivr.net" crossorigin />
     
     <!-- SEO优化 -->
     <meta name="keywords" content="滑移装载机,工程机械,建筑设备,山东永安,YONAN" />
@@ -36,29 +44,30 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
-    <!-- 超级精简的关键CSS - 仅LCP -->
+    <!-- 超级精简的关键CSS - 仅LCP和CLS -->
     <style>
       *{margin:0;padding:0;box-sizing:border-box}
-      html{font-size:10px}
-      body{font-family:system-ui,sans-serif;line-height:1.5;color:#333;background:#fff}
+      html{font-size:10px;font-display:swap}
+      body{font-family:system-ui,sans-serif;line-height:1.5;color:#333;background:#fff;font-display:swap}
       
-      /* Banner关键样式 - 防止CLS */
-      .banner-container{position:relative;width:100%;height:400px;overflow:hidden;background:#f5f5f5}
+      /* Banner关键样式 - LCP优化 */
+      .banner-container{position:relative;width:100%;height:400px;overflow:hidden;background:#f5f5f5;contain:layout style paint;transform:translateZ(0)}
       @media (max-width:768px){.banner-container{height:250px}}
-      .banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.5s}
+      .banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;will-change:opacity}
       .banner-slide.active{opacity:1}
-      .banner-slide img{width:100%;height:100%;object-fit:cover;display:block}
+      .banner-slide img{width:100%;height:100%;object-fit:cover;display:block;transform:translateZ(0)}
       
-      /* Header基础 */
-      .tevis-header{position:relative;z-index:50}
+      /* Header基础 - 避免CLS */
+      .tevis-header{position:relative;z-index:50;contain:layout}
       .main-header{background:#374151;color:#fff;height:99px}
       @media (max-width:768px){.main-header{background:#334155;height:60px}}
       .header-content{display:flex;align-items:center;justify-content:space-between;height:100%}
       .nav-menu{background:#dc2626;height:60px}
       .mobile-menu.hidden{display:none}
       
-      /* 加载指示器 */
+      /* 性能优化 */
       .loading{opacity:0;pointer-events:none}
+      img{image-rendering:optimizequality}
     </style>
 
     <title>{title}</title>
@@ -72,56 +81,77 @@ const {
 
     <FooterSection />
 
-    <!-- 延迟加载所有非关键资源 -->
+    <!-- 极速优化加载策略 -->
     <script>
-      // 页面加载完成后再加载样式和脚本
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          // 加载CSS
-          var link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = '/_astro/index.css';
-          document.head.appendChild(link);
-          
-          // 加载所有组件脚本
-          var scripts = [
-            '/_astro/header.js',
-            '/_astro/banner.js', 
-            '/_astro/footer.js'
-          ];
-          
-          scripts.forEach(function(src, index) {
-            setTimeout(function() {
-              var script = document.createElement('script');
-              script.src = src;
-              script.async = true;
-              document.head.appendChild(script);
-            }, index * 100);
-          });
-        }, 500);
-      });
+      // 立即加载关键CSS
+      var criticalCSS = document.createElement('link');
+      criticalCSS.rel = 'stylesheet';
+      criticalCSS.href = '/_astro/index.css';
+      criticalCSS.media = 'print';
+      criticalCSS.onload = function() { 
+        criticalCSS.media = 'all'; 
+        criticalCSS.onload = null; 
+      };
+      document.head.appendChild(criticalCSS);
       
-      // 超级延迟的第三方脚本
+      // 页面可见后再加载脚本
+      if (document.readyState !== 'loading') {
+        loadScripts();
+      } else {
+        document.addEventListener('DOMContentLoaded', loadScripts);
+      }
+      
+      function loadScripts() {
+        // 使用requestIdleCallback延迟加载脚本
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(function() {
+            loadComponentScripts();
+          });
+        } else {
+          setTimeout(loadComponentScripts, 100);
+        }
+      }
+      
+      function loadComponentScripts() {
+        var scripts = ['/_astro/header.js', '/_astro/banner.js', '/_astro/footer.js'];
+        scripts.forEach(function(src, index) {
+          setTimeout(function() {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            document.head.appendChild(script);
+          }, index * 50);
+        });
+      }
+      
+      // Partytown脚本 - 在Web Worker中运行，不阻塞主线程
       setTimeout(function() {
-        // Google Analytics
+        // Google Analytics - 使用Partytown在Web Worker中运行
         var ga = document.createElement('script');
         ga.async = true;
+        ga.type = 'text/partytown';
         ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
         document.head.appendChild(ga);
         
-        ga.onload = function() {
-          (window as any).dataLayer = (window as any).dataLayer || [];
-          function gtag(...args: any[]){((window as any).dataLayer).push(args);}
+        var gaConfig = document.createElement('script');
+        gaConfig.type = 'text/partytown';
+        gaConfig.innerHTML = `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-71JP66YM5X');
-        };
+          gtag('config', 'G-71JP66YM5X', {
+            page_title: document.title,
+            page_location: window.location.href
+          });
+        `;
+        document.head.appendChild(gaConfig);
         
-        // 客服系统
+        // 华智云客服系统 - 延迟加载但在主线程运行
         var cs = document.createElement("script");
         cs.src = "https://oss.huazhi.cloud/hzchat/dist/livechat.js";
         cs.async = true;
         document.head.appendChild(cs);
-      }, 8000);
+      }, 5000);
     </script>
   </body>
 </html>
