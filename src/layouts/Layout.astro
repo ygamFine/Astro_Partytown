@@ -22,19 +22,26 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- DNS预连接优化 -->
+    <!-- DNS预连接优化 - 减少网络延迟 -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="//cdn.huazhi.cloud" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     
     <!-- 性能提示 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 - 优化LCP -->
+    <!-- 关键资源预加载 - 优化LCP性能 -->
     <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
     <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
     <link rel="preload" href="/images/shouji-banner1-mobile.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    
+    <!-- 热销产品图片预加载 - 提升Core Web Vitals -->
+    <link rel="preload" href="/images/skid1-400.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/images/backhoe-400.webp" as="image" />
+    <link rel="preload" href="/images/telescopic-400.webp" as="image" />
     
     <!-- SEO优化 -->
     <meta
@@ -286,15 +293,19 @@ const {
       });
     </script>
 
-  <script>
-  var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
-    hm.setAttribute('_extID',"309-313-7n1iAECE");
-      var s = document.getElementsByTagName("script")[0]; 
-      s.parentNode.insertBefore(hm, s);
-    })();
+  <!-- 将客服脚本移到Partytown，避免阻塞主线程 -->
+  <script type="text/partytown">
+    // 延迟加载客服脚本，减少对性能的影响
+    setTimeout(() => {
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
+        hm.setAttribute('_extID',"309-313-7n1iAECE");
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    }, 2000); // 2秒后加载，优先保证核心内容
   </script>
 
     <FooterSection />
