@@ -31,11 +31,10 @@ const {
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 -->
+    <!-- 关键资源预加载 - 优化LCP -->
     <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
     <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/optimized/banner3.jpg" as="image" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/shouji-banner1.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    <link rel="preload" href="/shouji-banner1.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
     
     <!-- SEO优化 -->
     <meta
@@ -49,12 +48,8 @@ const {
 
     <!-- LCP关键图片预加载 - 最高优先级 -->
     <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)">
-    <!-- 移动端Banner预加载 - WebP优先 -->
-    <link rel="preload" href="/shouji-banner1.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
-    <!-- 移动端Banner预加载 - JPEG后备 -->
-    <link rel="preload" href="/shouji-banner1.jpg" as="image" type="image/jpeg" fetchpriority="high" media="(max-width: 768px) and (not (image-type: webp))">
 
-    <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
+    <!-- 关键CSS内联 - 防止CLS，立即渲染 -->
     <style>
       /* 全局重置和基础样式 */
       *, *::before, *::after {
@@ -65,7 +60,7 @@ const {
       
       html {
         scroll-behavior: smooth;
-        font-size: 10px; /* 根字体大小设置为10px */
+        font-size: 10px;
       }
 
       body {
@@ -76,17 +71,9 @@ const {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-text-size-adjust: 100%;
-        font-display: swap; /* 优化字体加载 */
       }
       
-      /* 桌面端字体 */
-      @media (min-width: 769px) {
-        body {
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      }
-      }
-      
-      /* 关键布局样式 */
+      /* 关键布局样式 - 防止CLS */
       .container {
         max-width: 80rem;
         margin-left: auto;
@@ -95,7 +82,7 @@ const {
         padding-right: 1rem;
       }
       
-      /* Banner关键样式 - 避免CLS */
+      /* Banner关键样式 - 防止CLS，预设尺寸 */
       .mobile-full-width {
         position: relative;
         width: 100%;
@@ -106,154 +93,65 @@ const {
       @media (max-width: 768px) {
         .mobile-full-width {
           width: 100vw;
-          height: auto;
+          height: 200px;
           left: 50%;
           margin-left: -50vw;
         }
       }
-      
-      .banner-slide {
-        position: absolute;
-        top: 0;
-        left: 0;
+
+      /* 防止CLS的图片容器 */
+      .banner-container {
         width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.8s ease-in-out;
-      }
-      
-      .banner-slide.active {
-        opacity: 1;
-      }
-      
-      .banner-slide img {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        object-position: center;
-        display: block;
-      }
-      
-      .grid {
-        display: grid;
-      }
-      
-      .md\\:grid-cols-2 {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-      }
-      
-      @media (min-width: 768px) {
-        .md\\:grid-cols-2 {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-      
-      .gap-8 {
-        gap: 2rem;
-      }
-      
-      .items-center {
-        align-items: center;
-      }
-      
-      /* Header样式 */
-      header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(12px);
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-      
-      /* 防止菜单闪动 */
-      .bg-red-600 {
-        visibility: visible !important;
-      }
-      
-      /* 确保导航菜单立即可见 */
-      nav[aria-label="主要导航"] {
-        visibility: visible !important;
-        opacity: 1 !important;
-      }
-      
-      /* Hero区域关键样式 */
-      .hero-mobile {
+        height: 400px;
         position: relative;
-        background: #fff;
-        padding-top: 6rem;
-        padding-bottom: 6rem;
         overflow: hidden;
       }
-      
+
       @media (max-width: 768px) {
-        .hero-mobile {
-          padding: 2rem 1rem;
-          text-align: center;
+        .banner-container {
+          height: 200px;
         }
       }
-      
-      /* 标题样式 */
-      h1 {
-        font-size: 2.25rem;
-        line-height: 2.5rem;
-        font-weight: 800;
-        color: #1f2937;
-        letter-spacing: -0.025em;
-        line-height: 1.25;
-        }
 
-      @media (min-width: 768px) {
-        h1 {
-          font-size: 3rem;
-          line-height: 1;
-        }
-      }
-      
-      @media (min-width: 1024px) {
-        h1 {
-          font-size: 3.75rem;
-          line-height: 1;
-        }
-        }
-
-      .text-red-600 {
-        color: #dc2626;
-        }
-
-      /* 图片容器优化 */
-      .img-container {
-        position: relative;
+      .banner-container img {
         width: 100%;
-        max-width: 32rem;
-        margin-left: auto;
-        margin-right: auto;
-        }
-
-      @media (min-width: 768px) {
-        .img-container {
-          max-width: none;
-        }
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
       }
-      
-      .img-container img {
+
+      /* 产品卡片预设尺寸 - 防止CLS */
+      .product-card {
         width: 100%;
-        height: auto;
-        object-fit: contain;
+        height: 320px;
+        display: block;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: #f9fafb;
+      }
+
+      .product-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      /* 导航菜单关键样式 */
+      .menu-item.active {
+        color: #fbbf24;
+        font-weight: bold;
+      }
+
+      /* Header固定高度 - 防止CLS */
+      header {
+        height: 80px;
         position: relative;
-        z-index: 10;
-        }
-      
-      /* 移动端图片优化 */
+        z-index: 50;
+      }
+
       @media (max-width: 768px) {
-        .img-container img {
-          max-width: 280px;
-          margin: 1rem auto;
-        }
-
-        /* 隐藏装饰元素 */
-        .decorative {
-          display: none;
+        header {
+          height: 60px;
         }
       }
 
@@ -261,19 +159,18 @@ const {
       .btn-primary {
         background: #dc2626;
         color: white;
-        padding: 0.75rem 2rem;
+        padding: 0.75rem 1.5rem;
         border-radius: 0.5rem;
         font-weight: 700;
-        font-size: 1.125rem;
         text-decoration: none;
         display: inline-block;
         transition: background-color 0.2s;
       }
-      
+
       .btn-primary:hover {
         background: #b91c1c;
       }
-      
+
       .btn-secondary {
         background: #e5e7eb;
         color: #1f2937;
@@ -357,7 +254,15 @@ const {
         margin-left: 1rem;
       }
 
-      /* CSS延迟加载优化 - 保留核心功能 */
+      /* 页面加载动画 - 轻量版 */
+      .animate-page-load {
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
     </style>
 
     <title>{title}</title>
@@ -369,47 +274,7 @@ const {
       <slot />
     </main>
 
-    <!-- 延迟加载非关键CSS - 避免阻塞渲染 -->
-    <script>
-      // 页面加载完成后再加载非关键CSS
-      (function() {
-        function loadNonCriticalCSS() {
-          // 智能检测当前页面需要的CSS
-          var currentPath = window.location.pathname;
-          var cssToLoad = [];
-          
-          // 根据页面路径确定需要加载的CSS
-          if (currentPath.indexOf('/about') !== -1) {
-            cssToLoad.push('/_astro/about.DUuG_13O.css');
-          } else {
-            // 首页和其他页面使用同一个CSS文件
-            cssToLoad.push('/_astro/index.0KiwQODs.css');
-          }
-          
-                     // 延迟加载CSS文件
-          for (var i = 0; i < cssToLoad.length; i++) {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = cssToLoad[i];
-            link.media = 'print';
-            link.onload = function() {
-              link.media = 'all';
-            };
-            document.head.appendChild(link);
-          }
-        }
-
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(loadNonCriticalCSS, 100);
-          });
-        } else {
-          setTimeout(loadNonCriticalCSS, 100);
-        }
-      })();
-    </script>
-
-    <!-- Google Analytics - 使用Partytown在Web Worker中运行 -->
+    <!-- 使用Partytown将Analytics移到Web Worker - 减少主线程阻塞 -->
     <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
     <script type="text/partytown">
       window.dataLayer = window.dataLayer || [];
@@ -419,58 +284,22 @@ const {
         page_title: document.title,
         page_location: window.location.href
       });
-      </script>
+    </script>
 
-    <!-- 华智云客服系统 - 主线程延迟加载方案 -->
-    <script>
-      // 华智云客服系统 - 在主线程中延迟加载以确保样式正常
-      (function() {
-        // 防止重复加载
-        if ((window as any).huazhiCloudInitialized || document.querySelector('script[_extID="309-313-7n1iAECE"]')) {
-          return;
-        }
-        
-        (window as any).huazhiCloudInitialized = true;
-        
-        // 延迟加载客服脚本
-        function loadCustomerService() {
-          console.log('开始加载华智云客服脚本...');
-          
-          var script = document.createElement("script");
+    <!-- 客服系统 - 使用Partytown减少主线程负担 -->
+    <script type="text/partytown">
+      // 在Web Worker中延迟加载客服系统
+      setTimeout(function() {
+        if (typeof document !== 'undefined') {
+          const script = document.createElement("script");
           script.src = "https://oss.huazhi.cloud/hzchat/dist/livechat.js";
           script.setAttribute("_extID", "309-313-7n1iAECE");
           script.async = true;
-          
-          script.onload = function() {
-            console.log('华智云客服脚本加载成功');
-          };
-          
-          script.onerror = function() {
-            console.error('华智云客服脚本加载失败，请检查网络连接');
-          };
-          
-          // 插入到head中
           document.head.appendChild(script);
         }
-        
-        // 页面完全加载后延迟加载客服
-        function initCustomerService() {
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-              // 页面加载完成后3秒再加载客服，减少对页面性能的影响
-              setTimeout(loadCustomerService, 3000);
-            });
-          } else {
-            // 如果页面已经加载完成，立即延迟加载
-            setTimeout(loadCustomerService, 3000);
-        }
-        }
-        
-        // 开始初始化
-        initCustomerService();
-        
-      })();
+      }, 5000); // 5秒后加载，不影响关键渲染路径
     </script>
-      <FooterSection />
+
+    <FooterSection />
   </body>
 </html>
