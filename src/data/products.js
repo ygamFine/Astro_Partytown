@@ -19,7 +19,7 @@ export const products = [
       "符合人体工程学的驾驶室，视野开阔，舒适安全。",
       "快速更换附件系统，可搭配多种属具，一机多用。"
     ],
-    gallery: ["/skid1.webp", "/skid2.webp", "/skid3.webp"]
+    gallery: ["/images/skid1-400.webp", "/skid2.webp", "/skid3.webp"]
   },
   {
     id: 2,
@@ -41,7 +41,7 @@ export const products = [
       "集成的液压管路，方便安装破碎锤等多种附件。",
       "宽敞的空调驾驶室，提供全天候舒适工作环境。"
     ],
-    gallery: ["/backhoe.webp", "/skid4.webp", "/skid5.webp"]
+    gallery: ["/images/backhoe-400.webp", "/skid4.webp", "/skid5.webp"]
   },
   {
     id: 3,
@@ -63,7 +63,7 @@ export const products = [
       "多种转向模式（前轮、四轮、蟹行），适应不同场地需求。",
       "快速更换平台、吊钩、铲斗等多种附件。"
     ],
-    gallery: ["/telescopic.webp", "/skid-main.webp", "/factory.webp"]
+    gallery: ["/images/telescopic-400.webp", "/skid-main.webp", "/factory.webp"]
   },
   {
     id: 4,

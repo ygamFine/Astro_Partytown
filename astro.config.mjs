@@ -59,15 +59,16 @@ export default defineConfig({
     },
     
     css: {
-      preprocessorOptions: {
-        sourceMap: false,
-      },
+      devSourcemap: false,
     },
   },
   
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: 268402689,
+      },
     },
     domains: ['localhost'],
   },
