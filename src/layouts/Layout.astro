@@ -31,11 +31,9 @@ const {
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 -->
-    <link rel="preload" href="/images/logo.png.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/optimized/banner3.jpg" as="image" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/shouji-banner1.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    <!-- 关键资源预加载 - 优化优先级 -->
+    <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" />
+    <link rel="preload" href="/images/logo.png.webp" as="image" fetchpriority="low" />
     
     <!-- SEO优化 -->
     <meta
@@ -56,206 +54,17 @@ const {
 
     <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
     <style>
-      /* 全局重置和基础样式 */
-      *, *::before, *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      /* 全局重置和基础样式 - 最小化关键CSS */
+      *{box-sizing:border-box;margin:0;padding:0}
+      html{scroll-behavior:smooth;font-size:10px}
+      body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;line-height:1.6;color:#333;background:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-display:swap}
       
-      html {
-        scroll-behavior: smooth;
-        font-size: 10px; /* 根字体大小设置为10px */
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background: #fff;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-text-size-adjust: 100%;
-        font-display: swap; /* 优化字体加载 */
-      }
-      
-      /* 桌面端字体 */
-      @media (min-width: 769px) {
-        body {
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      }
-      }
-      
-      /* 关键布局样式 */
-      .container {
-        max-width: 80rem;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-      
-      /* Banner关键样式 - 避免CLS */
-      .mobile-full-width {
-        position: relative;
-        width: 100%;
-        height: 400px;
-        overflow: hidden;
-      }
-      
-      @media (max-width: 768px) {
-        .mobile-full-width {
-          width: 100vw;
-          height: auto;
-          left: 50%;
-          margin-left: -50vw;
-        }
-      }
-      
-      .banner-slide {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.8s ease-in-out;
-      }
-      
-      .banner-slide.active {
-        opacity: 1;
-      }
-      
-      .banner-slide img {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        object-position: center;
-        display: block;
-      }
-      
-      .grid {
-        display: grid;
-      }
-      
-      .md\\:grid-cols-2 {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-      }
-      
-      @media (min-width: 768px) {
-        .md\\:grid-cols-2 {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-      
-      .gap-8 {
-        gap: 2rem;
-      }
-      
-      .items-center {
-        align-items: center;
-      }
-      
-      /* Header样式 */
-      header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(12px);
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-      }
-      
-      /* 防止菜单闪动 */
-      .bg-red-600 {
-        visibility: visible !important;
-      }
-      
-      /* 确保导航菜单立即可见 */
-      nav[aria-label="主要导航"] {
-        visibility: visible !important;
-        opacity: 1 !important;
-      }
-      
-      /* Hero区域关键样式 */
-      .hero-mobile {
-        position: relative;
-        background: #fff;
-        padding-top: 6rem;
-        padding-bottom: 6rem;
-        overflow: hidden;
-      }
-      
-      @media (max-width: 768px) {
-        .hero-mobile {
-          padding: 2rem 1rem;
-          text-align: center;
-        }
-      }
-      
-      /* 标题样式 */
-      h1 {
-        font-size: 2.25rem;
-        line-height: 2.5rem;
-        font-weight: 800;
-        color: #1f2937;
-        letter-spacing: -0.025em;
-        line-height: 1.25;
-        }
-
-      @media (min-width: 768px) {
-        h1 {
-          font-size: 3rem;
-          line-height: 1;
-        }
-      }
-      
-      @media (min-width: 1024px) {
-        h1 {
-          font-size: 3.75rem;
-          line-height: 1;
-        }
-        }
-
-      .text-red-600 {
-        color: #dc2626;
-        }
-
-      /* 图片容器优化 */
-      .img-container {
-        position: relative;
-        width: 100%;
-        max-width: 32rem;
-        margin-left: auto;
-        margin-right: auto;
-        }
-
-      @media (min-width: 768px) {
-        .img-container {
-          max-width: none;
-        }
-      }
-      
-      .img-container img {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        position: relative;
-        z-index: 10;
-        }
-      
-      /* 移动端图片优化 */
-      @media (max-width: 768px) {
-        .img-container img {
-          max-width: 280px;
-          margin: 1rem auto;
-        }
-
-        /* 隐藏装饰元素 */
-        .decorative {
-          display: none;
-        }
-      }
+      /* Banner关键样式 - 避免CLS，最小化CSS */
+      .mobile-full-width{position:relative;width:100%;height:400px;overflow:hidden}
+      @media (max-width:768px){.mobile-full-width{width:100vw;height:auto;left:50%;margin-left:-50vw}}
+      .banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.8s ease-in-out}
+      .banner-slide.active{opacity:1}
+      .banner-slide img{width:100%;height:auto;object-fit:contain;object-position:center;display:block}
 
       /* 按钮样式 */
       .btn-primary {

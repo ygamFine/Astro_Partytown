@@ -117,28 +117,30 @@
   // Reset and start progress bar
   function resetProgress() {
     if (progressFill) {
-      progressFill.style.width = '0%';
-      console.log('Progress reset to 0%');
+      progressFill.style.transform = 'scaleX(0)';
     }
     pausedProgress = 0;
     stopProgress();
     startProgress();
   }
 
-  // Start progress bar animation - 优化性能
+  // Start progress bar animation - 高性能版本
   function startProgress() {
     if (!progressFill) return;
     
     isPaused = false;
     progressStartTime = Date.now() - (pausedProgress * slideInterval / 100);
     
-    // 使用requestAnimationFrame替代setInterval，性能更好
+    // 使用transform替代width变化，性能更好
     function updateProgress() {
       if (isPaused || !progressFill) return;
       
       const elapsed = Date.now() - progressStartTime;
       const progress = Math.min((elapsed / slideInterval) * 100, 100);
-      progressFill.style.width = `${progress}%`;
+      
+      // 使用transform替代width，避免重排
+      progressFill.style.transform = `scaleX(${progress / 100})`;
+      progressFill.style.transformOrigin = 'left';
       
       if (progress >= 100) {
         stopProgress();
@@ -362,14 +364,26 @@
     }
   }
 
-  // 页面加载时执行 - 延迟非关键操作
+  // 页面加载时执行 - 优化性能，减少阻塞
   function initBanner() {
-    ensureMobileFullWidth();
-    window.addEventListener('resize', ensureMobileFullWidth);
+    // 延迟非关键操作到页面空闲时执行
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        ensureMobileFullWidth();
+        startAutoSlide();
+      });
+    } else {
+      setTimeout(() => {
+        ensureMobileFullWidth();
+        startAutoSlide();
+      }, 100);
+    }
     
-    // 延迟启动自动播放，让页面先渲染
-    requestAnimationFrame(() => {
-      startAutoSlide();
+    // 监听resize事件，但使用节流
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(ensureMobileFullWidth, 150);
     });
   }
   
@@ -377,8 +391,7 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initBanner);
   } else {
-    // 如果DOM已加载，延迟执行避免阻塞渲染
-    setTimeout(initBanner, 0);
+    initBanner();
   }
 </script>
 
@@ -394,7 +407,7 @@
     box-sizing: border-box;
   }
   
-  /* Banner slide transitions - 使用transform优化性能 */
+  /* Banner slide transitions - 优化GPU加速 */
   .banner-slide {
     position: absolute;
     top: 0;
@@ -402,23 +415,25 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    transform: translateZ(0); /* 启用硬件加速 */
-    transition: opacity 0.8s ease-in-out;
-    will-change: opacity; /* 提示浏览器优化 */
+    transform: translate3d(0,0,0); /* 强制GPU加速 */
+    transition: opacity 0.6s ease-out; /* 缩短过渡时间 */
+    will-change: opacity;
+    contain: layout style paint; /* 优化渲染 */
   }
   
   .banner-slide.active {
     opacity: 1;
   }
   
-  /* Banner images - 确保移动端完全覆盖 */
+  /* Banner images - 优化性能 */
   .banner-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transform: translateZ(0); /* 硬件加速 */
-    backface-visibility: hidden; /* 避免重绘 */
+    transform: translate3d(0,0,0);
+    backface-visibility: hidden;
+    image-rendering: optimizeSpeed; /* 优化图片渲染 */
   }
   
   /* 移动端优化 - 宽度100%，高度自适应 */
@@ -463,10 +478,8 @@
       height: auto !important;
       object-fit: contain !important;
       object-position: center !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
       display: block !important;
+      transform: translate3d(0,0,0) !important; /* GPU加速 */
     }
     
     /* 移动端隐藏桌面版进度条控制器 */
@@ -497,9 +510,13 @@
     }
   }
   
-  /* Progress bar styling */
+  /* Progress bar styling - 优化性能 */
   #progress-fill {
     background: white;
+    will-change: transform;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: none; /* 移除CSS过渡，使用JS控制 */
   }
   
   /* Slide labels styling */
