@@ -22,151 +22,45 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- DNS预连接优化 -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-    
     <!-- 性能提示 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 - 优化优先级 -->
+    <!-- 关键资源预加载 - 最高优先级首屏内容 -->
     <link rel="preload" href="/images/optimized/banner3.webp" as="image" type="image/webp" fetchpriority="high" />
-    <link rel="preload" href="/images/logo.png.webp" as="image" fetchpriority="low" />
+    <link rel="preload" href="/images/logo.png.webp" as="image" type="image/webp" fetchpriority="high" />
     
     <!-- SEO优化 -->
-    <meta
-      name="keywords"
-      content="滑移装载机,工程机械,建筑设备,山东永安,YONAN"
-    />
+    <meta name="keywords" content="滑移装载机,工程机械,建筑设备,山东永安,YONAN" />
     <meta name="author" content="山东永安建设机械集团有限公司" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
-    <!-- LCP关键图片预加载 - 最高优先级 -->
-    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)">
-    <!-- 移动端Banner预加载 - WebP优先 -->
-    <link rel="preload" href="/shouji-banner1.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
-    <!-- 移动端Banner预加载 - JPEG后备 -->
-    <link rel="preload" href="/shouji-banner1.jpg" as="image" type="image/jpeg" fetchpriority="high" media="(max-width: 768px) and (not (image-type: webp))">
-
-    <!-- 关键CSS内联 - 立即渲染，避免CSS阻塞 -->
+    <!-- 关键CSS内联 - 最小化首屏渲染阻塞 -->
     <style>
-      /* 全局重置和基础样式 - 最小化关键CSS */
+      /* 最小化CSS重置 - 仅包含核心必需样式 */
       *{box-sizing:border-box;margin:0;padding:0}
-      html{scroll-behavior:smooth;font-size:10px}
-      body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;line-height:1.6;color:#333;background:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-display:swap}
+      html{font-size:10px}
+      body{font-family:system-ui,sans-serif;line-height:1.6;color:#333;background:#fff}
       
-      /* Banner关键样式 - 避免CLS，最小化CSS */
-      .mobile-full-width{position:relative;width:100%;height:400px;overflow:hidden}
-      @media (max-width:768px){.mobile-full-width{width:100vw;height:auto;left:50%;margin-left:-50vw}}
-      .banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.8s ease-in-out}
+      /* Banner关键样式 - 避免布局偏移(CLS) */
+      .banner-container{position:relative;width:100%;height:400px;overflow:hidden;background:#f3f4f6}
+      @media (max-width:768px){.banner-container{height:250px}}
+      .banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.5s ease}
       .banner-slide.active{opacity:1}
-      .banner-slide img{width:100%;height:auto;object-fit:contain;object-position:center;display:block}
+      .banner-slide img{width:100%;height:100%;object-fit:cover;display:block}
+      
+      /* Header关键样式 - 避免CLS */
+      .tevis-header{position:relative;z-index:50}
+      .main-header{background:#374151;color:#fff;height:99px}
+      @media (max-width:768px){.main-header{background:#334155;height:60px}}
+      .header-content{display:flex;align-items:center;justify-content:space-between;height:100%}
+      .logo-image{height:23px}
+      @media (max-width:768px){.logo-image{height:32px}}
+      .nav-menu{background:#dc2626;height:60px}
+      .mobile-menu.hidden{display:none}
 
-      /* 按钮样式 */
-      .btn-primary {
-        background: #dc2626;
-        color: white;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
-        font-weight: 700;
-        font-size: 1.125rem;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.2s;
-      }
-      
-      .btn-primary:hover {
-        background: #b91c1c;
-      }
-      
-      .btn-secondary {
-        background: #e5e7eb;
-        color: #1f2937;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
-        font-weight: 700;
-        font-size: 1.125rem;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.2s;
-      }
-
-      .btn-secondary:hover {
-        background: #d1d5db;
-      }
-
-      /* 文本样式 */
-      .text-lg {
-        font-size: 1.125rem;
-        line-height: 1.75rem;
-      }
-
-      @media (min-width: 768px) {
-        .text-lg {
-          font-size: 1.25rem;
-          line-height: 1.75rem;
-        }
-      }
-      
-      .text-gray-700 {
-        color: #374151;
-      }
-
-      .mt-6 {
-        margin-top: 1.5rem;
-      }
-      
-      .mt-8 {
-        margin-top: 2rem;
-      }
-      
-      .max-w-md {
-        max-width: 28rem;
-      }
-      
-      .mx-auto {
-        margin-left: auto;
-        margin-right: auto;
-      }
-      
-      @media (min-width: 768px) {
-        .md\\:mx-0 {
-          margin-left: 0;
-          margin-right: 0;
-      }
-
-        .md\\:text-left {
-          text-align: left;
-      }
-      }
-      
-      .text-center {
-        text-align: center;
-      }
-      
-      .flex {
-        display: flex;
-      }
-      
-      .justify-center {
-        justify-content: center;
-      }
-
-      @media (min-width: 768px) {
-        .md\\:justify-start {
-          justify-content: flex-start;
-        }
-      }
-      
-      .space-x-4 > :not([hidden]) ~ :not([hidden]) {
-        margin-left: 1rem;
-      }
-
-      /* CSS延迟加载优化 - 保留核心功能 */
     </style>
 
     <title>{title}</title>
@@ -178,42 +72,45 @@ const {
       <slot />
     </main>
 
-    <!-- 延迟加载非关键CSS - 避免阻塞渲染 -->
+    <!-- 性能优化脚本 - 最小化阻塞时间 -->
     <script>
-      // 页面加载完成后再加载非关键CSS
+      // 立即执行的性能优化
       (function() {
-        function loadNonCriticalCSS() {
-          // 智能检测当前页面需要的CSS
-          var currentPath = window.location.pathname;
-          var cssToLoad = [];
-          
-          // 根据页面路径确定需要加载的CSS
-          if (currentPath.indexOf('/about') !== -1) {
-            cssToLoad.push('/_astro/about.DUuG_13O.css');
-          } else {
-            // 首页和其他页面使用同一个CSS文件
-            cssToLoad.push('/_astro/index.0KiwQODs.css');
-          }
-          
-                     // 延迟加载CSS文件
-          for (var i = 0; i < cssToLoad.length; i++) {
+        // 预连接重要域名 - 延迟到页面开始加载后
+        var preconnects = ['//fonts.googleapis.com', '//cdn.jsdelivr.net'];
+        setTimeout(function() {
+          preconnects.forEach(function(url) {
             var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = cssToLoad[i];
-            link.media = 'print';
-            link.onload = function() {
-              link.media = 'all';
-            };
+            link.rel = 'preconnect';
+            link.href = url;
             document.head.appendChild(link);
-          }
+          });
+        }, 1000);
+        
+        // CSS懒加载优化 - 减少首屏渲染阻塞
+        function loadCSS(href: string) {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = href;
+          link.media = 'print';
+          link.onload = function() {
+            link.media = 'all';
+          };
+          document.head.appendChild(link);
         }
-
+        
+        // 页面加载完成后延迟加载CSS
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(loadNonCriticalCSS, 100);
+            setTimeout(function() {
+              // 延迟加载全局样式，优先显示内容
+              loadCSS('/src/styles/global.css');
+            }, 1000);
           });
         } else {
-          setTimeout(loadNonCriticalCSS, 100);
+          setTimeout(function() {
+            loadCSS('/src/styles/global.css');
+          }, 1000);
         }
       })();
     </script>
