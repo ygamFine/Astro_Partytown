@@ -1,68 +1,67 @@
 ---
 import SocialIcons from './SocialIcons.astro';
 ---
-<footer class="bg-gray-800 text-gray-300 pt-16 pb-8">
+<footer class="footer-section">
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+    <div class="footer-grid">
       
       <!-- About Section -->
-      <div class="space-y-6">
-        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">About</h3>
-        <div class="space-y-4">
-          <a href="/about" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Advantages</a>
+      <div class="footer-column">
+        <h3 class="footer-title">About</h3>
+        <div class="footer-links">
+          <a href="/about" class="footer-link">Advantages</a>
         </div>
         
         <!-- Company Logo -->
-        <div class="mt-8">
-          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="h-16 w-auto">
+        <div class="footer-logo">
+          <img src="/images/logo.png.webp" alt="TEVIS Logo" class="logo-image">
         </div>
       </div>
 
       <!-- Products Section -->
-      <div class="space-y-6">
-        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">Products</h3>
-        <div class="space-y-4">
-          <a href="/products?category=挖掘装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Backhoe Loader</a>
-          <a href="/products/pile-driver" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Pile Driver</a>
-          <a href="/products?category=伸缩臂叉装车" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Telehandler</a>
-          <a href="/products?category=滑移装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Skid Steer Loader</a>
-          <a href="/products/telescopic-forklift" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Telescopic Forklift</a>
-          <a href="/products/truck-parts" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Truck Parts</a>
+      <div class="footer-column">
+        <h3 class="footer-title">Products</h3>
+        <div class="footer-links">
+          <a href="/products?category=挖掘装载机" class="footer-link">Backhoe Loader</a>
+          <a href="/products/pile-driver" class="footer-link">Pile Driver</a>
+          <a href="/products?category=伸缩臂叉装车" class="footer-link">Telehandler</a>
+          <a href="/products?category=滑移装载机" class="footer-link">Skid Steer Loader</a>
+          <a href="/products/telescopic-forklift" class="footer-link">Telescopic Forklift</a>
+          <a href="/products/truck-parts" class="footer-link">Truck Parts</a>
         </div>
       </div>
 
       <!-- Contact Us Section -->
-      <div class="space-y-6">
-        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">Contact Us</h3>
-        <div class="space-y-4">
-          <div class="text-3xl">
-            <p class="text-gray-300">Contact: <span class="text-white">Mr. Lei</span></p>
+      <div class="footer-column">
+        <h3 class="footer-title">Contact Us</h3>
+        <div class="contact-info">
+          <div class="contact-item">
+            <p class="contact-label">Contact: <span class="contact-value">Mr. Lei</span></p>
           </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">Phone: <span class="text-white">+8615069038877</span></p>
+          <div class="contact-item">
+            <p class="contact-label">Phone: <span class="contact-value">+8615069038877</span></p>
           </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">WhatsApp: <span class="text-white">+8618353161619</span></p>
+          <div class="contact-item">
+            <p class="contact-label">WhatsApp: <span class="contact-value">+8618353161619</span></p>
           </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">Email: <span class="text-white">leiyang0501@163.com</span></p>
+          <div class="contact-item">
+            <p class="contact-label">Email: <span class="contact-value">leiyang0501@163.com</span></p>
           </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">Address: <span class="text-white">No.12300 Longquan Road,</span></p>
-            <p class="text-white ml-0">Zaoyuan Street, Zhangqiu District, Jinan</p>
-            <p class="text-white ml-0">City, Shandong Province, China</p>
+          <div class="contact-item">
+            <p class="contact-label">Address:</p>
+            <p class="contact-value address">No.12300 Longquan Road, Zaoyuan Street, Zhangqiu District, Jinan City, Shandong Province, China</p>
           </div>
         </div>
 
         <!-- Social Icons -->
-        <div class="flex space-x-4 mt-6">
-          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+        <div class="social-icons">
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
             </svg>
           </a>
-          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
             </svg>
           </a>
@@ -70,39 +69,39 @@ import SocialIcons from './SocialIcons.astro';
       </div>
 
       <!-- Request a Quote Form -->
-      <div class="space-y-6">
-        <div class="bg-gray-700 p-6 rounded-lg">
-          <h3 class="text-4xl font-bold text-white uppercase tracking-wide mb-6 text-center">Request a Quote</h3>
-          <form class="space-y-4" id="quote-form">
+      <div class="footer-column">
+        <div class="quote-form-container">
+          <h3 class="quote-title">Request a Quote</h3>
+          <form class="quote-form" id="quote-form">
             <input 
               type="text" 
               name="name" 
               placeholder="Name" 
               required
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              class="form-input"
             />
             <input 
               type="email" 
               name="email" 
               placeholder="Email" 
               required
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              class="form-input"
             />
             <input 
               type="tel" 
               name="phone" 
               placeholder="Telephone" 
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              class="form-input"
             />
             <textarea 
               name="message" 
               placeholder="Message" 
               rows="4"
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+              class="form-textarea"
             ></textarea>
             <button 
               type="submit"
-              class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md transition-colors duration-200 uppercase tracking-wide"
+              class="form-submit"
             >
               Send
             </button>
@@ -112,115 +111,570 @@ import SocialIcons from './SocialIcons.astro';
     </div>
 
     <!-- Footer Bottom -->
-    <div class="mt-16 pt-8 border-t border-gray-700">
-      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <div class="text-center md:text-left">
-          <p class="text-gray-400 text-2xl">Copyright © 2024-2025 Shandong Yongan construction Machinery Group Co.,LTD All rights reserved.</p>
-          <p class="text-gray-400 mt-1 text-2xl">Technical Support: Huazhi</p>
+    <div class="footer-bottom">
+      <div class="footer-bottom-content">
+        <div class="copyright">
+          <p class="copyright-text">Copyright © 2024-2025 Shandong Yongan construction Machinery Group Co.,LTD All rights reserved.</p>
+          <p class="support-text">Technical Support: Huazhi</p>
         </div>
         
         <!-- Language Selector -->
-                  <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2">
-              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM0Mjg1RjQiLz4KPHBhdGggZD0iTTIgMTBoMTZNMTAgMmExNS4zIDE1LjMgMCAwIDEgNCA5IDE1LjMgMTUuMyAwIDAgMS00IDkgMTUuMyAxNS4zIDAgMCAxLTQtOSAxNS4zIDE1LjMgMCAwIDEgNC05eiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=" alt="Globe" class="w-7 h-7">
-              <span class="text-white font-medium text-2xl">英</span>
-              <span class="text-gray-400 text-2xl">|</span>
-              <span class="text-gray-400 text-2xl">中</span>
-              <span class="text-gray-400 text-2xl">|</span>
-              <span class="text-gray-400 text-2xl">日</span>
-            </div>
-          
-
+        <div class="language-selector">
+          <div class="language-options">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM0Mjg1RjQiLz4KPHBhdGggZD0iTTIgMTBoMTZNMTAgMmExNS4zIDE1LjMgMCAwIDEgNCA5IDE1LjMgMTUuMyAwIDAgMS00IDkgMTUuMyAxNS4zIDAgMCAxLTQtOSAxNS4zIDE1LjMgMCAwIDEgNC05eiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=" alt="Globe" class="globe-icon">
+            <span class="language-active">英</span>
+            <span class="language-divider">|</span>
+            <span class="language-option">中</span>
+            <span class="language-divider">|</span>
+            <span class="language-option">日</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </footer>
 
-<!-- Back to Top Button - Fixed Position -->
+<!-- Back to Top Button -->
 <button 
   id="back-to-top"
-  class="fixed bottom-12 right-6 z-50 bg-gray-300 hover:bg-gray-400 text-red-600 hover:text-red-500 p-4 rounded-full shadow-lg transition-all duration-300"
+  class="back-to-top"
   aria-label="Back to top"
 >
-  <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg class="back-to-top-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
   </svg>
 </button>
 
 <script>
-  // Quote form submission
-  const quoteForm = document.getElementById('quote-form') as HTMLFormElement;
-  quoteForm?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    // Here you would typically send the data to your backend
-    console.log('Quote request:', data);
-    
-    // Show success message
-    alert('Thank you for your inquiry! We will contact you soon.');
-    
-    // Reset form
-    this.reset();
-  });
+  class FooterController {
+    private quoteForm: HTMLFormElement | null = null;
+    private backToTopButton: HTMLElement | null = null;
 
-  // Back to top functionality
-  document.getElementById('back-to-top')?.addEventListener('click', function() {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
+    constructor() {
+      this.init();
+    }
 
-  // Show/hide back to top button based on scroll
-  window.addEventListener('scroll', function() {
-    const backToTop = document.getElementById('back-to-top');
-    if (backToTop) {
-      if (window.scrollY > 300) {
-        backToTop.style.opacity = '1';
-        backToTop.style.visibility = 'visible';
+    private init() {
+      this.setupElements();
+      this.setupQuoteForm();
+      this.setupBackToTop();
+    }
+
+    private setupElements() {
+      this.quoteForm = document.getElementById('quote-form') as HTMLFormElement;
+      this.backToTopButton = document.getElementById('back-to-top');
+    }
+
+    private setupQuoteForm() {
+      if (!this.quoteForm) return;
+
+      this.quoteForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleQuoteSubmission();
+      });
+    }
+
+    private handleQuoteSubmission() {
+      if (!this.quoteForm) return;
+
+      // Get form data
+      const formData = new FormData(this.quoteForm);
+      const data = Object.fromEntries(formData);
+      
+      // Log data (replace with actual API call)
+      console.log('Quote request:', data);
+      
+      // Show success message
+      this.showSuccessMessage();
+      
+      // Reset form
+      this.quoteForm.reset();
+    }
+
+    private showSuccessMessage() {
+      // Create and show success message
+      const message = document.createElement('div');
+      message.className = 'success-message';
+      message.textContent = 'Thank you for your inquiry! We will contact you soon.';
+      
+      document.body.appendChild(message);
+      
+      // Remove message after 3 seconds
+      setTimeout(() => {
+        message.remove();
+      }, 3000);
+    }
+
+    private setupBackToTop() {
+      if (!this.backToTopButton) return;
+
+      // Click handler
+      this.backToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+
+      // Show/hide based on scroll
+      let scrollThrottle: number | null = null;
+      
+      window.addEventListener('scroll', () => {
+        if (scrollThrottle) return;
+
+        scrollThrottle = requestAnimationFrame(() => {
+          this.updateBackToTopVisibility();
+          scrollThrottle = null;
+        });
+      });
+
+      // Initial check
+      this.updateBackToTopVisibility();
+    }
+
+    private updateBackToTopVisibility() {
+      if (!this.backToTopButton) return;
+
+      const shouldShow = window.scrollY > 300;
+      
+      if (shouldShow) {
+        this.backToTopButton.style.opacity = '1';
+        this.backToTopButton.style.visibility = 'visible';
       } else {
-        backToTop.style.opacity = '0';
-        backToTop.style.visibility = 'hidden';
+        this.backToTopButton.style.opacity = '0';
+        this.backToTopButton.style.visibility = 'hidden';
       }
     }
-  });
+  }
 
+  // Initialize when DOM is ready
+  function initFooter() {
+    new FooterController();
+  }
 
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFooter);
+  } else {
+    initFooter();
+  }
 </script>
 
 <style>
-  #back-to-top {
+  /* Footer基础样式 */
+  .footer-section {
+    background-color: #1f2937; /* gray-800 */
+    color: #d1d5db; /* gray-300 */
+    padding: 4rem 0 2rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem;
+  }
+
+  /* 移动端布局 */
+  @media (max-width: 768px) {
+    .footer-section {
+      padding: 2rem 0 1rem;
+    }
+
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  /* Footer列 */
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Footer链接 */
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer-link {
+    color: #d1d5db;
+    font-size: 1.5rem;
+    transition: color 0.2s;
+    padding: 0.5rem 0;
+  }
+
+  .footer-link:hover {
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .footer-link {
+      font-size: 1.2rem;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  /* Logo */
+  .footer-logo {
+    margin-top: 2rem;
+  }
+
+  .logo-image {
+    height: 4rem;
+    width: auto;
+  }
+
+  @media (max-width: 768px) {
+    .footer-logo {
+      margin-top: 1rem;
+    }
+
+    .logo-image {
+      height: 3rem;
+    }
+  }
+
+  /* 联系信息 */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-item {
+    font-size: 1.5rem;
+  }
+
+  .contact-label {
+    color: #d1d5db;
+  }
+
+  .contact-value {
+    color: white;
+  }
+
+  .address {
+    margin-top: 0.5rem;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    .contact-item {
+      font-size: 1.2rem;
+    }
+  }
+
+  /* 社交图标 */
+  .social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-link {
+    color: #9ca3af;
+    transition: color 0.2s;
+    padding: 0.5rem;
+  }
+
+  .social-link:hover {
+    color: white;
+  }
+
+  .social-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .social-link {
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  /* 询价表单 */
+  .quote-form-container {
+    background-color: #374151; /* gray-700 */
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .quote-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .quote-form-container {
+      padding: 1rem;
+    }
+
+    .quote-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .quote-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #4b5563; /* gray-600 */
+    border: 1px solid #6b7280; /* gray-500 */
+    border-radius: 0.375rem;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+
+  .form-input::placeholder,
+  .form-textarea::placeholder {
+    color: #9ca3af; /* gray-400 */
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #dc2626; /* red-500 */
+    border-color: transparent;
+  }
+
+  .form-textarea {
+    resize: none;
+    min-height: 100px;
+  }
+
+  @media (max-width: 768px) {
+    .form-input,
+    .form-textarea {
+      min-height: 44px;
+      font-size: 1rem;
+    }
+  }
+
+  .form-submit {
+    width: 100%;
+    background-color: #dc2626; /* red-600 */
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .form-submit:hover {
+    background-color: #b91c1c; /* red-700 */
+  }
+
+  @media (max-width: 768px) {
+    .form-submit {
+      min-height: 44px;
+      font-size: 1rem;
+    }
+  }
+
+  /* Footer底部 */
+  .footer-bottom {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid #374151; /* gray-700 */
+  }
+
+  @media (max-width: 768px) {
+    .footer-bottom {
+      margin-top: 2rem;
+      padding-top: 1rem;
+    }
+  }
+
+  .footer-bottom-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-bottom-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+  }
+
+  .copyright {
+    flex: 1;
+  }
+
+  .copyright-text,
+  .support-text {
+    color: #9ca3af; /* gray-400 */
+    font-size: 1rem;
+    margin: 0.25rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .copyright-text,
+    .support-text {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* 语言选择器 */
+  .language-selector {
+    display: flex;
+    align-items: center;
+  }
+
+  .language-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .globe-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .language-active {
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+
+  .language-option {
+    color: #9ca3af;
+    font-size: 1rem;
+  }
+
+  .language-divider {
+    color: #9ca3af;
+    font-size: 1rem;
+  }
+
+  /* 返回顶部按钮 */
+  .back-to-top {
+    position: fixed;
+    bottom: 3rem;
+    right: 1.5rem;
+    z-index: 50;
+    background-color: #d1d5db; /* gray-300 */
+    color: #dc2626; /* red-600 */
+    padding: 1rem;
+    border-radius: 50%;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
   }
-  
-  /* Form styling improvements */
-  #quote-form input:focus,
-  #quote-form textarea:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+
+  .back-to-top:hover {
+    background-color: #e5e7eb; /* gray-400 */
+    color: #b91c1c; /* red-500 */
   }
-  
-  /* Chat button animation */
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
+
+  .back-to-top-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .back-to-top {
+      bottom: 2rem;
+      right: 1rem;
+      padding: 0.75rem;
     }
-    50% {
-      transform: scale(1.05);
+
+    .back-to-top-icon {
+      width: 1.5rem;
+      height: 1.5rem;
     }
   }
-  
-  #chat-button {
-    animation: pulse 2s infinite;
+
+  /* 成功消息 */
+  .success-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background-color: #10b981; /* green-500 */
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    animation: slideIn 0.3s ease-out;
   }
-  
-  #chat-button:hover {
-    animation: none;
+
+  @media (max-width: 768px) {
+    .success-message {
+      top: 1rem;
+      right: 1rem;
+      left: 1rem;
+      text-align: center;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* 性能优化 */
+  .footer-section {
+    contain: layout style;
+  }
+
+  .back-to-top {
+    will-change: opacity, visibility;
   }
 </style> 
