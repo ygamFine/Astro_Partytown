@@ -6,7 +6,7 @@
 <link rel="preload" as="image" href="/images/optimized/banner3.webp" type="image/webp" fetchpriority="high">
 
 <!-- Banner容器 - 固定尺寸防止CLS -->
-<section class="banner-container mobile-full-width" id="mobile-banner">
+<section class="banner-container mobile-full-width desktop-banner" id="mobile-banner">
   <!-- Banner轮播 -->
   <div class="banner-carousel">
     <!-- Banner 1 - 默认显示 -->
@@ -129,8 +129,23 @@
     transition: width linear;
   }
 
+  /* 响应式显示控制 - PC端轮播图 */
+  .desktop-banner {
+    display: none;
+  }
+
+  @media (min-width: 769px) {
+    .desktop-banner {
+      display: block;
+    }
+  }
+
   /* 移动端优化 */
   @media (max-width: 768px) {
+    .desktop-banner {
+      display: none;
+    }
+
     .indicators {
       bottom: 15px;
     }
@@ -284,4 +299,3 @@
     setTimeout(initBanner, 100);
   }
 </script> 
-</style> 
