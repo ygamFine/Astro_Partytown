@@ -17,7 +17,7 @@ const mobileBanner = {
     <div class="mobile-carousel-inner">
       <div class="mobile-slide active">
         <img 
-          src="/images/shouji-banner1-mobile-ultra.webp?v=1"
+          src="/images/shouji-banner1-ultra.webp"
           alt="专业滑移装载机制造商"
           width={mobileBanner.width}
           height={mobileBanner.height}
@@ -105,6 +105,44 @@ const mobileBanner = {
 </section>
 
 <style>
+  /* 移动端轮播图样式 */
+  .mobile-banner-container {
+    display: block;
+    width: 100%;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .mobile-carousel-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mobile-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .mobile-slide.active {
+    opacity: 1;
+  }
+  
+  .mobile-banner {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+  }
+
+
+  
   /* 桌面端内容 - 默认显示 */
   .desktop-content {
     display: block;
@@ -115,10 +153,15 @@ const mobileBanner = {
     display: none;
   }
   
-  .mobile-carousel-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  /* 响应式显示控制 */
+  @media (max-width: 768px) {
+    .mobile-banner-container {
+      display: block !important;
+    }
+    
+    .desktop-content {
+      display: none !important;
+    }
   }
   
   /* 移动端图片优化 */

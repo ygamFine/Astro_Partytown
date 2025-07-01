@@ -22,24 +22,30 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- 关键资源预连接 - 减少网络延迟 -->
-    <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
+    <!-- 性能优化 - 资源hint -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
     <link rel="dns-prefetch" href="//cdn.huazhi.cloud" />
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- 性能提示 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 最高优先级：LCP关键图片 -->
-    <link rel="preload" href="/images/shouji-banner1-mobile-ultra.webp?v=1" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    <!-- LCP关键资源预加载 - 最高优先级 -->
+    <link rel="preload" href="/images/shouji-banner1-ultra.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)" />
     <link rel="preload" href="/images/optimized/banner3-optimized.webp?v=1" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
     
-    <!-- 次要图片：延迟预加载 -->
-    <link rel="preload" href="/images/logo.webp" as="image" />
-    <link rel="preload" href="/images/skid1-400.webp" as="image" media="(min-width: 769px)" />
+    <!-- 关键字体预加载 -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin />
+    
+    <!-- 次要图片预加载 -->
+    <link rel="preload" href="/images/skid1-400.webp" as="image" />
+    <link rel="preload" href="/images/backhoe-400.webp" as="image" />
+    <link rel="preload" href="/images/telescopic-400.webp" as="image" />
     
     <!-- SEO优化 -->
     <meta
@@ -76,6 +82,8 @@ const {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-text-size-adjust: 100%;
+        font-display: swap;
+        will-change: auto;
       }
       
       /* 关键布局样式 - 防止CLS */
@@ -110,7 +118,6 @@ const {
         height: 800px;
         position: relative;
         overflow: hidden;
-        background: #f3f4f6;
       }
 
       @media (max-width: 768px) {
@@ -124,44 +131,6 @@ const {
         height: 100%;
         object-fit: cover;
         object-position: center;
-        will-change: transform;
-      }
-
-      /* 移动端轮播优化 */
-      @media (max-width: 768px) {
-        .mobile-banner-container {
-          display: block !important;
-          width: 100%;
-          height: 200px;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .desktop-content {
-          display: none !important;
-        }
-        
-        .mobile-slide {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          opacity: 0;
-          transition: opacity 0.3s ease-in-out;
-        }
-        
-        .mobile-slide.active {
-          opacity: 1;
-        }
-        
-        .mobile-banner {
-          width: 100%;
-          height: 200px;
-          object-fit: cover;
-          object-position: center;
-          will-change: transform;
-        }
       }
 
       /* 产品卡片预设尺寸 - 防止CLS */
