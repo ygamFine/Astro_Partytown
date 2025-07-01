@@ -1,5 +1,5 @@
 ---
-// FullScreenBanner.astro - 高度优化版本
+// FullScreenBanner.astro - SSG优化版本，防止CLS
 ---
 
 <!-- 预加载关键Banner图片 -->
@@ -9,16 +9,16 @@
 <section class="banner-container desktop-banner" id="desktop-banner">
   <!-- Banner轮播 -->
   <div class="banner-carousel">
-    <!-- Banner 1 - 默认显示，LCP关键 -->
+    <!-- Banner 1 - 默认显示 -->
     <div class="banner-slide active">
       <img 
-        src="/images/optimized/banner3-optimized.webp?v=3" 
+        src="/images/optimized/banner3-optimized.webp?v=1" 
         alt="专业滑移装载机制造商"
         width="1440"
         height="600"
         loading="eager"
         fetchpriority="high"
-        decoding="sync"
+        decoding="async"
         style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
       />
     </div>
@@ -26,7 +26,7 @@
     <!-- Banner 2 -->
     <div class="banner-slide">
       <img 
-        src="/images/optimized/banner222-optimized.webp?v=3" 
+        src="/images/optimized/banner222-optimized.webp?v=1" 
         alt="高品质工程机械设备"
         width="1440"
         height="600"
@@ -39,7 +39,7 @@
     <!-- Banner 3 -->
     <div class="banner-slide">
       <img 
-        src="/images/optimized/banner-optimized.webp?v=3" 
+        src="/images/optimized/banner-optimized.webp?v=1" 
         alt="值得信赖的合作伙伴"
         width="1440"
         height="600"
@@ -50,18 +50,24 @@
     </div>
   </div>
 
-  <!-- Progress Bar Controller -->
+  <!-- Progress Bar Controller - 原始样式 -->
   <div class="progress-controller">
+    <!-- PREV Label -->
     <button id="prev-label" class="slide-label">PREV</button>
+    
+    <!-- Progress Bar Background -->
     <div class="progress-bar-container">
+      <!-- Progress Fill -->
       <div id="progress-fill" class="progress-fill"></div>
     </div>
+    
+    <!-- NEXT Label -->
     <button id="next-label" class="slide-label">NEXT</button>
   </div>
 </section>
 
 <style>
-  /* Banner容器样式 - 基础样式已在Layout中定义 */
+  /* Banner容器样式 - 已在Layout中定义，这里补充轮播功能 */
   .banner-carousel {
     position: relative;
     width: 100%;
@@ -76,55 +82,57 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    will-change: opacity;
+    transition: opacity 0.5s ease-in-out;
   }
 
   .banner-slide.active {
     opacity: 1;
   }
 
-  /* Progress Controller */
+  /* Progress Bar Controller - 原始样式 */
   .progress-controller {
     position: absolute;
-    bottom: 3.2rem;
+    bottom: 32px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3.2rem;
+    gap: 32px;
     z-index: 10;
   }
 
+  /* PREV/NEXT 标签样式 */
   .slide-label {
     background: none;
     border: none;
     color: white;
-    font-size: 1.8rem;
+    font-size: 18px;
     font-weight: 500;
-    letter-spacing: 0.2rem;
+    letter-spacing: 2px;
     cursor: pointer;
     user-select: none;
     padding: 0;
     margin: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.3s ease;
   }
 
   .slide-label:hover {
     opacity: 0.8;
   }
 
+  /* Progress Bar Background */
   .progress-bar-container {
     position: relative;
-    width: 38.4rem;
-    height: 0.2rem;
+    width: 384px;
+    height: 2px;
     background-color: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
+  /* Progress Fill */
   .progress-fill {
     position: absolute;
     left: 0;
@@ -135,12 +143,12 @@
     transition: width linear;
   }
 
-  /* PC端强制显示 */
+  /* PC端轮播图显示控制 - 强制显示 */
   .desktop-banner {
     display: block !important;
     position: relative;
     width: 100%;
-    height: 80rem;
+    height: 800px;
     overflow: hidden;
     background: #f3f4f6;
     z-index: 1;
@@ -148,7 +156,16 @@
     padding: 0;
   }
 
-  /* 移动端隐藏 */
+  /* 确保图片正确显示 */
+  .banner-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* 移动端隐藏PC端轮播图 */
   @media (max-width: 768px) {
     .desktop-banner {
       display: none !important;
@@ -157,95 +174,140 @@
 </style>
 
 <script>
-  // 轻量级Banner轮播 - 最小JavaScript
-  (() => {
-    if (window.innerWidth <= 768) return; // 移动端不执行
+  // 简化的Banner轮播 - 避免TypeScript类型问题
+  let currentSlide = 0;
+  let autoSlideTimer = null;
+  let progressTimer = null;
+  
+  const slides = document.querySelectorAll('#desktop-banner .banner-slide');
+  const progressFill = document.getElementById('progress-fill');
+  const totalSlides = slides.length;
+  const slideInterval = 5000;
+
+  function goToSlide(index) {
+    if (index === currentSlide || totalSlides <= 1) return;
     
-    const banner = document.getElementById('desktop-banner');
-    if (!banner) return;
+    // 隐藏当前幻灯片
+    slides[currentSlide].classList.remove('active');
     
-    let currentSlide = 0;
-    const slides = banner.querySelectorAll('.banner-slide');
-    const progressFill = document.getElementById('progress-fill');
-    const totalSlides = slides.length;
-    const slideInterval = 5000;
+    // 显示新幻灯片
+    currentSlide = index;
+    slides[currentSlide].classList.add('active');
     
+    resetProgress();
+    startProgress();
+  }
+
+  function nextSlide() {
+    const next = (currentSlide + 1) % totalSlides;
+    goToSlide(next);
+  }
+
+  function prevSlide() {
+    const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+    goToSlide(prev);
+  }
+
+  function startAutoSlide() {
     if (totalSlides <= 1) return;
     
-    let progressTimer;
-    let autoSlideTimer;
-    
-    const goToSlide = (index) => {
-      if (index === currentSlide) return;
-      
-      slides[currentSlide].classList.remove('active');
-      currentSlide = index;
-      slides[currentSlide].classList.add('active');
-      
-      resetProgress();
-      startProgress();
-    };
-    
-    const nextSlide = () => {
-      goToSlide((currentSlide + 1) % totalSlides);
-    };
-    
-    const prevSlide = () => {
-      goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
-    };
-    
-    const resetProgress = () => {
-      if (progressTimer) clearInterval(progressTimer);
-      if (progressFill) progressFill.style.width = '0%';
-    };
-    
-    const startProgress = () => {
-      if (!progressFill) return;
-      
-      let progress = 0;
-      const step = 100 / (slideInterval / 50);
-      
-      progressTimer = setInterval(() => {
-        progress += step;
-        progressFill.style.width = Math.min(progress, 100) + '%';
-        
-        if (progress >= 100) {
-          clearInterval(progressTimer);
-        }
-      }, 50);
-    };
-    
-    const startAutoSlide = () => {
-      autoSlideTimer = setInterval(nextSlide, slideInterval);
-      startProgress();
-    };
-    
-    const stopAutoSlide = () => {
-      if (autoSlideTimer) clearInterval(autoSlideTimer);
-      resetProgress();
-    };
-    
-    // 事件监听
-    const prevBtn = document.getElementById('prev-label');
-    const nextBtn = document.getElementById('next-label');
-    
-    if (prevBtn) prevBtn.addEventListener('click', () => {
-      stopAutoSlide();
-      prevSlide();
-      startAutoSlide();
-    });
-    
-    if (nextBtn) nextBtn.addEventListener('click', () => {
-      stopAutoSlide();
+    autoSlideTimer = setInterval(() => {
       nextSlide();
-      startAutoSlide();
-    });
+    }, slideInterval);
     
-    // 鼠标悬停控制
-    banner.addEventListener('mouseenter', stopAutoSlide);
-    banner.addEventListener('mouseleave', startAutoSlide);
+    startProgress();
+  }
+
+  function stopAutoSlide() {
+    if (autoSlideTimer) {
+      clearInterval(autoSlideTimer);
+      autoSlideTimer = null;
+    }
+    stopProgress();
+  }
+
+  function stopProgress() {
+    if (progressTimer) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+    }
+  }
+
+  // 移除暂停和恢复函数 - 轮播图持续播放
+
+  function startProgress() {
+    if (!progressFill) return;
     
-    // 启动轮播
+    const startTime = performance.now();
+    
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min((elapsed / slideInterval) * 100, 100);
+      
+      progressFill.style.width = progress + '%';
+      
+      if (progress < 100) {
+        progressTimer = requestAnimationFrame(animate);
+      }
+    }
+    
+    progressTimer = requestAnimationFrame(animate);
+  }
+
+  function resetProgress() {
+    if (progressFill) {
+      progressFill.style.width = '0%';
+    }
+    
+    if (progressTimer) {
+      cancelAnimationFrame(progressTimer);
+    }
+  }
+
+  // 事件绑定
+  function initBanner() {
+    console.log('初始化PC端轮播图，totalSlides:', totalSlides);
+    if (totalSlides <= 1) return;
+    
+    // 确保第一张图片有active类
+    if (slides.length > 0) {
+      slides[0].classList.add('active');
+    }
+    
+    // 按钮点击事件 - 原始样式
+    const prevLabel = document.getElementById('prev-label');
+    const nextLabel = document.getElementById('next-label');
+    
+    if (prevLabel) {
+      prevLabel.addEventListener('click', () => {
+        console.log('点击PREV');
+        prevSlide();
+        stopAutoSlide();
+        startAutoSlide(); // Restart auto slide
+      });
+    }
+    
+    if (nextLabel) {
+      nextLabel.addEventListener('click', () => {
+        console.log('点击NEXT');
+        nextSlide();
+        stopAutoSlide();
+        startAutoSlide(); // Restart auto slide
+      });
+    }
+
+    // 移除鼠标悬停暂停功能 - 轮播图持续自动播放
+
+    console.log('启动自动轮播');
     startAutoSlide();
-  })();
+  }
+
+  // 延迟初始化，避免阻塞关键渲染
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initBanner, 100);
+    });
+  } else {
+    setTimeout(initBanner, 100);
+  }
 </script> 
