@@ -331,6 +331,7 @@ const {
       
       // 用户交互时才加载客服
       ['click', 'scroll', 'keydown', 'touchstart'].forEach(event => {
+        console.log(event, '触发')
         document.addEventListener(event, loadCustomerService, { once: true, passive: true });
       });
       
