@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "echo '⚠️  Vercel适配器不支持astro preview' && echo '✅ 请使用: npm run preview:local' && echo '🌐 或者直接部署到Vercel测试'",
+    "preview": "astro preview",
     "preview:local": "npm run build && serve dist -l 4321",
     "preview:static": "serve dist -l 4321",
     "test:api": "node scripts/test-api.js",
@@ -15,7 +15,6 @@
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/tailwind": "^6.0.2",
-    "@astrojs/vercel": "^8.2.0",
     "@builder.io/partytown": "^0.10.3",
     "astro": "^5.9.3"
   },
