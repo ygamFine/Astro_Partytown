@@ -54,12 +54,7 @@ const mobileBanner = {
       </div>
     </div>
 
-    <!-- 移动端指示器 -->
-    <div class="mobile-indicators">
-      <button class="mobile-indicator active" data-slide="0"></button>
-      <button class="mobile-indicator" data-slide="1"></button>
-      <button class="mobile-indicator" data-slide="2"></button>
-    </div>
+
   </div>
 
   <!-- 桌面端内容 -->
@@ -146,54 +141,26 @@ const mobileBanner = {
     object-position: center;
   }
 
-  /* 移动端指示器 */
-  .mobile-indicators {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    z-index: 10;
-  }
 
-  .mobile-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid white;
-    background: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-
-  .mobile-indicator.active {
-    background: white;
+  
+  /* 桌面端内容 - 默认显示 */
+  .desktop-content {
+    display: block;
   }
   
-  /* 桌面端内容 */
-  .desktop-content {
+  /* 移动端轮播图 - 默认隐藏 */
+  .mobile-banner-container {
     display: none;
   }
   
   /* 响应式显示控制 */
   @media (max-width: 768px) {
     .mobile-banner-container {
-      display: block;
+      display: block !important;
     }
     
     .desktop-content {
-      display: none;
-    }
-  }
-  
-  @media (min-width: 769px) {
-    .mobile-banner-container {
-      display: none;
-    }
-    
-    .desktop-content {
-      display: block;
+      display: none !important;
     }
   }
   
@@ -226,23 +193,20 @@ const mobileBanner = {
     if (!mobileCarousel) return;
     
     let currentSlide = 0;
-    let autoSlideTimer = null;
+    let autoSlideTimer: ReturnType<typeof setInterval> | null = null;
     const slides = mobileCarousel.querySelectorAll('.mobile-slide');
-    const indicators = mobileCarousel.querySelectorAll('.mobile-indicator');
     const totalSlides = slides.length;
     const slideInterval = 4000; // 4秒切换
 
-    function goToSlide(index) {
+    function goToSlide(index: number) {
       if (index === currentSlide || totalSlides <= 1) return;
       
       // 隐藏当前幻灯片
       slides[currentSlide].classList.remove('active');
-      indicators[currentSlide].classList.remove('active');
       
       // 显示新幻灯片
       currentSlide = index;
       slides[currentSlide].classList.add('active');
-      indicators[currentSlide].classList.add('active');
     }
 
     function nextSlide() {
@@ -265,14 +229,7 @@ const mobileBanner = {
       }
     }
 
-    // 指示器点击事件
-    indicators.forEach((indicator, index) => {
-      indicator.addEventListener('click', () => {
-        stopAutoSlide();
-        goToSlide(index);
-        startAutoSlide();
-      });
-    });
+
 
     // 触摸滑动支持
     let startX = 0;

@@ -109,7 +109,7 @@ const {
       /* 防止CLS的图片容器 */
       .banner-container {
         width: 100%;
-        height: 400px;
+        height: 800px;
         position: relative;
         overflow: hidden;
       }
@@ -294,7 +294,7 @@ const {
     </script>
 
   <!-- 将客服脚本移到Partytown，避免阻塞主线程 -->
-  <script type="text/partytown">
+  <script>
     // 延迟加载客服脚本，减少对性能的影响
     setTimeout(() => {
       var _hmt = _hmt || [];
@@ -305,7 +305,7 @@ const {
         var s = document.getElementsByTagName("script")[0]; 
         s.parentNode.insertBefore(hm, s);
       })();
-    }, 2000); // 2秒后加载，优先保证核心内容
+    }, 3000); // 2秒后加载，优先保证核心内容
   </script>
 
     <FooterSection />
