@@ -33,10 +33,16 @@ const {
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- 关键资源预加载 - 优化LCP性能 -->
-    <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
+    <!-- 超高优先级LCP图片预加载 -->
+    <link rel="preload" href="/images/shouji-banner1-mobile.webp?v=3" as="image" fetchpriority="high" media="(max-width: 768px)" />
     <link rel="preload" href="/images/optimized/banner3-optimized.webp?v=1" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/shouji-banner1-mobile.webp?v=2" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    
+    <!-- 关键资源预加载 -->
+    <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
+    
+    <!-- 预连接关键第三方域名 -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.huazhi.cloud" crossorigin />
     
     <!-- 热销产品图片预加载 - 提升Core Web Vitals -->
     <link rel="preload" href="/images/skid1-400.webp" as="image" fetchpriority="high" />
@@ -281,32 +287,56 @@ const {
       <slot />
     </main>
 
-    <!-- 使用Partytown将Analytics移到Web Worker - 减少主线程阻塞 -->
-    <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
-    <script type="text/partytown">
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-71JP66YM5X', {
-        page_title: document.title,
-        page_location: window.location.href
+    <!-- 优化后的Analytics - 延迟到页面加载完成后 -->
+    <script>
+      // 优先加载核心内容，延迟分析脚本
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          // 使用Partytown将Analytics移到Web Worker
+          const script1 = document.createElement('script');
+          script1.async = true;
+          script1.type = 'text/partytown';
+          script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+          document.head.appendChild(script1);
+          
+          const script2 = document.createElement('script');
+          script2.type = 'text/partytown';
+          script2.textContent = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-71JP66YM5X', {
+              page_title: document.title,
+              page_location: window.location.href
+            });
+          `;
+          document.head.appendChild(script2);
+        }, 1000);
       });
     </script>
 
-  <!-- 将客服脚本移到Partytown，避免阻塞主线程 -->
-  <script> 
-    // 延迟加载客服脚本，减少对性能的影响
-    setTimeout(() => {
-      var _hmt = _hmt || [];
-      (function() {
+    <!-- 客服脚本 - 用户交互后加载 -->
+    <script>
+      let customerServiceLoaded = false;
+      
+      function loadCustomerService() {
+        if (customerServiceLoaded) return;
+        customerServiceLoaded = true;
+        
         var hm = document.createElement("script");
-        hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
-        hm.setAttribute('_extID',"309-313-7n1iAECE");
-        var s = document.getElementsByTagName("script")[0]; 
-        s.parentNode.insertBefore(hm, s);
-      })();
-    }, 5000); // 2秒后加载，优先保证核心内容
-  </script>
+        hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=" + new Date().getTime();
+        hm.setAttribute('_extID', "309-313-7n1iAECE");
+        document.head.appendChild(hm);
+      }
+      
+      // 用户交互时才加载客服
+      ['click', 'scroll', 'keydown', 'touchstart'].forEach(event => {
+        document.addEventListener(event, loadCustomerService, { once: true, passive: true });
+      });
+      
+      // 或者10秒后自动加载
+      setTimeout(loadCustomerService, 10000);
+    </script>
 
     <FooterSection />
   </body>
