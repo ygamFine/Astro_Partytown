@@ -1,9 +1,9 @@
 ---
 const mainProduct = {
-  src: '/main-product.svg'
+  src: '/main-product.svg?v=3'
 };
 const mobileBanner = {
-  webpSrc: '/images/shouji-banner1-mobile.webp', // 使用优化的移动版本 - 约17KB
+  webpSrc: '/images/shouji-banner1-mobile.webp?v=3',
   alt: '专业滑移装载机制造商',
   width: 375,
   height: 200
@@ -11,79 +11,72 @@ const mobileBanner = {
 ---
 
 <section class="hero-mobile">
-  <!-- 移动端轮播图 - WebP优化版本 -->
+  <!-- 移动端轮播图 - 高度优化版本 -->
   <div class="mobile-banner-container" id="mobile-carousel">
-    <!-- 轮播内容 -->
     <div class="mobile-carousel-inner">
       <div class="mobile-slide active">
         <img 
-          src="/images/shouji-banner1-ultra.webp"
+          src="/images/shouji-banner1-ultra.webp?v=3"
           alt="专业滑移装载机制造商"
-          width={mobileBanner.width}
-          height={mobileBanner.height}
+          width="375"
+          height="200"
           loading="eager"
           fetchpriority="high"
-          decoding="async"
+          decoding="sync"
           class="mobile-banner"
-          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
         />
       </div>
       <div class="mobile-slide">
         <img 
-          src="/images/banner222-mobile.webp?v=1"
+          src="/images/banner222-mobile.webp?v=3"
           alt="高品质工程机械设备"
-          width={mobileBanner.width}
-          height={mobileBanner.height}
+          width="375"
+          height="200"
           loading="lazy"
           decoding="async"
           class="mobile-banner"
-          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
         />
       </div>
       <div class="mobile-slide">
         <img 
-          src="/images/banner-mobile.webp?v=1"
+          src="/images/banner-mobile.webp?v=3"
           alt="值得信赖的合作伙伴"
-          width={mobileBanner.width}
-          height={mobileBanner.height}
+          width="375"
+          height="200"
           loading="lazy"
           decoding="async"
           class="mobile-banner"
-          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
         />
       </div>
     </div>
-
-
   </div>
 
   <!-- 桌面端内容 -->
   <div class="desktop-content">
     <div class="container">
-    <div class="grid md:grid-cols-2 gap-8 items-center">
-      <!-- 左侧内容 -->
-      <div class="text-center md:text-left" style="margin-left: 150px">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <!-- 左侧内容 -->
+        <div class="text-center md:text-left" style="margin-left: 15rem">
           <h1>
             滑移装载机 <br style="display: none;">
-          <span class="text-red-600">引领行业未来</span>
-        </h1>
+            <span class="text-red-600">引领行业未来</span>
+          </h1>
           <p class="mt-6 text-lg text-gray-700 max-w-md mx-auto md:mx-0">
-          致力于提供高效、可靠的工程机械解决方案。
-        </p>
-        <div class="mt-8 flex justify-center md:justify-start space-x-4">
+            致力于提供高效、可靠的工程机械解决方案。
+          </p>
+          <div class="mt-8 flex justify-center md:justify-start space-x-4">
             <a href="/products" class="btn-primary">
-            探索产品
-          </a>
+              探索产品
+            </a>
             <a href="/contact" class="btn-secondary">
-            联系我们
-          </a>
+              联系我们
+            </a>
+          </div>
         </div>
-      </div>
 
         <!-- 右侧图片 - LCP关键元素 -->
         <div class="img-container">
           <div style="position: relative; width: 100%;">
-            <!-- LCP关键图片 - 立即加载 -->
             <img 
               src={mainProduct.src} 
               alt="YN-S70滑移装载机" 
@@ -93,8 +86,8 @@ const mobileBanner = {
               decoding="sync"
               fetchpriority="high"
               style="width: 100%; height: auto; object-fit: contain; position: relative; z-index: 10;"
-            >
-            <!-- 背景装饰图形 - 桌面端显示 -->
+            />
+            <!-- 背景装饰图形 -->
             <div class="decorative" style="position: absolute; top: -2.5rem; right: -2.5rem; width: 10rem; height: 10rem; background: #ef4444; opacity: 0.1; border-radius: 50%;"></div>
             <div class="decorative" style="position: absolute; bottom: -5rem; left: -5rem; width: 12rem; height: 12rem; background: #3b82f6; opacity: 0.1; border-radius: 50%;"></div>
           </div>
@@ -105,77 +98,11 @@ const mobileBanner = {
 </section>
 
 <style>
-  /* 移动端轮播图样式 */
-  .mobile-banner-container {
-    display: block;
-    width: 100%;
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-  }
-  
+  /* 移动端轮播图样式 - 已在Layout中定义基础样式 */
   .mobile-carousel-inner {
     position: relative;
     width: 100%;
     height: 100%;
-  }
-  
-  .mobile-slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-  }
-  
-  .mobile-slide.active {
-    opacity: 1;
-  }
-  
-  .mobile-banner {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    object-position: center;
-  }
-
-
-  
-  /* 桌面端内容 - 默认显示 */
-  .desktop-content {
-    display: block;
-  }
-  
-  /* 移动端轮播图 - 默认隐藏 */
-  .mobile-banner-container {
-    display: none;
-  }
-  
-  /* 响应式显示控制 */
-  @media (max-width: 768px) {
-    .mobile-banner-container {
-      display: block !important;
-    }
-    
-    .desktop-content {
-      display: none !important;
-    }
-  }
-  
-  /* 移动端图片优化 */
-  @media (max-width: 768px) {
-    .img-container img {
-      max-width: 280px;
-      height: auto;
-      margin: 1rem auto;
-    }
-    
-    /* 移动端隐藏装饰元素 */
-    .decorative {
-      display: none;
-    }
   }
 
   /* 桌面端显示换行 */
@@ -184,94 +111,40 @@ const mobileBanner = {
       display: block !important;
     }
   }
+
+  /* 移动端隐藏装饰元素 */
+  @media (max-width: 768px) {
+    .decorative {
+      display: none;
+    }
+    
+    .img-container img {
+      max-width: 28rem;
+      height: auto;
+      margin: 1rem auto;
+    }
+  }
 </style>
 
 <script>
-  // 移动端轮播图功能
-  function initMobileCarousel() {
-    const mobileCarousel = document.getElementById('mobile-carousel');
-    if (!mobileCarousel) return;
+  // 轻量级移动端轮播 - 最小JavaScript
+  (() => {
+    const carousel = document.getElementById('mobile-carousel');
+    if (!carousel || window.innerWidth > 768) return;
     
     let currentSlide = 0;
-    let autoSlideTimer: ReturnType<typeof setInterval> | null = null;
-    const slides = mobileCarousel.querySelectorAll('.mobile-slide');
+    const slides = carousel.querySelectorAll('.mobile-slide');
     const totalSlides = slides.length;
-    const slideInterval = 4000; // 4秒切换
-
-    function goToSlide(index: number) {
-      if (index === currentSlide || totalSlides <= 1) return;
-      
-      // 隐藏当前幻灯片
+    
+    if (totalSlides <= 1) return;
+    
+    const nextSlide = () => {
       slides[currentSlide].classList.remove('active');
-      
-      // 显示新幻灯片
-      currentSlide = index;
+      currentSlide = (currentSlide + 1) % totalSlides;
       slides[currentSlide].classList.add('active');
-    }
-
-    function nextSlide() {
-      const next = (currentSlide + 1) % totalSlides;
-      goToSlide(next);
-    }
-
-    function startAutoSlide() {
-      if (totalSlides <= 1) return;
-      
-      autoSlideTimer = setInterval(() => {
-        nextSlide();
-      }, slideInterval);
-    }
-
-    function stopAutoSlide() {
-      if (autoSlideTimer) {
-        clearInterval(autoSlideTimer);
-        autoSlideTimer = null;
-      }
-    }
-
-
-
-    // 触摸滑动支持
-    let startX = 0;
-    let startY = 0;
+    };
     
-    mobileCarousel.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }, { passive: true });
-    
-    mobileCarousel.addEventListener('touchend', (e) => {
-      const endX = e.changedTouches[0].clientX;
-      const endY = e.changedTouches[0].clientY;
-      const diffX = startX - endX;
-      const diffY = Math.abs(startY - endY);
-      const threshold = 50;
-      
-      // 只有水平滑动距离大于垂直滑动距离时才触发轮播
-      if (Math.abs(diffX) > threshold && Math.abs(diffX) > diffY) {
-        stopAutoSlide();
-        if (diffX > 0) {
-          nextSlide();
-        } else {
-          const prev = (currentSlide - 1 + totalSlides) % totalSlides;
-          goToSlide(prev);
-        }
-        startAutoSlide();
-      }
-    }, { passive: true });
-
-    // 暂停/恢复自动轮播
-    mobileCarousel.addEventListener('mouseenter', stopAutoSlide);
-    mobileCarousel.addEventListener('mouseleave', startAutoSlide);
-
-    // 启动自动轮播
-    startAutoSlide();
-  }
-
-  // 页面加载后初始化移动端轮播图
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileCarousel);
-  } else {
-    initMobileCarousel();
-  }
+    // 4秒切换一次
+    setInterval(nextSlide, 4000);
+  })();
 </script>

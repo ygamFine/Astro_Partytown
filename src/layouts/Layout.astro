@@ -22,11 +22,13 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- 性能优化 - 资源hint -->
+    <!-- 性能优化 - DNS预解析 -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-    <link rel="dns-prefetch" href="//cdn.huazhi.cloud" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    
+    <!-- 字体预连接 - 最高优先级 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- 性能提示 -->
@@ -34,19 +36,20 @@ const {
     <meta name="theme-color" content="#dc2626" />
     <meta name="color-scheme" content="light" />
     
-    <!-- LCP关键资源预加载 - 最高优先级 -->
-    <link rel="preload" href="/images/shouji-banner1-ultra.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)" />
-    <link rel="preload" href="/images/optimized/banner3-optimized.webp?v=1" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/logo.webp" as="image" fetchpriority="high" />
+    <!-- LCP关键资源预加载 - 强制刷新缓存 -->
+    <link rel="preload" href="/images/shouji-banner1-ultra.webp?v=3" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)" />
+    <link rel="preload" href="/images/optimized/banner3-optimized.webp?v=3" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/logo.webp?v=3" as="image" fetchpriority="high" />
+    <link rel="preload" href="/main-product.svg?v=3" as="image" fetchpriority="high" media="(min-width: 769px)" />
     
-    <!-- 关键字体预加载 -->
-    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin />
-    
-    <!-- 次要图片预加载 -->
-    <link rel="preload" href="/images/skid1-400.webp" as="image" />
-    <link rel="preload" href="/images/backhoe-400.webp" as="image" />
-    <link rel="preload" href="/images/telescopic-400.webp" as="image" />
-    
+    <!-- 系统字体优化 - 避免网络字体阻塞 -->
+    <style>
+      /* 系统字体定义 - 避免外部字体加载 */
+      :root {
+        --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+      }
+    </style>
+
     <!-- SEO优化 -->
     <meta
       name="keywords"
@@ -57,12 +60,9 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
-    <!-- LCP关键图片预加载 - 最高优先级 -->
-    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)">
-
-    <!-- 关键CSS内联 - 防止CLS，立即渲染 -->
+    <!-- 关键CSS内联 - 立即渲染，防止CLS -->
     <style>
-      /* 全局重置和基础样式 */
+      /* CSS重置和基础样式 */
       *, *::before, *::after {
         box-sizing: border-box;
         margin: 0;
@@ -71,58 +71,58 @@ const {
       
       html {
         scroll-behavior: smooth;
-        font-size: 10px;
+        font-size: 62.5%; /* 1rem = 10px */
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        font-family: var(--font-family);
+        font-size: 1.6rem;
         line-height: 1.6;
         color: #333;
         background: #fff;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-text-size-adjust: 100%;
-        font-display: swap;
-        will-change: auto;
+        text-rendering: optimizeLegibility;
+        overflow-x: hidden;
       }
       
-      /* 关键布局样式 - 防止CLS */
+      /* 容器样式 */
       .container {
-        max-width: 80rem;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        max-width: 120rem;
+        margin: 0 auto;
+        padding: 0 1rem;
       }
       
-      /* Banner关键样式 - 防止CLS，预设尺寸 */
+      /* Banner关键样式 - 防止CLS */
       .mobile-full-width {
         position: relative;
         width: 100%;
-        height: 400px;
+        height: 40rem;
         overflow: hidden;
       }
       
       @media (max-width: 768px) {
         .mobile-full-width {
           width: 100vw;
-          height: 200px;
+          height: 20rem;
           left: 50%;
           margin-left: -50vw;
         }
       }
 
-      /* 防止CLS的图片容器 */
+      /* Banner容器预设尺寸 */
       .banner-container {
         width: 100%;
-        height: 800px;
+        height: 80rem;
         position: relative;
         overflow: hidden;
+        background: #f8fafc;
       }
 
       @media (max-width: 768px) {
         .banner-container {
-          height: 200px;
+          height: 20rem;
         }
       }
 
@@ -131,40 +131,73 @@ const {
         height: 100%;
         object-fit: cover;
         object-position: center;
+        will-change: auto;
       }
 
-      /* 产品卡片预设尺寸 - 防止CLS */
+      /* 移动端轮播图优化 */
+      .mobile-banner-container {
+        width: 100%;
+        height: 20rem;
+        position: relative;
+        overflow: hidden;
+        background: #f8fafc;
+      }
+      
+      .mobile-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        will-change: opacity;
+      }
+      
+      .mobile-slide.active {
+        opacity: 1;
+      }
+      
+      .mobile-banner {
+        width: 100%;
+        height: 20rem;
+        object-fit: cover;
+        object-position: center;
+        will-change: auto;
+      }
+
+      /* 产品卡片预设尺寸 */
       .product-card {
         width: 100%;
-        height: 320px;
+        height: 32rem;
         display: block;
-        border-radius: 0.5rem;
+        border-radius: 0.8rem;
         overflow: hidden;
         background: #f9fafb;
+        transition: transform 0.2s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-0.2rem);
       }
 
       .product-card img {
         width: 100%;
-        height: 200px;
+        height: 20rem;
         object-fit: cover;
+        will-change: auto;
       }
 
-      /* 导航菜单关键样式 */
-      .menu-item.active {
-        color: #fbbf24;
-        font-weight: bold;
-      }
-
-      /* Header固定高度 - 防止CLS */
+      /* Header固定高度 */
       header {
-        height: 80px;
+        height: 8rem;
         position: relative;
         z-index: 50;
       }
 
       @media (max-width: 768px) {
         header {
-          height: 60px;
+          height: 6rem;
         }
       }
 
@@ -172,147 +205,196 @@ const {
       .btn-primary {
         background: #dc2626;
         color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
+        padding: 1.2rem 2.4rem;
+        border-radius: 0.8rem;
         font-weight: 700;
+        font-size: 1.6rem;
         text-decoration: none;
         display: inline-block;
-        transition: background-color 0.2s;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
       }
 
       .btn-primary:hover {
         background: #b91c1c;
+        transform: translateY(-0.1rem);
       }
 
       .btn-secondary {
         background: #e5e7eb;
         color: #1f2937;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
+        padding: 1.2rem 2.4rem;
+        border-radius: 0.8rem;
         font-weight: 700;
-        font-size: 1.125rem;
+        font-size: 1.6rem;
         text-decoration: none;
         display: inline-block;
-        transition: background-color 0.2s;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
       }
 
       .btn-secondary:hover {
         background: #d1d5db;
+        transform: translateY(-0.1rem);
       }
 
-      /* 文本样式 */
+      /* 响应式文本 */
       .text-lg {
-        font-size: 1.125rem;
-        line-height: 1.75rem;
+        font-size: 1.8rem;
+        line-height: 1.75;
       }
 
       @media (min-width: 768px) {
         .text-lg {
-          font-size: 1.25rem;
-          line-height: 1.75rem;
+          font-size: 2rem;
+          line-height: 1.75;
         }
       }
       
-      .text-gray-700 {
-        color: #374151;
-      }
-
-      .mt-6 {
-        margin-top: 1.5rem;
-      }
-      
-      .mt-8 {
-        margin-top: 2rem;
-      }
-      
-      .max-w-md {
-        max-width: 28rem;
-      }
-      
-      .mx-auto {
-        margin-left: auto;
-        margin-right: auto;
-      }
-      
-      @media (min-width: 768px) {
-        .md\\:mx-0 {
-          margin-left: 0;
-          margin-right: 0;
-      }
-
-        .md\\:text-left {
-          text-align: left;
-      }
-      }
-      
-      .text-center {
-        text-align: center;
-      }
-      
-      .flex {
-        display: flex;
-      }
-      
-      .justify-center {
-        justify-content: center;
-      }
+      .text-gray-700 { color: #374151; }
+      .mt-6 { margin-top: 2.4rem; }
+      .mt-8 { margin-top: 3.2rem; }
+      .max-w-md { max-width: 28rem; }
+      .mx-auto { margin-left: auto; margin-right: auto; }
+      .text-center { text-align: center; }
+      .flex { display: flex; }
+      .justify-center { justify-content: center; }
+      .space-x-4 > :not([hidden]) ~ :not([hidden]) { margin-left: 1.6rem; }
 
       @media (min-width: 768px) {
-        .md\\:justify-start {
-          justify-content: flex-start;
-        }
-      }
-      
-      .space-x-4 > :not([hidden]) ~ :not([hidden]) {
-        margin-left: 1rem;
+        .md\\:mx-0 { margin-left: 0; margin-right: 0; }
+        .md\\:text-left { text-align: left; }
+        .md\\:justify-start { justify-content: flex-start; }
       }
 
-      /* 页面加载动画 - 轻量版 */
+      /* 导航菜单 */
+      .menu-item.active {
+        color: #fbbf24;
+        font-weight: bold;
+      }
+
+      /* 页面加载优化 */
       .animate-page-load {
-        animation: fadeIn 0.3s ease-out;
+        animation: fadeIn 0.2s ease-out;
       }
 
       @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from { opacity: 0; transform: translateY(1rem); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* 图片懒加载优化 */
+      img[loading="lazy"] {
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      img[loading="lazy"].loaded {
+        opacity: 1;
+      }
+
+      /* 移动端优化 */
+      @media (max-width: 768px) {
+        .desktop-content { display: none !important; }
+        .mobile-banner-container { display: block !important; }
+        
+        .container {
+          padding: 0 0.8rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+          padding: 1rem 2rem;
+          font-size: 1.4rem;
+        }
+      }
+
+      /* 桌面端优化 */
+      @media (min-width: 769px) {
+        .mobile-banner-container { display: none !important; }
+        .desktop-content { display: block !important; }
+      }
+
+      /* 性能优化 - 减少重绘 */
+      .banner-slide, .mobile-slide {
+        backface-visibility: hidden;
+        perspective: 1000px;
+      }
+
+      /* 滚动优化 */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
     </style>
 
     <title>{title}</title>
   </head>
-  <body>
+  <body class="animate-page-load">
     <Header />
     
     <main id="main-content">
       <slot />
     </main>
 
-    <!-- 使用Partytown将Analytics移到Web Worker - 减少主线程阻塞 -->
-    <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
-    <script type="text/partytown">
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-71JP66YM5X', {
-        page_title: document.title,
-        page_location: window.location.href
-      });
-    </script>
+    <!-- 延迟加载分析脚本 - 不阻塞渲染 -->
+    <script>
+      // 延迟加载Google Analytics - 5秒后加载
+      setTimeout(() => {
+        const script1 = document.createElement('script');
+        script1.async = true;
+        script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X';
+        document.head.appendChild(script1);
+        
+        script1.onload = () => {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-71JP66YM5X', {
+            page_title: document.title,
+            page_location: window.location.href
+          });
+        };
+      }, 5000);
 
-  <!-- 将客服脚本移到Partytown，避免阻塞主线程 -->
-  <script> 
-    // 延迟加载客服脚本，减少对性能的影响
-    setTimeout(() => {
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
-        hm.setAttribute('_extID',"309-313-7n1iAECE");
-        var s = document.getElementsByTagName("script")[0]; 
-        s.parentNode.insertBefore(hm, s);
-      })();
-    }, 5000); // 2秒后加载，优先保证核心内容
-  </script>
+      // 延迟加载客服脚本 - 8秒后加载
+      setTimeout(() => {
+        const script2 = document.createElement('script');
+        script2.src = 'https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time=' + new Date().getTime();
+        script2.setAttribute('_extID', '309-313-7n1iAECE');
+        document.head.appendChild(script2);
+      }, 8000);
+
+      // 图片懒加载优化
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              img.classList.add('loaded');
+              imageObserver.unobserve(img);
+            }
+          });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+          const images = document.querySelectorAll('img[loading="lazy"]');
+          images.forEach(img => imageObserver.observe(img));
+        });
+      }
+    </script>
 
     <FooterSection />
   </body>
