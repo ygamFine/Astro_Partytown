@@ -56,52 +56,6 @@ const mobileBanner = {
 
 
   </div>
-
-  <!-- 桌面端内容 -->
-  <div class="desktop-content">
-    <div class="container">
-    <div class="grid md:grid-cols-2 gap-8 items-center">
-      <!-- 左侧内容 -->
-      <div class="text-center md:text-left" style="margin-left: 150px">
-          <h1>
-            滑移装载机 <br style="display: none;">
-          <span class="text-red-600">引领行业未来</span>
-        </h1>
-          <p class="mt-6 text-lg text-gray-700 max-w-md mx-auto md:mx-0">
-          致力于提供高效、可靠的工程机械解决方案。
-        </p>
-        <div class="mt-8 flex justify-center md:justify-start space-x-4">
-            <a href="/products" class="btn-primary">
-            探索产品
-          </a>
-            <a href="/contact" class="btn-secondary">
-            联系我们
-          </a>
-        </div>
-      </div>
-
-        <!-- 右侧图片 - LCP关键元素 -->
-        <div class="img-container">
-          <div style="position: relative; width: 100%;">
-            <!-- LCP关键图片 - 立即加载 -->
-            <img 
-              src={mainProduct.src} 
-              alt="YN-S70滑移装载机" 
-              width="600" 
-              height="400" 
-              loading="eager"
-              decoding="sync"
-              fetchpriority="high"
-              style="width: 100%; height: auto; object-fit: contain; position: relative; z-index: 10;"
-            >
-            <!-- 背景装饰图形 - 桌面端显示 -->
-            <div class="decorative" style="position: absolute; top: -2.5rem; right: -2.5rem; width: 10rem; height: 10rem; background: #ef4444; opacity: 0.1; border-radius: 50%;"></div>
-            <div class="decorative" style="position: absolute; bottom: -5rem; left: -5rem; width: 12rem; height: 12rem; background: #3b82f6; opacity: 0.1; border-radius: 50%;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </section>
 
 <style>

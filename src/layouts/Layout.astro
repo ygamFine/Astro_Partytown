@@ -105,6 +105,23 @@ const {
         text-decoration: none;
         display: inline-block;
       }
+
+      /* 调整移动端 banner 与产品顺序 */
+      @media (max-width: 767px) {
+        /* 将主内容区域设为列布局，以便控制子组件顺序 */
+        #main-content {
+          display: flex;
+          flex-direction: column;
+        }
+        /* 确保移动端轮播图（hero-mobile）在最前 */
+        #main-content > section.hero-mobile {
+          order: -1 !important;
+        }
+        /* 确保产品展示（product-showcase）在第二 */
+        #main-content > section.product-showcase {
+          order: 0 !important;
+        }
+      }
     </style>
 
     <title>{title}</title>
