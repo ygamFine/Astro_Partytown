@@ -23,19 +23,15 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- 字体预加载和优化 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <!-- 优先级1: 关键连接建立 -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- 关键图片预加载 - 按优先级排序 -->
-    <link rel="preload" href="/images/shouji-banner1-ultra.webp?v=3" as="image" fetchpriority="high" media="(max-width: 768px)" />
+    <!-- 优先级2: 首屏关键图片 - 只预加载最关键的 -->
     <link rel="preload" href="/images/banner3.webp" as="image" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" href="/images/shouji-banner1-ultra.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
     <link rel="preload" href="/images/logo.png.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/main-product.svg" as="image" fetchpriority="high" media="(min-width: 769px)" />
-    <link rel="preload" href="/images/skid1-400.webp" as="image" fetchpriority="low" />
-    <link rel="preload" href="/backhoe.webp" as="image" fetchpriority="low" />
     
-    <!-- DNS预解析 -->
+    <!-- 优先级3: 其他连接 -->
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     <link rel="dns-prefetch" href="//cdn.huazhi.cloud" />
     
@@ -49,193 +45,20 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
-    <!-- 内联关键CSS - 防止渲染阻塞 -->
+    <!-- 极简关键CSS - 只保留绝对必需的首屏样式 -->
     <style>
-      /* 全局重置和基础样式 - 关键路径 */
-      *, *::before, *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      
-      html {
-        scroll-behavior: smooth;
-        font-size: 10px;
-        overflow-x: hidden;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-display: swap;
-        line-height: 1.6;
-        color: #333;
-        background: #fff;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeSpeed;
-        overflow-x: hidden;
-        width: 100%;
-        max-width: 100vw;
-      }
-      
-      /* 核心布局 - 首屏必需 */
-      .container {
-        max-width: 80rem;
-        margin: 0 auto;
-        padding: 0 1rem;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      
-      /* 主内容区域防止溢出 */
-      main {
-        width: 100%;
-        overflow-x: hidden;
-        position: relative;
-      }
-      
-      /* 所有section防止溢出 */
-      section {
-        width: 100%;
-        overflow-x: hidden;
-        position: relative;
-        box-sizing: border-box;
-      }
-      
-      /* 防止CLS的固定尺寸 */
-      @media (max-width: 768px) {
-        .mobile-banner-container {
-          height: 200px;
-          contain: layout;
-        }
-        
-        /* 移动端额外防护 */
-        body, html {
-          position: relative;
-        }
-        
-        * {
-          box-sizing: border-box;
-        }
-        
-        section, div, main, .container {
-          max-width: 100vw;
-          overflow-x: hidden;
-        }
-      }
-
-      /* Header固定高度 - 防止CLS */
-      header {
-        height: 80px;
-        contain: layout;
-      }
-
-      @media (max-width: 768px) {
-        header {
-          height: 60px;
-        }
-      }
-
-      /* 图片加载优化 */
-      img {
-        max-width: 100%;
-        height: auto;
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-      }
-
-      /* 性能优化的按钮 */
-      .btn-primary {
-        background: #dc2626;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 700;
-        text-decoration: none;
-        display: inline-block;
-        will-change: transform;
-        transition: transform 0.2s ease;
-      }
-      
-      .btn-primary:hover {
-        transform: translateY(-1px);
-      }
-      
-      .btn-secondary {
-        background: #e5e7eb;
-        color: #1f2937;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
-        font-weight: 700;
-        font-size: 1.125rem;
-        text-decoration: none;
-        display: inline-block;
-        will-change: transform;
-        transition: transform 0.2s ease;
-      }
-
-      .btn-secondary:hover {
-        transform: translateY(-1px);
-      }
-
-      /* 关键动画优化 */
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-
-      /* 调整移动端 banner 与产品顺序 - 防止CLS */
-      @media (max-width: 767px) {
-        #main-content {
-          display: flex;
-          flex-direction: column;
-        }
-        #main-content > section.hero-mobile {
-          order: -1 !important;
-          contain: layout;
-        }
-        #main-content > section.product-showcase {
-          order: 0 !important;
-          contain: layout;
-        }
-      }
-
-      /* 懒加载图片优化 */
-      img[loading="lazy"] {
-        transition: opacity 0.3s ease;
-      }
-
-      img[loading="lazy"]:not([src]) {
-        opacity: 0;
-      }
-
-      /* 触摸优化 */
-      .touch-target {
-        touch-action: manipulation;
-        min-height: 44px;
-        min-width: 44px;
-      }
-
-      /* 骨架屏样式 */
-      .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-      }
-
-      @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-      }
-
-      /* 内联字体样式 - 优化性能 */
-      @font-face {
-        font-family: 'System-UI';
-        src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont');
-        font-display: swap;
+      /* 最小重置 */
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      html{scroll-behavior:smooth;font-size:10px;overflow-x:hidden}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-display:swap;line-height:1.6;color:#333;background:#fff;overflow-x:hidden;width:100%;max-width:100vw}
+      .container{max-width:80rem;margin:0 auto;padding:0 1rem;width:100%;box-sizing:border-box}
+      main{width:100%;overflow-x:hidden;position:relative}
+      header{height:80px;contain:layout}
+      img{max-width:100%;height:auto}
+      @media (max-width:768px){
+        header{height:60px}
+        .mobile-banner-container{height:200px;contain:layout}
+        section,div,main,.container{max-width:100vw;overflow-x:hidden}
       }
     </style>
 
@@ -247,6 +70,41 @@ const {
     <main id="main-content">
       <slot />
     </main>
+
+    <!-- 延迟加载所有非关键资源 -->
+    <script>
+      // 使用Intersection Observer延迟加载非首屏资源
+      const loadNonCriticalResources = () => {
+        // 延迟加载非关键图片预加载
+        setTimeout(() => {
+          const img1 = document.createElement('link');
+          img1.rel = 'preload';
+          img1.href = '/images/skid1-400.webp';
+          img1.as = 'image';
+          img1.fetchPriority = 'low';
+          document.head.appendChild(img1);
+
+          const img2 = document.createElement('link');
+          img2.rel = 'preload';
+          img2.href = '/images/backhoe-400.webp';
+          img2.as = 'image';
+          img2.fetchPriority = 'low';
+          document.head.appendChild(img2);
+        }, 1000);
+
+        // 延迟加载样式
+        const style = document.createElement('style');
+        style.textContent = '.btn-primary{background:#dc2626;color:white;padding:.75rem 1.5rem;border-radius:.5rem;font-weight:700;text-decoration:none;display:inline-block;will-change:transform;transition:transform .2s ease}.btn-primary:hover{transform:translateY(-1px)}.btn-secondary{background:#e5e7eb;color:#1f2937;padding:.75rem 2rem;border-radius:.5rem;font-weight:700;font-size:1.125rem;text-decoration:none;display:inline-block;will-change:transform;transition:transform .2s ease}.btn-secondary:hover{transform:translateY(-1px)}.touch-target{touch-action:manipulation;min-height:44px;min-width:44px}.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}@keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}@media (max-width:767px){#main-content{display:flex;flex-direction:column}#main-content>section.hero-mobile{order:-1 !important;contain:layout}#main-content>section.product-showcase{order:0 !important;contain:layout}}@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}';
+        document.head.appendChild(style);
+      };
+
+      // 监听首屏内容加载完成
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadNonCriticalResources);
+      } else {
+        loadNonCriticalResources();
+      }
+    </script>
 
     <!-- 使用Partytown将Analytics移到Web Worker - 减少主线程阻塞 -->
     <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>

@@ -271,7 +271,8 @@ import StaticMenu from './StaticMenu.astro';
       if (!mainHeader || !navMenu) return;
       
       lastScrollY = window.scrollY;
-      const headerHeight = mainHeader.offsetHeight;
+      // 使用CSS变量而不是读取offsetHeight
+      const headerHeight = 80; // 固定高度，避免强制重排
       
       // 节流的滚动处理函数
       const handleScroll = throttle(() => {
@@ -282,51 +283,22 @@ import StaticMenu from './StaticMenu.astro';
         // 避免不必要的计算
         if (Math.abs(currentScrollY - lastScrollY) < 5) return;
         
-        // 批量DOM更新
-        requestAnimationFrame(() => {
-          if (currentScrollY > headerHeight && !isMenuFixed) {
-            // 固定菜单
-            Object.assign(navMenu.style, {
-              transition: 'none',
-              position: 'fixed',
-              top: '0',
-              left: '0',
-              right: '0',
-              zIndex: '50',
-              width: '100%',
-              transform: 'translateY(-100%)'
-            });
-            
-            mainHeader.style.display = 'none';
-            
-            // 触发滑入动画
-            navMenu.offsetHeight; // 强制重绘
-            navMenu.style.transition = 'transform 0.3s ease-in-out';
-            navMenu.style.transform = 'translateY(0)';
-            
+        // 使用CSS类而不是直接修改样式
+        if (currentScrollY > headerHeight && !isMenuFixed) {
+          // 固定菜单
+          requestAnimationFrame(() => {
+            navMenu.classList.add('header-fixed');
+            mainHeader.classList.add('header-hidden');
             isMenuFixed = true;
-          } else if (currentScrollY <= headerHeight && isMenuFixed) {
-            // 恢复正常布局
-            mainHeader.style.display = 'block';
-            
-            Object.assign(navMenu.style, {
-              transition: 'none',
-              position: 'relative',
-              top: 'auto',
-              left: 'auto',
-              right: 'auto',
-              width: 'auto',
-              transform: 'translateY(0)'
-            });
-            
-            // 恢复过渡
-            requestAnimationFrame(() => {
-              navMenu.style.transition = 'transform 0.3s ease-in-out';
-            });
-            
+          });
+        } else if (currentScrollY <= headerHeight && isMenuFixed) {
+          // 恢复正常布局
+          requestAnimationFrame(() => {
+            navMenu.classList.remove('header-fixed');
+            mainHeader.classList.remove('header-hidden');
             isMenuFixed = false;
-          }
-        });
+          });
+        }
         
         lastScrollY = currentScrollY;
       }, 16); // 约60fps
@@ -362,4 +334,40 @@ import StaticMenu from './StaticMenu.astro';
       init();
     }
   })();
-</script> 
+</script>
+
+<style>
+  /* 响应式菜单 */
+  @media (max-width: 768px) {
+    .nav-menu {
+      padding: 1rem;
+    }
+  }
+
+  /* 优化的Header滚动CSS类 - 避免强制重排 */
+  .header-fixed {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    width: 100%;
+    transform: translateY(0) !important;
+    transition: transform 0.3s ease-in-out;
+    will-change: transform;
+  }
+
+  .header-hidden {
+    display: none;
+  }
+
+  /* 提前准备动画状态，避免运行时重排 */
+  #nav-menu {
+    will-change: transform;
+    contain: layout style;
+  }
+
+  #main-header {
+    contain: layout style;
+  }
+</style> 

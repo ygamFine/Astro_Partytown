@@ -138,9 +138,11 @@
     left: 0;
     top: 0;
     height: 100%;
-    width: 0%;
+    width: var(--progress-width, 0%);
     background-color: rgba(255, 255, 255, 1);
-    transition: width linear;
+    transition: none;
+    will-change: width;
+    contain: layout style;
   }
 
   /* PC端轮播图显示控制 - 强制显示 */
@@ -260,7 +262,8 @@
         const elapsed = currentTime - startTime;
         const progress = Math.min((elapsed / slideInterval) * 100, 100);
         
-        progressFill.style.width = progress + '%';
+        // 使用CSS变量而不是直接修改style
+        progressFill.style.setProperty('--progress-width', progress + '%');
         
         if (progress < 100) {
           progressTimer = requestAnimationFrame(animate);
@@ -272,7 +275,7 @@
 
     function resetProgress() {
       if (progressFill) {
-        progressFill.style.width = '0%';
+        progressFill.style.setProperty('--progress-width', '0%');
       }
       
       if (progressTimer) {
