@@ -2,8 +2,8 @@
 // FullScreenBanner.astro - SSG优化版本，防止CLS
 ---
 
-<!-- 预加载关键Banner图片 -->
-<link rel="preload" as="image" href="/images/optimized/banner3-optimized.webp?v=1" type="image/webp" fetchpriority="high">
+<!-- 预加载关键Banner图片 - 使用原图 -->
+<link rel="preload" as="image" href="/images/banner3.webp" type="image/webp" fetchpriority="high">
 
 <!-- PC端Banner容器 -->
 <section class="banner-container desktop-banner" id="desktop-banner">
@@ -12,7 +12,7 @@
     <!-- Banner 1 - 默认显示 -->
     <div class="banner-slide active">
       <img 
-        src="/images/optimized/banner3-optimized.webp?v=1" 
+        src="/images/banner3.webp" 
         alt="专业滑移装载机制造商"
         width="1440"
         height="600"
@@ -26,7 +26,7 @@
     <!-- Banner 2 -->
     <div class="banner-slide">
       <img 
-        src="/images/optimized/banner222-optimized.webp?v=1" 
+        src="/images/banner222.webp" 
         alt="高品质工程机械设备"
         width="1440"
         height="600"
@@ -39,7 +39,7 @@
     <!-- Banner 3 -->
     <div class="banner-slide">
       <img 
-        src="/images/optimized/banner-optimized.webp?v=1" 
+        src="/images/banner.webp" 
         alt="值得信赖的合作伙伴"
         width="1440"
         height="600"
