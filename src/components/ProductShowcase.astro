@@ -1,35 +1,50 @@
 <section class="product-showcase">
   <div class="container">
-    <h2>PRODUCT SHOWCASE</h2>
-    <p class="description">Our product line covers a wide range of skid steer loaders, telescopic forklifts, backhoe loaders, customized attachments, remanufactured construction machinery and equipment, and various types of parts for construction machinery.</p>
-
-    <div class="products-row">
-      <div class="product-display">
-        <div class="progress-bar">
-          <div class="progress-line"></div>
-          <div class="progress-dot"></div>
+    <div class="product-showcase-main">
+      <!-- 左侧区域：标题 + 描述文字 + 进度条 + 三张图片 -->
+      <div class="product-left-section">
+        <!-- 标题居左对齐 -->
+        <h2>PRODUCT SHOWCASE</h2>
+        
+        <!-- 描述文字在黑点灰线顶上 -->
+        <p class="description">Our product line covers a wide range of skid steer loaders, telescopic forklifts, backhoe loaders, customized attachments, remanufactured construction machinery and equipment, and various types of parts for construction machinery.</p>
+        
+        <!-- 进度条在左侧三张图头顶上 -->
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-line"></div>
+            <div class="progress-dot active" data-index="0" style="left: 15%;"></div>
+            <div class="progress-dot" data-index="1"></div>
+            <div class="progress-dot" data-index="2" style="right: 15%;"></div>
+          </div>
         </div>
-        <img src="/images/telescopic-400.webp" alt="Telescopic Forklift" class="product-image" />
-        <h3>Telescopic Forklift</h3>
-        <a href="/products/telescopic-forklift" class="view-details-btn">View Details</a>
+        
+        <!-- 左侧小图片 -->
+        <div class="product-thumbnails">
+        <div class="product-item active" data-index="0">
+          <img src="/backhoe.webp" alt="Backhoe Loader" class="thumbnail-image" />
+          <h3>Backhoe Loader</h3>
+          <a href="/products/backhoe-loader" class="view-details-btn">View Details</a>
+        </div>
+        <div class="product-item" data-index="1">
+          <img src="/skid1.webp" alt="Skid Steer Loader" class="thumbnail-image" />
+          <h3>Skid Steer Loader</h3>
+          <a href="/products/skid-steer-loader" class="view-details-btn">View Details</a>
+        </div>
+        <div class="product-item" data-index="2">
+          <img src="/telescopic.webp" alt="Telescopic Forklift" class="thumbnail-image" />
+          <h3>Telescopic Forklift</h3>
+          <a href="/products/telescopic-forklift" class="view-details-btn">View Details</a>
+        </div>
       </div>
-      <div class="product-display">
-        <div class="progress-bar">
-          <div class="progress-line"></div>
-          <div class="progress-dot"></div>
-        </div>
-        <img src="/images/telescopic-400.webp" alt="Telescopic Forklift" class="product-image" />
-        <h3>Telescopic Forklift</h3>
-        <a href="/products/telescopic-forklift" class="view-details-btn">View Details</a>
       </div>
-      <div class="product-display">
-        <div class="progress-bar">
-          <div class="progress-line"></div>
-          <div class="progress-dot"></div>
+      
+      <!-- 右侧大图显示 -->
+      <div class="product-main-display">
+        <div class="main-image-container">
+          <div class="tevis-watermark">TEVIS</div>
+          <img id="mainProductImage" src="/backhoe.webp" alt="Main Product" class="main-product-image" />
         </div>
-        <img src="/images/telescopic-400.webp" alt="Telescopic Forklift" class="product-image" />
-        <h3>Telescopic Forklift</h3>
-        <a href="/products/telescopic-forklift" class="view-details-btn">View Details</a>
       </div>
     </div>
   </div>
@@ -43,7 +58,6 @@
 .container {
   max-width: 1460px;
   margin: 0 auto;
-  text-align: center;
   padding: 0 1rem;
 }
 h2 {
@@ -51,93 +65,238 @@ h2 {
   font-weight: 800;
   margin-bottom: 1rem;
   color: #181a1d;
+  text-align: left;
 }
 .description {
-  font-size: 1.125rem;
+  font-size: 1.375rem;
   color: #333;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+  font-weight: 500;
+  text-align: left;
+}
+.product-showcase-main {
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+}
+.product-left-section {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  /* max-width: 600px; */
+}
+.progress-container {
+  margin-bottom: 1rem;
 }
 .progress-bar {
   position: relative;
   width: 100%;
-  height: 16px;
-  margin-bottom: 3rem;
+  height: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .progress-line {
   position: absolute;
   top: 50%;
-  left: -10px;
-  right: -10px;
-  height: 4px;
+  left: 8px;
+  right: 8px;
+  height: 3px;
   background: #d1d5db;
   transform: translateY(-50%);
+  z-index: 1;
 }
 .progress-dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 16px;
-  height: 16px;
+  position: relative;
+  width: 1.5rem;
+  height: 1.5rem;
   background: #181a1d;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  z-index: 2;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
-.product-display {
+.progress-dot.active {
+  background: #dc2626;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-image: url('/images/logo.png.webp');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.product-thumbnails {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  flex: 1;
+  justify-content: space-around;
+}
+.product-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  width: 100%;
-  max-width: 540px;
-  margin: 0;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
 }
-.product-image {
-  width: auto;
-  height: 250px;
+.product-item:not(.active) {
+  opacity: 0.6;
+}
+.product-item:hover {
+  opacity: 1;
+}
+.thumbnail-image {
+  width: 240px;
+  height: 180px;
   object-fit: contain;
+  background: transparent;
 }
-.product-display h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
+.product-item h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #181a1d;
   margin: 0;
+  text-align: center;
 }
 .view-details-btn {
   font-weight: bold;
+  font-size: 1.125rem;
   color: #181a1d;
   text-decoration: underline;
   text-underline-offset: 4px;
   border-bottom: 3px solid #dc2626;
-  padding-bottom: 2px;
+  padding-bottom: 3px;
   transition: color 0.2s;
 }
 .view-details-btn:hover {
   color: #dc2626;
 }
-.products-row {
+.product-main-display {
+  flex: 1.5;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  justify-content: center;
+  align-items: center;
 }
-@media (max-width: 600px) {
-  .product-image {
-    height: 180px;
+.main-image-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.main-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.3s ease;
+}
+.tevis-watermark {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgba(0,0,0,0.1);
+  z-index: 1;
+  letter-spacing: 0.2em;
+}
+@media (max-width: 768px) {
+  .product-showcase-main {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .product-left-section {
+    width: 100%;
+  }
+  .product-thumbnails {
+    justify-content: center;
+  }
+  .thumbnail-image {
+    width: 120px;
+    height: 100px;
+  }
+  .main-image-container {
+    height: 300px;
   }
   .description {
     font-size: 1rem;
   }
 }
-@media (min-width: 600px) and (max-width: 767px) {
-  .product-display {
-    width: calc((100% - 2rem) / 2);
-  }
-}
-@media (min-width: 768px) {
-  .product-display {
-    width: calc((100% - 4rem) / 3);
-  }
-}
-</style> 
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const productItems = document.querySelectorAll('.product-item');
+    const progressDots = document.querySelectorAll('.progress-dot');
+    const mainProductImage = document.getElementById('mainProductImage');
+    
+    // 产品数据
+    const products = [
+      {
+        image: '/backhoe.webp',
+        alt: 'Backhoe Loader'
+      },
+      {
+        image: '/skid1.webp', 
+        alt: 'Skid Steer Loader'
+      },
+      {
+        image: '/telescopic.webp',
+        alt: 'Telescopic Forklift'
+      }
+    ];
+
+    // 更新显示
+    function updateDisplay(index: number) {
+      // 更新左侧小图的active状态
+      productItems.forEach((item, i) => {
+        if (i === index) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // 更新进度条点的状态
+      progressDots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+
+      // 更新右侧大图
+      const imgElement = mainProductImage as HTMLImageElement;
+      if (imgElement && products[index]) {
+        imgElement.style.opacity = '0';
+        setTimeout(() => {
+          imgElement.src = products[index].image;
+          imgElement.alt = products[index].alt;
+          imgElement.style.opacity = '1';
+        }, 150);
+      }
+    }
+
+    // 绑定点击事件
+    productItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        updateDisplay(index);
+      });
+    });
+
+    // 进度条点也可以点击
+    progressDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        updateDisplay(index);
+      });
+    });
+  });
+</script> 

@@ -6,6 +6,10 @@ import partytown from '@astrojs/partytown';
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
+  server: {
+    port: 3000,
+    host: true,
+  },
   integrations: [
     tailwind({
       applyBaseStyles: true,

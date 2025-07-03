@@ -1,25 +1,189 @@
 ---
 // Customer cases data could be imported from a separate file
 ---
-<section class="w-full bg-gray-50 py-16">
-  <div class="container mx-auto">
-    <h2 class="text-3xl font-bold text-center mb-12">Customer Cases</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <img src="/case1.webp" alt="Customer Case 1" class="w-full h-36 object-cover rounded mb-2 transition-transform duration-200 hover:scale-105 hover:shadow-lg" loading="lazy" decoding="async" />
-        <h3 class="text-xl font-semibold mb-2">项目案例 1</h3>
-        <p class="text-gray-600">成功为大型建筑公司提供高效的滑移装载机解决方案。</p>
-      </div>
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <img src="/case2.webp" alt="Customer Case 2" class="w-full h-36 object-cover rounded mb-2" loading="lazy" decoding="async" />
-        <h3 class="text-xl font-semibold mb-2">项目案例 2</h3>
-        <p class="text-gray-600">在城市基础设施建设中发挥重要作用的工程机械设备。</p>
-      </div>
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <img src="/case3.webp" alt="Customer Case 3" class="w-full h-36 object-cover rounded mb-2" loading="lazy" decoding="async" />
-        <h3 class="text-xl font-semibold mb-2">项目案例 3</h3>
-        <p class="text-gray-600">矿业开发项目中的可靠合作伙伴和设备供应商。</p>
+
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <!-- 标题 -->
+    <h2 class="text-4xl font-bold text-center mb-6 text-gray-800 tracking-wider">
+      CUSTOMER CASES
+    </h2>
+    
+    <!-- 描述文字 -->
+    <p class="text-center text-gray-600 mb-12 max-w-4xl mx-auto text-lg leading-relaxed">
+      Our products are exported to Europe, South America, the Middle East, Central Asia, Africa, Southeast Asia and 
+      other regions, providing reliable and durable construction machinery and equipment for global customers.
+    </p>
+    
+    <!-- 案例轮播区域 -->
+    <div class="relative max-w-7xl mx-auto">
+      <!-- 左箭头 - 在卡片外侧 -->
+      <button id="prevBtn" class="absolute -left-16 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      
+      <!-- 右箭头 - 在卡片外侧 -->
+      <button id="nextBtn" class="absolute -right-16 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+      
+      <!-- 案例卡片滚动容器 -->
+      <div id="casesContainer" class="overflow-hidden">
+        <div id="casesSlider" class="flex transition-transform duration-500 ease-in-out">
+          <!-- 案例1 -->
+          <div class="flex-none w-full md:w-1/3 px-3">
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+              <div class="h-80 bg-gray-200">
+                <img 
+                  src="/case1.webp" 
+                  alt="Shiphold Sand Cleaning" 
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-800 leading-tight">
+                  A New Powerhouse For Shiphold Sand Cleaning At S...
+                </h3>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 案例2 -->
+          <div class="flex-none w-full md:w-1/3 px-3">
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+              <div class="h-80 bg-gray-200">
+                <img 
+                  src="/case2.webp" 
+                  alt="Saudi Delegation Visits" 
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-800 leading-tight">
+                  Saudi Delegation Visits, Praises Our Expertise
+                </h3>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 案例3 -->
+          <div class="flex-none w-full md:w-1/3 px-3">
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+              <div class="h-80 bg-gray-200">
+                <img 
+                  src="/case3.webp" 
+                  alt="Dutch Farms Operation" 
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-800 leading-tight">
+                  Tevis backhoe loaders help Dutch farms operate eff...
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- 更多案例（隐藏的） -->
+          <div class="flex-none w-full md:w-1/3 px-3">
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg">
+              <div class="h-80 bg-gray-200">
+                <img 
+                  src="/case1.webp" 
+                  alt="Another Case" 
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-800 leading-tight">
+                  More Success Stories Coming Soon...
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    
+    <!-- More cases 按钮 -->
+    <div class="text-center mt-12">
+      <a href="/case" class="inline-flex items-center border-2 border-red-600 text-red-600 px-8 py-3 hover:bg-red-600 hover:text-white transition-colors duration-300">
+        More cases
+        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
+    </div>
   </div>
-</section> 
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const casesSlider = document.getElementById('casesSlider');
+    
+    // 检查所有元素是否存在
+    if (!prevBtn || !nextBtn || !casesSlider) {
+      return;
+    }
+    
+    const totalSlides = casesSlider.children.length;
+    let currentIndex = 0;
+
+    // 更新滑块位置
+    function updateSlider() {
+      if (!casesSlider || !prevBtn || !nextBtn) return;
+      
+      // 移动端显示一个，桌面端显示三个
+      const isMobile = window.innerWidth < 768;
+      const slidesToShow = isMobile ? 1 : 3;
+      const slideWidth = 100 / slidesToShow; // 每个滑块的宽度百分比
+      
+      // 计算移动距离
+      const translateX = -(currentIndex * slideWidth);
+      casesSlider.style.transform = `translateX(${translateX}%)`;
+      
+      // 更新按钮状态
+      prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+      nextBtn.style.opacity = currentIndex >= totalSlides - slidesToShow ? '0.5' : '1';
+    }
+
+    // 下一张
+    function nextSlide() {
+      const isMobile = window.innerWidth < 768;
+      const slidesToShow = isMobile ? 1 : 3;
+      
+      if (currentIndex < totalSlides - slidesToShow) {
+        currentIndex++;
+        updateSlider();
+      }
+    }
+
+    // 上一张
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlider();
+      }
+    }
+
+    // 绑定事件
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    // 响应式更新
+    window.addEventListener('resize', updateSlider);
+    
+    // 初始化
+    updateSlider();
+  });
+</script> 

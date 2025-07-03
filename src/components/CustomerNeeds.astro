@@ -1,78 +1,68 @@
-<section class="py-20 bg-gray-50 section-container">
-  <div class="container mx-auto px-4">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl font-bold text-gray-800 mb-4 lcp-critical title-h2 text-container">
-        满足不同客户群体的多样化需求
-      </h2>
-      <p class="text-xl text-gray-600 lcp-critical text-container">
-        MEET THE DIVERSE NEEDS OF DIFFERENT CUSTOMER GROUPS
-      </p>
-      <div class="w-20 h-1 bg-red-600 mx-auto mt-4 non-critical"></div>
-    </div>
-    
-    <div class="relative non-critical">
-      <!-- Main factory image - 固定尺寸防止布局偏移 -->
-      <div class="relative overflow-hidden rounded-2xl shadow-2xl performance-critical">
-        <div class="image-placeholder panoramic-image">
-          <img src="/factory-panoramic.svg" alt="Factory Panoramic View" class="w-full h-96 object-cover hover-scale-optimized transition-transform duration-300 panoramic-image" loading="lazy" width="1200" height="384">
+<section class="relative min-h-screen flex items-center">
+  <!-- 背景图片 -->
+  <div class="absolute inset-0">
+    <img 
+      src="/factory.webp" 
+      alt="Factory Workshop" 
+      class="w-full h-full object-cover"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+  </div>
+  
+  <!-- 内容容器 -->
+  <div class="relative z-10 w-full">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col lg:flex-row items-center lg:gap-16">
+        
+        <!-- 左侧文字内容 -->
+        <div class="bg-white p-16 max-w-2xl mb-8 lg:mb-0 lg:mr-8">
+          <h2 class="text-6xl font-bold mb-8 leading-tight">
+            <span class="text-red-600">MEET THE DIVERSE NEEDS</span><br>
+            <span class="text-gray-800">OF DIFFERENT CUSTOMER</span><br>
+            <span class="text-gray-800">GROUPS</span>
+          </h2>
+          
+          <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+            Our product line covers slip loader, telescopic forklift, 
+            excavator loader, accessories development and 
+            customization, remanufacturing engineering 
+            machinery equipment, engineering machinery parts 
+            and other categories of many series
+          </p>
+          
+          <a href="/contact" class="inline-flex items-center border-2 border-red-600 text-red-600 px-10 py-4 text-lg hover:bg-red-600 hover:text-white transition-colors duration-300">
+            Contact us
+            <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </a>
         </div>
         
-        <!-- Overlay gradient -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-        
-        <!-- Content overlay -->
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div class="text-center text-white text-container">
-            <h3 class="text-3xl font-bold mb-4">现代化生产基地</h3>
-            <p class="text-xl mb-8 text-gray-200">先进的生产设备和完善的质量管理体系</p>
+        <!-- 右侧360度展示 -->
+        <div class="text-center text-white" style="margin-left: 30rem;">
+          <div class="relative inline-block">
+            <!-- 360度圆形边框 -->
+            <div class="w-48 h-48 border-6 border-white rounded-full flex items-center justify-center mb-6 relative">
+              <span class="text-8xl font-bold relative z-10">360</span>
+              <!-- 弧形装饰 - 旋转圈 -->
+              <div class="absolute rounded-full animate-spin" style="
+                width: 256px;
+                height: 256px;
+                top: calc(50% - 90px);
+                left: calc(50% - 128px);
+                border: 8px solid transparent;
+                border-top: 8px solid white;
+                border-right: 8px solid rgba(255,255,255,0.5);
+                animation-duration: 3s;
+              "></div>
+            </div>
             
-            <!-- 360 Panoramic Button -->
-            <button class="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 hover-scale-optimized hover:shadow-2xl transition-all duration-300 transform button-fixed animation-no-layout-shift">
-              <svg class="w-6 h-6 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-              </svg>
-              360° 全景参观
-            </button>
+            <p class="text-2xl font-semibold">Click to enter</p>
+            <p class="text-lg opacity-90">Panoramic display</p>
           </div>
         </div>
         
-        <!-- 装饰元素 - 延迟显示，不影响布局 -->
-        <div class="absolute top-8 left-8 w-16 h-16 bg-red-600 rounded-full opacity-20 decorative-element animation-no-layout-shift"></div>
-        <div class="absolute bottom-8 right-8 w-12 h-12 bg-blue-600 rounded-full opacity-30 decorative-element animation-no-layout-shift"></div>
-        <div class="absolute top-1/2 left-4 w-8 h-8 bg-yellow-500 rounded-full opacity-25 decorative-element animation-no-layout-shift"></div>
-      </div>
-      
-      <!-- Feature cards - 固定尺寸 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 grid-fixed">
-        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover-scale-optimized transition-all duration-300 transform card-fixed animation-no-layout-shift">
-          <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mb-4 hover:rotate-12 transition-transform duration-300 animation-no-layout-shift">
-            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <h4 class="text-lg font-bold text-gray-800 mb-2 text-container">质量保证</h4>
-          <p class="text-gray-600 text-container">严格的质量控制流程，确保每台设备都符合国际标准</p>
-        </div>
-        
-        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover-scale-optimized transition-all duration-300 transform card-fixed animation-no-layout-shift">
-          <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mb-4 hover:rotate-12 transition-transform duration-300 animation-no-layout-shift">
-            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-            </svg>
-          </div>
-          <h4 class="text-lg font-bold text-gray-800 mb-2 text-container">专业团队</h4>
-          <p class="text-gray-600 text-container">经验丰富的工程师团队，提供专业的技术支持</p>
-        </div>
-        
-        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover-scale-optimized transition-all duration-300 transform card-fixed animation-no-layout-shift">
-          <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mb-4 hover:rotate-12 transition-transform duration-300 animation-no-layout-shift">
-            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <h4 class="text-lg font-bold text-gray-800 mb-2 text-container">认证齐全</h4>
-          <p class="text-gray-600 text-container">通过ISO9001、CE等多项国际认证，品质有保障</p>
-        </div>
       </div>
     </div>
   </div>
