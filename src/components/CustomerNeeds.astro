@@ -1,29 +1,32 @@
-<section class="relative min-h-screen flex items-center">
+<section class="relative min-h-screen flex items-center overflow-hidden">
   <!-- 背景图片 -->
   <div class="absolute inset-0">
     <img 
       src="/factory.webp" 
       alt="Factory Workshop" 
-      class="w-full h-full object-cover"
+      width="1920"
+      height="1080"
       loading="lazy"
+      decoding="async"
+      class="w-full h-full object-cover"
     />
     <div class="absolute inset-0 bg-black bg-opacity-30"></div>
   </div>
   
   <!-- 内容容器 -->
   <div class="relative z-10 w-full">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col lg:flex-row items-center lg:gap-16">
+    <div class="container mx-auto px-4 py-8 lg:py-0">
+      <div class="flex flex-col lg:flex-row items-center justify-center lg:justify-between lg:gap-16 space-y-8 lg:space-y-0">
         
         <!-- 左侧文字内容 -->
-        <div class="bg-white p-16 max-w-2xl mb-8 lg:mb-0 lg:mr-8">
-          <h2 class="text-6xl font-bold mb-8 leading-tight">
+        <div class="bg-white p-6 md:p-8 lg:p-16 max-w-2xl w-full lg:w-auto mx-4 lg:mx-0 rounded-lg lg:rounded-none">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold mb-4 md:mb-6 lg:mb-8 leading-tight">
             <span class="text-red-600">MEET THE DIVERSE NEEDS</span><br>
             <span class="text-gray-800">OF DIFFERENT CUSTOMER</span><br>
             <span class="text-gray-800">GROUPS</span>
           </h2>
           
-          <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+          <p class="text-sm md:text-base lg:text-lg xl:text-xl text-gray-600 mb-6 md:mb-8 lg:mb-10 leading-relaxed">
             Our product line covers slip loader, telescopic forklift, 
             excavator loader, accessories development and 
             customization, remanufacturing engineering 
@@ -31,39 +34,127 @@
             and other categories of many series
           </p>
           
-          <a href="/contact" class="inline-flex items-center border-2 border-red-600 text-red-600 px-10 py-4 text-lg hover:bg-red-600 hover:text-white transition-colors duration-300">
+          <a href="/contact" class="inline-flex items-center border-2 border-red-600 text-red-600 px-4 md:px-6 lg:px-10 py-2 md:py-3 lg:py-4 text-sm md:text-base lg:text-lg hover:bg-red-600 hover:text-white transition-colors duration-300 rounded">
             Contact us
-            <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="ml-2 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
             </svg>
           </a>
         </div>
         
         <!-- 右侧360度展示 -->
-        <div class="text-center text-white" style="margin-left: 30rem;">
+        <div class="text-center text-white w-full lg:w-auto flex-shrink-0 px-4 lg:px-0">
           <div class="relative inline-block">
             <!-- 360度圆形边框 -->
-            <div class="w-48 h-48 border-6 border-white rounded-full flex items-center justify-center mb-6 relative">
-              <span class="text-8xl font-bold relative z-10">360</span>
+            <div class="circle-360 w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 border-3 sm:border-4 md:border-6 border-white rounded-full flex items-center justify-center mb-3 md:mb-4 lg:mb-6 relative mx-auto">
+              <span class="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold relative z-10">360</span>
               <!-- 弧形装饰 - 旋转圈 -->
-              <div class="absolute rounded-full animate-spin" style="
-                width: 256px;
-                height: 256px;
-                top: calc(50% - 90px);
-                left: calc(50% - 128px);
-                border: 8px solid transparent;
-                border-top: 8px solid white;
-                border-right: 8px solid rgba(255,255,255,0.5);
-                animation-duration: 3s;
-              "></div>
+              <div class="spinner-ring absolute rounded-full animate-spin"></div>
             </div>
             
-            <p class="text-2xl font-semibold">Click to enter</p>
-            <p class="text-lg opacity-90">Panoramic display</p>
+            <p class="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold">Click to enter</p>
+            <p class="text-xs sm:text-sm md:text-base lg:text-lg opacity-90">Panoramic display</p>
           </div>
         </div>
         
       </div>
     </div>
   </div>
-</section> 
+</section>
+
+<style>
+  /* 360度展示响应式样式 */
+  .circle-360 {
+    position: relative;
+  }
+
+  .spinner-ring {
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-right: 2px solid rgba(255,255,255,0.5);
+    animation-duration: 3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* 小屏手机 */
+  @media (max-width: 639px) {
+    .spinner-ring {
+      width: 126px;
+      height: 126px;
+      top: calc(50% - 63px);
+      left: calc(50% - 63px);
+      border-width: 2px;
+    }
+  }
+
+  /* 大屏手机 */
+  @media (min-width: 640px) and (max-width: 767px) {
+    .spinner-ring {
+      width: 144px;
+      height: 144px;
+      top: calc(50% - 72px);
+      left: calc(50% - 72px);
+      border-width: 3px;
+    }
+  }
+
+  /* 平板端 */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .spinner-ring {
+      width: 180px;
+      height: 180px;
+      top: calc(50% - 90px);
+      left: calc(50% - 90px);
+      border-width: 4px;
+    }
+  }
+
+  /* 桌面端 */
+  @media (min-width: 1024px) {
+    .spinner-ring {
+      width: 216px;
+      height: 216px;
+      top: calc(50% - 108px);
+      left: calc(50% - 108px);
+      border-width: 6px;
+    }
+  }
+
+  /* 移动端布局优化 */
+  @media (max-width: 1023px) {
+    section {
+      min-height: 100vh;
+      padding: 1rem 0;
+    }
+    
+    .container {
+      max-width: 100%;
+    }
+  }
+
+  /* 超小屏幕优化 */
+  @media (max-width: 479px) {
+    section {
+      min-height: auto;
+      padding: 2rem 0;
+    }
+    
+    .bg-white {
+      margin: 0 0.5rem;
+      border-radius: 0.5rem;
+    }
+  }
+
+  /* 确保在移动端垂直布局有足够间距 */
+  @media (max-width: 1023px) {
+    .space-y-8 > * + * {
+      margin-top: 2rem;
+    }
+  }
+
+  /* 防止水平滚动 */
+  body {
+    overflow-x: hidden;
+  }
+</style> 

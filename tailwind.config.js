@@ -12,7 +12,7 @@ module.exports = {
         },
       },
       height: {
-        '23': '5.75rem', // 92px
+        '23': '4.75rem', // 92px
       },
       animation: {
         'fade-in': 'fadeIn 1s ease-out',
