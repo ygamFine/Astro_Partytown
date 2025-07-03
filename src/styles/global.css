@@ -8,13 +8,8 @@
 @tailwind utilities;
 
 /* 基础重置 */
-* {
-  box-sizing: border-box;
-}
-
 html {
   scroll-behavior: smooth;
-  font-size: 10px;
 }
 
 body {
@@ -33,21 +28,7 @@ body {
   padding: 0 1rem;
 }
 
-/* 按钮组件 */
-.btn-primary {
-  @apply bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition-colors duration-300;
-}
-
-.btn-secondary {
-  @apply border-2 border-red-600 text-red-600 px-6 py-3 rounded-lg font-bold hover:bg-red-600 hover:text-white transition-colors duration-300;
-}
-
-/* 焦点可见性 */
-.focus-visible-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2;
-}
-
-/* 页面动画 */
+/* 高性能动画 */
 .animate-page-load {
   animation: fadeInUp 0.6s ease-out;
 }
@@ -55,20 +36,15 @@ body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translate3d(0, 30px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
-/* 移动端banner全宽样式 */
-.mobile-full-width {
-  width: 100%;
-  position: relative;
-}
-
+/* 移动端banner优化 */
 @media (max-width: 768px) {
   .mobile-full-width {
     width: 100vw;
@@ -85,9 +61,10 @@ body {
   }
 }
 
-/* Banner轮播样式 */
+/* 高性能轮播 - 使用GPU加速 */
 .banner-slide {
   transition: opacity 0.5s ease-in-out;
+  will-change: opacity;
 }
 
 .banner-slide:not(.active) {
@@ -108,13 +85,14 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* 性能优化 */
+/* 性能优化的悬停效果 */
 .hover-scale-optimized {
   will-change: transform;
+  transition: transform 0.2s ease;
 }
 
 .hover-scale-optimized:hover {
-  transform: scale(1.05);
+  transform: scale3d(1.05, 1.05, 1);
 }
 
 /* 触摸优化 */
@@ -124,24 +102,25 @@ body {
 
 /* 懒加载图片优化 */
 img[loading="lazy"] {
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
 }
 
 img[loading="lazy"]:not([src]) {
   opacity: 0;
 }
 
-/* 卡片悬停效果 */
+/* 高性能卡片悬停 */
 .card-hover {
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
 }
 
 .card-hover:hover {
-  transform: translateY(-5px);
+  transform: translate3d(0, -5px, 0);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
-/* 滚动条样式 */
+/* 简化的滚动条 */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -165,7 +144,7 @@ img[loading="lazy"]:not([src]) {
   color: #1a202c;
 }
 
-/* 焦点样式 */
+/* 焦点样式优化 */
 :focus-visible {
   outline: 2px solid #e60012;
   outline-offset: 2px;
@@ -177,13 +156,12 @@ a {
   text-decoration: none;
 }
 
-/* 图片样式 */
+/* 图片性能优化 */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* 移动端图片优化 */
 @media (max-width: 768px) {
   img {
     image-rendering: -webkit-optimize-contrast;
@@ -204,7 +182,7 @@ input, textarea, select {
   font-family: inherit;
 }
 
-/* 无障碍性 */
+/* 减少动画优化 */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -213,21 +191,21 @@ input, textarea, select {
   }
 }
 
-/* 响应式容器宽度 */
+/* 响应式容器优化 */
 @media (min-width: 1200px) {
-    .container {
-        width: 1200px;
-    }
+  .container {
+    width: 1200px;
+  }
 }
 
 @media (min-width: 1500px) {
-    .container {
-        width: 1400px;
-    }
+  .container {
+    width: 1400px;
+  }
 }
 
 @media (min-width: 1700px) {
-    body .container {
-        width: 1600px;
+  body .container {
+    width: 1600px;
   }
 } 

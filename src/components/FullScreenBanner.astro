@@ -173,141 +173,167 @@
   }
 </style>
 
-<script>
-  // 简化的Banner轮播 - 避免TypeScript类型问题
-  let currentSlide = 0;
-  let autoSlideTimer = null;
-  let progressTimer = null;
-  
-  const slides = document.querySelectorAll('#desktop-banner .banner-slide');
-  const progressFill = document.getElementById('progress-fill');
-  const totalSlides = slides.length;
-  const slideInterval = 5000;
-
-  function goToSlide(index) {
-    if (index === currentSlide || totalSlides <= 1) return;
+<script type="text/javascript">
+  // 高性能Banner轮播 - 优化版本
+  (function() {
+    let currentSlide = 0;
+    let autoSlideTimer = null;
+    let progressTimer = null;
     
-    // 隐藏当前幻灯片
-    slides[currentSlide].classList.remove('active');
-    
-    // 显示新幻灯片
-    currentSlide = index;
-    slides[currentSlide].classList.add('active');
-    
-    resetProgress();
-    startProgress();
-  }
-
-  function nextSlide() {
-    const next = (currentSlide + 1) % totalSlides;
-    goToSlide(next);
-  }
-
-  function prevSlide() {
-    const prev = (currentSlide - 1 + totalSlides) % totalSlides;
-    goToSlide(prev);
-  }
-
-  function startAutoSlide() {
-    if (totalSlides <= 1) return;
-    
-    autoSlideTimer = setInterval(() => {
-      nextSlide();
-    }, slideInterval);
-    
-    startProgress();
-  }
-
-  function stopAutoSlide() {
-    if (autoSlideTimer) {
-      clearInterval(autoSlideTimer);
-      autoSlideTimer = null;
-    }
-    stopProgress();
-  }
-
-  function stopProgress() {
-    if (progressTimer) {
-      clearInterval(progressTimer);
-      progressTimer = null;
-    }
-  }
-
-  // 移除暂停和恢复函数 - 轮播图持续播放
-
-  function startProgress() {
-    if (!progressFill) return;
-    
-    const startTime = performance.now();
-    
-    function animate(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min((elapsed / slideInterval) * 100, 100);
-      
-      progressFill.style.width = progress + '%';
-      
-      if (progress < 100) {
-        progressTimer = requestAnimationFrame(animate);
-      }
-    }
-    
-    progressTimer = requestAnimationFrame(animate);
-  }
-
-  function resetProgress() {
-    if (progressFill) {
-      progressFill.style.width = '0%';
-    }
-    
-    if (progressTimer) {
-      cancelAnimationFrame(progressTimer);
-    }
-  }
-
-  // 事件绑定
-  function initBanner() {
-    console.log('初始化PC端轮播图，totalSlides:', totalSlides);
-    if (totalSlides <= 1) return;
-    
-    // 确保第一张图片有active类
-    if (slides.length > 0) {
-      slides[0].classList.add('active');
-    }
-    
-    // 按钮点击事件 - 原始样式
+    // 缓存DOM元素
+    const slides = document.querySelectorAll('#desktop-banner .banner-slide');
+    const progressFill = document.getElementById('progress-fill');
     const prevLabel = document.getElementById('prev-label');
     const nextLabel = document.getElementById('next-label');
     
-    if (prevLabel) {
-      prevLabel.addEventListener('click', () => {
-        console.log('点击PREV');
-        prevSlide();
-        stopAutoSlide();
-        startAutoSlide(); // Restart auto slide
-      });
-    }
-    
-    if (nextLabel) {
-      nextLabel.addEventListener('click', () => {
-        console.log('点击NEXT');
-        nextSlide();
-        stopAutoSlide();
-        startAutoSlide(); // Restart auto slide
-      });
+    const totalSlides = slides.length;
+    const slideInterval = 5000;
+
+    // 防抖函数
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func.apply(this, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
     }
 
-    // 移除鼠标悬停暂停功能 - 轮播图持续自动播放
+    function goToSlide(index) {
+      if (index === currentSlide || totalSlides <= 1) return;
+      
+      // 使用requestAnimationFrame优化动画
+      requestAnimationFrame(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        
+        resetProgress();
+        startProgress();
+      });
+    }
 
-    console.log('启动自动轮播');
-    startAutoSlide();
-  }
+    function nextSlide() {
+      const next = (currentSlide + 1) % totalSlides;
+      goToSlide(next);
+    }
 
-  // 延迟初始化，避免阻塞关键渲染
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(initBanner, 100);
-    });
-  } else {
-    setTimeout(initBanner, 100);
-  }
+    function prevSlide() {
+      const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+      goToSlide(prev);
+    }
+
+    function startAutoSlide() {
+      if (totalSlides <= 1) return;
+      
+      if (autoSlideTimer) {
+        clearInterval(autoSlideTimer);
+      }
+      autoSlideTimer = setInterval(nextSlide, slideInterval);
+      startProgress();
+    }
+
+    function stopAutoSlide() {
+      if (autoSlideTimer) {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = null;
+      }
+      stopProgress();
+    }
+
+    function stopProgress() {
+      if (progressTimer) {
+        cancelAnimationFrame(progressTimer);
+        progressTimer = null;
+      }
+    }
+
+    function startProgress() {
+      if (!progressFill) return;
+      
+      const startTime = performance.now();
+      
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min((elapsed / slideInterval) * 100, 100);
+        
+        progressFill.style.width = progress + '%';
+        
+        if (progress < 100) {
+          progressTimer = requestAnimationFrame(animate);
+        }
+      }
+      
+      progressTimer = requestAnimationFrame(animate);
+    }
+
+    function resetProgress() {
+      if (progressFill) {
+        progressFill.style.width = '0%';
+      }
+      
+      if (progressTimer) {
+        cancelAnimationFrame(progressTimer);
+      }
+    }
+
+    // 防抖的按钮点击处理
+    const debouncedPrev = debounce(() => {
+      prevSlide();
+      stopAutoSlide();
+      setTimeout(startAutoSlide, 100);
+    }, 300);
+
+    const debouncedNext = debounce(() => {
+      nextSlide();
+      stopAutoSlide();
+      setTimeout(startAutoSlide, 100);
+    }, 300);
+
+    function initBanner() {
+      if (totalSlides <= 1) return;
+      
+      // 确保第一张图片有active类
+      if (slides.length > 0) {
+        slides[0].classList.add('active');
+      }
+      
+      // 使用委托事件处理
+      if (prevLabel) {
+        prevLabel.addEventListener('click', debouncedPrev, { passive: true });
+      }
+      
+      if (nextLabel) {
+        nextLabel.addEventListener('click', debouncedNext, { passive: true });
+      }
+
+      // 页面可见性API - 页面隐藏时停止轮播
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopAutoSlide();
+        } else {
+          startAutoSlide();
+        }
+      });
+
+      startAutoSlide();
+    }
+
+    // 性能优化的初始化
+    function init() {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          // 使用setTimeout避免阻塞首屏渲染
+          setTimeout(initBanner, 100);
+        });
+      } else {
+        setTimeout(initBanner, 100);
+      }
+    }
+
+    init();
+  })();
 </script> 

@@ -184,133 +184,173 @@ import StaticMenu from './StaticMenu.astro';
   </div>
 </header>
 
-<script>
-  function initMobileMenu() {
-    const btn = document.getElementById('mobile-menu-button');
-    const menu = document.getElementById('mobile-menu');
-    const openIcon = document.getElementById('menu-open-icon');
-    const closeIcon = document.getElementById('menu-close-icon');
+<script type="text/javascript">
+  (function() {
+    // 缓存DOM元素
+    let mobileMenuButton = null;
+    let mobileMenu = null;
+    let openIcon = null;
+    let closeIcon = null;
+    let mainHeader = null;
+    let navMenu = null;
     
-    if (btn && menu) {
-      // 菜单切换
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isHidden = menu.classList.contains('hidden');
-        
-        // 切换菜单显示
-        menu.classList.toggle('hidden');
-        btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-        
-        // 切换图标
-        if (openIcon && closeIcon) {
-          openIcon.classList.toggle('hidden');
-          closeIcon.classList.toggle('hidden');
+    // 状态管理
+    let lastScrollY = 0;
+    let isMenuFixed = false;
+    let isScrolling = false;
+
+    // 节流函数
+    function throttle(func, limit) {
+      let inThrottle;
+      return function(...args) {
+        if (!inThrottle) {
+          func.apply(this, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
         }
-      });
+      };
+    }
+
+    // 移动端菜单初始化
+    function initMobileMenu() {
+      mobileMenuButton = document.getElementById('mobile-menu-button');
+      mobileMenu = document.getElementById('mobile-menu');
+      openIcon = document.getElementById('menu-open-icon');
+      closeIcon = document.getElementById('menu-close-icon');
       
-      // 点击链接关闭菜单
-      menu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
+      if (!mobileMenuButton || !mobileMenu) return;
+
+      // 菜单切换 - 添加防抖
+      const toggleMenu = throttle((e) => {
+        e.preventDefault();
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        // 批量DOM操作
+        requestAnimationFrame(() => {
+          mobileMenu.classList.toggle('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+          
           if (openIcon && closeIcon) {
-            openIcon.classList.remove('hidden');
-            closeIcon.classList.add('hidden');
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
           }
         });
+      }, 100);
+
+      mobileMenuButton.addEventListener('click', toggleMenu);
+      
+      // 点击链接关闭菜单 - 使用事件委托
+      mobileMenu.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+          requestAnimationFrame(() => {
+            mobileMenu.classList.add('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', 'false');
+            if (openIcon && closeIcon) {
+              openIcon.classList.remove('hidden');
+              closeIcon.classList.add('hidden');
+            }
+          });
+        }
       });
     }
-  }
 
-  function initScrollHeader() {
-    const mainHeader = document.getElementById('main-header');
-    const navMenu = document.getElementById('nav-menu');
-    
-    if (!mainHeader || !navMenu) return;
-    
-    let lastScrollY = window.scrollY;
-    const headerHeight = mainHeader.offsetHeight; // 主banner高度
-    let isMenuFixed = false; // 跟踪菜单状态
-    
-    function handleScroll() {
-      const currentScrollY = window.scrollY;
+    // 优化的滚动头部处理
+    function initScrollHeader() {
+      mainHeader = document.getElementById('main-header');
+      navMenu = document.getElementById('nav-menu');
       
-      // 再次检查元素是否存在
       if (!mainHeader || !navMenu) return;
       
-      // 当滚动超过banner高度时，隐藏banner并固定菜单
-      if (currentScrollY > headerHeight && !isMenuFixed) {
-        // 隐藏主banner
-        mainHeader.style.display = 'none';
-        
-        // 临时禁用过渡，快速设置初始位置
-        navMenu.style.transition = 'none';
-        navMenu.style.position = 'fixed';
-        navMenu.style.top = '0';
-        navMenu.style.left = '0';
-        navMenu.style.right = '0';
-        navMenu.style.zIndex = '50';
-        navMenu.style.width = '100%';
-        navMenu.style.transform = 'translateY(-100%)';
-        
-        // 强制重绘，然后启用过渡并触发滑入动画
-        navMenu.offsetHeight; // 强制重绘
-        navMenu.style.transition = 'transform 0.3s ease-in-out';
-        
-        // 稍微延迟确保过渡设置生效
-        requestAnimationFrame(() => {
-          navMenu.style.transform = 'translateY(0)';
-        });
-        
-        isMenuFixed = true;
-      } else if (currentScrollY <= headerHeight && isMenuFixed) {
-        // 显示主banner
-        mainHeader.style.display = 'block';
-        
-        // 直接恢复菜单常规定位，无动画
-        navMenu.style.transition = 'none';
-        navMenu.style.position = 'relative';
-        navMenu.style.top = 'auto';
-        navMenu.style.left = 'auto';
-        navMenu.style.right = 'auto';
-        navMenu.style.width = 'auto';
-        navMenu.style.transform = 'translateY(0)';
-        
-        // 恢复过渡设置
-        requestAnimationFrame(() => {
-          navMenu.style.transition = 'transform 0.3s ease-in-out';
-        });
-        
-        isMenuFixed = false;
-      }
+      lastScrollY = window.scrollY;
+      const headerHeight = mainHeader.offsetHeight;
       
-      lastScrollY = currentScrollY;
-    }
-    
-    // 监听滚动事件，使用节流优化性能
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
+      // 节流的滚动处理函数
+      const handleScroll = throttle(() => {
+        if (!mainHeader || !navMenu) return;
+        
+        const currentScrollY = window.scrollY;
+        
+        // 避免不必要的计算
+        if (Math.abs(currentScrollY - lastScrollY) < 5) return;
+        
+        // 批量DOM更新
         requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
+          if (currentScrollY > headerHeight && !isMenuFixed) {
+            // 固定菜单
+            Object.assign(navMenu.style, {
+              transition: 'none',
+              position: 'fixed',
+              top: '0',
+              left: '0',
+              right: '0',
+              zIndex: '50',
+              width: '100%',
+              transform: 'translateY(-100%)'
+            });
+            
+            mainHeader.style.display = 'none';
+            
+            // 触发滑入动画
+            navMenu.offsetHeight; // 强制重绘
+            navMenu.style.transition = 'transform 0.3s ease-in-out';
+            navMenu.style.transform = 'translateY(0)';
+            
+            isMenuFixed = true;
+          } else if (currentScrollY <= headerHeight && isMenuFixed) {
+            // 恢复正常布局
+            mainHeader.style.display = 'block';
+            
+            Object.assign(navMenu.style, {
+              transition: 'none',
+              position: 'relative',
+              top: 'auto',
+              left: 'auto',
+              right: 'auto',
+              width: 'auto',
+              transform: 'translateY(0)'
+            });
+            
+            // 恢复过渡
+            requestAnimationFrame(() => {
+              navMenu.style.transition = 'transform 0.3s ease-in-out';
+            });
+            
+            isMenuFixed = false;
+          }
         });
-        ticking = true;
-      }
-    });
-    
-    // 初始状态检查
-    handleScroll();
-  }
+        
+        lastScrollY = currentScrollY;
+      }, 16); // 约60fps
 
-  // DOM就绪后初始化
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+      // 优化的滚动监听
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      
+      // 初始状态检查
+      handleScroll();
+    }
+
+    // 页面可见性优化
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        // 页面隐藏时暂停不必要的操作
+        isScrolling = false;
+      }
+    }
+
+    // 初始化函数
+    function init() {
       initMobileMenu();
       initScrollHeader();
-    });
-  } else {
-    initMobileMenu();
-    initScrollHeader();
-  }
+      
+      // 添加页面可见性监听
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+
+    // DOM就绪后初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
 </script> 
