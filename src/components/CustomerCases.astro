@@ -33,7 +33,7 @@
       
       <!-- 案例卡片滚动容器 -->
       <div id="casesContainer" class="overflow-hidden">
-        <div id="casesSlider" class="flex transition-transform duration-500 ease-in-out cases-slider">
+        <div id="casesSlider" class="flex transition-transform duration-500 ease-in-out">
           <!-- 案例1 -->
           <div class="flex-none w-full md:w-1/3 px-3">
             <div class="bg-white rounded-lg overflow-hidden shadow-lg">
@@ -162,15 +162,11 @@
       
       // 计算移动距离
       const translateX = -(currentIndex * slideWidth);
+      casesSlider.style.transform = `translateX(${translateX}%)`;
       
-      // 使用requestAnimationFrame批量更新DOM
-      requestAnimationFrame(() => {
-        casesSlider.style.setProperty('--translate-x', translateX + '%');
-        
-        // 使用CSS类替代直接修改opacity
-        prevBtn.classList.toggle('btn-disabled', currentIndex === 0);
-        nextBtn.classList.toggle('btn-disabled', currentIndex >= totalSlides - slidesToShow);
-      });
+      // 更新按钮状态
+      prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+      nextBtn.style.opacity = currentIndex >= totalSlides - slidesToShow ? '0.5' : '1';
     }
 
     // 下一张
@@ -202,25 +198,4 @@
     // 初始化
     updateSlider();
   });
-</script>
-
-<style>
-  /* 优化的滑块动画 */
-  .cases-slider {
-    transform: translateX(var(--translate-x, 0%));
-    will-change: transform;
-    contain: layout style;
-  }
-
-  /* 按钮禁用状态 */
-  .btn-disabled {
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-  }
-
-  /* 确保按钮有正常的opacity */
-  button {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-  }
-</style> 
+</script> 

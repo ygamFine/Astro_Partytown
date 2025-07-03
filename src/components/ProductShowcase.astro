@@ -23,7 +23,7 @@
         <div class="product-thumbnails">
         <div class="product-item active" data-index="0">
           <img 
-            src="/images/backhoe-400.webp" 
+            src="/backhoe.webp" 
             alt="Backhoe Loader" 
             width="200"
             height="150"
@@ -36,7 +36,7 @@
         </div>
         <div class="product-item" data-index="1">
           <img 
-            src="/images/skid1-400.webp" 
+            src="/skid1.webp" 
             alt="Skid Steer Loader" 
             width="200"
             height="150"
@@ -49,7 +49,7 @@
         </div>
         <div class="product-item" data-index="2">
           <img 
-            src="/images/telescopic-400.webp" 
+            src="/telescopic.webp" 
             alt="Telescopic Forklift" 
             width="200"
             height="150"
@@ -69,7 +69,7 @@
           <div class="tevis-watermark">TEVIS</div>
           <img 
             id="mainProductImage" 
-            src="/images/backhoe-400.webp" 
+            src="/backhoe.webp" 
             alt="Main Product" 
             width="600"
             height="400"
@@ -229,8 +229,6 @@ h2 {
   height: 100%;
   object-fit: contain;
   transition: opacity 0.3s ease;
-  will-change: opacity;
-  contain: layout style;
 }
 .tevis-watermark {
   position: absolute;
@@ -242,16 +240,6 @@ h2 {
   z-index: 1;
   letter-spacing: 0.2em;
 }
-
-/* 图片切换动画类 */
-.image-fade-out {
-  opacity: 0;
-}
-
-.image-fade-in {
-  opacity: 1;
-}
-
 @media (max-width: 768px) {
   .product-showcase-main {
     flex-direction: column;
@@ -285,15 +273,15 @@ h2 {
     // 产品数据
     const products = [
       {
-        image: '/images/backhoe-400.webp',
+        image: '/backhoe.webp',
         alt: 'Backhoe Loader'
       },
       {
-        image: '/images/skid1-400.webp', 
+        image: '/skid1.webp', 
         alt: 'Skid Steer Loader'
       },
       {
-        image: '/images/telescopic-400.webp',
+        image: '/telescopic.webp',
         alt: 'Telescopic Forklift'
       }
     ];
@@ -321,13 +309,11 @@ h2 {
       // 更新右侧大图
       const imgElement = mainProductImage as HTMLImageElement;
       if (imgElement && products[index]) {
-        imgElement.classList.add('image-fade-out');
+        imgElement.style.opacity = '0';
         setTimeout(() => {
           imgElement.src = products[index].image;
           imgElement.alt = products[index].alt;
-          imgElement.classList.remove('image-fade-out');
-          imgElement.classList.add('image-fade-in');
-          setTimeout(() => imgElement.classList.remove('image-fade-in'), 300);
+          imgElement.style.opacity = '1';
         }, 150);
       }
     }

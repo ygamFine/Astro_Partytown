@@ -10,12 +10,51 @@ const mobileBanner = {
 };
 ---
 
-<!-- 移动端轮播图 - 只在移动端显示 -->
-<section class="mobile-banner-container" aria-label="移动端轮播图">
-  <div id="mobile-carousel" class="mobile-carousel-inner">
-    <div class="mobile-slide active" style="background-image: url('/images/shouji-banner1-ultra.webp')"></div>
-    <div class="mobile-slide" style="background-image: url('/images/banner222-mobile.webp')"></div>
-    <div class="mobile-slide" style="background-image: url('/images/banner-mobile.webp')"></div>
+<section class="hero-mobile">
+  <!-- 移动端轮播图 - WebP优化版本 -->
+  <div class="mobile-banner-container" id="mobile-carousel">
+    <!-- 轮播内容 -->
+    <div class="mobile-carousel-inner">
+      <div class="mobile-slide active">
+        <img 
+          src="/images/shouji-banner1-ultra.webp?v=3"
+          alt="专业滑移装载机制造商"
+          width={mobileBanner.width}
+          height={mobileBanner.height}
+          loading="eager"
+          fetchpriority="high"
+          decoding="sync"
+          class="mobile-banner"
+          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+        />
+      </div>
+      <div class="mobile-slide">
+        <img 
+          src="/images/banner222-mobile.webp?v=3"
+          alt="高品质工程机械设备"
+          width={mobileBanner.width}
+          height={mobileBanner.height}
+          loading="lazy"
+          decoding="async"
+          class="mobile-banner"
+          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+        />
+      </div>
+      <div class="mobile-slide">
+        <img 
+          src="/images/banner-mobile.webp?v=3"
+          alt="值得信赖的合作伙伴"
+          width={mobileBanner.width}
+          height={mobileBanner.height}
+          loading="lazy"
+          decoding="async"
+          class="mobile-banner"
+          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+        />
+      </div>
+    </div>
+
+
   </div>
 </section>
 
@@ -43,14 +82,20 @@ const mobileBanner = {
     height: 100%;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
   }
   
   .mobile-slide.active {
     opacity: 1;
   }
+  
+  .mobile-banner {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+  }
+
+
   
   /* 桌面端内容 - 默认显示 */
   .desktop-content {
@@ -79,6 +124,11 @@ const mobileBanner = {
       max-width: 280px;
       height: auto;
       margin: 1rem auto;
+    }
+    
+    /* 移动端隐藏装饰元素 */
+    .decorative {
+      display: none;
     }
   }
 
