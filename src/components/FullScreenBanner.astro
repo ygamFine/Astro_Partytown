@@ -19,7 +19,8 @@
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+        class="banner-image"
+        style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
       />
     </div>
     
@@ -32,7 +33,8 @@
         height="600"
         loading="lazy"
         decoding="async"
-        style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+        class="banner-image"
+        style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
       />
     </div>
     
@@ -45,7 +47,8 @@
         height="600"
         loading="lazy"
         decoding="async"
-        style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+        class="banner-image"
+        style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
       />
     </div>
   </div>
@@ -83,10 +86,13 @@
     height: 100%;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
+    overflow: hidden;
+    pointer-events: none; /* 隐藏的slide不响应鼠标事件 */
   }
 
   .banner-slide.active {
     opacity: 1;
+    pointer-events: auto; /* 只有显示的slide响应鼠标事件 */
   }
 
   /* Progress Bar Controller - 原始样式 */
@@ -156,13 +162,15 @@
     padding: 0;
   }
 
-  /* 确保图片正确显示 */
-  .banner-slide img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+  /* Banner图片悬停放大效果 - 只对当前显示的图片生效 */
+  #desktop-banner .banner-slide.active img:hover,
+  #desktop-banner .banner-slide.active .banner-image:hover {
+    transform: scale(1.05) !important;
+  }
+
+  /* 确保悬停在当前显示的slide容器上也能触发图片缩放 */
+  #desktop-banner .banner-slide.active:hover img {
+    transform: scale(1.05) !important;
   }
 
   /* 移动端隐藏PC端轮播图 */

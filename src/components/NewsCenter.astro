@@ -1,78 +1,64 @@
 ---
 // 新闻中心组件 - 按设计稿实现
+import { allNews } from '../data/news.js';
 ---
 
-<section class="py-16 bg-white">
+<section class="py-16 bg-white animate-fade-up">
   <div class="container mx-auto px-4">
-    <!-- 标题和更多新闻按钮 -->
-    <div class="flex justify-between items-start mb-12">
-      <div>
-        <h2 class="text-4xl font-bold mb-4 text-gray-800 tracking-wider">
-          NEWS CENTER
-        </h2>
-        <p class="text-gray-600 max-w-2xl leading-relaxed">
-          Efficient and timely service guarantee and other characteristics have been widely praised 
-          and trusted by domestic and foreign users
-        </p>
-      </div>
-      <a href="/news" class="border border-gray-400 text-gray-600 px-6 py-2 hover:bg-gray-50 transition-colors duration-300 whitespace-nowrap">
-        More news →
-      </a>
+    <!-- 标题 -->
+    <h2 class="text-4xl font-bold text-center mb-6 text-gray-800 tracking-wider animate-fade-up animate-delay-100">
+      NEWS CENTER
+    </h2>
+    
+    <!-- 描述文字 -->
+    <p class="text-center text-gray-600 mb-12 max-w-4xl mx-auto text-lg leading-relaxed animate-fade-up animate-delay-200">
+      Stay updated with the latest news and developments from our company. 
+      Get insights into our innovations, partnerships, and industry achievements.
+    </p>
+    
+    <!-- 新闻网格 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      {allNews.slice(0, 3).map((article: any, index: number) => (
+        <article class={`bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 card-hover-animate animate-fade-up animate-delay-${300 + (index + 1) * 100}`}>
+          <div class="h-48 bg-gray-200 overflow-hidden">
+            <img 
+              src={article.image} 
+              alt={article.title}
+              width="400"
+              height="192"
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+          <div class="p-6">
+            <div class="flex items-center text-sm text-gray-500 mb-3">
+              <time datetime={article.date}>{article.date}</time>
+              <span class="mx-2">•</span>
+              <span>{article.category}</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-gray-800 leading-tight hover:text-red-600 transition-colors">
+              {article.title}
+            </h3>
+            <p class="text-gray-600 mb-4 leading-relaxed">
+              {article.excerpt}
+            </p>
+            <a 
+              href={`/news/${article.slug}`} 
+              class="inline-flex items-center text-red-600 hover:text-red-700 font-medium transition-colors"
+            >
+              阅读更多
+              <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+            </a>
+          </div>
+        </article>
+      ))}
     </div>
     
-    <!-- 新闻卡片区域 -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-      <!-- 新闻1 -->
-      <div class="bg-white">
-        <div class="h-80 bg-gray-200 mb-6">
-          <img 
-            src="/news1.webp" 
-            alt="Telescopic Forklift" 
-            width="400"
-            height="320"
-            loading="lazy"
-            decoding="async"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        <div class="space-y-4">
-          <p class="text-sm text-gray-500">March 25,2025</p>
-          <h3 class="text-xl font-semibold text-gray-800 leading-tight">
-            What Is A Telescopic Forklift?
-          </h3>
-          <a href="/news/telescopic-forklift" class="inline-block text-gray-600 border-b border-gray-400 hover:text-gray-800 transition-colors">
-            View Details
-          </a>
-        </div>
-      </div>
-      
-      <!-- 新闻2 -->
-      <div class="bg-white">
-        <div class="h-80 bg-gray-200 mb-6">
-          <img 
-            src="/news2.webp" 
-            alt="Excavator Loaders" 
-            width="400"
-            height="320"
-            loading="lazy"
-            decoding="async"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        <div class="space-y-4">
-          <p class="text-sm text-gray-500">February 18,2025</p>
-          <h3 class="text-xl font-semibold text-gray-800 leading-tight">
-            Excavator Loaders from China Gain Popularity in Europe and America, Setting New Standards for Efficiency and Innovation
-          </h3>
-          <a href="/news/excavator-loaders-europe-america" class="inline-block text-gray-600 border-b border-gray-400 hover:text-gray-800 transition-colors">
-            View Details
-          </a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- 分页指示器和报价按钮 -->
-    <div class="flex justify-between items-center">
+    <!-- 底部操作区域 -->
+    <div class="flex justify-between items-center mt-12 animate-fade-up animate-delay-700">
       <!-- 分页指示器 -->
       <div class="flex space-x-2">
         <span class="w-3 h-3 bg-red-600 rounded-full"></span>
@@ -82,6 +68,13 @@
         <span class="w-3 h-3 bg-gray-300 rounded-full"></span>
       </div>
       
+      <!-- View all 按钮 -->
+      <a href="/news" class="inline-flex items-center border-2 border-red-600 text-red-600 px-8 py-3 hover:bg-red-600 hover:text-white transition-colors duration-300">
+        View all
+        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
     </div>
   </div>
 </section> 
