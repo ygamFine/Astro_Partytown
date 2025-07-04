@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 全局样式 - 精简版 */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* 基础重置 */
 html {
   scroll-behavior: smooth;
@@ -49,7 +44,7 @@ body {
   }
 }
 
-/* 移动端优化 - 移除problematic mobile-full-width */
+/* 移动端优化 */
 @media (max-width: 768px) {
   .mobile-banner {
     width: 100%;
@@ -199,21 +194,21 @@ input, textarea, select {
   }
 }
 
-/* 响应式容器优化 */
+/* 响应式容器 */
 @media (min-width: 1200px) {
   .container {
-    width: 1200px;
+    max-width: 1200px;
   }
 }
 
 @media (min-width: 1500px) {
   .container {
-    width: 1400px;
+    max-width: 1400px;
   }
 }
 
 @media (min-width: 1700px) {
   body .container {
-    width: 1600px;
+    max-width: 1600px;
   }
 } 

@@ -30,10 +30,10 @@
             class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
-        <div class="p-6">
+        <div class="p-4">
           <h3 class="text-xl font-bold mb-2 text-gray-800">滑移装载机 YN-S850</h3>
-          <p class="text-gray-600 mb-4">紧凑设计，动力强劲，适用于狭窄空间作业</p>
-          <div class="flex justify-between items-center">
+          <p class="text-gray-600 mb-4 text-sm leading-relaxed">紧凑设计，动力强劲，适用于狭窄空间作业</p>
+          <div class="flex justify-between items-center mt-auto">
             <span class="text-2xl font-bold text-red-600">¥180,000</span>
             <a href="/products/skid-steer-loader-s850" class="btn-primary text-sm">查看详情</a>
           </div>
@@ -53,10 +53,10 @@
             class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
-        <div class="p-6">
+        <div class="p-4">
           <h3 class="text-xl font-bold mb-2 text-gray-800">挖掘装载机 YN-B120</h3>
-          <p class="text-gray-600 mb-4">一机双能，兼具挖掘与装载功能</p>
-          <div class="flex justify-between items-center">
+          <p class="text-gray-600 mb-4 text-sm leading-relaxed">一机双能，兼具挖掘与装载功能</p>
+          <div class="flex justify-between items-center mt-auto">
             <span class="text-2xl font-bold text-red-600">¥350,000</span>
             <a href="/products/backhoe-loader-b120" class="btn-primary text-sm">查看详情</a>
           </div>
@@ -76,10 +76,10 @@
             class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
-        <div class="p-6">
+        <div class="p-4">
           <h3 class="text-xl font-bold mb-2 text-gray-800">伸缩臂叉装车 YN-T3500</h3>
-          <p class="text-gray-600 mb-4">超长臂展，高空作业的理想选择</p>
-          <div class="flex justify-between items-center">
+          <p class="text-gray-600 mb-4 text-sm leading-relaxed">超长臂展，高空作业的理想选择</p>
+          <div class="flex justify-between items-center mt-auto">
             <span class="text-2xl font-bold text-red-600">¥420,000</span>
             <a href="/products/telescopic-handler-t3500" class="btn-primary text-sm">查看详情</a>
           </div>
@@ -100,9 +100,9 @@
 </section>
 
 <style>
-  /* 产品卡片固定尺寸 - 防止CLS */
+  /* 产品卡片优化布局 - 紧凑间距 */
   .product-card {
-    height: 480px;
+    /* height: 420px; */
     display: flex;
     flex-direction: column;
   }
@@ -115,22 +115,31 @@
     overflow: hidden;
   }
 
-  .product-card .p-6 {
+  .product-card .p-4 {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    padding: 1rem;
+  }
+
+  /* 确保价格和按钮在底部 */
+  .product-card .p-4 > div:last-child {
+    margin-top: auto;
   }
 
   /* 移动端优化 */
   @media (max-width: 768px) {
     .product-card {
       height: auto;
-      min-height: 400px;
+      min-height: 360px;
     }
 
     .product-image-container {
       height: 200px;
+    }
+    
+    .product-card .p-4 {
+      padding: 0.875rem;
     }
   }
 </style> 
