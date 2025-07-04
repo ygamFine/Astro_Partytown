@@ -196,19 +196,19 @@ input, textarea, select {
 
 /* 响应式容器 */
 @media (min-width: 1200px) {
-  .container {
+    .container {
     max-width: 1200px;
-  }
+    }
 }
 
 @media (min-width: 1500px) {
-  .container {
+    .container {
     max-width: 1400px;
-  }
+    }
 }
 
 @media (min-width: 1700px) {
-  body .container {
+    body .container {
     max-width: 1600px;
   }
 } 

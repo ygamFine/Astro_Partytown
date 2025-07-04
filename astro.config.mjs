@@ -7,7 +7,7 @@ import partytown from '@astrojs/partytown';
 export default defineConfig({
   output: 'static',
   server: {
-    port: 3000,
+    port: 3333,
     host: true,
   },
   integrations: [
