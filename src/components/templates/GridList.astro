@@ -22,7 +22,7 @@ const displayItems = items.slice(0, maxItems);
     {displayItems.map((item) => (
       <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <a href={item.href} class="block h-full">
-          <div class="aspect-[4/3] overflow-hidden">
+          <div class="aspect-[3/2] overflow-hidden">
             <img 
               src={item.image} 
               alt={item.title}
@@ -38,25 +38,31 @@ const displayItems = items.slice(0, maxItems);
             </h3>
             
             {item.excerpt && (
-              <p class="text-gray-600 text-sm mb-3 line-clamp-3">
+              <p class="text-gray-600 text-sm mb-2 line-clamp-2">
                 {item.excerpt}
               </p>
             )}
             
-            <!-- 从下往上滑出的联系信息 -->
-            <div class="absolute inset-x-0 bottom-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" style="height: 62.5px;">
-              <div class="flex items-center justify-between h-full">
-                <div>
-                  <h4 class="font-bold text-base leading-tight">{item.title}</h4>
-                  <p class="text-xs opacity-90">获取详细报价和技术参数</p>
-                </div>
-                <div class="flex items-center space-x-1">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                  </svg>
-                  <span class="font-medium text-sm">立即联系</span>
-                </div>
+            <!-- 费用占位区域 -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between">
+                <span class="text-red-600 font-bold text-lg">面议</span>
+                <span class="text-gray-500 text-sm">起</span>
+              </div>
+            </div>
+            
+            <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
+            <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-base leading-tight">{item.title}</h4>
+                <p class="text-xs opacity-90">获取详细报价和技术参数</p>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <span class="font-medium text-sm">立即联系</span>
               </div>
             </div>
           </div>

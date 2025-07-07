@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Layout from '../layouts/Layout.astro';
+import ContactButtons from '../components/ContactButtons.astro';
 import CompanyIntro from '../components/CompanyIntro.astro';
 import Advantages from '../components/Advantages.astro';
 import CustomerCases from '../components/CustomerCases.astro';
@@ -34,6 +35,19 @@ const teamMembers = [
 			<CompanyIntro />
 			<Advantages />
 			<CustomerCases />
+			
+			<!-- 联系我们部分 -->
+			<section class="py-16 bg-gray-50">
+				<div class="container mx-auto px-4">
+					<div class="text-center mb-12">
+						<h2 class="text-3xl font-bold text-gray-900 mb-4">与我们合作</h2>
+						<p class="text-lg text-gray-600 max-w-2xl mx-auto">
+							了解了我们的实力和优势，期待与您的合作。选择适合您的联系方式，让我们开始对话。
+						</p>
+					</div>
+					<ContactButtons />
+				</div>
+			</section>
 		</main>
 	</div>
 </Layout> 

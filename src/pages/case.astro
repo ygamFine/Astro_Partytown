@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import SecondaryPageLayout from '../components/templates/SecondaryPageLayout.astro';
+import ContactButtons from '../components/ContactButtons.astro';
 import GridList from '../components/templates/GridList.astro';
 import Pagination from '../components/templates/Pagination.astro';
 
@@ -106,4 +107,17 @@ const breadcrumbs = [
     totalPages={totalPages}
     baseUrl="/cases-template"
   />
+  
+  <!-- 联系我们部分 -->
+  <section class="py-16 bg-gray-50 mt-12 rounded-lg">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">需要类似的解决方案？</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          看到这些成功案例，是否有适合您项目的解决方案？联系我们，为您定制专业的设备配置方案。
+        </p>
+      </div>
+      <ContactButtons />
+    </div>
+  </section>
 </SecondaryPageLayout> 
