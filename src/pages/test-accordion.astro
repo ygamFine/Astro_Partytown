@@ -1,0 +1,135 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '../components/templates/SecondaryPageLayout.astro';
+import GridList from '../components/templates/GridList.astro';
+
+// 测试数据
+const testItems = [
+  {
+    id: 1,
+    title: "案例测试展示",
+    image: "/case1.webp",
+    excerpt: "这是一个测试案例，展示手风琴菜单的动态排序功能",
+    category: "测试分类",
+    href: "/case/test-1"
+  },
+  {
+    id: 2,
+    title: "菜单排序测试",
+    image: "/case2.webp",
+    excerpt: "案例页面会让案例菜单排在第一位并高亮显示",
+    category: "测试分类",
+    href: "/case/test-2"
+  },
+  {
+    id: 3,
+    title: "一级菜单高亮",
+    image: "/case3.webp",
+    excerpt: "验证一级菜单项的高亮效果和展开状态",
+    category: "测试分类",
+    href: "/case/test-3"
+  }
+];
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Cases', href: '/case' },
+  { label: 'Accordion Menu Test' }
+];
+---
+
+<SecondaryPageLayout 
+  title="案例页面 - 手风琴菜单测试"
+  description="测试案例页面的手风琴菜单功能"
+  breadcrumbs={breadcrumbs}
+  currentSection="cases"
+  contentType="grid"
+>
+  <div class="mb-8 p-6 bg-green-50 rounded-lg">
+    <h2 class="text-2xl font-bold mb-4 text-green-900">🎯 双重交互功能测试</h2>
+    <div class="space-y-3 text-green-800">
+      <p><strong>✅ 文字点击：</strong> 点击菜单标题文字（如 📋 案例）直接跳转到对应页面</p>
+      <p><strong>✅ 箭头点击：</strong> 点击右侧箭头按钮展开/折叠手风琴菜单</p>
+      <p><strong>✅ 分离功能：</strong> 链接跳转和菜单展开是两个独立的操作</p>
+      <p><strong>✅ 当前状态：</strong> 案例菜单排在第一位且默认展开</p>
+      <p><strong>✅ 视觉反馈：</strong> 只有文字区域有 hover 效果，箭头无交互样式</p>
+    </div>
+  </div>
+
+  <div class="mb-8 p-6 bg-indigo-50 rounded-lg">
+    <h2 class="text-xl font-bold mb-4 text-indigo-900">👆 操作指南</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div class="bg-white p-4 rounded-lg">
+        <h3 class="font-bold text-indigo-600 mb-3">🔗 菜单文字区域</h3>
+        <ul class="space-y-2">
+          <li><strong>点击效果：</strong> 直接跳转到对应的主页面</li>
+          <li><strong>视觉反馈：</strong> hover 时文字颜色变深</li>
+          <li><strong>示例操作：</strong> 点击 "🏗️ 产品" → 跳转到 /products</li>
+          <li><strong>适用场景：</strong> 快速访问主要页面</li>
+        </ul>
+      </div>
+              <div class="bg-white p-4 rounded-lg">
+          <h3 class="font-bold text-purple-600 mb-3">⤵️ 箭头按钮区域</h3>
+          <ul class="space-y-2">
+            <li><strong>点击效果：</strong> 展开/折叠子菜单项</li>
+            <li><strong>视觉反馈：</strong> 无交互样式，保持静态外观</li>
+            <li><strong>示例操作：</strong> 点击箭头查看产品分类列表</li>
+            <li><strong>适用场景：</strong> 浏览具体分类和子页面</li>
+          </ul>
+        </div>
+    </div>
+  </div>
+
+  <div class="mb-8 p-6 bg-blue-50 rounded-lg">
+    <h2 class="text-xl font-bold mb-4 text-blue-900">🔍 页面类型测试</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      <div class="bg-white p-4 rounded-lg">
+        <h3 class="font-bold text-green-600 mb-2">📋 案例页面</h3>
+        <p>案例菜单在第一位，高亮显示且展开</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg">
+        <h3 class="font-bold text-blue-600 mb-2">🏗️ 产品页面</h3>
+        <p>产品菜单在第一位，高亮显示且展开</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg">
+        <h3 class="font-bold text-orange-600 mb-2">📰 新闻页面</h3>
+        <p>新闻菜单在第一位，高亮显示且展开</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-8 p-6 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+    <h2 class="text-xl font-bold mb-4 text-yellow-900">🔄 双重交互设计</h2>
+    <div class="space-y-2 text-yellow-800">
+      <p><strong>✨ 交互升级：</strong> 一级菜单分为两个功能区域</p>
+      <p><strong>🎯 左侧文字：</strong> 点击跳转到对应页面（如点击"产品"跳转到产品页面）</p>
+      <p><strong>📝 右侧箭头：</strong> 点击展开/折叠手风琴菜单</p>
+      <p><strong>🔢 字体大小：</strong> text-xl (20px) 大字体，更易阅读</p>
+      <p><strong>📱 响应式：</strong> 移动端优化，箭头按钮更小</p>
+      <p><strong>🎭 视觉效果：</strong> 只有文字区域有 hover 效果，箭头保持静态</p>
+    </div>
+  </div>
+
+  <div class="mb-8 p-6 bg-purple-50 rounded-lg">
+    <h2 class="text-xl font-bold mb-4 text-purple-900">🎯 快速测试链接</h2>
+    <div class="flex flex-wrap gap-3">
+      <a href="/products-new" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+        测试产品页面
+      </a>
+      <a href="/news-new" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+        测试新闻页面
+      </a>
+      <a href="/cases-template" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors">
+        测试案例页面
+      </a>
+    </div>
+  </div>
+
+  <GridList 
+    items={testItems}
+    itemsPerRow={3}
+    maxRows={2}
+  />
+</SecondaryPageLayout> 

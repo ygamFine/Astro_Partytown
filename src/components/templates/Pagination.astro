@@ -1,0 +1,222 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
+  maxVisiblePages?: number;
+}
+
+const { currentPage, totalPages, baseUrl, maxVisiblePages = 5 } = Astro.props;
+
+// 计算显示的页码范围
+const getVisiblePages = (current: number, total: number, maxVisible: number) => {
+  const start = Math.max(1, current - Math.floor(maxVisible / 2));
+  const end = Math.min(total, start + maxVisible - 1);
+  const adjustedStart = Math.max(1, end - maxVisible + 1);
+  
+  const pages = [];
+  for (let i = adjustedStart; i <= end; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+};
+
+const visiblePages = getVisiblePages(currentPage, totalPages, maxVisiblePages);
+
+// 生成页面URL
+const getPageUrl = (page: number) => {
+  if (page === 1) {
+    return baseUrl;
+  }
+  return `${baseUrl}/${page}`;
+};
+
+// 检查是否需要显示分页
+const shouldShowPagination = totalPages > 1;
+---
+
+{shouldShowPagination && (
+  <nav class="pagination" aria-label="Pagination Navigation">
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <!-- 首页 -->
+      {currentPage > 1 && (
+        <a 
+          href={getPageUrl(1)}
+          class="pagination-button pagination-nav"
+          aria-label="Go to first page"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+          <span class="hidden sm:inline">首页</span>
+        </a>
+      )}
+      
+      <!-- 上一页 -->
+      {currentPage > 1 && (
+        <a 
+          href={getPageUrl(currentPage - 1)}
+          class="pagination-button pagination-nav"
+          aria-label="Go to previous page"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span class="hidden sm:inline">上一页</span>
+        </a>
+      )}
+      
+      <!-- 第一页 -->
+      {visiblePages[0] > 1 && (
+        <>
+          <a 
+            href={getPageUrl(1)}
+            class="pagination-button pagination-number"
+            aria-label="Go to page 1"
+          >
+            1
+          </a>
+          {visiblePages[0] > 2 && (
+            <span class="pagination-ellipsis">...</span>
+          )}
+        </>
+      )}
+      
+      <!-- 页码 -->
+      {visiblePages.map((page) => (
+        <a
+          href={getPageUrl(page)}
+          class={`pagination-button pagination-number ${page === currentPage ? 'active' : ''}`}
+          aria-label={`Go to page ${page}`}
+          aria-current={page === currentPage ? 'page' : undefined}
+        >
+          {page}
+        </a>
+      ))}
+      
+      <!-- 最后一页 -->
+      {visiblePages[visiblePages.length - 1] < totalPages && (
+        <>
+          {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
+            <span class="pagination-ellipsis">...</span>
+          )}
+          <a 
+            href={getPageUrl(totalPages)}
+            class="pagination-button pagination-number"
+            aria-label={`Go to page ${totalPages}`}
+          >
+            {totalPages}
+          </a>
+        </>
+      )}
+      
+      <!-- 下一页 -->
+      {currentPage < totalPages && (
+        <a 
+          href={getPageUrl(currentPage + 1)}
+          class="pagination-button pagination-nav"
+          aria-label="Go to next page"
+        >
+          <span class="hidden sm:inline">下一页</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      )}
+      
+      <!-- 尾页 -->
+      {currentPage < totalPages && (
+        <a 
+          href={getPageUrl(totalPages)}
+          class="pagination-button pagination-nav"
+          aria-label="Go to last page"
+        >
+          <span class="hidden sm:inline">尾页</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+        </a>
+      )}
+    </div>
+    
+    <!-- 页面信息 -->
+    <div class="mt-4 text-center text-base text-gray-600">
+      <span>
+        第 {currentPage} 页 / 共 {totalPages} 页
+      </span>
+      <span class="hidden sm:inline ml-4">
+        • 总计 {totalPages} 页
+      </span>
+    </div>
+  </nav>
+)}
+
+<style>
+  .pagination {
+    @apply w-full py-8;
+  }
+  
+  .pagination-button {
+    @apply inline-flex items-center justify-center px-3 py-2 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700 transition-colors duration-200;
+    min-width: 40px;
+    height: 40px;
+  }
+  
+  .pagination-nav {
+    @apply px-4 space-x-1;
+    height: 40px;
+  }
+  
+  .pagination-number {
+    @apply w-10;
+    height: 40px;
+  }
+  
+  .pagination-number.active {
+    @apply bg-red-600 text-white border-red-600 hover:bg-red-700 hover:text-white;
+  }
+  
+  .pagination-ellipsis {
+    @apply inline-flex items-center justify-center px-3 py-2 text-base font-medium text-gray-400;
+  }
+  
+  /* 移动设备适配 */
+  @media (max-width: 640px) {
+    .pagination-button {
+      @apply px-2 py-2 text-sm;
+      min-width: 36px;
+      height: 36px;
+    }
+    
+    .pagination-nav {
+      @apply px-2;
+      height: 36px;
+    }
+    
+    .pagination-number {
+      @apply w-9;
+      height: 36px;
+    }
+    
+    /* 移动设备上隐藏文字，只显示图标 */
+    .pagination-nav span {
+      @apply hidden;
+    }
+    
+    /* 移动设备上缩小间距 */
+    .pagination > div {
+      @apply gap-1;
+    }
+  }
+  
+  /* 禁用状态 */
+  .pagination-button:disabled {
+    @apply bg-gray-100 text-gray-400 cursor-not-allowed hover:bg-gray-100 hover:text-gray-400;
+  }
+  
+  /* 焦点状态 */
+  .pagination-button:focus {
+    @apply outline-none ring-2 ring-red-500 ring-offset-2;
+  }
+</style> 

@@ -1,0 +1,335 @@
+---
+interface Props {
+  currentSection?: 'products' | 'news' | 'cases';
+}
+
+const { currentSection } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+// 定义三个主要菜单项
+const menuItems = [
+  {
+    id: 'products',
+    title: '产品',
+    icon: '🏗️',
+    mainLink: '/products',
+    items: [
+      { label: '滑移装载机', href: '/products/category/skid-steer', count: 12 },
+      { label: '反铲装载机', href: '/products/category/backhoe', count: 8 },
+      { label: '伸缩臂装载机', href: '/products/category/telescopic', count: 6 },
+      { label: '电动机械', href: '/products/category/electric', count: 4 },
+      { label: '热门产品', href: '/products/category/hot-selling', count: 15 },
+      { label: '新品到货', href: '/products/category/new-arrivals', count: 5 },
+    ]
+  },
+  {
+    id: 'news',
+    title: '新闻',
+    icon: '📰',
+    mainLink: '/news',
+    items: [
+      { label: '公司新闻', href: '/news/category/company', count: 25 },
+      { label: '行业新闻', href: '/news/category/industry', count: 18 },
+      { label: '产品更新', href: '/news/category/product', count: 12 },
+      { label: '活动资讯', href: '/news/category/events', count: 8 },
+      { label: '2024年', href: '/news/archive/2024', count: 35 },
+      { label: '2023年', href: '/news/archive/2023', count: 42 },
+    ]
+  },
+  {
+    id: 'cases',
+    title: '案例',
+    icon: '📋',
+    mainLink: '/case',
+    items: [
+      { label: '建筑项目', href: '/case/category/construction', count: 20 },
+      { label: '矿业作业', href: '/case/category/mining', count: 15 },
+      { label: '农业应用', href: '/case/category/agriculture', count: 12 },
+      { label: '市政项目', href: '/case/category/municipal', count: 8 },
+      { label: '北美地区', href: '/case/region/north-america', count: 18 },
+      { label: '欧洲地区', href: '/case/region/europe', count: 22 },
+      { label: '亚太地区', href: '/case/region/asia-pacific', count: 15 },
+    ]
+  }
+];
+
+// 根据当前页面类型动态排序菜单项，把当前激活的菜单项放在第一位
+const sortedMenuItems = [...menuItems].sort((a, b) => {
+  if (a.id === currentSection) return -1;
+  if (b.id === currentSection) return 1;
+  return 0;
+});
+
+// 为每个菜单项添加状态信息
+const accordionMenus = sortedMenuItems.map(menu => ({
+  ...menu,
+  isActive: menu.id === currentSection,
+  defaultOpen: menu.id === currentSection
+}));
+---
+
+<aside class="accordion-sidebar bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- 手风琴菜单 -->
+  <nav class="accordion-nav">
+    {accordionMenus.map((menu) => (
+      <div class="accordion-section" data-section={menu.id}>
+        <div class={`accordion-header-wrapper ${menu.isActive ? 'active' : ''}`}>
+          <!-- 可点击的标题链接区域 -->
+          <a 
+            href={menu.mainLink}
+            class="accordion-title-link"
+          >
+            <div class="flex items-center flex-1">
+              <span class="text-2xl mr-3">{menu.icon}</span>
+              <span class="font-medium">{menu.title}</span>
+            </div>
+          </a>
+          
+          <!-- 手风琴切换按钮 -->
+          <button 
+            class="accordion-toggle-btn"
+            data-accordion-toggle={menu.id}
+            aria-expanded={menu.defaultOpen ? 'true' : 'false'}
+            aria-label={`展开/折叠 ${menu.title} 菜单`}
+          >
+            <svg 
+              class="accordion-chevron w-6 h-6 transform transition-transform duration-200"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+        
+        <div 
+          class={`accordion-content ${menu.defaultOpen ? 'accordion-open' : ''}`}
+          data-accordion-content={menu.id}
+        >
+          <ul class="accordion-list">
+            <!-- 子分类链接 -->
+            {menu.items.map((item) => (
+              <li>
+                <a 
+                  href={item.href}
+                  class={`accordion-link ${currentPath === item.href ? 'active' : ''}`}
+                >
+                  <span class="flex-1">{item.label}</span>
+                  <span class="accordion-count">({item.count})</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    ))}
+  </nav>
+</aside>
+
+<script>
+  // 手风琴功能实现
+  function initAccordion() {
+    const accordionButtons = document.querySelectorAll('.accordion-toggle-btn');
+    
+    accordionButtons.forEach(button => {
+      button.addEventListener('click', function(event) {
+        const target = event.currentTarget as HTMLElement;
+        const sectionId = target.getAttribute('data-accordion-toggle');
+        
+        if (!sectionId) return;
+        
+        const content = document.querySelector(`[data-accordion-content="${sectionId}"]`) as HTMLElement;
+        const chevron = target.querySelector('.accordion-chevron') as HTMLElement;
+        
+        if (!content || !chevron) return;
+        
+        const isOpen = content.classList.contains('accordion-open');
+        
+        // 切换展开/折叠状态
+        if (isOpen) {
+          content.classList.remove('accordion-open');
+          target.setAttribute('aria-expanded', 'false');
+          chevron.style.transform = 'rotate(0deg)';
+        } else {
+          content.classList.add('accordion-open');
+          target.setAttribute('aria-expanded', 'true');
+          chevron.style.transform = 'rotate(180deg)';
+        }
+      });
+    });
+    
+    // 初始化展开状态
+    accordionButtons.forEach(button => {
+      const sectionId = button.getAttribute('data-accordion-toggle');
+      
+      if (!sectionId) return;
+      
+      const content = document.querySelector(`[data-accordion-content="${sectionId}"]`) as HTMLElement;
+      const chevron = button.querySelector('.accordion-chevron') as HTMLElement;
+      
+      if (!content || !chevron) return;
+      
+      if (content.classList.contains('accordion-open')) {
+        button.setAttribute('aria-expanded', 'true');
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    });
+  }
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', initAccordion);
+</script>
+
+<style>
+  .accordion-sidebar {
+    @apply sticky top-8;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  
+  .accordion-section {
+    @apply border-b border-gray-100 last:border-b-0;
+  }
+  
+  .accordion-header-wrapper {
+    @apply w-full flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-200;
+  }
+  
+  .accordion-header-wrapper.active {
+    @apply bg-gray-100;
+  }
+  
+  .accordion-title-link {
+    @apply flex items-center flex-1 px-5 py-5 text-gray-800 hover:text-gray-700 font-medium text-xl text-left no-underline transition-colors duration-200;
+  }
+  
+  .accordion-title-link:hover {
+    @apply text-gray-700;
+  }
+  
+  .accordion-toggle-btn {
+    @apply flex items-center justify-center p-3 text-gray-400;
+  }
+  
+  .accordion-toggle-btn:focus {
+    @apply outline-none;
+  }
+  
+  .accordion-chevron {
+    @apply text-current flex-shrink-0;
+  }
+  
+  .accordion-header-wrapper.active .accordion-chevron {
+    @apply text-gray-600;
+  }
+  
+  .accordion-content {
+    @apply overflow-hidden transition-all duration-300;
+    max-height: 0;
+    opacity: 0;
+  }
+  
+  .accordion-content.accordion-open {
+    @apply opacity-100;
+    max-height: 600px;
+  }
+  
+  .accordion-list {
+    @apply py-2 bg-gray-50;
+  }
+  
+  .accordion-link {
+    @apply flex items-center justify-between px-6 py-3 text-gray-600 hover:bg-white hover:text-gray-800 transition-colors duration-200 text-lg;
+  }
+  
+  .accordion-link.active {
+    @apply bg-white text-gray-800 font-medium;
+  }
+  
+  .accordion-count {
+    @apply text-sm text-gray-400 ml-2;
+  }
+  
+  .accordion-link:hover .accordion-count {
+    @apply text-gray-600;
+  }
+  
+  .accordion-link.active .accordion-count {
+    @apply text-gray-600;
+  }
+  
+  /* 自定义滚动条 */
+  .accordion-sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .accordion-sidebar::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  
+  .accordion-sidebar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  
+  .accordion-sidebar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+  
+  /* 移动设备适配 */
+  @media (max-width: 1024px) {
+    .accordion-sidebar {
+      @apply static mb-6;
+      max-height: none;
+    }
+    
+    .accordion-content.accordion-open {
+      max-height: 400px;
+    }
+  }
+  
+  /* 动画效果 */
+  .accordion-content.accordion-open {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  @keyframes slideDown {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+    to {
+      max-height: 600px;
+      opacity: 1;
+    }
+  }
+  
+  /* 响应式字体大小 */
+  @media (max-width: 640px) {
+    .accordion-title-link {
+      @apply text-lg px-4 py-4;
+    }
+    
+    .accordion-toggle-btn {
+      @apply p-2;
+    }
+    
+    .accordion-link {
+      @apply text-base px-5 py-3;
+    }
+  }
+  
+  /* 第一个菜单项的特殊样式 */
+  .accordion-section:first-child .accordion-header-wrapper {
+    @apply border-t-0;
+  }
+  
+  /* 激活状态的加强视觉效果 */
+  .accordion-header-wrapper.active {
+    @apply shadow-sm;
+  }
+  
+  .accordion-header-wrapper.active:hover {
+    @apply bg-gray-200;
+  }
+</style> 

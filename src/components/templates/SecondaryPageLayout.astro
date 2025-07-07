@@ -1,0 +1,77 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  breadcrumbs: Array<{
+    label: string;
+    href?: string;
+  }>;
+  currentSection: 'products' | 'news' | 'cases';
+  contentType?: 'grid' | 'list';
+}
+
+const { 
+  title, 
+  description, 
+  breadcrumbs, 
+  currentSection, 
+  contentType = 'grid'
+} = Astro.props;
+
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from './Breadcrumb.astro';
+import Sidebar from './Sidebar.astro';
+---
+
+<Layout title={title} description={description}>
+  <main>
+    <!-- Page Header -->
+    <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">{title}</h1>
+          {description && (
+            <p class="text-xl opacity-90">{description}</p>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <!-- Breadcrumb -->
+    <div class="bg-gray-50 py-4">
+      <div class="container mx-auto px-4">
+        <Breadcrumb breadcrumbs={breadcrumbs} />
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <section class="py-12 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+          <!-- Left Sidebar -->
+          <div class="lg:w-1/4">
+            <Sidebar currentSection={currentSection} />
+          </div>
+
+          <!-- Right Content Area -->
+          <div class="lg:w-3/4">
+            <!-- Content Slot -->
+            <div class={`content-area ${contentType}`}>
+              <slot />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .content-area.grid {
+    @apply space-y-8;
+  }
+  
+  .content-area.list {
+    @apply space-y-6;
+  }
+</style> 

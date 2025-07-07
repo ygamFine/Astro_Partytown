@@ -8,13 +8,13 @@ import { allNews } from '../../data/news.js';
 
 // 为分页生成静态路径
 export function getStaticPaths() {
-  const newsPerPage = 6; // 每页显示的新闻数量
+  const newsPerPage = 6; // 每页显示6篇新闻
   const totalPages = Math.ceil(allNews.length / newsPerPage);
   
   // 生成分页路径
   const paths = [];
   
-  // 第一页 (可以用 /news 或 /news/1 访问)
+  // 第一页 (可以用 /news-template 或 /news-template/1 访问)
   paths.push({
     params: { page: undefined },
     props: { 
@@ -51,19 +51,21 @@ const newsItems = sortedNews.map(newsItem => ({
   date: newsItem.date,
   category: newsItem.category,
   href: `/news/${newsItem.slug}`,
-  readTime: '5 min read' // 可以根据内容长度计算
+  author: 'TEVIS Team',
+  readTime: '5 min read'
 }));
 
 // 面包屑导航
 const breadcrumbs = [
   { label: 'Home', href: '/' },
-  { label: 'News' }
+  { label: 'News', href: '/news' },
+  { label: 'All News' }
 ];
 ---
 
 <SecondaryPageLayout 
-  title="News Center"
-  description="Stay updated with our latest news and industry insights"
+  title="All News"
+  description="Stay updated with our latest news, industry insights, and company updates"
   breadcrumbs={breadcrumbs}
   currentSection="news"
   contentType="list"
@@ -78,6 +80,6 @@ const breadcrumbs = [
   <Pagination 
     currentPage={currentPage}
     totalPages={totalPages}
-    baseUrl="/news"
+    baseUrl="/news-template"
   />
 </SecondaryPageLayout> 

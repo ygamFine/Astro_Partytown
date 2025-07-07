@@ -1,0 +1,97 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '../components/templates/SecondaryPageLayout.astro';
+import GridList from '../components/templates/GridList.astro';
+
+// 扩展的案例数据
+const cases = [
+  {
+    id: 1,
+    title: "European Port Construction Project",
+    image: "/case1.webp",
+    excerpt: "Over 50 units of YN skid steer loaders excel in European major port expansion project, demonstrating exceptional performance in challenging marine environments.",
+    category: "Marine Construction"
+  },
+  {
+    id: 2,
+    title: "Urban Infrastructure Development",
+    image: "/case2.webp",
+    excerpt: "YN backhoe loaders completed complex earthworks in narrow city environments with flexibility and efficiency.",
+    category: "Urban Development"
+  },
+  {
+    id: 3,
+    title: "Mining Operations Enhancement",
+    image: "/case3.webp",
+    excerpt: "YN telescopic handlers demonstrated exceptional reliability and durability in harsh mining environments.",
+    category: "Mining"
+  },
+  {
+    id: 4,
+    title: "Agricultural Modernization",
+    image: "/skid1.webp",
+    excerpt: "Modern farming solutions with versatile machinery, helping farmers increase productivity while maintaining sustainability.",
+    category: "Agriculture"
+  },
+  {
+    id: 5,
+    title: "Disaster Relief Operations",
+    image: "/skid2.webp",
+    excerpt: "Emergency response and disaster relief operations showcasing equipment reliability and versatility.",
+    category: "Emergency Response"
+  },
+  {
+    id: 6,
+    title: "Smart City Construction",
+    image: "/skid3.webp",
+    excerpt: "Intelligent construction solutions integrating IoT and automation technologies for next-generation urban development.",
+    category: "Smart Technology"
+  },
+  {
+    id: 7,
+    title: "Highway Construction Project",
+    image: "/skid4.webp",
+    excerpt: "Large-scale highway construction project featuring comprehensive machinery solutions and project management.",
+    category: "Infrastructure"
+  },
+  {
+    id: 8,
+    title: "Industrial Complex Development",
+    image: "/skid5.webp",
+    excerpt: "Complex industrial site development requiring specialized equipment and coordinated operations.",
+    category: "Industrial"
+  }
+];
+
+// 转换数据格式
+const gridItems = cases.map(caseItem => ({
+  id: caseItem.id,
+  title: caseItem.title,
+  image: caseItem.image,
+  excerpt: caseItem.excerpt,
+  category: caseItem.category,
+  href: `/case/${caseItem.id}`
+}));
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Cases', href: '/case' },
+  { label: 'All Cases' }
+];
+---
+
+<SecondaryPageLayout 
+  title="Customer Success Stories"
+  description="Explore comprehensive case studies showcasing our equipment performance across various industries"
+  breadcrumbs={breadcrumbs}
+  currentSection="cases"
+  contentType="grid"
+>
+  <GridList 
+    items={gridItems}
+    itemsPerRow={3}
+    maxRows={3}
+  />
+</SecondaryPageLayout> 

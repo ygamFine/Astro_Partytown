@@ -2,6 +2,7 @@
 export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import { products } from '../../data/products.js';
+import { allNews } from '../../data/news.js';
 
 export function getStaticPaths() {
   // 从导入的products数据生成静态路径
@@ -12,79 +13,612 @@ export function getStaticPaths() {
 }
 
 const { product } = Astro.props;
+
+// 获取相关产品（同类别的其他产品，最多显示3个）
+const relatedProducts = products
+  .filter(p => p.category === product.category && p.id !== product.id)
+  .slice(0, 3);
+
+// 获取相关新闻（最新的4篇）
+const relatedNews = allNews.slice(0, 4);
+
+// 获取当前产品在列表中的位置，用于上一个/下一个导航
+const currentIndex = products.findIndex(p => p.id === product.id);
+const previousProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
+const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
+
+// 推荐产品（不同类别的产品）
+const recommendedProducts = products
+  .filter(p => p.category !== product.category)
+  .slice(0, 6);
 ---
 
-<Layout title={`${product.name}`}>
-  <main>
-    <!-- 产品详情 -->
-    <section class="py-20 bg-gray-50">
+<Layout title={`${product.name} - 产品详情`}>
+  <main class="bg-gray-50 min-h-screen">
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 py-4">
+        <nav class="text-sm text-gray-600">
+          <a href="/" class="hover:text-red-600">首页</a> / 
+          <a href="/products" class="hover:text-red-600">产品中心</a> / 
+          <a href={`/products?category=${encodeURIComponent(product.category)}`} class="hover:text-red-600">{product.category}</a> / 
+          <span class="text-gray-800">{product.name}</span>
+        </nav>
+      </div>
+    </div>
+
+    <!-- 第一行：产品主要信息 -->
+    <section class="bg-white py-8">
       <div class="container mx-auto px-4">
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- 产品图片 -->
-            <div class="p-8">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:items-start">
+          <!-- 左侧：产品图片展示区 -->
+          <div class="lg:col-span-2 flex flex-col h-full">
+            <!-- 主图片区域 -->
+            <div class="flex-1 relative">
+              <!-- 主图片 -->
+              <div class="bg-gray-100 rounded-lg overflow-hidden relative" id="imageContainer" style="width: 100%; height: 400px;">
+                <img 
+                  id="mainImage"
+                  src={product.image} 
+                  alt={product.name}
+                  class="w-full h-full object-contain cursor-crosshair"
+                >
+                <!-- 透明放大镜选择框 -->
+                <div id="magnifierLens" class="absolute border-2 border-gray-400 pointer-events-none opacity-0 transition-opacity duration-200" style="width: 100px; height: 100px; background: rgba(255,255,255,0.1);"></div>
+              </div>
+              
+              <!-- 放大显示区域 - 直接放在主图右侧 -->
+              <div id="magnifierZoom" class="absolute top-0 bg-white border border-gray-300 rounded-lg shadow-lg pointer-events-none opacity-0 transition-opacity duration-200 z-50 overflow-hidden" style="left: calc(100% + 20px); width: 400px; height: 100%; background-repeat: no-repeat;"></div>
+            </div>
+            
+            <!-- 缩略图 -->
+            <div class="flex space-x-2 overflow-x-auto mt-4 flex-shrink-0">
               <img 
                 src={product.image} 
                 alt={product.name}
-                class="w-full h-auto rounded-lg shadow-md"
-                loading="lazy" 
-                decoding="async"
+                class="w-20 h-20 object-cover rounded border-2 border-red-600 cursor-pointer flex-shrink-0 thumbnail-img"
+                onclick="document.getElementById('mainImage').src = this.src"
               >
+              {product.gallery.map((img, index) => (
+                <img 
+                  src={img} 
+                  alt={`${product.name} ${index + 1}`}
+                  class="w-20 h-20 object-cover rounded border border-gray-200 hover:border-red-600 cursor-pointer flex-shrink-0 thumbnail-img"
+                  onclick="document.getElementById('mainImage').src = this.src"
+                >
+              ))}
             </div>
-            
-            <!-- 产品信息 -->
-            <div class="p-8">
-              <div class="mb-4">
-                <span class="bg-red-100 text-red-600 text-sm font-medium px-3 py-1 rounded-full">{product.category}</span>
+          </div>
+
+          <!-- 右侧：产品信息区 -->
+          <div class="lg:col-span-3 flex flex-col space-y-6">
+            <!-- 产品名称 -->
+            <h1 class="text-3xl font-bold text-gray-900">{product.name}</h1>
+
+            <!-- 产品描述 -->
+            <div class="bg-gray-50 rounded-lg p-6">
+              <div class="space-y-4">
+                <p class="text-gray-700 leading-relaxed">
+                  {product.excerpt}
+                </p>
+                <div class="pt-4 border-t border-gray-200">
+                  <h4 class="font-medium text-gray-900 mb-2">产品优势</h4>
+                  <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• 高效节能，性能卓越</li>
+                    <li>• 操作简便，维护方便</li>
+                    <li>• 结构紧凑，适用性强</li>
+                    <li>• 品质可靠，服务完善</li>
+                  </ul>
+                </div>
               </div>
-              
-              <h1 class="text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
-              
-              <div class="text-3xl font-bold text-red-600 mb-6">{product.price}</div>
-              
-              <p class="text-gray-600 leading-relaxed mb-8">{product.excerpt}</p>
-              
-              <!-- 产品特点 -->
-              <div class="mb-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">产品特点</h3>
-                <ul class="space-y-2">
-                  {product.features.map((feature) => (
-                    <li class="flex items-center">
-                      <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                      </svg>
-                      <span class="text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+            </div>
+
+            <!-- 联系我们 -->
+            <div class="bg-red-50 rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">联系我们</h3>
+              <div class="space-y-3">
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-red-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                  </svg>
+                  <span class="text-gray-700">400-123-4567</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-red-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                  <span class="text-gray-700">sales@company.com</span>
+                </div>
               </div>
-              
-              <!-- 联系按钮 -->
-              <div class="flex space-x-4">
-                <a href="/contact" class="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors focus-visible-ring">
-                  立即咨询
-                </a>
-                <a href="/products" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors focus-visible-ring">
-                  查看更多产品
-                </a>
+              <button class="w-full mt-4 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                立即咨询报价
+              </button>
+            </div>
+
+            <!-- 分享功能 -->
+            <div class="flex items-center space-x-4 pt-4 border-t">
+              <span class="text-sm text-gray-500">分享到：</span>
+              <div class="flex space-x-2">
+                <button class="w-8 h-8 bg-blue-600 text-white rounded flex items-center justify-center hover:bg-blue-700">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                </button>
+                <button class="w-8 h-8 bg-green-600 text-white rounded flex items-center justify-center hover:bg-green-700">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                </button>
+                <button class="w-8 h-8 bg-gray-600 text-white rounded flex items-center justify-center hover:bg-gray-700">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"/></svg>
+                </button>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- 技术参数 -->
-        <div class="bg-white rounded-2xl shadow-lg mt-8 p-8">
-          <h2 class="text-2xl font-bold text-gray-800 mb-6">技术参数</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {product.specs.map((spec) => (
-              <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                <span class="font-medium text-gray-700">{spec.key}</span>
-                <span class="text-gray-900 font-semibold">{spec.value}</span>
+      </div>
+    </section>
+
+    <!-- 第二行：详细内容 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <!-- 左侧：详细内容（占3列） -->
+          <div class="lg:col-span-3 space-y-8">
+            <!-- 产品详情 -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">产品详情</h2>
+              
+              <!-- 完整技术参数 -->
+              <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">技术参数</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {product.specs.map(spec => (
+                    <div class="flex justify-between py-2 border-b border-gray-100">
+                      <span class="text-gray-600">{spec.key}</span>
+                      <span class="font-medium text-gray-900">{spec.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+
+              <!-- 产品特点 -->
+              <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">产品特点</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {product.features.map(feature => (
+                    <div class="flex items-start">
+                      <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                      <span class="text-gray-700">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- 产品应用场景 -->
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">应用场景</h3>
+                <p class="text-gray-600 leading-relaxed">
+                  {product.name}广泛应用于建筑工地、市政工程、道路建设、园林绿化、仓储物流等多个领域。
+                  凭借其出色的性能和可靠性，为各类工程项目提供高效的解决方案。
+                </p>
+              </div>
+            </div>
+
+            <!-- Previous / Next 导航 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="flex justify-between items-center">
+                <div class="flex-1">
+                  {previousProduct && (
+                    <a href={`/products/${previousProduct.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                      <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                      <div>
+                        <div class="text-sm">上一个产品</div>
+                        <div class="font-medium">{previousProduct.name}</div>
+                      </div>
+                    </a>
+                  )}
+                </div>
+                <div class="flex-1 text-right">
+                  {nextProduct && (
+                    <a href={`/products/${nextProduct.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
+                      <div class="text-right">
+                        <div class="text-sm">下一个产品</div>
+                        <div class="font-medium">{nextProduct.name}</div>
+                      </div>
+                      <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <!-- Leave your messages 表单 -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                Leave your messages
+              </h2>
+              
+              <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- 姓名 -->
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input 
+                      type="text" 
+                      id="name" 
+                      name="name"
+                      placeholder="Name"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      required
+                    >
+                  </div>
+                  
+                  <!-- 电话 -->
+                  <div>
+                    <label for="telephone" class="block text-sm font-medium text-gray-700 mb-2">Telephone</label>
+                    <input 
+                      type="tel" 
+                      id="telephone" 
+                      name="telephone"
+                      placeholder="Telephone"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    >
+                  </div>
+                </div>
+
+                <!-- 邮箱 -->
+                <div>
+                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                    Mail<span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    placeholder="Enter your email.."
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    required
+                  >
+                </div>
+
+                <!-- 咨询内容 -->
+                <div>
+                  <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Consultation content</label>
+                  <textarea 
+                    id="message" 
+                    name="message"
+                    rows="5"
+                    placeholder="Products you are interested in"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  ></textarea>
+                </div>
+
+                <!-- 验证码 -->
+                <div>
+                  <label for="captcha" class="block text-sm font-medium text-gray-700 mb-2">Verification code</label>
+                  <div class="flex items-center space-x-4">
+                    <input 
+                      type="text" 
+                      id="captcha" 
+                      name="captcha"
+                      class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      required
+                    >
+                    <div class="w-24 h-12 bg-green-100 rounded flex items-center justify-center text-lg font-mono tracking-widest text-gray-700">
+                      zqWp
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 提交按钮 -->
+                <button 
+                  type="submit"
+                  class="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                >
+                  send
+                </button>
+              </form>
+            </div>
+
+            <!-- Related Products -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                Related Products
+              </h2>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {relatedProducts.map(relatedProduct => (
+                  <div class="group bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+                    <div class="relative overflow-hidden">
+                      <img 
+                        src={relatedProduct.image} 
+                        alt={relatedProduct.name}
+                        class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      >
+                      <!-- 联系信息悬停层 -->
+                      <div class="absolute inset-x-0 bottom-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm text-white p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" style="height: 62.5px;">
+                        <div class="h-full flex items-center justify-between">
+                          <div>
+                            <h4 class="text-base font-semibold mb-1">{relatedProduct.name}</h4>
+                            <p class="text-xs opacity-90">立即咨询获取详细信息</p>
+                          </div>
+                          <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <span class="text-xs">立即联系</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <a href={`/products/${relatedProduct.slug}`} class="block">
+                        <h3 class="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                          {relatedProduct.name}
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">{relatedProduct.excerpt}</p>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Related News -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                Related News
+              </h2>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedNews.map(newsItem => (
+                  <div class="flex items-start space-x-4">
+                    <div class="flex-1">
+                      <a href={`/news/${newsItem.slug}`} class="block">
+                        <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
+                          {newsItem.title}
+                        </h3>
+                      </a>
+                      <div class="text-sm text-gray-500">
+                        {newsItem.date}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧：产品推荐 -->
+          <div class="space-y-6">
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">推荐产品</h3>
+              <div class="space-y-4">
+                {recommendedProducts.map(recommended => (
+                  <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <a href={`/products/${recommended.slug}`} class="block">
+                      <div class="flex space-x-3">
+                        <img 
+                          src={recommended.image} 
+                          alt={recommended.name}
+                          class="w-16 h-16 object-cover rounded"
+                        >
+                        <div class="flex-1 min-w-0">
+                          <h4 class="font-medium text-gray-900 mb-1 hover:text-red-600 transition-colors line-clamp-2">
+                            {recommended.name}
+                          </h4>
+                          <p class="text-xs text-gray-600 line-clamp-2">{recommended.excerpt}</p>
+                          <div class="mt-2">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                              {recommended.category}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
   </main>
+
+  <script>
+    // 缩略图点击切换主图
+    document.querySelectorAll('.thumbnail-img').forEach(function(img) {
+      img.addEventListener('click', function() {
+        // 移除所有缩略图的选中状态
+        document.querySelectorAll('.thumbnail-img').forEach(function(thumb) {
+          thumb.classList.remove('border-red-600');
+          thumb.classList.add('border-gray-200');
+        });
+        
+        // 添加当前缩略图的选中状态
+        this.classList.remove('border-gray-200');
+        this.classList.add('border-red-600');
+        
+        // 更新主图
+        const mainImage = document.getElementById('mainImage');
+        const magnifierZoom = document.getElementById('magnifierZoom');
+        if (mainImage && this.src) {
+          mainImage.src = this.src;
+          // 更新放大镜背景图
+          if (magnifierZoom) {
+            magnifierZoom.style.backgroundImage = `url('${this.src}')`;
+          }
+        }
+      });
+    });
+
+    // 图片放大镜效果
+    function initMagnifier() {
+      const imageContainer = document.getElementById('imageContainer');
+      const mainImage = document.getElementById('mainImage');
+      const magnifierLens = document.getElementById('magnifierLens');
+      const magnifierZoom = document.getElementById('magnifierZoom');
+      
+      if (!imageContainer || !mainImage || !magnifierLens || !magnifierZoom) return;
+      
+      // 初始化放大镜背景图
+      function initZoomBackground() {
+        const rect = imageContainer.getBoundingClientRect();
+        const img = mainImage as HTMLImageElement;
+        const imgNaturalWidth = img.naturalWidth || img.width;
+        const imgNaturalHeight = img.naturalHeight || img.height;
+        
+        // 计算图片在容器中的实际显示区域
+        const containerWidth = rect.width;
+        const containerHeight = rect.height;
+        const imgAspectRatio = imgNaturalWidth / imgNaturalHeight;
+        const containerAspectRatio = containerWidth / containerHeight;
+        
+        let imgDisplayWidth, imgDisplayHeight;
+        
+        if (imgAspectRatio > containerAspectRatio) {
+          // 图片较宽，以容器宽度为准
+          imgDisplayWidth = containerWidth;
+          imgDisplayHeight = containerWidth / imgAspectRatio;
+        } else {
+          // 图片较高，以容器高度为准
+          imgDisplayWidth = containerHeight * imgAspectRatio;
+          imgDisplayHeight = containerHeight;
+        }
+        
+        magnifierZoom.style.backgroundImage = `url('${mainImage.src}')`;
+        // 设置背景图大小为实际显示图片的4倍放大
+        const zoomFactor = 4;
+        magnifierZoom.style.backgroundSize = `${imgDisplayWidth * zoomFactor}px ${imgDisplayHeight * zoomFactor}px`;
+      }
+      
+      initZoomBackground();
+      
+      // 鼠标移入显示放大镜
+      imageContainer.addEventListener('mouseenter', function() {
+        initZoomBackground(); // 确保背景图正确
+        magnifierLens.style.opacity = '1';
+        magnifierZoom.style.opacity = '1';
+      });
+      
+      // 鼠标移出隐藏放大镜
+      imageContainer.addEventListener('mouseleave', function() {
+        magnifierLens.style.opacity = '0';
+        magnifierZoom.style.opacity = '0';
+      });
+
+      // 鼠标移动更新放大镜选择框和放大内容
+      imageContainer.addEventListener('mousemove', function(e) {
+        const rect = imageContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // 获取实际图片在容器中的尺寸和位置
+        const img = mainImage as HTMLImageElement;
+        const imgNaturalWidth = img.naturalWidth || img.width;
+        const imgNaturalHeight = img.naturalHeight || img.height;
+        const containerWidth = rect.width;
+        const containerHeight = rect.height;
+        
+        // 计算图片在容器中的实际显示区域
+        const imgAspectRatio = imgNaturalWidth / imgNaturalHeight;
+        const containerAspectRatio = containerWidth / containerHeight;
+        
+        let imgDisplayWidth, imgDisplayHeight, imgOffsetX, imgOffsetY;
+        
+        if (imgAspectRatio > containerAspectRatio) {
+          // 图片较宽，以容器宽度为准
+          imgDisplayWidth = containerWidth;
+          imgDisplayHeight = containerWidth / imgAspectRatio;
+          imgOffsetX = 0;
+          imgOffsetY = (containerHeight - imgDisplayHeight) / 2;
+        } else {
+          // 图片较高，以容器高度为准
+          imgDisplayWidth = containerHeight * imgAspectRatio;
+          imgDisplayHeight = containerHeight;
+          imgOffsetX = (containerWidth - imgDisplayWidth) / 2;
+          imgOffsetY = 0;
+        }
+        
+        // 选择框尺寸
+        const lensSize = 100;
+        const lensRadius = lensSize / 2;
+        
+        // 计算选择框位置（限制在图片实际显示区域内）
+        let lensX = x - lensRadius;
+        let lensY = y - lensRadius;
+        
+        // 边界检查 - 限制在图片实际显示区域内
+        if (lensX < imgOffsetX) lensX = imgOffsetX;
+        if (lensY < imgOffsetY) lensY = imgOffsetY;
+        if (lensX + lensSize > imgOffsetX + imgDisplayWidth) lensX = imgOffsetX + imgDisplayWidth - lensSize;
+        if (lensY + lensSize > imgOffsetY + imgDisplayHeight) lensY = imgOffsetY + imgDisplayHeight - lensSize;
+        
+        // 设置选择框位置
+        magnifierLens.style.left = lensX + 'px';
+        magnifierLens.style.top = lensY + 'px';
+        
+        // 计算放大区域的背景图位置（基于实际图片区域）
+        const zoomX = (lensX + lensRadius - imgOffsetX) / imgDisplayWidth;
+        const zoomY = (lensY + lensRadius - imgOffsetY) / imgDisplayHeight;
+        
+        // 计算背景图位置，确保只显示选中区域的放大版本
+        const zoomFactor = 4;
+        const magnifierWidth = 400;
+        const magnifierHeight = rect.height;
+        
+        const backgroundX = -zoomX * (imgDisplayWidth * zoomFactor) + (magnifierWidth / 2);
+        const backgroundY = -zoomY * (imgDisplayHeight * zoomFactor) + (magnifierHeight / 2);
+        
+        magnifierZoom.style.backgroundPosition = `${backgroundX}px ${backgroundY}px`;
+      });
+    }
+    
+    // 页面加载完成后初始化放大镜
+    document.addEventListener('DOMContentLoaded', function() {
+      initMagnifier();
+    });
+    
+    // 图片加载完成后重新初始化放大镜
+    const mainImage = document.getElementById('mainImage');
+    if (mainImage) {
+      mainImage.addEventListener('load', function() {
+        initMagnifier();
+      });
+    }
+
+    // 表单提交处理
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('消息已发送，我们会尽快与您联系！');
+      });
+    }
+
+    // 分享功能
+    document.querySelectorAll('button[class*="bg-blue-600"], button[class*="bg-green-600"], button[class*="bg-gray-600"]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        alert('分享功能开发中...');
+      });
+    });
+  </script>
+
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
 </Layout> 

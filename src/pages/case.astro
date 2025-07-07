@@ -1,82 +1,109 @@
 ---
 export const prerender = true;
-import Layout from '../layouts/Layout.astro';
-import CustomerCases from '../components/CustomerCases.astro';
 
+import SecondaryPageLayout from '../components/templates/SecondaryPageLayout.astro';
+import GridList from '../components/templates/GridList.astro';
+import Pagination from '../components/templates/Pagination.astro';
+
+// 案例数据
 const cases = [
   {
     id: 1,
-    title: "大型港口建设项目",
-    client: "欧洲某大型物流港口",
+    title: "European Port Construction Project",
+    client: "Major European Logistics Port",
     image: "/case1.webp",
-    description: "超过50台永安滑移装载机在欧洲某大型港口的扩建项目中表现出色，承担了物料搬运、场地平整和集装箱辅助装卸等多项任务。",
-    results: ["项目提前完成", "零事故记录", "客户满意度100%"]
+    excerpt: "Over 50 units of YN skid steer loaders excel in European major port expansion project, demonstrating exceptional performance in challenging marine environments.",
+    category: "Marine Construction",
+    results: ["Project completed ahead of schedule", "Zero accident record", "100% customer satisfaction"]
   },
   {
     id: 2,
-    title: "城市基础设施建设",
-    client: "某市政建设集团",
+    title: "Urban Infrastructure Development", 
+    client: "Municipal Construction Group",
     image: "/case2.webp",
-    description: "在城市道路改造项目中，永安挖掘装载机凭借其灵活性和高效性，在狭窄的城市环境中完成了复杂的土方作业。",
-    results: ["减少施工周期20%", "噪音控制达标", "周边居民零投诉"]
+    excerpt: "In urban road renovation projects, YN backhoe loaders completed complex earthworks in narrow city environments with flexibility and efficiency.",
+    category: "Urban Development",
+    results: ["20% reduction in construction time", "Noise control compliance", "Zero complaints from residents"]
   },
   {
     id: 3,
-    title: "矿山开发项目",
-    client: "某大型矿业集团",
+    title: "Mining Operations Enhancement",
+    client: "Large Mining Group", 
     image: "/case3.webp",
-    description: "在恶劣的矿山环境中，永安伸缩臂叉装车展现了卓越的可靠性和耐用性，为客户创造了显著的经济效益。",
-    results: ["设备可用率达98%", "维护成本降低30%", "作业效率提升40%"]
+    excerpt: "In harsh mining environments, YN telescopic handlers demonstrated exceptional reliability and durability, creating significant economic benefits for clients.",
+    category: "Mining",
+    results: ["98% equipment availability", "30% reduction in maintenance costs", "40% improvement in work efficiency"]
+  },
+  {
+    id: 4,
+    title: "Agricultural Modernization",
+    client: "Modern Farming Cooperative",
+    image: "/skid1.webp",
+    excerpt: "Modern farming solutions with our versatile machinery, helping farmers increase productivity while maintaining environmental sustainability.",
+    category: "Agriculture",
+    results: ["Increased crop yield by 25%", "Reduced labor costs", "Sustainable farming practices"]
+  },
+  {
+    id: 5,
+    title: "Disaster Relief Operations",
+    client: "Emergency Response Team",
+    image: "/skid2.webp", 
+    excerpt: "Emergency response and disaster relief operations showcasing the reliability and versatility of our emergency equipment series.",
+    category: "Emergency Response",
+    results: ["Rapid deployment capability", "24/7 operational reliability", "Critical infrastructure restoration"]
+  },
+  {
+    id: 6,
+    title: "Smart City Construction",
+    client: "Smart City Development Authority",
+    image: "/skid3.webp",
+    excerpt: "Intelligent construction solutions integrating IoT and automation technologies for next-generation urban development projects.",
+    category: "Smart Technology", 
+    results: ["Digital twin integration", "Automated quality control", "Real-time project monitoring"]
   }
+];
+
+// 分页配置
+const itemsPerPage = 6; // 每页显示6个案例（2行x3列）
+const totalPages = Math.ceil(cases.length / itemsPerPage);
+const currentPage = 1; // 第一页
+const displayCases = cases.slice(0, itemsPerPage);
+
+// 转换案例数据格式以适配GridList组件
+const gridItems = displayCases.map(caseItem => ({
+  id: caseItem.id,
+  title: caseItem.title,
+  image: caseItem.image,
+  excerpt: caseItem.excerpt,
+  category: caseItem.category,
+  href: `/case/${caseItem.id}` // 假设有详情页面
+}));
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Cases' }
 ];
 ---
 
-<Layout title="客户案例">
-  <div class="animate-page-load">
-    <!-- Page Header -->
-    <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">客户案例</h1>
-        <p class="text-xl opacity-90">真实案例见证永安品质</p>
-      </div>
-    </section>
-
-    <main>
-      <!-- 案例展示 -->
-      <section class="py-20 bg-gray-50">
-        <div class="container mx-auto px-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cases.map((caseItem) => (
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <img 
-                  src={caseItem.image} 
-                  alt={caseItem.title}
-                  class="w-full h-64 object-cover"
-                  loading="lazy"
-                />
-                <div class="p-6">
-                  <h3 class="text-xl font-bold mb-2">{caseItem.title}</h3>
-                  <p class="text-gray-600 mb-2">客户：{caseItem.client}</p>
-                  <p class="text-gray-700 mb-4">{caseItem.description}</p>
-                  <div class="space-y-2">
-                    <h4 class="font-semibold text-gray-800">项目成果：</h4>
-                    <ul class="space-y-1">
-                      {caseItem.results.map((result) => (
-                        <li class="text-sm text-gray-600 flex items-center">
-                          <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                          {result}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <CustomerCases />
-    </main>
-  </div>
-</Layout> 
+<SecondaryPageLayout 
+  title="Customer Cases"
+  description="Discover how our machinery solutions have helped customers achieve success across various industries"
+  breadcrumbs={breadcrumbs}
+  currentSection="cases"
+  contentType="grid"
+>
+  <!-- 案例网格 -->
+  <GridList 
+    items={gridItems}
+    itemsPerRow={3}
+    maxRows={2}
+  />
+  
+  <!-- 分页 -->
+  <Pagination 
+    currentPage={currentPage}
+    totalPages={totalPages}
+    baseUrl="/cases-template"
+  />
+</SecondaryPageLayout> 

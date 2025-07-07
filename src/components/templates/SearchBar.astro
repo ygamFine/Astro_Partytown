@@ -1,0 +1,226 @@
+---
+// 搜索栏组件
+// 支持全文检索功能
+---
+
+<div class="search-bar">
+  <form class="relative" id="search-form">
+    <div class="relative">
+      <input 
+        type="text" 
+        id="search-input"
+        placeholder="Search..." 
+        class="w-full px-4 py-3 pl-12 pr-4 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        autocomplete="off"
+      />
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <button 
+        type="submit"
+        class="absolute inset-y-0 right-0 flex items-center pr-3"
+      >
+        <svg class="w-5 h-5 text-gray-400 hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- 搜索结果下拉框 -->
+    <div 
+      id="search-results" 
+      class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+    >
+      <div id="search-results-content" class="p-2">
+        <!-- 搜索结果将在这里显示 -->
+      </div>
+    </div>
+  </form>
+</div>
+
+<script define:vars={{ searchData: [] }}>
+  // 搜索功能实现
+  function initSearch() {
+    const searchInput = document.getElementById('search-input');
+    const searchForm = document.getElementById('search-form');
+    const searchResults = document.getElementById('search-results');
+    const searchResultsContent = document.getElementById('search-results-content');
+    
+    let debounceTimer = null;
+    
+    // 生成搜索数据
+    function getSearchData() {
+      const currentPath = window.location.pathname;
+      
+      if (currentPath.includes('/products')) {
+        return [
+          {
+            title: 'Skid Steer Loader YN-S850',
+            excerpt: 'Compact design, powerful performance, suitable for narrow space operations.',
+            url: '/products/skid-steer-loader-s850',
+            category: 'Products'
+          },
+          {
+            title: 'Backhoe Loader YN-B120',
+            excerpt: 'Dual function machine with both excavation and loading capabilities.',
+            url: '/products/backhoe-loader-b120',
+            category: 'Products'
+          },
+          {
+            title: 'Telescopic Handler YN-T3500',
+            excerpt: 'Extended reach capabilities for high-altitude operations.',
+            url: '/products/telescopic-handler-t3500',
+            category: 'Products'
+          },
+          {
+            title: 'Electric Loader YN-E50',
+            excerpt: 'Zero emission, low noise, leading the green construction era.',
+            url: '/products/electric-loader-e50',
+            category: 'Products'
+          }
+        ];
+      } else if (currentPath.includes('/news')) {
+        return [
+          {
+            title: 'New Electric Loader Launch',
+            excerpt: 'YN-S850 electric skid steer loader debuts at Shanghai machinery exhibition...',
+            url: '/news/new-electric-loader',
+            category: 'News'
+          },
+          {
+            title: 'New Factory Opens',
+            excerpt: 'Smart manufacturing upgrade: New production base officially operational...',
+            url: '/news/new-factory-opens',
+            category: 'News'
+          }
+        ];
+      } else if (currentPath.includes('/case')) {
+        return [
+          {
+            title: 'European Port Construction',
+            excerpt: 'Over 50 units of YN skid steer loaders excel in European major port expansion...',
+            url: '/case/europe-port',
+            category: 'Cases'
+          }
+        ];
+      }
+      
+      return [];
+    }
+    
+    const searchData = getSearchData();
+    
+    // 搜索功能
+    function performSearch(query, redirect = false) {
+      if (!query) {
+        hideResults();
+        return;
+      }
+      
+      const results = searchData.filter(item => {
+        const searchText = `${item.title} ${item.excerpt}`.toLowerCase();
+        return searchText.includes(query.toLowerCase());
+      });
+      
+      if (redirect && results.length > 0) {
+        window.location.href = results[0].url;
+        return;
+      }
+      
+      displayResults(results, query);
+    }
+    
+    // 显示搜索结果
+    function displayResults(results, query) {
+      if (results.length === 0) {
+        searchResultsContent.innerHTML = `
+          <div class="p-4 text-center text-gray-500">
+            <p>No results found for "${query}"</p>
+          </div>
+        `;
+      } else {
+        searchResultsContent.innerHTML = results.map(item => `
+          <a href="${item.url}" class="block p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
+            <div class="flex items-start space-x-3">
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h4>
+                <p class="text-xs text-gray-500 mt-1">${highlightText(item.excerpt, query)}</p>
+                <span class="inline-block text-xs bg-red-100 text-red-600 px-2 py-1 rounded mt-2">${item.category}</span>
+              </div>
+            </div>
+          </a>
+        `).join('');
+      }
+      
+      showResults();
+    }
+    
+    // 高亮文本
+    function highlightText(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<mark class="bg-yellow-200">$1</mark>');
+    }
+    
+    function showResults() {
+      searchResults.classList.remove('hidden');
+    }
+    
+    function hideResults() {
+      searchResults.classList.add('hidden');
+    }
+    
+    // 绑定事件
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        performSearch(e.target.value.trim());
+      }, 300);
+    });
+    
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query) {
+        performSearch(query, true);
+      }
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!searchForm.contains(e.target)) {
+        hideResults();
+      }
+    });
+    
+    searchInput.addEventListener('focus', () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        performSearch(query);
+      }
+    });
+  }
+  
+  // 初始化搜索
+  document.addEventListener('DOMContentLoaded', initSearch);
+</script>
+
+<style>
+  .search-bar {
+    @apply relative;
+  }
+  
+  mark {
+    @apply bg-yellow-200 px-1 rounded;
+  }
+  
+  /* 搜索结果样式 */
+  #search-results {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  #search-results a:hover {
+    @apply bg-gray-50;
+  }
+</style> 

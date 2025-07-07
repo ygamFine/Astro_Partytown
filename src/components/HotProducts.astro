@@ -8,7 +8,7 @@
     <!-- 产品网格 - 固定尺寸防止CLS -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       <!-- 产品1 -->
-      <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+      <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <div class="product-image-container">
           <img 
             src="/images/skid1-400.webp" 
@@ -21,18 +21,31 @@
             style="width: 100%; height: 100%; object-fit: cover;"
           />
         </div>
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-2 text-gray-800">滑移装载机 YN-S850</h3>
+        <div class="p-6 relative">
+          <h3 class="text-xl font-bold mb-2 text-gray-800 group-hover:text-red-600 transition-colors">滑移装载机 YN-S850</h3>
           <p class="text-gray-600 mb-4">紧凑设计，动力强劲，适用于狭窄空间作业</p>
-          <div class="flex justify-between items-center">
-            <span class="text-2xl font-bold text-red-600">¥180,000</span>
-            <a href="/products/skid-steer-loader-s850" class="btn-primary text-sm">查看详情</a>
+          
+          <!-- 从下往上滑出的联系信息 -->
+          <div class="absolute inset-x-0 bottom-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" style="height: 62.5px;">
+            <div class="flex items-center justify-between h-full">
+              <div>
+                <h4 class="font-bold text-base leading-tight">滑移装载机 YN-S850</h4>
+                <p class="text-xs opacity-90">获取详细报价和技术参数</p>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <span class="font-medium text-sm">立即联系</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 产品2 -->
-      <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+      <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <div class="product-image-container">
           <img 
             src="/images/backhoe-400.webp" 
@@ -44,18 +57,31 @@
             style="width: 100%; height: 100%; object-fit: cover;"
           />
         </div>
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-2 text-gray-800">挖掘装载机 YN-B120</h3>
+        <div class="p-6 relative">
+          <h3 class="text-xl font-bold mb-2 text-gray-800 group-hover:text-red-600 transition-colors">挖掘装载机 YN-B120</h3>
           <p class="text-gray-600 mb-4">一机双能，兼具挖掘与装载功能</p>
-          <div class="flex justify-between items-center">
-            <span class="text-2xl font-bold text-red-600">¥350,000</span>
-            <a href="/products/backhoe-loader-b120" class="btn-primary text-sm">查看详情</a>
+          
+          <!-- 从下往上滑出的联系信息 -->
+          <div class="absolute inset-x-0 bottom-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" style="height: 62.5px;">
+            <div class="flex items-center justify-between h-full">
+              <div>
+                <h4 class="font-bold text-base leading-tight">挖掘装载机 YN-B120</h4>
+                <p class="text-xs opacity-90">获取详细报价和技术参数</p>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <span class="font-medium text-sm">立即联系</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 产品3 -->
-      <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+      <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <div class="product-image-container">
           <img 
             src="/images/telescopic-400.webp" 
@@ -67,12 +93,25 @@
             style="width: 100%; height: 100%; object-fit: cover;"
           />
         </div>
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-2 text-gray-800">伸缩臂叉装车 YN-T3500</h3>
+        <div class="p-6 relative">
+          <h3 class="text-xl font-bold mb-2 text-gray-800 group-hover:text-red-600 transition-colors">伸缩臂叉装车 YN-T3500</h3>
           <p class="text-gray-600 mb-4">超长臂展，高空作业的理想选择</p>
-          <div class="flex justify-between items-center">
-            <span class="text-2xl font-bold text-red-600">¥420,000</span>
-            <a href="/products/telescopic-handler-t3500" class="btn-primary text-sm">查看详情</a>
+          
+          <!-- 从下往上滑出的联系信息 -->
+          <div class="absolute inset-x-0 bottom-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" style="height: 62.5px;">
+            <div class="flex items-center justify-between h-full">
+              <div>
+                <h4 class="font-bold text-base leading-tight">伸缩臂叉装车 YN-T3500</h4>
+                <p class="text-xs opacity-90">获取详细报价和技术参数</p>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <span class="font-medium text-sm">立即联系</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
