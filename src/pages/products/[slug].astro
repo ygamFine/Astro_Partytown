@@ -112,9 +112,9 @@ const recommendedProducts = products
                 class="flex space-x-2 overflow-x-hidden flex-1 scroll-smooth"
                 style="scroll-behavior: smooth;"
               >
-                <img 
-                  src={product.image} 
-                  alt={product.name}
+              <img 
+                src={product.image} 
+                alt={product.name}
                   class="w-20 h-20 object-cover rounded border-2 border-red-600 cursor-pointer flex-shrink-0 thumbnail-img select-none"
                   data-index="0"
                   data-src={product.image}
@@ -398,8 +398,8 @@ const recommendedProducts = products
                         <!-- 费用占位区域 -->
                         <div class="mb-3">
                           <div class="flex items-center justify-between">
-                            <span class="text-red-600 font-bold text-lg">面议</span>
-                            <span class="text-gray-500 text-sm">起</span>
+                            <span class="text-red-600 font-bold text-sm" style="visibility: hidden;">面议</span>
+                            <span class="text-gray-500 text-xs" style="visibility: hidden;">起</span>
                           </div>
                         </div>
                         
@@ -486,8 +486,8 @@ const recommendedProducts = products
                         <!-- 费用占位区域 -->
                         <div class="mb-3">
                           <div class="flex items-center justify-between">
-                            <span class="text-red-600 font-bold text-sm">面议</span>
-                            <span class="text-gray-500 text-xs">起</span>
+                            <span class="text-red-600 font-bold text-sm" style="visibility: hidden;">面议</span>
+                            <span class="text-gray-500 text-xs" style="visibility: hidden;">起</span>
                           </div>
                         </div>
                         

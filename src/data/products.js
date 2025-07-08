@@ -19,7 +19,28 @@ export const products = [
       "符合人体工程学的驾驶室，视野开阔，舒适安全。",
       "快速更换附件系统，可搭配多种属具，一机多用。"
     ],
-    gallery: ["/images/skid1-400.webp", "/skid2.webp", "/skid3.webp", "/skid4.webp", "/skid5.webp", "/images/backhoe-400.webp", "/images/telescopic-400.webp"]
+    gallery: [
+      "/images/skid1-400.webp", 
+      "/skid2.webp", 
+      "/skid3.webp", 
+      "/skid4.webp", 
+      "/skid5.webp", 
+      "/images/backhoe-400.webp", 
+      "/images/telescopic-400.webp",
+      "/skid-main.webp",
+      "/backhoe.webp",
+      "/telescopic.webp",
+      "/case1.webp",
+      "/case2.webp",
+      "/case3.webp",
+      "/factory.webp",
+      "/images/product1.webp",
+      "/images/product2.webp",
+      "/images/banner.webp",
+      "/images/banner222.webp",
+      "/images/logo.png.webp",
+      "/images/banner3.webp"
+    ]
   },
   {
     id: 2,
