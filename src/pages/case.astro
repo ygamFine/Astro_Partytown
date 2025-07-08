@@ -2,73 +2,15 @@
 export const prerender = true;
 
 import SecondaryPageLayout from '../components/templates/SecondaryPageLayout.astro';
-import ContactButtons from '../components/ContactButtons.astro';
 import GridList from '../components/templates/GridList.astro';
 import Pagination from '../components/templates/Pagination.astro';
-
-// 案例数据
-const cases = [
-  {
-    id: 1,
-    title: "European Port Construction Project",
-    client: "Major European Logistics Port",
-    image: "/case1.webp",
-    excerpt: "Over 50 units of YN skid steer loaders excel in European major port expansion project, demonstrating exceptional performance in challenging marine environments.",
-    category: "Marine Construction",
-    results: ["Project completed ahead of schedule", "Zero accident record", "100% customer satisfaction"]
-  },
-  {
-    id: 2,
-    title: "Urban Infrastructure Development", 
-    client: "Municipal Construction Group",
-    image: "/case2.webp",
-    excerpt: "In urban road renovation projects, YN backhoe loaders completed complex earthworks in narrow city environments with flexibility and efficiency.",
-    category: "Urban Development",
-    results: ["20% reduction in construction time", "Noise control compliance", "Zero complaints from residents"]
-  },
-  {
-    id: 3,
-    title: "Mining Operations Enhancement",
-    client: "Large Mining Group", 
-    image: "/case3.webp",
-    excerpt: "In harsh mining environments, YN telescopic handlers demonstrated exceptional reliability and durability, creating significant economic benefits for clients.",
-    category: "Mining",
-    results: ["98% equipment availability", "30% reduction in maintenance costs", "40% improvement in work efficiency"]
-  },
-  {
-    id: 4,
-    title: "Agricultural Modernization",
-    client: "Modern Farming Cooperative",
-    image: "/skid1.webp",
-    excerpt: "Modern farming solutions with our versatile machinery, helping farmers increase productivity while maintaining environmental sustainability.",
-    category: "Agriculture",
-    results: ["Increased crop yield by 25%", "Reduced labor costs", "Sustainable farming practices"]
-  },
-  {
-    id: 5,
-    title: "Disaster Relief Operations",
-    client: "Emergency Response Team",
-    image: "/skid2.webp", 
-    excerpt: "Emergency response and disaster relief operations showcasing the reliability and versatility of our emergency equipment series.",
-    category: "Emergency Response",
-    results: ["Rapid deployment capability", "24/7 operational reliability", "Critical infrastructure restoration"]
-  },
-  {
-    id: 6,
-    title: "Smart City Construction",
-    client: "Smart City Development Authority",
-    image: "/skid3.webp",
-    excerpt: "Intelligent construction solutions integrating IoT and automation technologies for next-generation urban development projects.",
-    category: "Smart Technology", 
-    results: ["Digital twin integration", "Automated quality control", "Real-time project monitoring"]
-  }
-];
+import { allCases } from '../data/cases.js';
 
 // 分页配置
 const itemsPerPage = 6; // 每页显示6个案例（2行x3列）
-const totalPages = Math.ceil(cases.length / itemsPerPage);
+const totalPages = Math.ceil(allCases.length / itemsPerPage);
 const currentPage = 1; // 第一页
-const displayCases = cases.slice(0, itemsPerPage);
+const displayCases = allCases.slice(0, itemsPerPage);
 
 // 转换案例数据格式以适配GridList组件
 const gridItems = displayCases.map(caseItem => ({
@@ -99,25 +41,13 @@ const breadcrumbs = [
     items={gridItems}
     itemsPerRow={3}
     maxRows={2}
+    mode="case"
   />
   
   <!-- 分页 -->
   <Pagination 
     currentPage={currentPage}
     totalPages={totalPages}
-    baseUrl="/cases-template"
+    baseUrl="/case"
   />
-  
-  <!-- 联系我们部分 -->
-  <section class="py-16 bg-gray-50 mt-12 rounded-lg">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">需要类似的解决方案？</h2>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-          看到这些成功案例，是否有适合您项目的解决方案？联系我们，为您定制专业的设备配置方案。
-        </p>
-      </div>
-      <ContactButtons />
-    </div>
-  </section>
 </SecondaryPageLayout> 

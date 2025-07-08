@@ -10,15 +10,16 @@ interface Props {
   }>;
   itemsPerRow?: number;
   maxRows?: number;
+  mode?: 'product' | 'case' | 'sidebar';
 }
 
-const { items, itemsPerRow = 3, maxRows = 4 } = Astro.props;
+const { items, itemsPerRow = 3, maxRows = 4, mode = 'product' } = Astro.props;
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
 ---
 
 <div class="grid-list">
-  <div class={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
+  <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
     {displayItems.map((item) => (
       <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <a href={item.href} class="block h-full">
@@ -32,38 +33,32 @@ const displayItems = items.slice(0, maxItems);
             />
           </div>
           
-          <div class="p-4 relative">
+          <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-6 relative'}>
             <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
               {item.title}
             </h3>
             
-            {item.excerpt && (
-              <p class="text-gray-600 text-sm mb-2 line-clamp-2">
-                {item.excerpt}
-              </p>
+            {mode === 'product' && (
+              <>
+                {item.excerpt && (
+                  <p class="text-gray-600 text-sm mb-2 line-clamp-2">
+                    {item.excerpt}
+                  </p>
+                )}
+                
+                <!-- 费用占位区域 -->
+                <div class="mb-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-red-600 font-bold text-lg" style="visibility: hidden;">面议</span>
+                    <span class="text-gray-500 text-sm" style="visibility: hidden;">起</span>
+                  </div>
+                </div>
+              </>
             )}
             
-            <!-- 费用占位区域 -->
-            <div class="mb-3">
-              <div class="flex items-center justify-between">
-                <span class="text-red-600 font-bold text-lg" style="visibility: hidden;">面议</span>
-                <span class="text-gray-500 text-sm" style="visibility: hidden;">起</span>
-              </div>
-            </div>
-            
             <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
-            <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
-              <div>
-                <h4 class="font-bold text-base leading-tight">{item.title}</h4>
-                <p class="text-xs opacity-90">获取详细报价和技术参数</p>
-              </div>
-              <div class="flex items-center space-x-1">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                </svg>
-                <span class="font-medium text-sm">立即联系</span>
-              </div>
+            <div class={mode === 'sidebar' ? 'absolute inset-0 bg-red-600 text-white px-3 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center' : 'absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center'}>
+              <h4 class="font-bold text-base leading-tight">{item.title}</h4>
             </div>
           </div>
         </a>
@@ -99,6 +94,11 @@ const displayItems = items.slice(0, maxItems);
     overflow: hidden;
   }
   
+  /* Sidebar模式始终保持单列 */
+  .sidebar-grid {
+    @apply grid-cols-1 !important;
+  }
+  
   /* 确保网格在移动设备上正确显示 */
   @media (max-width: 768px) {
     .grid-list .grid {
@@ -107,7 +107,7 @@ const displayItems = items.slice(0, maxItems);
   }
   
   @media (min-width: 769px) and (max-width: 1024px) {
-    .grid-list .grid {
+    .grid-list .grid:not(.sidebar-grid) {
       @apply grid-cols-2;
     }
   }

@@ -1,0 +1,198 @@
+---
+export const prerender = true;
+
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/templates/Breadcrumb.astro';
+import { allCases } from '../../data/cases.js';
+import { allNews } from '../../data/news.js';
+
+export function getStaticPaths() {
+  // 从案例数据生成静态路径
+  return allCases.map(caseItem => ({
+    params: { id: caseItem.id.toString() },
+    props: { caseItem }
+  }));
+}
+
+const { caseItem } = Astro.props;
+
+// 获取当前案例在列表中的位置，用于上一个/下一个导航
+const currentIndex = allCases.findIndex(c => c.id === caseItem.id);
+const previousCase = currentIndex > 0 ? allCases[currentIndex - 1] : null;
+const nextCase = currentIndex < allCases.length - 1 ? allCases[currentIndex + 1] : null;
+
+// 获取相关新闻（最新的4篇）
+const relatedNews = allNews.slice(0, 4);
+
+// 获取相关案例（排除当前案例，取前2个）
+const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('zh-CN', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Cases', href: '/case' },
+  { label: caseItem.category, href: `/case?category=${encodeURIComponent(caseItem.category)}` },
+  { label: caseItem.title }
+];
+---
+
+<Layout title={`${caseItem.title} - 案例详情`}>
+  <main class="bg-gray-50 min-h-screen">
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 py-4">
+        <Breadcrumb breadcrumbs={breadcrumbs} />
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <!-- 主要内容区域 -->
+        <div class="xl:col-span-3">
+          <!-- 案例标题和信息 -->
+          <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <!-- 案例头部信息 -->
+            <header class="mb-8">
+              <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{caseItem.title}</h1>
+              <time datetime={caseItem.date} class="text-sm text-gray-500 mb-6 block">{formatDate(caseItem.date)}</time>
+            </header>
+
+            <!-- 案例详细内容 -->
+            <div class="prose max-w-none text-lg text-gray-800 leading-relaxed" set:html={caseItem.content} />
+          </div>
+
+          <!-- Previous/Next 导航 -->
+          <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
+            <div class="flex justify-between items-center">
+              <div class="flex-1">
+                {previousCase && (
+                  <a href={`/case/${previousCase.id}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                    <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                      <div class="text-sm">上一个案例</div>
+                      <div class="font-medium">{previousCase.title}</div>
+                    </div>
+                  </a>
+                )}
+              </div>
+              <div class="flex-1 text-right">
+                {nextCase && (
+                  <a href={`/case/${nextCase.id}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
+                    <div class="text-right">
+                      <div class="text-sm">下一个案例</div>
+                      <div class="font-medium">{nextCase.title}</div>
+                    </div>
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <!-- Related News -->
+          <div class="bg-white rounded-lg p-8 shadow-sm">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+              <div class="w-1 h-6 bg-red-600 mr-3"></div>
+              Related News
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {relatedNews.map((news) => (
+                <div class="flex items-start space-x-4">
+                  <div class="flex-1">
+                    <a href={`/news/${news.slug}`} class="block">
+                      <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
+                        {news.title}
+                      </h3>
+                    </a>
+                    <div class="text-sm text-gray-500">
+                      {formatDate(news.date)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="xl:col-span-1">
+          <!-- Related Cases -->
+          <div class="bg-white rounded-lg p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <div class="w-1 h-5 bg-red-600 mr-2"></div>
+              相关案例
+            </h3>
+            
+            <div class="space-y-4">
+              {relatedCases.map(relatedCase => (
+                <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
+                  <a href={`/case/${relatedCase.id}`} class="block">
+                    <div class="aspect-[5/3] overflow-hidden">
+                      <img 
+                        src={relatedCase.image} 
+                        alt={relatedCase.title}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    
+                    <div class="p-3 relative min-h-[50px] flex items-center">
+                      <h4 class="font-semibold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2 text-lg">
+                        {relatedCase.title}
+                      </h4>
+                      
+                      <!-- 从下往上滑出的案例信息 - 覆盖整个信息区域 -->
+                      <div class="absolute inset-0 bg-red-600 text-white px-3 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center">
+                        <h5 class="font-bold text-base leading-tight">{relatedCase.title}</h5>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+            
+            <!-- 查看更多相关案例 -->
+            <div class="mt-4 text-center">
+              <a href="/case" class="text-sm text-red-600 hover:text-red-700 font-medium">
+                查看更多案例 →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style is:global>
+  .prose h3 {
+    @apply text-2xl font-bold my-6 text-gray-800;
+  }
+  .prose p {
+    @apply mb-6;
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

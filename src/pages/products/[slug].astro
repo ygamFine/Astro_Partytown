@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/templates/Breadcrumb.astro';
 import ContactButtons from '../../components/ContactButtons.astro';
 import { products } from '../../data/products.js';
 import { allNews } from '../../data/news.js';
@@ -31,7 +32,15 @@ const nextProduct = currentIndex < products.length - 1 ? products[currentIndex +
 // 推荐产品（不同类别的产品）
 const recommendedProducts = products
   .filter(p => p.category !== product.category)
-  .slice(0, 6);
+  .slice(0, 2);
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: '产品中心', href: '/products' },
+  { label: product.category, href: `/products?category=${encodeURIComponent(product.category)}` },
+  { label: product.name }
+];
 ---
 
 <Layout title={`${product.name} - 产品详情`}>
@@ -39,12 +48,7 @@ const recommendedProducts = products
     <!-- 面包屑导航 -->
     <div class="bg-white border-b">
       <div class="container mx-auto px-4 py-4">
-        <nav class="text-sm text-gray-600">
-          <a href="/" class="hover:text-red-600">首页</a> / 
-          <a href="/products" class="hover:text-red-600">产品中心</a> / 
-          <a href={`/products?category=${encodeURIComponent(product.category)}`} class="hover:text-red-600">{product.category}</a> / 
-          <span class="text-gray-800">{product.name}</span>
-        </nav>
+        <Breadcrumb breadcrumbs={breadcrumbs} />
       </div>
     </div>
 
@@ -452,8 +456,8 @@ const recommendedProducts = products
 
           </div>
 
-          <!-- 右侧：推荐产品（sticky定位） -->
-          <div class="sticky top-4 space-y-6" id="recommendedProductsSidebar">
+          <!-- 右侧：推荐产品 -->
+          <div class="space-y-6" id="recommendedProductsSidebar">
             <div class="bg-white rounded-lg p-6 shadow-sm">
               <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <div class="w-1 h-5 bg-red-600 mr-2"></div>
@@ -461,7 +465,7 @@ const recommendedProducts = products
               </h3>
               
               <div class="space-y-4">
-                {recommendedProducts.slice(0, 3).map(recommended => (
+                {recommendedProducts.slice(0, 2).map(recommended => (
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/products/${recommended.slug}`} class="block">
                       <div class="aspect-[3/2] overflow-hidden">
