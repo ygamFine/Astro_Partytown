@@ -1,0 +1,202 @@
+---
+// 环境检测
+const isProd = import.meta.env.PROD;
+const isDev = import.meta.env.DEV;
+const mode = import.meta.env.MODE;
+
+// GTM配置
+const GTM_ID = 'GTM-5MNNZB76';
+const GTM_DEBUG = isDev ? '&gtm_debug=true' : '';
+const GTM_PREVIEW = isDev ? '&gtm_preview=' : '';
+
+// 调试信息
+console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID: ${GTM_ID}`);
+---
+
+<!-- GTM 数据层初始化 -->
+<script is:inline define:vars={{ isProd, isDev, GTM_ID }}>
+  // 初始化 dataLayer
+  window.dataLayer = window.dataLayer || [];
+  
+  // 添加环境信息到数据层
+  window.dataLayer.push({
+    'environment': isProd ? 'production' : 'development',
+    'gtm.start': new Date().getTime(),
+    'event': 'gtm.js'
+  });
+  
+  // 开发环境调试信息
+  if (isDev) {
+    console.log('🐛 [GTM Debug] DataLayer 已初始化:', window.dataLayer);
+    
+    // 监听 dataLayer 变化（仅开发环境）
+    const originalPush = window.dataLayer.push;
+    window.dataLayer.push = function(...args) {
+      console.log('🐛 [GTM Debug] DataLayer Push:', args);
+      return originalPush.apply(this, args);
+    };
+  }
+</script>
+
+{isProd ? (
+  <!-- ✅ 生产环境：使用 Partytown 加载 GTM -->
+  <>
+    <script type="text/partytown" define:vars={{ GTM_ID }}>
+      (function(w,d,s,l,i){
+        // 确保 dataLayer 存在
+        w[l] = w[l] || [];
+        
+        // 创建 GTM 脚本标签
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+            
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        j.onerror = function() {
+          console.error('❌ [GTM] Failed to load GTM script in production');
+        };
+        j.onload = function() {
+          console.log('✅ [GTM] GTM script loaded successfully in production via Partytown');
+        };
+        
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', GTM_ID);
+    </script>
+    
+    <!-- noscript fallback for production -->
+    <noscript>
+      <iframe 
+        src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+        height="0" 
+        width="0" 
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager"
+      ></iframe>
+    </noscript>
+  </>
+) : (
+  <!-- 🧪 开发环境：使用标准 script 加载 GTM -->
+  <>
+    <script is:inline define:vars={{ GTM_ID, GTM_DEBUG, GTM_PREVIEW }}>
+      (function(w,d,s,l,i){
+        // 确保 dataLayer 存在
+        w[l] = w[l] || [];
+        
+        // 开发环境特殊处理
+        console.log('🧪 [GTM Dev] 开始加载 GTM 脚本...');
+        
+        // 创建 GTM 脚本标签
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+            
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl + GTM_DEBUG + GTM_PREVIEW;
+        
+        // 开发环境错误处理
+        j.onerror = function(e) {
+          console.error('❌ [GTM Dev] GTM 脚本加载失败:', e);
+          console.warn('💡 [GTM Dev] 这在开发环境是正常的，可能是网络问题或CORS限制');
+        };
+        
+        j.onload = function() {
+          console.log('✅ [GTM Dev] GTM 脚本加载成功');
+          console.log('🔍 [GTM Dev] GTM Debug 模式已启用');
+          
+          // 开发环境额外调试信息
+          setTimeout(() => {
+            if (window.google_tag_manager) {
+              console.log('🔍 [GTM Dev] GTM 容器信息:', Object.keys(window.google_tag_manager));
+            }
+          }, 1000);
+        };
+        
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', GTM_ID);
+    </script>
+    
+    <!-- 开发环境 noscript fallback -->
+    <noscript>
+      <iframe 
+        src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}${GTM_DEBUG}${GTM_PREVIEW}`}
+        height="0" 
+        width="0" 
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager (Dev)"
+      ></iframe>
+    </noscript>
+    
+    <!-- 开发环境调试面板 -->
+    <script is:inline>
+      // 开发环境 GTM 调试助手
+      if (typeof window !== 'undefined') {
+        window.gtmDebug = {
+          // 手动触发事件
+          push: (data) => {
+            console.log('🧪 [GTM Debug] 手动推送事件:', data);
+            window.dataLayer.push(data);
+          },
+          
+          // 查看当前 dataLayer
+          getDataLayer: () => {
+            console.log('🧪 [GTM Debug] 当前 dataLayer:', window.dataLayer);
+            return window.dataLayer;
+          },
+          
+          // 测试事件
+          testEvent: () => {
+            const testData = {
+              event: 'test_event',
+              event_category: 'development',
+              event_action: 'manual_test',
+              event_label: 'gtm_debug_helper',
+              timestamp: new Date().toISOString()
+            };
+            window.dataLayer.push(testData);
+            console.log('🧪 [GTM Debug] 测试事件已发送:', testData);
+          }
+        };
+        
+        console.log('🧪 [GTM Debug] 调试助手已加载，可用命令:');
+        console.log('  - gtmDebug.push(data)     // 推送自定义事件');
+        console.log('  - gtmDebug.getDataLayer() // 查看数据层');
+        console.log('  - gtmDebug.testEvent()    // 发送测试事件');
+      }
+    </script>
+  </>
+)}
+
+<!-- 通用 GTM 配置检查 -->
+<script is:inline define:vars={{ isProd, isDev }}>
+  // 页面加载完成后的验证
+  window.addEventListener('load', function() {
+    setTimeout(() => {
+      // 检查 GTM 是否正确加载
+      if (window.dataLayer) {
+        const mode = isProd ? '生产' : '开发';
+        console.log(`✅ [GTM] ${mode}环境 GTM 配置验证通过`);
+        
+        if (isDev) {
+          console.log('🔍 [GTM Dev] DataLayer 内容:', window.dataLayer);
+          if (window.google_tag_manager) {
+            console.log('🔍 [GTM Dev] GTM 管理器状态:', 'loaded');
+          } else {
+            console.warn('⚠️ [GTM Dev] GTM 管理器未加载，这在开发环境是常见的');
+          }
+        }
+      } else {
+        console.error('❌ [GTM] DataLayer 未初始化！');
+      }
+    }, 2000);
+  });
+</script>
+
+<style>
+  /* 确保 noscript iframe 不影响布局 */
+  noscript iframe {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+</style> 
