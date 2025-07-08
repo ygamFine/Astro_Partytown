@@ -341,17 +341,6 @@ const {
       <slot />
     </main>
 
-    <!-- 使用Partytown将Analytics移到Web Worker - 减少主线程阻塞 -->
-    <script async type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-71JP66YM5X"></script>
-    <script type="text/partytown">
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-71JP66YM5X', {
-        page_title: document.title,
-        page_location: window.location.href
-      });
-    </script>
 
     <!-- 大幅延迟客服脚本加载 -->
     <script> 
