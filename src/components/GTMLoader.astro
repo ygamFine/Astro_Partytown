@@ -161,7 +161,7 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
 </script>
 
 <!-- 🎯 智能noscript回退 - 支持所有模式 -->
-<script is:inline define:vars={{ GTM_ID }}>
+<!-- <script is:inline define:vars={{ GTM_ID }}>
   // 创建noscript回退
   (function() {
     const noscript = document.createElement('noscript');
@@ -187,7 +187,7 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
     noscript.appendChild(iframe);
     document.head.appendChild(noscript);
   })();
-</script>
+</script> -->
 
 <!-- 🔍 GTM 最终验证检查 -->
 <script is:inline>
