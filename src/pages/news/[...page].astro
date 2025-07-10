@@ -49,9 +49,7 @@ const newsItems = sortedNews.map(newsItem => ({
   image: newsItem.image,
   excerpt: newsItem.excerpt,
   date: newsItem.date,
-  category: newsItem.category,
   href: `/news/${newsItem.slug}`,
-  readTime: '5 min read' // 可以根据内容长度计算
 }));
 
 // 面包屑导航
@@ -71,7 +69,6 @@ const breadcrumbs = [
   <!-- 新闻列表 -->
   <NewsList 
     items={newsItems}
-    maxItems={6}
   />
   
   <!-- 分页 -->

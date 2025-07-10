@@ -1,55 +1,219 @@
 ---
 export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/templates/Breadcrumb.astro';
+import GridList from '../../components/templates/GridList.astro';
 import { allNews } from '../../data/news.js';
+import { products } from '../../data/products.js';
 
 export function getStaticPaths() {
-  return allNews.map(news => ({
-    params: { slug: news.slug },
-    props: { news }
-  }));
+  // 按日期降序排序所有新闻
+  const sortedNews = allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  return sortedNews.map((news, index) => {
+    const previousNews = index > 0 ? sortedNews[index - 1] : null;
+    const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
+
+    return {
+      params: { slug: news.slug },
+      props: { news, previousNews, nextNews }
+    };
+  });
 }
 
-const { news } = Astro.props;
+const { news, previousNews, nextNews } = Astro.props;
+
+// 获取3个相关产品（随机）
+const shuffledProducts = products.sort(() => 0.5 - Math.random());
+const relatedProducts = shuffledProducts.slice(0, 3);
+
+// 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
+const relatedNews = allNews
+  .filter(item => item.slug !== news.slug)
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .slice(0, 4);
+
+// 获取热门文章 (最新的5篇，排除当前文章) -> 用于右侧边栏
+const popularArticles = allNews
+  .filter(item => item.slug !== news.slug)
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .slice(0, 5);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'News', href: '/news' },
+  { label: news.title }
+];
+
+const formatDate = (dateString: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+};
 ---
 
-<Layout title={`${news.title}`}>
-  <main>
-    <!-- Article Header -->
-    <header class="mb-8 text-center">
-      <p class="text-red-600 font-semibold">{news.category}</p>
-      <h1 class="text-3xl md:text-5xl font-bold text-gray-900 my-4 leading-tight">{news.title}</h1>
-      <p class="text-gray-500">发布于: <time datetime={news.date}>{new Date(news.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</time></p>
-    </header>
-
-    <!-- Article Image -->
-    <div class="mb-8">
-      <img 
-        src={news.image} 
-        alt={news.title} 
-        class="w-full h-auto max-h-[500px] object-cover rounded-2xl shadow-lg"
-        loading="lazy"
-        decoding="async"
-      >
+<Layout title={news.title} description={news.excerpt}>
+  <main class="bg-gray-50 min-h-screen">
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 py-4">
+        <Breadcrumb breadcrumbs={breadcrumbs} />
+      </div>
     </div>
+    
+    <!-- Main Content Section -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- 中间主内容区 -->
+            <div class="lg:col-span-3">
+              <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <article>
+                    <!-- Article Header -->
+                    <header class="mb-8">
+                      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{news.title}</h1>
+                      <time datetime={news.date} class="text-sm text-gray-500 block">{formatDate(news.date)}</time>
+                    </header>
 
-    <!-- Article Content -->
-    <div class="prose max-w-none text-lg text-gray-800 leading-relaxed" set:html={news.content} />
+                    <!-- Article Image -->
+                    {news.image && (
+                    <div class="mb-8">
+                        <img 
+                        src={news.image} 
+                        alt={news.title} 
+                        class="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                        loading="eager"
+                        decoding="async"
+                        >
+                    </div>
+                    )}
 
-    <!-- Back Button -->
-    <div class="mt-12 text-center">
-      <a href="/news" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors duration-300">
-        &laquo; 返回新闻列表
-      </a>
+                    <!-- Article Content -->
+                    <div class="prose max-w-none" set:html={news.content} />
+                </article>
+              </div>
+
+              <!-- Previous/Next 导航 -->
+              <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
+                <div class="flex justify-between items-center">
+                    <div class="flex-1">
+                        {previousNews && (
+                        <a href={`/news/${previousNews.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                            <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                            <div class="text-sm">上一个</div>
+                            <div class="font-medium line-clamp-1">{previousNews.title}</div>
+                            </div>
+                        </a>
+                        )}
+                    </div>
+                    <div class="flex-1 text-right">
+                        {nextNews && (
+                        <a href={`/news/${nextNews.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
+                            <div class="text-right">
+                            <div class="text-sm">下一个</div>
+                            <div class="font-medium line-clamp-1">{nextNews.title}</div>
+                            </div>
+                            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+              <!-- Related Products -->
+              <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
+                  <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                    Related Products
+                  </h2>
+                  <GridList 
+                      items={relatedProducts.map(p => ({
+                          id: p.id,
+                          title: p.name, // 使用 name 字段作为 title
+                          image: p.image,
+                          excerpt: p.excerpt,
+                          href: `/products/${p.slug}`
+                      }))}
+                      itemsPerRow={3}
+                  />
+              </div>
+
+              <!-- Related News -->
+              <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                  Related News
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  {relatedNews.map((newsItem) => (
+                    <div class="flex items-start space-x-4">
+                      <div class="flex-1">
+                        <a href={`/news/${newsItem.slug}`} class="block">
+                          <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
+                            {newsItem.title}
+                          </h3>
+                        </a>
+                        <div class="text-sm text-gray-500">
+                          {formatDate(newsItem.date)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+            </div>
+            </div>
+
+            <!-- 右侧热门文章 -->
+            <aside class="lg:col-span-1 space-y-8">
+              <!-- Popular Articles -->
+              <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div class="w-1 h-6 bg-blue-600 mr-3"></div>
+                  Popular articles
+                </h3>
+                <ul class="space-y-4">
+                  {popularArticles.map(article => (
+                    <li>
+                      <a href={`/news/${article.slug}`} class="font-medium text-gray-800 hover:text-blue-600 transition-colors duration-200 ease-in-out line-clamp-2">
+                        {article.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </aside>
+        </div>
     </div>
   </main>
 </Layout>
 
 <style is:global>
-  .prose h3 {
-    @apply text-2xl font-bold my-6 text-gray-800;
+  .prose {
+    @apply text-gray-800 leading-relaxed;
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply text-gray-900 font-bold;
+  }
+  .prose a {
+    @apply text-blue-600 hover:underline;
   }
   .prose p {
-    @apply mb-6;
+    @apply my-4;
+  }
+  .prose ul, .prose ol {
+    @apply my-4 pl-6;
+  }
+  .prose li {
+    @apply mb-2;
+  }
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 </style> 

@@ -23,7 +23,7 @@ const displayItems = items.slice(0, maxItems);
     {displayItems.map((item) => (
       <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <a href={item.href} class="block h-full">
-          <div class="aspect-[3/2] overflow-hidden">
+          <div class="aspect-video overflow-hidden">
             <img 
               src={item.image} 
               alt={item.title}
@@ -33,7 +33,7 @@ const displayItems = items.slice(0, maxItems);
             />
           </div>
           
-          <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-6 relative'}>
+          <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-4 relative'}>
             <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
               {item.title}
             </h3>
@@ -41,18 +41,10 @@ const displayItems = items.slice(0, maxItems);
             {mode === 'product' && (
               <>
                 {item.excerpt && (
-                  <p class="text-gray-600 text-sm mb-2 line-clamp-2">
+                  <p class="text-gray-600 text-sm mb-4 line-clamp-3">
                     {item.excerpt}
                   </p>
                 )}
-                
-                <!-- 费用占位区域 -->
-                <div class="mb-3">
-                  <div class="flex items-center justify-between">
-                    <span class="text-red-600 font-bold text-lg" style="visibility: hidden;">面议</span>
-                    <span class="text-gray-500 text-sm" style="visibility: hidden;">起</span>
-                  </div>
-                </div>
               </>
             )}
             
