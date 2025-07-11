@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "news": "News"
+  },
+  "news": {
+    "title": "News Center",
+    "description": "Stay updated with our latest news and industry insights",
+    "read_more": "Read More",
+    "published_date": "Published Date",
+    "author": "Author",
+    "category": "Category",
+    "tags": "Tags",
+    "share_article": "Share Article",
+    "related_articles": "Related Articles",
+    "popular_articles": "Popular Articles",
+    "latest_news": "Latest News",
+    "industry_insights": "Industry Insights",
+    "company_updates": "Company Updates",
+    "product_news": "Product News"
+  },
+  "navigation": {
+    "previous_article": "Previous Article",
+    "next_article": "Next Article",
+    "back_to_news": "Back to News"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "articles": "articles",
+    "pages": "pages"
+  },
+  "related": {
+    "products": "Related Products",
+    "news": "Related News"
+  },
+  "sidebar": {
+    "popular_articles": "Popular Articles",
+    "categories": "Categories",
+    "latest_news": "Latest News"
+  }
+}

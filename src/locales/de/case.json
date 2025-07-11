@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Startseite",
+    "cases": "Kundenfälle"
+  },
+  "case": {
+    "title": "Kundenfälle",
+    "description": "Entdecken Sie, wie unsere Maschinenlösungen Kunden in verschiedenen Branchen zum Erfolg verholfen haben",
+    "view_case": "Fall anzeigen",
+    "case_details": "Fall-Details",
+    "customer_info": "Kundeninformationen",
+    "project_overview": "Projektübersicht",
+    "challenges": "Herausforderungen",
+    "solutions": "Lösungen",
+    "results": "Ergebnisse",
+    "testimonials": "Kundenbewertungen",
+    "industry": "Branche",
+    "location": "Standort",
+    "completion_date": "Abschlussdatum",
+    "equipment_used": "Verwendete Ausrüstung",
+    "project_duration": "Projektdauer"
+  },
+  "navigation": {
+    "previous_case": "Vorheriger Fall",
+    "next_case": "Nächster Fall",
+    "back_to_cases": "Zurück zur Fallliste"
+  },
+  "pagination": {
+    "showing": "Angezeigt",
+    "to": "bis",
+    "of": "von",
+    "cases": "Fälle",
+    "pages": "Seiten"
+  },
+  "related": {
+    "cases": "Verwandte Fälle",
+    "news": "Verwandte Nachrichten",
+    "view_more": "Mehr anzeigen"
+  },
+  "sidebar": {
+    "related_cases": "Verwandte Fälle",
+    "categories": "Kategorien",
+    "latest_cases": "Neueste Fälle"
+  }
+}

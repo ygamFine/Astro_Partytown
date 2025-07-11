@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Trang chủ",
+    "cases": "Tình huống khách hàng"
+  },
+  "case": {
+    "title": "Tình huống khách hàng",
+    "description": "Khám phá cách các giải pháp máy móc của chúng tôi đã giúp khách hàng đạt được thành công trong nhiều ngành khác nhau",
+    "view_case": "Xem tình huống",
+    "case_details": "Chi tiết tình huống",
+    "customer_info": "Thông tin khách hàng",
+    "project_overview": "Tổng quan dự án",
+    "challenges": "Thách thức",
+    "solutions": "Giải pháp",
+    "results": "Kết quả",
+    "testimonials": "Lời chứng thực khách hàng",
+    "industry": "Ngành",
+    "location": "Vị trí",
+    "completion_date": "Ngày hoàn thành",
+    "equipment_used": "Thiết bị sử dụng",
+    "project_duration": "Thời gian dự án"
+  },
+  "navigation": {
+    "previous_case": "Tình huống trước",
+    "next_case": "Tình huống tiếp theo",
+    "back_to_cases": "Quay lại danh sách tình huống"
+  },
+  "pagination": {
+    "showing": "Hiển thị",
+    "to": "đến",
+    "of": "trên tổng",
+    "cases": "tình huống",
+    "pages": "trang"
+  },
+  "related": {
+    "cases": "Tình huống liên quan",
+    "news": "Tin tức liên quan",
+    "view_more": "Xem thêm"
+  },
+  "sidebar": {
+    "related_cases": "Tình huống liên quan",
+    "categories": "Danh mục",
+    "latest_cases": "Tình huống mới nhất"
+  }
+}

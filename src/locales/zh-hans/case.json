@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "首页",
+    "cases": "客户案例"
+  },
+  "case": {
+    "title": "客户案例",
+    "description": "了解我们的机械设备解决方案如何帮助客户在各个行业取得成功",
+    "view_case": "查看案例",
+    "case_details": "案例详情",
+    "customer_info": "客户信息",
+    "project_overview": "项目概述",
+    "challenges": "挑战",
+    "solutions": "解决方案",
+    "results": "成果",
+    "testimonials": "客户评价",
+    "industry": "行业",
+    "location": "地点",
+    "completion_date": "完成日期",
+    "equipment_used": "使用设备",
+    "project_duration": "项目周期"
+  },
+  "navigation": {
+    "previous_case": "上一个案例",
+    "next_case": "下一个案例",
+    "back_to_cases": "返回案例列表"
+  },
+  "pagination": {
+    "showing": "显示",
+    "to": "到",
+    "of": "共",
+    "cases": "个案例",
+    "pages": "页"
+  },
+  "related": {
+    "cases": "相关案例",
+    "news": "相关新闻",
+    "view_more": "查看更多"
+  },
+  "sidebar": {
+    "related_cases": "相关案例",
+    "categories": "分类",
+    "latest_cases": "最新案例"
+  }
+}

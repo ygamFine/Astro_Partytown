@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "الرئيسية",
+    "news": "الأخبار"
+  },
+  "news": {
+    "title": "مركز الأخبار",
+    "description": "ابق على اطلاع بآخر الأخبار ورؤى الصناعة",
+    "read_more": "اقرأ المزيد",
+    "published_date": "تاريخ النشر",
+    "author": "الكاتب",
+    "category": "الفئة",
+    "tags": "العلامات",
+    "share_article": "مشاركة المقال",
+    "related_articles": "مقالات ذات صلة",
+    "popular_articles": "المقالات الشائعة",
+    "latest_news": "آخر الأخبار",
+    "industry_insights": "رؤى الصناعة",
+    "company_updates": "تحديثات الشركة",
+    "product_news": "أخبار المنتجات"
+  },
+  "navigation": {
+    "previous_article": "المقال السابق",
+    "next_article": "المقال التالي",
+    "back_to_news": "العودة إلى الأخبار"
+  },
+  "pagination": {
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "articles": "مقالات",
+    "pages": "صفحات"
+  },
+  "related": {
+    "products": "المنتجات ذات الصلة",
+    "news": "الأخبار ذات الصلة"
+  },
+  "sidebar": {
+    "popular_articles": "المقالات الشائعة",
+    "categories": "الفئات",
+    "latest_news": "آخر الأخبار"
+  }
+}

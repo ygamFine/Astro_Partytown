@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "होम",
+    "cases": "ग्राहक केस"
+  },
+  "case": {
+    "title": "ग्राहक केस",
+    "description": "जानें कि हमारे मशीनरी समाधानों ने विभिन्न उद्योगों में ग्राहकों को सफलता प्राप्त करने में कैसे मदद की है",
+    "view_case": "केस देखें",
+    "case_details": "केस विवरण",
+    "customer_info": "ग्राहक जानकारी",
+    "project_overview": "प्रोजेक्ट अवलोकन",
+    "challenges": "चुनौतियां",
+    "solutions": "समाधान",
+    "results": "परिणाम",
+    "testimonials": "ग्राहक प्रशंसापत्र",
+    "industry": "उद्योग",
+    "location": "स्थान",
+    "completion_date": "पूर्णता दिनांक",
+    "equipment_used": "उपयोग किए गए उपकरण",
+    "project_duration": "प्रोजेक्ट अवधि"
+  },
+  "navigation": {
+    "previous_case": "पिछला केस",
+    "next_case": "अगला केस",
+    "back_to_cases": "केस सूची पर वापस जाएं"
+  },
+  "pagination": {
+    "showing": "दिखाया जा रहा है",
+    "to": "से",
+    "of": "कुल",
+    "cases": "केस",
+    "pages": "पेज"
+  },
+  "related": {
+    "cases": "संबंधित केस",
+    "news": "संबंधित समाचार",
+    "view_more": "और देखें"
+  },
+  "sidebar": {
+    "related_cases": "संबंधित केस",
+    "categories": "श्रेणियां",
+    "latest_cases": "नवीनतम केस"
+  }
+}

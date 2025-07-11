@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "หน้าแรก",
+    "news": "ข่าวสาร"
+  },
+  "news": {
+    "title": "ศูนย์ข่าวสาร",
+    "description": "ติดตามข่าวสารล่าสุดและข้อมูลเชิงลึกของอุตสาหกรรมของเรา",
+    "read_more": "อ่านเพิ่มเติม",
+    "published_date": "วันที่เผยแพร่",
+    "author": "ผู้เขียน",
+    "category": "หมวดหมู่",
+    "tags": "แท็ก",
+    "share_article": "แชร์บทความ",
+    "related_articles": "บทความที่เกี่ยวข้อง",
+    "popular_articles": "บทความยอดนิยม",
+    "latest_news": "ข่าวล่าสุด",
+    "industry_insights": "ข้อมูลเชิงลึกของอุตสาหกรรม",
+    "company_updates": "อัปเดตบริษัท",
+    "product_news": "ข่าวผลิตภัณฑ์"
+  },
+  "navigation": {
+    "previous_article": "บทความก่อนหน้า",
+    "next_article": "บทความถัดไป",
+    "back_to_news": "กลับไปยังข่าวสาร"
+  },
+  "pagination": {
+    "showing": "แสดง",
+    "to": "ถึง",
+    "of": "จาก",
+    "articles": "บทความ",
+    "pages": "หน้า"
+  },
+  "related": {
+    "products": "ผลิตภัณฑ์ที่เกี่ยวข้อง",
+    "news": "ข่าวที่เกี่ยวข้อง"
+  },
+  "sidebar": {
+    "popular_articles": "บทความยอดนิยม",
+    "categories": "หมวดหมู่",
+    "latest_news": "ข่าวล่าสุด"
+  }
+}

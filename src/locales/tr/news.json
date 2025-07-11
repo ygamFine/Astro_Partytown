@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Ana Sayfa",
+    "news": "Haberler"
+  },
+  "news": {
+    "title": "Haber Merkezi",
+    "description": "En son haberlerimiz ve sektör içgörülerimizle güncel kalın",
+    "read_more": "Devamını oku",
+    "published_date": "Yayın Tarihi",
+    "author": "Yazar",
+    "category": "Kategori",
+    "tags": "Etiketler",
+    "share_article": "Makaleyi Paylaş",
+    "related_articles": "İlgili Makaleler",
+    "popular_articles": "Popüler Makaleler",
+    "latest_news": "Son Haberler",
+    "industry_insights": "Sektör İçgörüleri",
+    "company_updates": "Şirket Güncellemeleri",
+    "product_news": "Ürün Haberleri"
+  },
+  "navigation": {
+    "previous_article": "Önceki Makale",
+    "next_article": "Sonraki Makale",
+    "back_to_news": "Haberlere Geri Dön"
+  },
+  "pagination": {
+    "showing": "Gösteriliyor",
+    "to": "ile",
+    "of": "arasında",
+    "articles": "makale",
+    "pages": "sayfa"
+  },
+  "related": {
+    "products": "İlgili Ürünler",
+    "news": "İlgili Haberler"
+  },
+  "sidebar": {
+    "popular_articles": "Popüler Makaleler",
+    "categories": "Kategoriler",
+    "latest_news": "Son Haberler"
+  }
+}

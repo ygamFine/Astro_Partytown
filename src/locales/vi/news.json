@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Trang chủ",
+    "news": "Tin tức"
+  },
+  "news": {
+    "title": "Trung tâm Tin tức",
+    "description": "Cập nhật với tin tức mới nhất và thông tin chi tiết ngành của chúng tôi",
+    "read_more": "Đọc thêm",
+    "published_date": "Ngày xuất bản",
+    "author": "Tác giả",
+    "category": "Danh mục",
+    "tags": "Thẻ",
+    "share_article": "Chia sẻ bài viết",
+    "related_articles": "Bài viết liên quan",
+    "popular_articles": "Bài viết phổ biến",
+    "latest_news": "Tin tức mới nhất",
+    "industry_insights": "Thông tin chi tiết ngành",
+    "company_updates": "Cập nhật công ty",
+    "product_news": "Tin tức sản phẩm"
+  },
+  "navigation": {
+    "previous_article": "Bài viết trước",
+    "next_article": "Bài viết tiếp theo",
+    "back_to_news": "Quay lại tin tức"
+  },
+  "pagination": {
+    "showing": "Hiển thị",
+    "to": "đến",
+    "of": "trong số",
+    "articles": "bài viết",
+    "pages": "trang"
+  },
+  "related": {
+    "products": "Sản phẩm liên quan",
+    "news": "Tin tức liên quan"
+  },
+  "sidebar": {
+    "popular_articles": "Bài viết phổ biến",
+    "categories": "Danh mục",
+    "latest_news": "Tin tức mới nhất"
+  }
+}

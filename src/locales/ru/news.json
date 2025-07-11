@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Главная",
+    "news": "Новости"
+  },
+  "news": {
+    "title": "Новостной центр",
+    "description": "Будьте в курсе наших последних новостей и отраслевых инсайтов",
+    "read_more": "Читать далее",
+    "published_date": "Дата публикации",
+    "author": "Автор",
+    "category": "Категория",
+    "tags": "Теги",
+    "share_article": "Поделиться статьей",
+    "related_articles": "Похожие статьи",
+    "popular_articles": "Популярные статьи",
+    "latest_news": "Последние новости",
+    "industry_insights": "Отраслевые инсайты",
+    "company_updates": "Обновления компании",
+    "product_news": "Новости продуктов"
+  },
+  "navigation": {
+    "previous_article": "Предыдущая статья",
+    "next_article": "Следующая статья",
+    "back_to_news": "Вернуться к новостям"
+  },
+  "pagination": {
+    "showing": "Показано",
+    "to": "до",
+    "of": "из",
+    "articles": "статей",
+    "pages": "страниц"
+  },
+  "related": {
+    "products": "Похожие продукты",
+    "news": "Похожие новости"
+  },
+  "sidebar": {
+    "popular_articles": "Популярные статьи",
+    "categories": "Категории",
+    "latest_news": "Последние новости"
+  }
+}

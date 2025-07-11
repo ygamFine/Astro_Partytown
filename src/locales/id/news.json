@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Beranda",
+    "news": "Berita"
+  },
+  "news": {
+    "title": "Pusat Berita",
+    "description": "Tetap terinformasi dengan berita terbaru dan wawasan industri kami",
+    "read_more": "Baca selengkapnya",
+    "published_date": "Tanggal Publikasi",
+    "author": "Penulis",
+    "category": "Kategori",
+    "tags": "Tag",
+    "share_article": "Bagikan Artikel",
+    "related_articles": "Artikel Terkait",
+    "popular_articles": "Artikel Populer",
+    "latest_news": "Berita Terbaru",
+    "industry_insights": "Wawasan Industri",
+    "company_updates": "Update Perusahaan",
+    "product_news": "Berita Produk"
+  },
+  "navigation": {
+    "previous_article": "Artikel Sebelumnya",
+    "next_article": "Artikel Selanjutnya",
+    "back_to_news": "Kembali ke Berita"
+  },
+  "pagination": {
+    "showing": "Menampilkan",
+    "to": "sampai",
+    "of": "dari",
+    "articles": "artikel",
+    "pages": "halaman"
+  },
+  "related": {
+    "products": "Produk Terkait",
+    "news": "Berita Terkait"
+  },
+  "sidebar": {
+    "popular_articles": "Artikel Populer",
+    "categories": "Kategori",
+    "latest_news": "Berita Terbaru"
+  }
+}

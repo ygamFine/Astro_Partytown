@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Início",
+    "cases": "Casos de clientes"
+  },
+  "case": {
+    "title": "Casos de clientes",
+    "description": "Descubra como as nossas soluções de maquinaria ajudaram os clientes a alcançar o sucesso em várias indústrias",
+    "view_case": "Ver caso",
+    "case_details": "Detalhes do caso",
+    "customer_info": "Informações do cliente",
+    "project_overview": "Visão geral do projeto",
+    "challenges": "Desafios",
+    "solutions": "Soluções",
+    "results": "Resultados",
+    "testimonials": "Testemunhos de clientes",
+    "industry": "Indústria",
+    "location": "Localização",
+    "completion_date": "Data de conclusão",
+    "equipment_used": "Equipamento utilizado",
+    "project_duration": "Duração do projeto"
+  },
+  "navigation": {
+    "previous_case": "Caso anterior",
+    "next_case": "Próximo caso",
+    "back_to_cases": "Voltar à lista de casos"
+  },
+  "pagination": {
+    "showing": "Mostrando",
+    "to": "a",
+    "of": "de",
+    "cases": "casos",
+    "pages": "páginas"
+  },
+  "related": {
+    "cases": "Casos relacionados",
+    "news": "Notícias relacionadas",
+    "view_more": "Ver mais"
+  },
+  "sidebar": {
+    "related_cases": "Casos relacionados",
+    "categories": "Categorias",
+    "latest_cases": "Casos mais recentes"
+  }
+}

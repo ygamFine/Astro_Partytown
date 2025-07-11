@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "ホーム",
+    "news": "ニュース"
+  },
+  "news": {
+    "title": "ニュースセンター",
+    "description": "最新のニュースと業界の洞察で最新情報を入手",
+    "read_more": "続きを読む",
+    "published_date": "公開日",
+    "author": "著者",
+    "category": "カテゴリー",
+    "tags": "タグ",
+    "share_article": "記事を共有",
+    "related_articles": "関連記事",
+    "popular_articles": "人気記事",
+    "latest_news": "最新ニュース",
+    "industry_insights": "業界の洞察",
+    "company_updates": "会社の更新",
+    "product_news": "製品ニュース"
+  },
+  "navigation": {
+    "previous_article": "前の記事",
+    "next_article": "次の記事",
+    "back_to_news": "ニュースに戻る"
+  },
+  "pagination": {
+    "showing": "表示中",
+    "to": "から",
+    "of": "の",
+    "articles": "記事",
+    "pages": "ページ"
+  },
+  "related": {
+    "products": "関連製品",
+    "news": "関連ニュース"
+  },
+  "sidebar": {
+    "popular_articles": "人気記事",
+    "categories": "カテゴリー",
+    "latest_news": "最新ニュース"
+  }
+}

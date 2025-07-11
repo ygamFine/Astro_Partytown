@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Ana Sayfa",
+    "cases": "Müşteri Vakaları"
+  },
+  "case": {
+    "title": "Müşteri Vakaları",
+    "description": "Makine çözümlerimizin çeşitli endüstrilerde müşterilerin başarı elde etmesine nasıl yardımcı olduğunu keşfedin",
+    "view_case": "Vakayı Görüntüle",
+    "case_details": "Vaka Detayları",
+    "customer_info": "Müşteri Bilgileri",
+    "project_overview": "Proje Genel Bakışı",
+    "challenges": "Zorluklar",
+    "solutions": "Çözümler",
+    "results": "Sonuçlar",
+    "testimonials": "Müşteri Referansları",
+    "industry": "Endüstri",
+    "location": "Konum",
+    "completion_date": "Tamamlanma Tarihi",
+    "equipment_used": "Kullanılan Ekipman",
+    "project_duration": "Proje Süresi"
+  },
+  "navigation": {
+    "previous_case": "Önceki Vaka",
+    "next_case": "Sonraki Vaka",
+    "back_to_cases": "Vaka Listesine Dön"
+  },
+  "pagination": {
+    "showing": "Gösterilen",
+    "to": "ile",
+    "of": "toplam",
+    "cases": "vaka",
+    "pages": "sayfa"
+  },
+  "related": {
+    "cases": "İlgili Vakalar",
+    "news": "İlgili Haberler",
+    "view_more": "Daha Fazla Görüntüle"
+  },
+  "sidebar": {
+    "related_cases": "İlgili Vakalar",
+    "categories": "Kategoriler",
+    "latest_cases": "En Son Vakalar"
+  }
+}

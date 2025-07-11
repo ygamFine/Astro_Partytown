@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Strona główna",
+    "cases": "Przypadki klientów"
+  },
+  "case": {
+    "title": "Przypadki klientów",
+    "description": "Odkryj, jak nasze rozwiązania maszynowe pomogły klientom osiągnąć sukces w różnych branżach",
+    "view_case": "Zobacz przypadek",
+    "case_details": "Szczegóły przypadku",
+    "customer_info": "Informacje o kliencie",
+    "project_overview": "Przegląd projektu",
+    "challenges": "Wyzwania",
+    "solutions": "Rozwiązania",
+    "results": "Wyniki",
+    "testimonials": "Opinie klientów",
+    "industry": "Branża",
+    "location": "Lokalizacja",
+    "completion_date": "Data ukończenia",
+    "equipment_used": "Użyte sprzęt",
+    "project_duration": "Czas trwania projektu"
+  },
+  "navigation": {
+    "previous_case": "Poprzedni przypadek",
+    "next_case": "Następny przypadek",
+    "back_to_cases": "Powrót do listy przypadków"
+  },
+  "pagination": {
+    "showing": "Pokazuje",
+    "to": "do",
+    "of": "z",
+    "cases": "przypadki",
+    "pages": "strony"
+  },
+  "related": {
+    "cases": "Powiązane przypadki",
+    "news": "Powiązane wiadomości",
+    "view_more": "Zobacz więcej"
+  },
+  "sidebar": {
+    "related_cases": "Powiązane przypadki",
+    "categories": "Kategorie",
+    "latest_cases": "Najnowsze przypadki"
+  }
+}

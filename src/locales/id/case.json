@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Beranda",
+    "cases": "Kasus Pelanggan"
+  },
+  "case": {
+    "title": "Kasus Pelanggan",
+    "description": "Temukan bagaimana solusi mesin kami telah membantu pelanggan mencapai kesuksesan di berbagai industri",
+    "view_case": "Lihat Kasus",
+    "case_details": "Detail Kasus",
+    "customer_info": "Informasi Pelanggan",
+    "project_overview": "Gambaran Proyek",
+    "challenges": "Tantangan",
+    "solutions": "Solusi",
+    "results": "Hasil",
+    "testimonials": "Testimoni Pelanggan",
+    "industry": "Industri",
+    "location": "Lokasi",
+    "completion_date": "Tanggal Penyelesaian",
+    "equipment_used": "Peralatan yang Digunakan",
+    "project_duration": "Durasi Proyek"
+  },
+  "navigation": {
+    "previous_case": "Kasus Sebelumnya",
+    "next_case": "Kasus Berikutnya",
+    "back_to_cases": "Kembali ke Daftar Kasus"
+  },
+  "pagination": {
+    "showing": "Menampilkan",
+    "to": "hingga",
+    "of": "dari",
+    "cases": "kasus",
+    "pages": "halaman"
+  },
+  "related": {
+    "cases": "Kasus Terkait",
+    "news": "Berita Terkait",
+    "view_more": "Lihat Lebih Banyak"
+  },
+  "sidebar": {
+    "related_cases": "Kasus Terkait",
+    "categories": "Kategori",
+    "latest_cases": "Kasus Terbaru"
+  }
+}

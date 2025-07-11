@@ -1,0 +1,112 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayout.astro';
+import GridList from '../../../components/templates/GridList.astro';
+import Pagination from '../../../components/templates/Pagination.astro';
+import { allCases } from '../../../data/cases.js';
+import { SUPPORTED_LANGUAGES } from '../../../locales/i18n.js';
+import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+
+// 为分页生成静态路径
+export function getStaticPaths() {
+  const casesPerPage = 6; // 每页显示6个案例（2行x3列）
+  const totalPages = Math.ceil(allCases.length / casesPerPage);
+  
+  // 生成分页路径
+  const paths = [];
+  
+  // 为每种语言生成路径
+  SUPPORTED_LANGUAGES.forEach(lang => {
+    // 第一页 (可以用 /[lang]/case 访问)
+    paths.push({
+      params: { lang, page: undefined },
+      props: { 
+        lang,
+        currentPage: 1,
+        totalPages,
+        cases: allCases.slice(0, casesPerPage)
+      }
+    });
+    
+    // 其他页面 (使用 page- 前缀避免与详情页面冲突)
+    for (let i = 2; i <= totalPages; i++) {
+      paths.push({
+        params: { lang, page: `page-${i}` },
+        props: {
+          lang,
+          currentPage: i,
+          totalPages,
+          cases: allCases.slice((i - 1) * casesPerPage, i * casesPerPage)
+        }
+      });
+    }
+  });
+  
+  return paths;
+}
+
+const { lang, currentPage, totalPages, cases } = Astro.props;
+
+// 从URL参数中解析当前页码
+const urlParams = Astro.params.page;
+let actualCurrentPage = currentPage;
+
+// 如果URL参数存在且以 page- 开头，解析页码
+if (urlParams && urlParams.startsWith('page-')) {
+  const pageNumber = parseInt(urlParams.replace('page-', ''));
+  if (!isNaN(pageNumber) && pageNumber >= 1) {
+    actualCurrentPage = pageNumber;
+  }
+}
+
+// 动态加载对应语言的翻译文件
+let t;
+let paginationT;
+try {
+  t = await import(`../../../locales/${lang}/case.json`);
+  paginationT = await import(`../../../locales/${lang}/pagination.json`);
+} catch (error) {
+  // 如果加载失败，使用英文作为默认
+  t = await import(`../../../locales/en/case.json`);
+  paginationT = await import(`../../../locales/en/pagination.json`);
+}
+
+// 转换案例数据格式以适配GridList组件
+const gridItems = cases.map(caseItem => ({
+  id: caseItem.id,
+  title: caseItem.title,
+  image: caseItem.image,
+  excerpt: caseItem.excerpt,
+  category: caseItem.category,
+  href: `/${lang}/case/${caseItem.id}` // 假设有详情页面
+}));
+
+// 面包屑导航
+const breadcrumbs = generateCaseBreadcrumbs(lang, currentPage > 1 ? currentPage : undefined);
+---
+
+<SecondaryPageLayout 
+  title={t.default.case.title}
+  description={t.default.case.description}
+  breadcrumbs={breadcrumbs}
+  currentSection="cases"
+  contentType="grid"
+  lang={lang}
+>
+  <!-- 案例网格 -->
+  <GridList 
+    items={gridItems}
+    itemsPerRow={3}
+    maxRows={2}
+    mode="case"
+  />
+  
+  <!-- 分页 -->
+  <Pagination 
+    currentPage={actualCurrentPage}
+    totalPages={totalPages}
+    baseUrl={`/${lang}/case`}
+    i18n={paginationT.default}
+  />
+</SecondaryPageLayout> 

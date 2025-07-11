@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "news": "Nieuws"
+  },
+  "news": {
+    "title": "Nieuwscentrum",
+    "description": "Blijf op de hoogte van ons laatste nieuws en industrie-inzichten",
+    "read_more": "Lees meer",
+    "published_date": "Publicatiedatum",
+    "author": "Auteur",
+    "category": "Categorie",
+    "tags": "Tags",
+    "share_article": "Artikel delen",
+    "related_articles": "Gerelateerde artikelen",
+    "popular_articles": "Populaire artikelen",
+    "latest_news": "Laatste nieuws",
+    "industry_insights": "Industrie-inzichten",
+    "company_updates": "Bedrijfsupdates",
+    "product_news": "Productnieuws"
+  },
+  "navigation": {
+    "previous_article": "Vorig artikel",
+    "next_article": "Volgend artikel",
+    "back_to_news": "Terug naar nieuws"
+  },
+  "pagination": {
+    "showing": "Toon",
+    "to": "tot",
+    "of": "van",
+    "articles": "artikelen",
+    "pages": "pagina's"
+  },
+  "related": {
+    "products": "Gerelateerde producten",
+    "news": "Gerelateerd nieuws"
+  },
+  "sidebar": {
+    "popular_articles": "Populaire artikelen",
+    "categories": "Categorieën",
+    "latest_news": "Laatste nieuws"
+  }
+}

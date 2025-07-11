@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "首页",
+    "news": "新闻中心"
+  },
+  "news": {
+    "title": "新闻中心",
+    "description": "了解我们的最新新闻和行业洞察",
+    "read_more": "阅读更多",
+    "published_date": "发布日期",
+    "author": "作者",
+    "category": "分类",
+    "tags": "标签",
+    "share_article": "分享文章",
+    "related_articles": "相关文章",
+    "popular_articles": "热门文章",
+    "latest_news": "最新新闻",
+    "industry_insights": "行业洞察",
+    "company_updates": "公司动态",
+    "product_news": "产品新闻"
+  },
+  "navigation": {
+    "previous_article": "上一篇文章",
+    "next_article": "下一篇文章",
+    "back_to_news": "返回新闻列表"
+  },
+  "pagination": {
+    "showing": "显示",
+    "to": "到",
+    "of": "共",
+    "articles": "篇文章",
+    "pages": "页"
+  },
+  "related": {
+    "products": "相关产品",
+    "news": "相关新闻"
+  },
+  "sidebar": {
+    "popular_articles": "热门文章",
+    "categories": "分类",
+    "latest_news": "最新新闻"
+  }
+}

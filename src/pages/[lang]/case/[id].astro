@@ -1,20 +1,29 @@
 ---
 export const prerender = true;
 
-import Layout from '../../layouts/Layout.astro';
-import Breadcrumb from '../../components/templates/Breadcrumb.astro';
-import { allCases } from '../../data/cases.js';
-import { allNews } from '../../data/news.js';
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
+import { allCases } from '../../../data/cases.js';
+import { allNews } from '../../../data/news.js';
+import { mergeTranslations } from '../../../locales/i18n.js';
+import { generateCaseDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
   // 从案例数据生成静态路径
-  return allCases.map(caseItem => ({
-    params: { id: caseItem.id.toString() },
-    props: { caseItem }
-  }));
+  const { SUPPORTED_LANGUAGES } = await import('../../../locales/i18n.js');
+  return SUPPORTED_LANGUAGES.flatMap(lang =>
+    allCases.map(caseItem => ({
+      params: { lang, id: caseItem.id.toString() },
+      props: { lang, caseItem }
+    }))
+  );
 }
 
-const { caseItem } = Astro.props;
+const { lang, caseItem } = Astro.props;
+
+// 加载国际化翻译
+const translations = await mergeTranslations(lang, ['case']);
+const t = translations['case'];
 
 // 获取当前案例在列表中的位置，用于上一个/下一个导航
 const currentIndex = allCases.findIndex(c => c.id === caseItem.id);
@@ -30,7 +39,7 @@ const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
 // 格式化日期
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('zh-CN', { 
+  return date.toLocaleDateString(lang === 'zh-hans' || lang === 'zh-hant' ? 'zh-CN' : lang, { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric',
@@ -40,20 +49,15 @@ const formatDate = (dateStr: string) => {
 };
 
 // 面包屑导航
-const breadcrumbs = [
-  { label: 'Home', href: '/' },
-  { label: 'Cases', href: '/case' },
-  { label: caseItem.category, href: `/case?category=${encodeURIComponent(caseItem.category)}` },
-  { label: caseItem.title }
-];
+const breadcrumbs = generateCaseDetailBreadcrumbs(lang, caseItem.title);
 ---
 
-<Layout title={`${caseItem.title} - 案例详情`}>
+<Layout title={`${caseItem.title} - ${t.case.case_details}`} lang={lang}>
   <main class="bg-gray-50 min-h-screen">
     <!-- 面包屑导航 -->
     <div class="bg-white border-b">
       <div class="container mx-auto px-4 py-4">
-        <Breadcrumb breadcrumbs={breadcrumbs} />
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
       </div>
     </div>
 
@@ -78,12 +82,12 @@ const breadcrumbs = [
             <div class="flex justify-between items-center">
               <div class="flex-1">
                 {previousCase && (
-                  <a href={`/case/${previousCase.id}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                  <a href={`/${lang}/case/${previousCase.id}`} class="flex items-center text-gray-600 hover:text-red-600 group">
                     <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                     </svg>
                     <div>
-                      <div class="text-sm">上一个案例</div>
+                      <div class="text-sm">{t.navigation.previous_case}</div>
                       <div class="font-medium">{previousCase.title}</div>
                     </div>
                   </a>
@@ -91,9 +95,9 @@ const breadcrumbs = [
               </div>
               <div class="flex-1 text-right">
                 {nextCase && (
-                  <a href={`/case/${nextCase.id}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
+                  <a href={`/${lang}/case/${nextCase.id}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
                     <div class="text-right">
-                      <div class="text-sm">下一个案例</div>
+                      <div class="text-sm">{t.navigation.next_case}</div>
                       <div class="font-medium">{nextCase.title}</div>
                     </div>
                     <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -109,14 +113,14 @@ const breadcrumbs = [
           <div class="bg-white rounded-lg p-8 shadow-sm">
             <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <div class="w-1 h-6 bg-red-600 mr-3"></div>
-              Related News
+              {t.related.news}
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               {relatedNews.map((news) => (
                 <div class="flex items-start space-x-4">
                   <div class="flex-1">
-                    <a href={`/news/${news.slug}`} class="block">
+                    <a href={`/${lang}/news/${news.slug}`} class="block">
                       <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
                         {news.title}
                       </h3>
@@ -137,13 +141,13 @@ const breadcrumbs = [
           <div class="bg-white rounded-lg p-6 shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <div class="w-1 h-5 bg-red-600 mr-2"></div>
-              相关案例
+              {t.sidebar.related_cases}
             </h3>
             
             <div class="space-y-4">
               {relatedCases.map(relatedCase => (
                 <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
-                  <a href={`/case/${relatedCase.id}`} class="block">
+                  <a href={`/${lang}/case/${relatedCase.id}`} class="block">
                     <div class="aspect-[5/3] overflow-hidden">
                       <img 
                         src={relatedCase.image} 
@@ -171,8 +175,8 @@ const breadcrumbs = [
             
             <!-- 查看更多相关案例 -->
             <div class="mt-4 text-center">
-              <a href="/case" class="text-sm text-red-600 hover:text-red-700 font-medium">
-                查看更多案例 →
+              <a href={`/${lang}/case`} class="text-sm text-red-600 hover:text-red-700 font-medium">
+                {t.related.view_more} →
               </a>
             </div>
           </div>

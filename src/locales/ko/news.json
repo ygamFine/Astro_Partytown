@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "홈",
+    "news": "뉴스"
+  },
+  "news": {
+    "title": "뉴스 센터",
+    "description": "최신 뉴스와 업계 인사이트로 최신 정보를 유지하세요",
+    "read_more": "더 보기",
+    "published_date": "발행일",
+    "author": "작성자",
+    "category": "카테고리",
+    "tags": "태그",
+    "share_article": "기사 공유",
+    "related_articles": "관련 기사",
+    "popular_articles": "인기 기사",
+    "latest_news": "최신 뉴스",
+    "industry_insights": "업계 인사이트",
+    "company_updates": "회사 업데이트",
+    "product_news": "제품 뉴스"
+  },
+  "navigation": {
+    "previous_article": "이전 기사",
+    "next_article": "다음 기사",
+    "back_to_news": "뉴스로 돌아가기"
+  },
+  "pagination": {
+    "showing": "표시 중",
+    "to": "에서",
+    "of": "의",
+    "articles": "기사",
+    "pages": "페이지"
+  },
+  "related": {
+    "products": "관련 제품",
+    "news": "관련 뉴스"
+  },
+  "sidebar": {
+    "popular_articles": "인기 기사",
+    "categories": "카테고리",
+    "latest_news": "최신 뉴스"
+  }
+}

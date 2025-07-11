@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "ホーム",
+    "cases": "お客様事例"
+  },
+  "case": {
+    "title": "お客様事例",
+    "description": "当社の機械ソリューションが、様々な業界でお客様の成功をどのように支援しているかをご覧ください",
+    "view_case": "事例を見る",
+    "case_details": "事例詳細",
+    "customer_info": "お客様情報",
+    "project_overview": "プロジェクト概要",
+    "challenges": "課題",
+    "solutions": "ソリューション",
+    "results": "結果",
+    "testimonials": "お客様の声",
+    "industry": "業界",
+    "location": "所在地",
+    "completion_date": "完了日",
+    "equipment_used": "使用機器",
+    "project_duration": "プロジェクト期間"
+  },
+  "navigation": {
+    "previous_case": "前の事例",
+    "next_case": "次の事例",
+    "back_to_cases": "事例一覧に戻る"
+  },
+  "pagination": {
+    "showing": "表示中",
+    "to": "〜",
+    "of": "全",
+    "cases": "件の事例",
+    "pages": "ページ"
+  },
+  "related": {
+    "cases": "関連事例",
+    "news": "関連ニュース",
+    "view_more": "もっと見る"
+  },
+  "sidebar": {
+    "related_cases": "関連事例",
+    "categories": "カテゴリー",
+    "latest_cases": "最新事例"
+  }
+}

@@ -1,0 +1,100 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayout.astro';
+import NewsList from '../../../components/templates/NewsList.astro';
+import Pagination from '../../../components/templates/Pagination.astro';
+import { allNews } from '../../../data/news.js';
+import { SUPPORTED_LANGUAGES } from '../../../locales/i18n.js';
+import { generateNewsBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+
+// 为分页生成静态路径
+export function getStaticPaths() {
+  const newsPerPage = 6; // 每页显示的新闻数量
+  const totalPages = Math.ceil(allNews.length / newsPerPage);
+  
+  // 生成分页路径
+  const paths = [];
+  
+  // 为每种语言生成路径
+  SUPPORTED_LANGUAGES.forEach(lang => {
+    // 第一页 (可以用 /[lang]/news 或 /[lang]/news/1 访问)
+    paths.push({
+      params: { lang, page: undefined },
+      props: { 
+        lang,
+        currentPage: 1,
+        totalPages,
+        news: allNews.slice(0, newsPerPage)
+      }
+    });
+    
+    // 其他页面
+    for (let i = 2; i <= totalPages; i++) {
+      paths.push({
+        params: { lang, page: i.toString() },
+        props: {
+          lang,
+          currentPage: i,
+          totalPages,
+          news: allNews.slice((i - 1) * newsPerPage, i * newsPerPage)
+        }
+      });
+    }
+  });
+  
+  return paths;
+}
+
+const { lang, currentPage, totalPages, news } = Astro.props;
+
+// 动态加载对应语言的翻译文件
+let t;
+let paginationT;
+try {
+  t = await import(`../../../locales/${lang}/news.json`);
+  paginationT = await import(`../../../locales/${lang}/pagination.json`);
+} catch (error) {
+  // 如果加载失败，使用英文作为默认
+  t = await import(`../../../locales/en/news.json`);
+  paginationT = await import(`../../../locales/en/pagination.json`);
+}
+
+// 按日期倒序排序新闻并转换数据格式
+const sortedNews = news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const newsItems = sortedNews.map(newsItem => ({
+  id: newsItem.id,
+  title: newsItem.title,
+  image: newsItem.image,
+  excerpt: newsItem.excerpt,
+  date: newsItem.date,
+  href: `/${lang}/news/${newsItem.slug}`,
+}));
+
+// 面包屑导航
+const breadcrumbs = generateNewsBreadcrumbs(lang, currentPage > 1 ? currentPage : undefined);
+---
+
+<SecondaryPageLayout 
+  title={t.default.news.title}
+  description={t.default.news.description}
+  breadcrumbs={breadcrumbs}
+  currentSection="news"
+  contentType="list"
+  lang={lang}
+>
+  <!-- 新闻列表 -->
+  <NewsList 
+    items={newsItems}
+    lang={lang}
+    t={t.default}
+  />
+  
+  <!-- 分页 -->
+  <Pagination 
+    currentPage={currentPage}
+    totalPages={totalPages}
+    baseUrl={`/${lang}/news`}
+    i18n={paginationT.default}
+  />
+</SecondaryPageLayout> 

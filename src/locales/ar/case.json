@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "الرئيسية",
+    "cases": "حالات العملاء"
+  },
+  "case": {
+    "title": "حالات العملاء",
+    "description": "اكتشف كيف ساعدت حلول الآلات لدينا العملاء على تحقيق النجاح في مختلف الصناعات",
+    "view_case": "عرض الحالة",
+    "case_details": "تفاصيل الحالة",
+    "customer_info": "معلومات العميل",
+    "project_overview": "نظرة عامة على المشروع",
+    "challenges": "التحديات",
+    "solutions": "الحلول",
+    "results": "النتائج",
+    "testimonials": "شهادات العملاء",
+    "industry": "الصناعة",
+    "location": "الموقع",
+    "completion_date": "تاريخ الإنجاز",
+    "equipment_used": "المعدات المستخدمة",
+    "project_duration": "مدة المشروع"
+  },
+  "navigation": {
+    "previous_case": "الحالة السابقة",
+    "next_case": "الحالة التالية",
+    "back_to_cases": "العودة إلى قائمة الحالات"
+  },
+  "pagination": {
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "cases": "حالة",
+    "pages": "صفحات"
+  },
+  "related": {
+    "cases": "الحالات ذات الصلة",
+    "news": "الأخبار ذات الصلة",
+    "view_more": "عرض المزيد"
+  },
+  "sidebar": {
+    "related_cases": "الحالات ذات الصلة",
+    "categories": "الفئات",
+    "latest_cases": "أحدث الحالات"
+  }
+}

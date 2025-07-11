@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "cases": "Customer Cases"
+  },
+  "case": {
+    "title": "Customer Cases",
+    "description": "Discover how our machinery solutions have helped customers achieve success across various industries",
+    "view_case": "View Case",
+    "case_details": "Case Details",
+    "customer_info": "Customer Information",
+    "project_overview": "Project Overview",
+    "challenges": "Challenges",
+    "solutions": "Solutions",
+    "results": "Results",
+    "testimonials": "Customer Testimonials",
+    "industry": "Industry",
+    "location": "Location",
+    "completion_date": "Completion Date",
+    "equipment_used": "Equipment Used",
+    "project_duration": "Project Duration"
+  },
+  "navigation": {
+    "previous_case": "Previous Case",
+    "next_case": "Next Case",
+    "back_to_cases": "Back to Cases"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "cases": "cases",
+    "pages": "pages"
+  },
+  "related": {
+    "cases": "Related Cases",
+    "news": "Related News",
+    "view_more": "View More"
+  },
+  "sidebar": {
+    "related_cases": "Related Cases",
+    "categories": "Categories",
+    "latest_cases": "Latest Cases"
+  }
+}

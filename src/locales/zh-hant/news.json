@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "首頁",
+    "news": "新聞"
+  },
+  "news": {
+    "title": "新聞中心",
+    "description": "透過我們的最新新聞和產業洞察保持更新",
+    "read_more": "閱讀更多",
+    "published_date": "發布日期",
+    "author": "作者",
+    "category": "分類",
+    "tags": "標籤",
+    "share_article": "分享文章",
+    "related_articles": "相關文章",
+    "popular_articles": "熱門文章",
+    "latest_news": "最新新聞",
+    "industry_insights": "產業洞察",
+    "company_updates": "公司更新",
+    "product_news": "產品新聞"
+  },
+  "navigation": {
+    "previous_article": "上一篇文章",
+    "next_article": "下一篇文章",
+    "back_to_news": "返回新聞"
+  },
+  "pagination": {
+    "showing": "顯示",
+    "to": "到",
+    "of": "共",
+    "articles": "篇文章",
+    "pages": "頁"
+  },
+  "related": {
+    "products": "相關產品",
+    "news": "相關新聞"
+  },
+  "sidebar": {
+    "popular_articles": "熱門文章",
+    "categories": "分類",
+    "latest_news": "最新新聞"
+  }
+}

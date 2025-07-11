@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Strona główna",
+    "news": "Aktualności"
+  },
+  "news": {
+    "title": "Centrum Aktualności",
+    "description": "Bądź na bieżąco z naszymi najnowszymi wiadomościami i spostrzeżeniami branżowymi",
+    "read_more": "Czytaj więcej",
+    "published_date": "Data publikacji",
+    "author": "Autor",
+    "category": "Kategoria",
+    "tags": "Tagi",
+    "share_article": "Udostępnij artykuł",
+    "related_articles": "Powiązane artykuły",
+    "popular_articles": "Popularne artykuły",
+    "latest_news": "Najnowsze wiadomości",
+    "industry_insights": "Spostrzeżenia branżowe",
+    "company_updates": "Aktualizacje firmy",
+    "product_news": "Wiadomości o produktach"
+  },
+  "navigation": {
+    "previous_article": "Poprzedni artykuł",
+    "next_article": "Następny artykuł",
+    "back_to_news": "Powrót do aktualności"
+  },
+  "pagination": {
+    "showing": "Pokazuję",
+    "to": "do",
+    "of": "z",
+    "articles": "artykułów",
+    "pages": "stron"
+  },
+  "related": {
+    "products": "Powiązane produkty",
+    "news": "Powiązane wiadomości"
+  },
+  "sidebar": {
+    "popular_articles": "Popularne artykuły",
+    "categories": "Kategorie",
+    "latest_news": "Najnowsze wiadomości"
+  }
+}

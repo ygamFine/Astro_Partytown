@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "ഹോം",
+    "news": "വാർത്തകൾ"
+  },
+  "news": {
+    "title": "വാർത്താ കേന്ദ്രം",
+    "description": "ഞങ്ങളുടെ ഏറ്റവും പുതിയ വാർത്തകളും വ്യവസായ ഉൾക്കാഴ്ചകളും ഉപയോഗിച്ച് അപ്ഡേറ്റ് ആയിരിക്കുക",
+    "read_more": "കൂടുതൽ വായിക്കുക",
+    "published_date": "പ്രസിദ്ധീകരണ തീയതി",
+    "author": "രചയിതാവ്",
+    "category": "വിഭാഗം",
+    "tags": "ടാഗുകൾ",
+    "share_article": "ലേഖനം പങ്കുവെയ്ക്കുക",
+    "related_articles": "ബന്ധപ്പെട്ട ലേഖനങ്ങൾ",
+    "popular_articles": "ജനപ്രിയ ലേഖനങ്ങൾ",
+    "latest_news": "ഏറ്റവും പുതിയ വാർത്തകൾ",
+    "industry_insights": "വ്യവസായ ഉൾക്കാഴ്ചകൾ",
+    "company_updates": "കമ്പനി അപ്ഡേറ്റുകൾ",
+    "product_news": "ഉത്പന്ന വാർത്തകൾ"
+  },
+  "navigation": {
+    "previous_article": "മുൻപത്തെ ലേഖനം",
+    "next_article": "അടുത്ത ലേഖനം",
+    "back_to_news": "വാർത്തകളിലേക്ക് തിരികെ"
+  },
+  "pagination": {
+    "showing": "കാണിക്കുന്നു",
+    "to": "വരെ",
+    "of": "എന്നതിൽ",
+    "articles": "ലേഖനങ്ങൾ",
+    "pages": "പേജുകൾ"
+  },
+  "related": {
+    "products": "ബന്ധപ്പെട്ട ഉത്പന്നങ്ങൾ",
+    "news": "ബന്ധപ്പെട്ട വാർത്തകൾ"
+  },
+  "sidebar": {
+    "popular_articles": "ജനപ്രിയ ലേഖനങ്ങൾ",
+    "categories": "വിഭാഗങ്ങൾ",
+    "latest_news": "ഏറ്റവും പുതിയ വാർത്തകൾ"
+  }
+}

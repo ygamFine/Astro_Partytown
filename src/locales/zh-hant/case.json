@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "首頁",
+    "cases": "客戶案例"
+  },
+  "case": {
+    "title": "客戶案例",
+    "description": "了解我們的機械設備解決方案如何幫助客戶在各個行業取得成功",
+    "view_case": "查看案例",
+    "case_details": "案例詳情",
+    "customer_info": "客戶信息",
+    "project_overview": "項目概述",
+    "challenges": "挑戰",
+    "solutions": "解決方案",
+    "results": "成果",
+    "testimonials": "客戶評價",
+    "industry": "行業",
+    "location": "地點",
+    "completion_date": "完成日期",
+    "equipment_used": "使用設備",
+    "project_duration": "項目週期"
+  },
+  "navigation": {
+    "previous_case": "上一個案例",
+    "next_case": "下一個案例",
+    "back_to_cases": "返回案例列表"
+  },
+  "pagination": {
+    "showing": "顯示",
+    "to": "到",
+    "of": "共",
+    "cases": "個案例",
+    "pages": "頁"
+  },
+  "related": {
+    "cases": "相關案例",
+    "news": "相關新聞",
+    "view_more": "查看更多"
+  },
+  "sidebar": {
+    "related_cases": "相關案例",
+    "categories": "分類",
+    "latest_cases": "最新案例"
+  }
+}

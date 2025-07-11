@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "होम",
+    "news": "समाचार"
+  },
+  "news": {
+    "title": "समाचार केंद्र",
+    "description": "हमारी नवीनतम समाचार और उद्योग अंतर्दृष्टि के साथ अपडेट रहें",
+    "read_more": "और पढ़ें",
+    "published_date": "प्रकाशन तिथि",
+    "author": "लेखक",
+    "category": "श्रेणी",
+    "tags": "टैग",
+    "share_article": "लेख साझा करें",
+    "related_articles": "संबंधित लेख",
+    "popular_articles": "लोकप्रिय लेख",
+    "latest_news": "नवीनतम समाचार",
+    "industry_insights": "उद्योग अंतर्दृष्टि",
+    "company_updates": "कंपनी अपडेट",
+    "product_news": "उत्पाद समाचार"
+  },
+  "navigation": {
+    "previous_article": "पिछला लेख",
+    "next_article": "अगला लेख",
+    "back_to_news": "समाचार पर वापस जाएं"
+  },
+  "pagination": {
+    "showing": "दिखा रहा है",
+    "to": "से",
+    "of": "का",
+    "articles": "लेख",
+    "pages": "पृष्ठ"
+  },
+  "related": {
+    "products": "संबंधित उत्पाद",
+    "news": "संबंधित समाचार"
+  },
+  "sidebar": {
+    "popular_articles": "लोकप्रिय लेख",
+    "categories": "श्रेणियां",
+    "latest_news": "नवीनतम समाचार"
+  }
+}

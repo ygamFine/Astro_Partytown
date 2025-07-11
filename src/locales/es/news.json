@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Inicio",
+    "news": "Noticias"
+  },
+  "news": {
+    "title": "Centro de Noticias",
+    "description": "Manténgase actualizado con nuestras últimas noticias y perspectivas de la industria",
+    "read_more": "Leer más",
+    "published_date": "Fecha de Publicación",
+    "author": "Autor",
+    "category": "Categoría",
+    "tags": "Etiquetas",
+    "share_article": "Compartir Artículo",
+    "related_articles": "Artículos Relacionados",
+    "popular_articles": "Artículos Populares",
+    "latest_news": "Últimas Noticias",
+    "industry_insights": "Perspectivas de la Industria",
+    "company_updates": "Actualizaciones de la Empresa",
+    "product_news": "Noticias de Productos"
+  },
+  "navigation": {
+    "previous_article": "Artículo Anterior",
+    "next_article": "Artículo Siguiente",
+    "back_to_news": "Volver a Noticias"
+  },
+  "pagination": {
+    "showing": "Mostrando",
+    "to": "a",
+    "of": "de",
+    "articles": "artículos",
+    "pages": "páginas"
+  },
+  "related": {
+    "products": "Productos Relacionados",
+    "news": "Noticias Relacionadas"
+  },
+  "sidebar": {
+    "popular_articles": "Artículos Populares",
+    "categories": "Categorías",
+    "latest_news": "Últimas Noticias"
+  }
+}

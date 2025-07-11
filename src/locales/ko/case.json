@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "홈",
+    "cases": "고객 사례"
+  },
+  "case": {
+    "title": "고객 사례",
+    "description": "다양한 산업 분야에서 우리의 기계 솔루션이 고객의 성공을 어떻게 도왔는지 알아보세요",
+    "view_case": "사례 보기",
+    "case_details": "사례 상세",
+    "customer_info": "고객 정보",
+    "project_overview": "프로젝트 개요",
+    "challenges": "과제",
+    "solutions": "해결책",
+    "results": "결과",
+    "testimonials": "고객 후기",
+    "industry": "산업",
+    "location": "위치",
+    "completion_date": "완료일",
+    "equipment_used": "사용 장비",
+    "project_duration": "프로젝트 기간"
+  },
+  "navigation": {
+    "previous_case": "이전 사례",
+    "next_case": "다음 사례",
+    "back_to_cases": "사례 목록으로 돌아가기"
+  },
+  "pagination": {
+    "showing": "표시 중",
+    "to": "~",
+    "of": "총",
+    "cases": "개 사례",
+    "pages": "페이지"
+  },
+  "related": {
+    "cases": "관련 사례",
+    "news": "관련 뉴스",
+    "view_more": "더 보기"
+  },
+  "sidebar": {
+    "related_cases": "관련 사례",
+    "categories": "카테고리",
+    "latest_cases": "최신 사례"
+  }
+}

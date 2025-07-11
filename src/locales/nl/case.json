@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "cases": "Klantcases"
+  },
+  "case": {
+    "title": "Klantcases",
+    "description": "Ontdek hoe onze machine-oplossingen klanten hebben geholpen succes te behalen in verschillende industrieën",
+    "view_case": "Case bekijken",
+    "case_details": "Case details",
+    "customer_info": "Klantinformatie",
+    "project_overview": "Projectoverzicht",
+    "challenges": "Uitdagingen",
+    "solutions": "Oplossingen",
+    "results": "Resultaten",
+    "testimonials": "Klantgetuigenissen",
+    "industry": "Industrie",
+    "location": "Locatie",
+    "completion_date": "Voltooiingsdatum",
+    "equipment_used": "Gebruikte apparatuur",
+    "project_duration": "Projectduur"
+  },
+  "navigation": {
+    "previous_case": "Vorige case",
+    "next_case": "Volgende case",
+    "back_to_cases": "Terug naar caselijst"
+  },
+  "pagination": {
+    "showing": "Toont",
+    "to": "tot",
+    "of": "van",
+    "cases": "cases",
+    "pages": "pagina's"
+  },
+  "related": {
+    "cases": "Gerelateerde cases",
+    "news": "Gerelateerd nieuws",
+    "view_more": "Meer bekijken"
+  },
+  "sidebar": {
+    "related_cases": "Gerelateerde cases",
+    "categories": "Categorieën",
+    "latest_cases": "Nieuwste cases"
+  }
+}

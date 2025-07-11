@@ -1,27 +1,40 @@
 ---
 export const prerender = true;
-import Layout from '../../layouts/Layout.astro';
-import Breadcrumb from '../../components/templates/Breadcrumb.astro';
-import GridList from '../../components/templates/GridList.astro';
-import { allNews } from '../../data/news.js';
-import { products } from '../../data/products.js';
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
+import GridList from '../../../components/templates/GridList.astro';
+import { allNews } from '../../../data/news.js';
+import { products } from '../../../data/products.js';
+import { SUPPORTED_LANGUAGES } from '../../../locales/i18n.js';
+import { generateNewsDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 
 export function getStaticPaths() {
   // 按日期降序排序所有新闻
   const sortedNews = allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  return sortedNews.map((news, index) => {
-    const previousNews = index > 0 ? sortedNews[index - 1] : null;
-    const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
+  return SUPPORTED_LANGUAGES.flatMap(lang =>
+    sortedNews.map((news, index) => {
+      const previousNews = index > 0 ? sortedNews[index - 1] : null;
+      const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
 
-    return {
-    params: { slug: news.slug },
-      props: { news, previousNews, nextNews }
-    };
-  });
+      return {
+        params: { lang, slug: news.slug },
+        props: { lang, news, previousNews, nextNews }
+      };
+    })
+  );
 }
 
-const { news, previousNews, nextNews } = Astro.props;
+const { lang, news, previousNews, nextNews } = Astro.props;
+
+// 动态加载对应语言的翻译文件
+let t;
+try {
+  t = await import(`../../../locales/${lang}/news.json`);
+} catch (error) {
+  // 如果加载失败，使用英文作为默认
+  t = await import(`../../../locales/en/news.json`);
+}
 
 // 获取3个相关产品（随机）
 const shuffledProducts = products.sort(() => 0.5 - Math.random());
@@ -39,11 +52,7 @@ const popularArticles = allNews
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   .slice(0, 5);
 
-const breadcrumbs = [
-  { label: 'Home', href: '/' },
-  { label: 'News', href: '/news' },
-  { label: news.title }
-];
+const breadcrumbs = generateNewsDetailBreadcrumbs(lang, news.title);
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
@@ -52,12 +61,12 @@ const formatDate = (dateString: string) => {
 };
 ---
 
-<Layout title={news.title} description={news.excerpt}>
+<Layout title={news.title} description={news.excerpt} lang={lang}>
   <main class="bg-gray-50 min-h-screen">
     <!-- Breadcrumb -->
     <div class="bg-white border-b">
       <div class="container mx-auto px-4 py-4">
-        <Breadcrumb breadcrumbs={breadcrumbs} />
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
       </div>
     </div>
     
@@ -97,12 +106,12 @@ const formatDate = (dateString: string) => {
                 <div class="flex justify-between items-center">
                     <div class="flex-1">
                         {previousNews && (
-                        <a href={`/news/${previousNews.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                        <a href={`/${lang}/news/${previousNews.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
                             <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
                             <div>
-                            <div class="text-sm">上一个</div>
+                            <div class="text-sm">{t.default.navigation.previous_article}</div>
                             <div class="font-medium line-clamp-1">{previousNews.title}</div>
                             </div>
                         </a>
@@ -110,9 +119,9 @@ const formatDate = (dateString: string) => {
                     </div>
                     <div class="flex-1 text-right">
                         {nextNews && (
-                        <a href={`/news/${nextNews.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
+                        <a href={`/${lang}/news/${nextNews.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
                             <div class="text-right">
-                            <div class="text-sm">下一个</div>
+                            <div class="text-sm">{t.default.navigation.next_article}</div>
                             <div class="font-medium line-clamp-1">{nextNews.title}</div>
                             </div>
                             <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -128,7 +137,7 @@ const formatDate = (dateString: string) => {
               <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
                   <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                     <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                    Related Products
+                    {t.default.related.products}
                   </h2>
                   <GridList 
                       items={relatedProducts.map(p => ({
@@ -136,7 +145,7 @@ const formatDate = (dateString: string) => {
                           title: p.name, // 使用 name 字段作为 title
                           image: p.image,
                           excerpt: p.excerpt,
-                          href: `/products/${p.slug}`
+                          href: `/${lang}/products/${p.slug}`
                       }))}
                       itemsPerRow={3}
                   />
@@ -146,13 +155,13 @@ const formatDate = (dateString: string) => {
               <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                   <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                  Related News
+                  {t.default.related.news}
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   {relatedNews.map((newsItem) => (
                     <div class="flex items-start space-x-4">
                       <div class="flex-1">
-                        <a href={`/news/${newsItem.slug}`} class="block">
+                        <a href={`/${lang}/news/${newsItem.slug}`} class="block">
                           <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
                             {newsItem.title}
                           </h3>
@@ -173,12 +182,12 @@ const formatDate = (dateString: string) => {
               <div class="bg-white p-6 rounded-lg shadow-sm">
                 <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                   <div class="w-1 h-6 bg-blue-600 mr-3"></div>
-                  Popular articles
+                  {t.default.sidebar.popular_articles}
                 </h3>
                 <ul class="space-y-4">
                   {popularArticles.map(article => (
                     <li>
-                      <a href={`/news/${article.slug}`} class="font-medium text-gray-800 hover:text-blue-600 transition-colors duration-200 ease-in-out line-clamp-2">
+                      <a href={`/${lang}/news/${article.slug}`} class="font-medium text-gray-800 hover:text-blue-600 transition-colors duration-200 ease-in-out line-clamp-2">
                         {article.title}
                       </a>
                     </li>

@@ -1,0 +1,45 @@
+{
+  "breadcrumb": {
+    "home": "Laman Utama",
+    "cases": "Kes Pelanggan"
+  },
+  "case": {
+    "title": "Kes Pelanggan",
+    "description": "Temui bagaimana penyelesaian jentera kami telah membantu pelanggan mencapai kejayaan merentasi pelbagai industri",
+    "view_case": "Lihat Kes",
+    "case_details": "Butiran Kes",
+    "customer_info": "Maklumat Pelanggan",
+    "project_overview": "Gambaran Keseluruhan Projek",
+    "challenges": "Cabaran",
+    "solutions": "Penyelesaian",
+    "results": "Keputusan",
+    "testimonials": "Testimoni Pelanggan",
+    "industry": "Industri",
+    "location": "Lokasi",
+    "completion_date": "Tarikh Siap",
+    "equipment_used": "Peralatan Digunakan",
+    "project_duration": "Tempoh Projek"
+  },
+  "navigation": {
+    "previous_case": "Kes Sebelumnya",
+    "next_case": "Kes Seterusnya",
+    "back_to_cases": "Kembali ke Senarai Kes"
+  },
+  "pagination": {
+    "showing": "Menunjukkan",
+    "to": "hingga",
+    "of": "daripada",
+    "cases": "kes",
+    "pages": "halaman"
+  },
+  "related": {
+    "cases": "Kes Berkaitan",
+    "news": "Berita Berkaitan",
+    "view_more": "Lihat Lagi"
+  },
+  "sidebar": {
+    "related_cases": "Kes Berkaitan",
+    "categories": "Kategori",
+    "latest_cases": "Kes Terkini"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "breadcrumb": {
+    "home": "Laman Utama",
+    "news": "Berita"
+  },
+  "news": {
+    "title": "Pusat Berita",
+    "description": "Kekal terkini dengan berita terbaru dan pandangan industri kami",
+    "read_more": "Baca selanjutnya",
+    "published_date": "Tarikh Penerbitan",
+    "author": "Pengarang",
+    "category": "Kategori",
+    "tags": "Tag",
+    "share_article": "Kongsi Artikel",
+    "related_articles": "Artikel Berkaitan",
+    "popular_articles": "Artikel Popular",
+    "latest_news": "Berita Terkini",
+    "industry_insights": "Pandangan Industri",
+    "company_updates": "Kemas Kini Syarikat",
+    "product_news": "Berita Produk"
+  },
+  "navigation": {
+    "previous_article": "Artikel Sebelumnya",
+    "next_article": "Artikel Seterusnya",
+    "back_to_news": "Kembali ke Berita"
+  },
+  "pagination": {
+    "showing": "Menunjukkan",
+    "to": "kepada",
+    "of": "daripada",
+    "articles": "artikel",
+    "pages": "halaman"
+  },
+  "related": {
+    "products": "Produk Berkaitan",
+    "news": "Berita Berkaitan"
+  },
+  "sidebar": {
+    "popular_articles": "Artikel Popular",
+    "categories": "Kategori",
+    "latest_news": "Berita Terkini"
+  }
+}
