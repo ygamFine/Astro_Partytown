@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Trang chủ",
+    "products": "Sản phẩm"
+  },
+  "product": {
+    "advantages": "Ưu điểm Sản phẩm",
+    "advantages_list": [
+      "Hiệu suất cao và tiết kiệm năng lượng, hiệu suất xuất sắc",
+      "Vận hành dễ dàng và bảo trì thuận tiện",
+      "Cấu trúc nhỏ gọn và khả năng ứng dụng mạnh mẽ",
+      "Chất lượng đáng tin cậy và dịch vụ hoàn hảo"
+    ],
+    "contact_us": "Liên hệ chúng tôi",
+    "share_to": "Chia sẻ đến:",
+    "details": "Chi tiết Sản phẩm",
+    "specifications": "Thông số Kỹ thuật",
+    "features": "Tính năng Sản phẩm",
+    "applications": "Ứng dụng",
+    "applications_text": "Được sử dụng rộng rãi trong các công trường xây dựng, kỹ thuật đô thị, xây dựng đường, cảnh quan, kho bãi và hậu cần và nhiều lĩnh vực khác. Với hiệu suất và độ tin cậy xuất sắc, cung cấp giải pháp hiệu quả cho các dự án kỹ thuật khác nhau."
+  },
+  "navigation": {
+    "previous_product": "Sản phẩm Trước",
+    "next_product": "Sản phẩm Tiếp theo"
+  },
+  "form": {
+    "title": "Để lại Tin nhắn của Bạn",
+    "name": "Tên",
+    "name_placeholder": "Nhập tên của bạn",
+    "telephone": "Điện thoại",
+    "telephone_placeholder": "Nhập điện thoại của bạn",
+    "email": "Email",
+    "email_placeholder": "Nhập email của bạn",
+    "email_required": "Bắt buộc",
+    "message": "Nội dung Tư vấn",
+    "message_placeholder": "Sản phẩm bạn quan tâm",
+    "captcha": "Mã Xác minh",
+    "send": "Gửi"
+  },
+  "related": {
+    "products": "Sản phẩm Liên quan",
+    "news": "Tin tức Liên quan",
+    "recommended": "Sản phẩm Được khuyến nghị",
+    "view_more": "Xem Thêm Sản phẩm",
+    "contact_now": "Liên hệ Ngay",
+    "get_quote": "Nhận báo giá chi tiết và thông số kỹ thuật"
+  },
+  "button": {
+    "contactNow": "Liên hệ Ngay",
+    "email": "Email",
+    "telephone": "Điện thoại",
+    "whatsapp": "WhatsApp"
+  }
+} 

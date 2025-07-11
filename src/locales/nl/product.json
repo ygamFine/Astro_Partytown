@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "products": "Producten"
+  },
+  "product": {
+    "advantages": "Productvoordelen",
+    "advantages_list": [
+      "Hoge efficiëntie en energiebesparing, uitstekende prestaties",
+      "Eenvoudige bediening en handig onderhoud",
+      "Compacte structuur en sterke toepasbaarheid",
+      "Betrouwbare kwaliteit en perfecte service"
+    ],
+    "contact_us": "Neem contact op",
+    "share_to": "Delen naar:",
+    "details": "Productdetails",
+    "specifications": "Technische specificaties",
+    "features": "Productkenmerken",
+    "applications": "Toepassingen",
+    "applications_text": "Widely gebruikt in bouwplaatsen, gemeentelijke techniek, wegenbouw, landschapsarchitectuur, opslag en logistiek en vele andere gebieden. Met zijn uitstekende prestaties en betrouwbaarheid biedt het efficiënte oplossingen voor verschillende technische projecten."
+  },
+  "navigation": {
+    "previous_product": "Vorige Product",
+    "next_product": "Volgende Product"
+  },
+  "form": {
+    "title": "Laat uw bericht achter",
+    "name": "Naam",
+    "name_placeholder": "Voer uw naam in",
+    "telephone": "Telefoon",
+    "telephone_placeholder": "Voer uw telefoon in",
+    "email": "E-mail",
+    "email_placeholder": "Voer uw e-mail in",
+    "email_required": "Vereist",
+    "message": "Consultatie-inhoud",
+    "message_placeholder": "Producten die u interesseren",
+    "captcha": "Verificatiecode",
+    "send": "Versturen"
+  },
+  "related": {
+    "products": "Gerelateerde Producten",
+    "news": "Gerelateerde Nieuws",
+    "recommended": "Aanbevolen Producten",
+    "view_more": "Meer Producten Bekijken",
+    "contact_now": "Nu Contact Opnemen",
+    "get_quote": "Gedetailleerde offertes en technische specificaties krijgen"
+  },
+  "button": {
+    "contactNow": "Nu Contact Opnemen",
+    "email": "E-mail",
+    "telephone": "Telefoon",
+    "whatsapp": "WhatsApp"
+  }
+} 

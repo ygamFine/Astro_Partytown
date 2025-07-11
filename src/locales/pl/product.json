@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Strona główna",
+    "products": "Produkty"
+  },
+  "product": {
+    "advantages": "Zalety Produktu",
+    "advantages_list": [
+      "Wysoka wydajność i oszczędność energii, doskonała wydajność",
+      "Łatwa obsługa i wygodna konserwacja",
+      "Kompaktowa struktura i silna zastosowalność",
+      "Niezawodna jakość i doskonała obsługa"
+    ],
+    "contact_us": "Skontaktuj się z nami",
+    "share_to": "Udostępnij do:",
+    "details": "Szczegóły Produktu",
+    "specifications": "Specyfikacje Techniczne",
+    "features": "Cechy Produktu",
+    "applications": "Zastosowania",
+    "applications_text": "Szeroko stosowany w placach budowy, inżynierii miejskiej, budowie dróg, architekturze krajobrazu, magazynowaniu i logistyce oraz wielu innych dziedzinach. Dzięki doskonałej wydajności i niezawodności zapewnia wydajne rozwiązania dla różnych projektów inżynieryjnych."
+  },
+  "navigation": {
+    "previous_product": "Poprzedni Produkt",
+    "next_product": "Następny Produkt"
+  },
+  "form": {
+    "title": "Zostaw Wiadomość",
+    "name": "Imię",
+    "name_placeholder": "Wprowadź swoje imię",
+    "telephone": "Telefon",
+    "telephone_placeholder": "Wprowadź swój telefon",
+    "email": "Email",
+    "email_placeholder": "Wprowadź swój email",
+    "email_required": "Wymagane",
+    "message": "Treść Konsultacji",
+    "message_placeholder": "Produkty, które Cię interesują",
+    "captcha": "Kod Weryfikacyjny",
+    "send": "Wyślij"
+  },
+  "related": {
+    "products": "Powiązane Produkty",
+    "news": "Powiązane Wiadomości",
+    "recommended": "Polecane Produkty",
+    "view_more": "Zobacz Więcej Produktów",
+    "contact_now": "Skontaktuj się Teraz",
+    "get_quote": "Uzyskaj szczegółowe wyceny i specyfikacje techniczne"
+  },
+  "button": {
+    "contactNow": "Skontaktuj się Teraz",
+    "email": "Email",
+    "telephone": "Telefon",
+    "whatsapp": "WhatsApp"
+  }
+} 

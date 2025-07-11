@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "이전",
+    "next": "다음",
+    "page": "페이지",
+    "of": "의",
+    "first": "처음",
+    "last": "마지막",
+    "showing": "표시 중",
+    "to": "에서",
+    "ofTotal": "총",
+    "items": "개",
+    "pages": "페이지"
+  },
+  "aria": {
+    "pagination": "페이지네이션",
+    "previous": "이전 페이지",
+    "next": "다음 페이지",
+    "page": "페이지로 이동",
+    "first": "첫 페이지로 이동",
+    "last": "마지막 페이지로 이동"
+  }
+}

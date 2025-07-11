@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "前へ",
+    "next": "次へ",
+    "page": "ページ",
+    "of": "の",
+    "first": "最初",
+    "last": "最後",
+    "showing": "表示中",
+    "to": "から",
+    "ofTotal": "合計",
+    "items": "件",
+    "pages": "ページ"
+  },
+  "aria": {
+    "pagination": "ページネーション",
+    "previous": "前のページ",
+    "next": "次のページ",
+    "page": "ページに移動",
+    "first": "最初のページに移動",
+    "last": "最後のページに移動"
+  }
+}

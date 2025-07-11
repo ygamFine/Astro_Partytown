@@ -15,7 +15,7 @@ export function getStaticPaths() {
     const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
 
     return {
-      params: { slug: news.slug },
+    params: { slug: news.slug },
       props: { news, previousNews, nextNews }
     };
   });
@@ -68,26 +68,26 @@ const formatDate = (dateString: string) => {
             <div class="lg:col-span-3">
               <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
                 <article>
-                    <!-- Article Header -->
+    <!-- Article Header -->
                     <header class="mb-8">
                       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{news.title}</h1>
                       <time datetime={news.date} class="text-sm text-gray-500 block">{formatDate(news.date)}</time>
-                    </header>
+    </header>
 
-                    <!-- Article Image -->
+    <!-- Article Image -->
                     {news.image && (
-                    <div class="mb-8">
-                        <img 
-                        src={news.image} 
-                        alt={news.title} 
+    <div class="mb-8">
+      <img 
+        src={news.image} 
+        alt={news.title} 
                         class="w-full h-auto max-h-[500px] object-cover rounded-lg"
                         loading="eager"
-                        decoding="async"
-                        >
-                    </div>
+        decoding="async"
+      >
+    </div>
                     )}
 
-                    <!-- Article Content -->
+    <!-- Article Content -->
                     <div class="prose max-w-none" set:html={news.content} />
                 </article>
               </div>

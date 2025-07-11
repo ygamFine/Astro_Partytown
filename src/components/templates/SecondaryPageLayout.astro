@@ -8,6 +8,7 @@ interface Props {
   }>;
   currentSection: 'products' | 'news' | 'cases';
   contentType?: 'grid' | 'list';
+  lang?: string;
 }
 
 const { 
@@ -15,7 +16,8 @@ const {
   description, 
   breadcrumbs, 
   currentSection, 
-  contentType = 'grid'
+  contentType = 'grid',
+  lang
 } = Astro.props;
 
 import Layout from '../../layouts/Layout.astro';
@@ -40,7 +42,7 @@ import Sidebar from './Sidebar.astro';
     <!-- Breadcrumb -->
     <div class="bg-gray-50 py-4">
       <div class="container mx-auto px-4">
-        <Breadcrumb breadcrumbs={breadcrumbs} />
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
       </div>
     </div>
 

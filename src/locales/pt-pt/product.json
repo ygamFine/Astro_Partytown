@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Início",
+    "products": "Produtos"
+  },
+  "product": {
+    "advantages": "Vantagens do Produto",
+    "advantages_list": [
+      "Alta eficiência e economia de energia, desempenho excelente",
+      "Operação fácil e manutenção conveniente",
+      "Estrutura compacta e forte aplicabilidade",
+      "Qualidade confiável e serviço perfeito"
+    ],
+    "contact_us": "Contacte-nos",
+    "share_to": "Partilhar para:",
+    "details": "Detalhes do Produto",
+    "specifications": "Especificações Técnicas",
+    "features": "Características do Produto",
+    "applications": "Aplicações",
+    "applications_text": "Amplamente utilizado em canteiros de obras, engenharia municipal, construção de estradas, paisagismo, armazenamento e logística e muitos outros campos. Com o seu excelente desempenho e confiabilidade, fornece soluções eficientes para vários projetos de engenharia."
+  },
+  "navigation": {
+    "previous_product": "Produto Anterior",
+    "next_product": "Produto Seguinte"
+  },
+  "form": {
+    "title": "Deixe a Sua Mensagem",
+    "name": "Nome",
+    "name_placeholder": "Introduza o seu nome",
+    "telephone": "Telefone",
+    "telephone_placeholder": "Introduza o seu telefone",
+    "email": "Email",
+    "email_placeholder": "Introduza o seu email",
+    "email_required": "Obrigatório",
+    "message": "Conteúdo de Consulta",
+    "message_placeholder": "Produtos que lhe interessam",
+    "captcha": "Código de Verificação",
+    "send": "Enviar"
+  },
+  "related": {
+    "products": "Produtos Relacionados",
+    "news": "Notícias Relacionadas",
+    "recommended": "Produtos Recomendados",
+    "view_more": "Ver Mais Produtos",
+    "contact_now": "Contactar Agora",
+    "get_quote": "Obter orçamentos detalhados e especificações técnicas"
+  },
+  "button": {
+    "contactNow": "Contactar Agora",
+    "email": "E-Mail",
+    "telephone": "Telefone",
+    "whatsapp": "WhatsApp"
+  }
+} 

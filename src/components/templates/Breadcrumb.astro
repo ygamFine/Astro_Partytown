@@ -1,15 +1,46 @@
 ---
 interface Props {
   breadcrumbs: Array<{
-    label: string;
+    label: string; // 这里label将作为key
     href?: string;
   }>;
+  lang?: string; // 可选的语言参数
 }
 
-const { breadcrumbs } = Astro.props;
+const { breadcrumbs, lang: propLang } = Astro.props;
+const lang = propLang || Astro.params?.lang || 'en';
+
+// 动态导入对应语言的面包屑翻译
+type BreadcrumbDict = Record<string, string>;
+let t: BreadcrumbDict = {};
+
+try {
+  // 尝试加载指定语言的翻译文件
+  t = await import(`../../locales/${lang}/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
+} catch (e) {
+  try {
+    // 如果指定语言加载失败，尝试加载英文作为fallback
+    t = await import(`../../locales/en/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
+  } catch (fallbackError) {
+    // 如果连英文也加载失败，使用空对象
+    console.warn(`Failed to load breadcrumb translations for language: ${lang}`, e);
+    t = {};
+  }
+}
+
+// 安全的翻译函数
+const translate = (key: string, fallback?: string): string => {
+  return t?.[key] || fallback || key;
+};
+
+// 生成面包屑导航的aria-label
+const generateAriaLabel = (): string => {
+  const homeText = translate('home', 'Home');
+  return `${homeText} navigation`;
+};
 ---
 
-<nav aria-label="面包屑导航" class="breadcrumb">
+<nav aria-label={generateAriaLabel()} class="breadcrumb">
   <ol class="flex items-center space-x-2 text-xl">
     {breadcrumbs.map((crumb, index) => (
       <li class="flex items-center">
@@ -23,28 +54,28 @@ const { breadcrumbs } = Astro.props;
             href={crumb.href} 
             class="text-gray-600 hover:text-red-600 transition-colors duration-200 flex items-center"
           >
-            {crumb.label === 'Home' || crumb.label === '首页' ? (
+            {crumb.label === 'home' ? (
               <>
                 <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                 </svg>
-                {crumb.label}
+                {translate(crumb.label, crumb.label)}
               </>
             ) : (
-              crumb.label
+              translate(crumb.label, crumb.label)
             )}
           </a>
         ) : (
           <span class="text-gray-900 font-medium flex items-center">
-            {crumb.label === 'Home' || crumb.label === '首页' ? (
+            {crumb.label === 'home' ? (
               <>
                 <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                 </svg>
-                {crumb.label}
+                {translate(crumb.label, crumb.label)}
               </>
             ) : (
-              crumb.label
+              translate(crumb.label, crumb.label)
             )}
           </span>
         )}

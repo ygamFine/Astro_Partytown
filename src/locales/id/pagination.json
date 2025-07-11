@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "page": "Halaman",
+    "of": "dari",
+    "first": "Pertama",
+    "last": "Terakhir",
+    "showing": "Menampilkan",
+    "to": "ke",
+    "ofTotal": "dari",
+    "items": "item",
+    "pages": "halaman"
+  },
+  "aria": {
+    "pagination": "Navigasi halaman",
+    "previous": "Halaman sebelumnya",
+    "next": "Halaman selanjutnya",
+    "page": "Pergi ke halaman",
+    "first": "Pergi ke halaman pertama",
+    "last": "Pergi ke halaman terakhir"
+  }
+}

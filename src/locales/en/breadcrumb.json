@@ -1,0 +1,16 @@
+{
+  "home": "Home",
+  "about": "About",
+  "products": "Products",
+  "productDetail": "Product Detail",
+  "case": "Cases",
+  "news": "News",
+  "contact": "Contact",
+  "search": "Search Results",
+  "category": "Category",
+  "all": "All",
+  "skidSteerLoader": "Skid Steer Loader",
+  "backhoeLoader": "Backhoe Loader",
+  "telescopicHandler": "Telescopic Handler",
+  "electricMachinery": "Electric Machinery"
+} 

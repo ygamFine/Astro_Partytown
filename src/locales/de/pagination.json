@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "page": "Seite",
+    "of": "von",
+    "first": "Erste",
+    "last": "Letzte",
+    "showing": "Anzeige",
+    "to": "bis",
+    "ofTotal": "von",
+    "items": "Elemente",
+    "pages": "Seiten"
+  },
+  "aria": {
+    "pagination": "Seitennavigation",
+    "previous": "Vorherige Seite",
+    "next": "Nächste Seite",
+    "page": "Zur Seite gehen",
+    "first": "Zur ersten Seite gehen",
+    "last": "Zur letzten Seite gehen"
+  }
+}

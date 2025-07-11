@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Startseite",
+    "products": "Produkte"
+  },
+  "product": {
+    "advantages": "Produktvorteile",
+    "advantages_list": [
+      "Hohe Effizienz und Energieeinsparung, ausgezeichnete Leistung",
+      "Einfache Bedienung und praktische Wartung",
+      "Kompakte Struktur und starke Anwendbarkeit",
+      "Zuverlässige Qualität und perfekter Service"
+    ],
+    "contact_us": "Kontaktieren Sie uns",
+    "share_to": "Teilen auf:",
+    "details": "Produktdetails",
+    "specifications": "Technische Spezifikationen",
+    "features": "Produktmerkmale",
+    "applications": "Anwendungen",
+    "applications_text": "Wird häufig in Baustellen, kommunaler Technik, Straßenbau, Landschaftsgestaltung, Lagerung und Logistik sowie vielen anderen Bereichen eingesetzt. Mit seiner ausgezeichneten Leistung und Zuverlässigkeit bietet es effiziente Lösungen für verschiedene Ingenieurprojekte."
+  },
+  "navigation": {
+    "previous_product": "Vorheriges Produkt",
+    "next_product": "Nächstes Produkt"
+  },
+  "form": {
+    "title": "Hinterlassen Sie Ihre Nachricht",
+    "name": "Name",
+    "name_placeholder": "Geben Sie Ihren Namen ein",
+    "telephone": "Telefon",
+    "telephone_placeholder": "Geben Sie Ihre Telefonnummer ein",
+    "email": "E-Mail",
+    "email_placeholder": "Geben Sie Ihre E-Mail ein",
+    "email_required": "Erforderlich",
+    "message": "Beratungsinhalt",
+    "message_placeholder": "Produkte, die Sie interessieren",
+    "captcha": "Verifizierungscode",
+    "send": "Senden"
+  },
+  "related": {
+    "products": "Verwandte Produkte",
+    "news": "Verwandte Nachrichten",
+    "recommended": "Empfohlene Produkte",
+    "view_more": "Weitere Produkte anzeigen",
+    "contact_now": "Jetzt kontaktieren",
+    "get_quote": "Detaillierte Angebote und technische Spezifikationen erhalten"
+  },
+  "button": {
+    "contactNow": "Jetzt kontaktieren",
+    "email": "E-Mail",
+    "telephone": "Telefon",
+    "whatsapp": "WhatsApp"
+  }
+} 

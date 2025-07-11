@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    "first": "First",
+    "last": "Last",
+    "showing": "Showing",
+    "to": "to",
+    "ofTotal": "of",
+    "items": "items",
+    "pages": "pages"
+  },
+  "aria": {
+    "pagination": "Pagination navigation",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Go to page",
+    "first": "Go to first page",
+    "last": "Go to last page"
+  }
+}

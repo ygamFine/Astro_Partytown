@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Accueil",
+    "products": "Produits"
+  },
+  "product": {
+    "advantages": "Avantages du Produit",
+    "advantages_list": [
+      "Haute efficacité et économie d'énergie, performance excellente",
+      "Opération facile et maintenance pratique",
+      "Structure compacte et forte applicabilité",
+      "Qualité fiable et service parfait"
+    ],
+    "contact_us": "Contactez-nous",
+    "share_to": "Partager vers :",
+    "details": "Détails du Produit",
+    "specifications": "Spécifications Techniques",
+    "features": "Caractéristiques du Produit",
+    "applications": "Applications",
+    "applications_text": "Largement utilisé dans les chantiers de construction, l'ingénierie municipale, la construction routière, l'aménagement paysager, l'entreposage et la logistique et de nombreux autres domaines. Avec ses performances et sa fiabilité excellentes, il fournit des solutions efficaces pour divers projets d'ingénierie."
+  },
+  "navigation": {
+    "previous_product": "Produit Précédent",
+    "next_product": "Produit Suivant"
+  },
+  "form": {
+    "title": "Laissez Votre Message",
+    "name": "Nom",
+    "name_placeholder": "Entrez votre nom",
+    "telephone": "Téléphone",
+    "telephone_placeholder": "Entrez votre téléphone",
+    "email": "Email",
+    "email_placeholder": "Entrez votre email",
+    "email_required": "Requis",
+    "message": "Contenu de Consultation",
+    "message_placeholder": "Produits qui vous intéressent",
+    "captcha": "Code de Vérification",
+    "send": "Envoyer"
+  },
+  "related": {
+    "products": "Produits Connexes",
+    "news": "Actualités Connexes",
+    "recommended": "Produits Recommandés",
+    "view_more": "Voir Plus de Produits",
+    "contact_now": "Contacter Maintenant",
+    "get_quote": "Obtenir des devis détaillés et des spécifications techniques"
+  },
+  "button": {
+    "contactNow": "Contacter Maintenant",
+    "email": "E-Mail",
+    "telephone": "Téléphone",
+    "whatsapp": "WhatsApp"
+  }
+} 

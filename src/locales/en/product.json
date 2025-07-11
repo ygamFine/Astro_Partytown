@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "products": "Products"
+  },
+  "product": {
+    "advantages": "Product Advantages",
+    "advantages_list": [
+      "High efficiency and energy saving, excellent performance",
+      "Easy operation and convenient maintenance",
+      "Compact structure and strong applicability",
+      "Reliable quality and perfect service"
+    ],
+    "contact_us": "Contact Us",
+    "share_to": "Share to:",
+    "details": "Product Details",
+    "specifications": "Technical Specifications",
+    "features": "Product Features",
+    "applications": "Applications",
+    "applications_text": "Widely used in construction sites, municipal engineering, road construction, landscaping, warehousing and logistics and many other fields. With its excellent performance and reliability, it provides efficient solutions for various engineering projects."
+  },
+  "navigation": {
+    "previous_product": "Previous Product",
+    "next_product": "Next Product"
+  },
+  "form": {
+    "title": "Leave Your Message",
+    "name": "Name",
+    "name_placeholder": "Enter your name",
+    "telephone": "Telephone",
+    "telephone_placeholder": "Enter your telephone",
+    "email": "Email",
+    "email_placeholder": "Enter your email",
+    "email_required": "Required",
+    "message": "Consultation Content",
+    "message_placeholder": "Products you are interested in",
+    "captcha": "Verification Code",
+    "send": "Send"
+  },
+  "related": {
+    "products": "Related Products",
+    "news": "Related News",
+    "recommended": "Recommended Products",
+    "view_more": "View More Products",
+    "contact_now": "Contact Now",
+    "get_quote": "Get detailed quotes and technical specifications"
+  },
+  "button": {
+    "contactNow": "Contact Now",
+    "email": "E-Mail",
+    "telephone": "Telephone",
+    "whatsapp": "WhatsApp"
+  }
+} 

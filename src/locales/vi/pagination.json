@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Trước",
+    "next": "Tiếp",
+    "page": "Trang",
+    "of": "trên",
+    "first": "Đầu",
+    "last": "Cuối",
+    "showing": "Hiển thị",
+    "to": "đến",
+    "ofTotal": "trên",
+    "items": "mục",
+    "pages": "trang"
+  },
+  "aria": {
+    "pagination": "Điều hướng phân trang",
+    "previous": "Trang trước",
+    "next": "Trang tiếp theo",
+    "page": "Đi đến trang",
+    "first": "Đi đến trang đầu",
+    "last": "Đi đến trang cuối"
+  }
+}

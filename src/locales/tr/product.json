@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Ana Sayfa",
+    "products": "Ürünler"
+  },
+  "product": {
+    "advantages": "Ürün Avantajları",
+    "advantages_list": [
+      "Yüksek verimlilik ve enerji tasarrufu, mükemmel performans",
+      "Kolay operasyon ve uygun bakım",
+      "Kompakt yapı ve güçlü uygulanabilirlik",
+      "Güvenilir kalite ve mükemmel hizmet"
+    ],
+    "contact_us": "Bize Ulaşın",
+    "share_to": "Paylaş:",
+    "details": "Ürün Detayları",
+    "specifications": "Teknik Özellikler",
+    "features": "Ürün Özellikleri",
+    "applications": "Uygulamalar",
+    "applications_text": "İnşaat sahaları, belediye mühendisliği, yol yapımı, peyzaj düzenleme, depolama ve lojistik ve birçok diğer alanda yaygın olarak kullanılır. Mükemmel performansı ve güvenilirliği ile çeşitli mühendislik projeleri için verimli çözümler sağlar."
+  },
+  "navigation": {
+    "previous_product": "Önceki Ürün",
+    "next_product": "Sonraki Ürün"
+  },
+  "form": {
+    "title": "Mesajınızı Bırakın",
+    "name": "Ad",
+    "name_placeholder": "Adınızı girin",
+    "telephone": "Telefon",
+    "telephone_placeholder": "Telefonunuzu girin",
+    "email": "E-posta",
+    "email_placeholder": "E-postanızı girin",
+    "email_required": "Gerekli",
+    "message": "Danışma İçeriği",
+    "message_placeholder": "İlgilendiğiniz ürünler",
+    "captcha": "Doğrulama Kodu",
+    "send": "Gönder"
+  },
+  "related": {
+    "products": "İlgili Ürünler",
+    "news": "İlgili Haberler",
+    "recommended": "Önerilen Ürünler",
+    "view_more": "Daha Fazla Ürün Görüntüle",
+    "contact_now": "Şimdi İletişime Geç",
+    "get_quote": "Detaylı teklifler ve teknik özellikler alın"
+  },
+  "button": {
+    "contactNow": "Şimdi İletişime Geçin",
+    "email": "E-Posta",
+    "telephone": "Telefon",
+    "whatsapp": "WhatsApp"
+  }
+} 

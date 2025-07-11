@@ -1,0 +1,16 @@
+{
+  "home": "ഹോം",
+  "about": "നമ്മെക്കുറിച്ച്",
+  "products": "ഉത്പന്നങ്ങൾ",
+  "productDetail": "ഉത്പന്ന വിശദാംശങ്ങൾ",
+  "case": "കേസുകൾ",
+  "news": "വാർത്തകൾ",
+  "contact": "ബന്ധപ്പെടുക",
+  "search": "തിരയൽ ഫലങ്ങൾ",
+  "category": "വിഭാഗം",
+  "all": "എല്ലാം",
+  "skidSteerLoader": "സ്കിഡ് സ്റ്റിയർ ലോഡർ",
+  "backhoeLoader": "ബാക്ക്‌ഹോ ലോഡർ",
+  "telescopicHandler": "ടെലിസ്കോപ്പിക് ഹാൻഡ്ലർ",
+  "electricMachinery": "ഇലക്ട്രിക് മെഷീനറി"
+}

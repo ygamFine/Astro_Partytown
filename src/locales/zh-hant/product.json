@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "首頁",
+    "products": "產品中心"
+  },
+  "product": {
+    "advantages": "產品優勢",
+    "advantages_list": [
+      "高效節能，性能卓越",
+      "操作簡便，維護方便",
+      "結構緊湊，適用性強",
+      "質量可靠，服務完善"
+    ],
+    "contact_us": "聯繫我們",
+    "share_to": "分享到：",
+    "details": "產品詳情",
+    "specifications": "技術規格",
+    "features": "產品特點",
+    "applications": "應用領域",
+    "applications_text": "廣泛應用於建築工地、市政工程、道路建設、園林綠化、倉儲物流等多個領域。憑藉其卓越的性能和可靠性，為各種工程項目提供高效解決方案。"
+  },
+  "navigation": {
+    "previous_product": "上一個產品",
+    "next_product": "下一個產品"
+  },
+  "form": {
+    "title": "留言諮詢",
+    "name": "姓名",
+    "name_placeholder": "請輸入您的姓名",
+    "telephone": "電話",
+    "telephone_placeholder": "請輸入您的電話",
+    "email": "郵箱",
+    "email_placeholder": "請輸入您的郵箱",
+    "email_required": "必填",
+    "message": "諮詢內容",
+    "message_placeholder": "您感興趣的產品",
+    "captcha": "驗證碼",
+    "send": "發送"
+  },
+  "related": {
+    "products": "相關產品",
+    "news": "相關新聞",
+    "recommended": "推薦產品",
+    "view_more": "查看更多產品",
+    "contact_now": "立即諮詢",
+    "get_quote": "獲取詳細報價和技術規格"
+  },
+  "button": {
+    "contactNow": "立即聯繫",
+    "email": "郵箱",
+    "telephone": "電話",
+    "whatsapp": "WhatsApp"
+  }
+} 

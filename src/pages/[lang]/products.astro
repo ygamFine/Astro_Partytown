@@ -1,0 +1,66 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '../../components/templates/SecondaryPageLayout.astro';
+import GridList from '../../components/templates/GridList.astro';
+import Pagination from '../../components/templates/Pagination.astro';
+import { products } from '../../data/products.js';
+import { SUPPORTED_LANGUAGES, getLocaleFromPath, mergeTranslations } from '../../locales/i18n.js';
+import { generateProductListBreadcrumbs } from '../../lib/breadcrumbUtils.js';
+
+// 必须实现 getStaticPaths 为所有语言生成路由
+export async function getStaticPaths() {
+  return SUPPORTED_LANGUAGES.map((lang) => ({
+    params: { lang },
+    props: { locale: lang },
+  }));
+}
+
+const { lang } = Astro.params;
+const translations = await mergeTranslations(lang, ['pagination']);
+const t = (translations as any).pagination || {};
+console.log('国际化打印',t);
+
+// 分页配置
+const itemsPerPage = 9; // 每页显示9个产品（3行x3列）
+const totalPages = Math.ceil(products.length / itemsPerPage);
+const currentPage = 1; // 第一页
+const displayProducts = products.slice(0, itemsPerPage);
+
+// 转换产品数据格式以适配GridList组件
+const gridItems = displayProducts.map(product => ({
+  id: product.id,
+  title: product.name,
+  image: product.image,
+  excerpt: product.excerpt,
+  category: product.category,
+  href: `/${lang}/products/${product.slug}`
+}));
+
+// 面包屑导航
+const breadcrumbs = generateProductListBreadcrumbs(lang);
+---
+
+<SecondaryPageLayout 
+  title="Products"
+  description="Explore our comprehensive range of construction machinery"
+  breadcrumbs={breadcrumbs}
+  currentSection="products"
+  contentType="grid"
+  lang={lang}
+>
+  <!-- 产品网格 -->
+  <GridList 
+    items={gridItems}
+    itemsPerRow={3}
+    maxRows={3}
+  />
+  
+  <!-- 分页 -->
+  <Pagination 
+    currentPage={currentPage}
+    totalPages={totalPages}
+    baseUrl={`/${lang}/products`}
+    i18n={t}
+  />
+</SecondaryPageLayout> 

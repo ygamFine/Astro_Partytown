@@ -1,0 +1,16 @@
+{
+  "home": "Главная",
+  "about": "О нас",
+  "products": "Продукты",
+  "productDetail": "Детали продукта",
+  "case": "Кейсы",
+  "news": "Новости",
+  "contact": "Контакты",
+  "search": "Результаты поиска",
+  "category": "Категория",
+  "all": "Все",
+  "skidSteerLoader": "Мини-погрузчик",
+  "backhoeLoader": "Экскаватор-погрузчик",
+  "telescopicHandler": "Телескопический погрузчик",
+  "electricMachinery": "Электрические машины"
+}

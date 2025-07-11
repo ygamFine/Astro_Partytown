@@ -1,0 +1,87 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayout.astro';
+import GridList from '../../../components/templates/GridList.astro';
+import Pagination from '../../../components/templates/Pagination.astro';
+import { products } from '../../../data/products.js';
+import { SUPPORTED_LANGUAGES, mergeTranslations } from '../../../locales/i18n.js';
+
+// 必须实现 getStaticPaths 为所有语言和页面生成路由
+export async function getStaticPaths() {
+  const paths = [];
+  const itemsPerPage = 9;
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  
+  SUPPORTED_LANGUAGES.forEach((lang) => {
+    // 第一页 (无页码)
+    paths.push({
+      params: { lang, page: undefined },
+      props: { locale: lang, currentPage: 1, totalPages }
+    });
+    
+    // 其他页面
+    for (let page = 2; page <= totalPages; page++) {
+      paths.push({
+        params: { lang, page: page.toString() },
+        props: { locale: lang, currentPage: page, totalPages }
+      });
+    }
+  });
+  
+  return paths;
+}
+
+const { lang } = Astro.params;
+const { currentPage, totalPages } = Astro.props;
+const translations = await mergeTranslations(lang, ['pagination']);
+const t = translations.pagination;
+
+// 分页配置
+const itemsPerPage = 9;
+const startIndex = (currentPage - 1) * itemsPerPage;
+const endIndex = startIndex + itemsPerPage;
+const displayProducts = products.slice(startIndex, endIndex);
+
+// 转换产品数据格式以适配GridList组件
+const gridItems = displayProducts.map(product => ({
+  id: product.id,
+  title: product.name,
+  image: product.image,
+  excerpt: product.excerpt,
+  category: product.category,
+  href: `/${lang}/products/${product.slug}`
+}));
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: `/${lang}` },
+  { label: 'Products', href: `/${lang}/products` }
+];
+
+// 生成分页基础URL
+const baseUrl = `/${lang}/products`;
+---
+
+<SecondaryPageLayout 
+  title="Products"
+  description="Explore our comprehensive range of construction machinery"
+  breadcrumbs={breadcrumbs}
+  currentSection="products"
+  contentType="grid"
+>
+  <!-- 产品网格 -->
+  <GridList 
+    items={gridItems}
+    itemsPerRow={3}
+    maxRows={3}
+  />
+  
+  <!-- 分页 -->
+  <Pagination 
+    currentPage={currentPage}
+    totalPages={totalPages}
+    baseUrl={baseUrl}
+    i18n={t}
+  />
+</SecondaryPageLayout> 

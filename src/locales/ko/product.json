@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "홈",
+    "products": "제품"
+  },
+  "product": {
+    "advantages": "제품의 장점",
+    "advantages_list": [
+      "고효율 및 에너지 절약, 뛰어난 성능",
+      "쉬운 조작과 편리한 유지보수",
+      "컴팩트한 구조와 강력한 적용성",
+      "신뢰할 수 있는 품질과 완벽한 서비스"
+    ],
+    "contact_us": "문의하기",
+    "share_to": "공유하기:",
+    "details": "제품 상세",
+    "specifications": "기술 사양",
+    "features": "제품 특징",
+    "applications": "응용 분야",
+    "applications_text": "건설 현장, 도시 공학, 도로 건설, 조경, 창고 및 물류 등 많은 분야에서 널리 사용됩니다. 뛰어난 성능과 신뢰성으로 다양한 엔지니어링 프로젝트에 효율적인 솔루션을 제공합니다."
+  },
+  "navigation": {
+    "previous_product": "이전 제품",
+    "next_product": "다음 제품"
+  },
+  "form": {
+    "title": "메시지 남기기",
+    "name": "이름",
+    "name_placeholder": "이름을 입력하세요",
+    "telephone": "전화번호",
+    "telephone_placeholder": "전화번호를 입력하세요",
+    "email": "이메일",
+    "email_placeholder": "이메일을 입력하세요",
+    "email_required": "필수",
+    "message": "상담 내용",
+    "message_placeholder": "관심 있는 제품",
+    "captcha": "인증 코드",
+    "send": "보내기"
+  },
+  "related": {
+    "products": "관련 제품",
+    "news": "관련 뉴스",
+    "recommended": "추천 제품",
+    "view_more": "더 많은 제품 보기",
+    "contact_now": "지금 문의하기",
+    "get_quote": "상세 견적 및 기술 사양 받기"
+  },
+  "button": {
+    "contactNow": "지금 문의하기",
+    "email": "이메일",
+    "telephone": "전화번호",
+    "whatsapp": "WhatsApp"
+  }
+} 

@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "ホーム",
+    "products": "製品"
+  },
+  "product": {
+    "advantages": "製品の利点",
+    "advantages_list": [
+      "高効率・省エネ、優れた性能",
+      "操作が簡単でメンテナンスが便利",
+      "コンパクトな構造と強力な適用性",
+      "信頼性の高い品質と完璧なサービス"
+    ],
+    "contact_us": "お問い合わせ",
+    "share_to": "シェア先:",
+    "details": "製品詳細",
+    "specifications": "技術仕様",
+    "features": "製品特徴",
+    "applications": "用途",
+    "applications_text": "建設現場、都市工学、道路建設、造園、倉庫・物流など多くの分野で広く使用されています。優れた性能と信頼性により、様々なエンジニアリングプロジェクトに効率的なソリューションを提供します。"
+  },
+  "navigation": {
+    "previous_product": "前の製品",
+    "next_product": "次の製品"
+  },
+  "form": {
+    "title": "メッセージを残す",
+    "name": "お名前",
+    "name_placeholder": "お名前を入力してください",
+    "telephone": "電話番号",
+    "telephone_placeholder": "電話番号を入力してください",
+    "email": "メールアドレス",
+    "email_placeholder": "メールアドレスを入力してください",
+    "email_required": "必須",
+    "message": "相談内容",
+    "message_placeholder": "ご興味のある製品",
+    "captcha": "認証コード",
+    "send": "送信"
+  },
+  "related": {
+    "products": "関連製品",
+    "news": "関連ニュース",
+    "recommended": "おすすめ製品",
+    "view_more": "製品をもっと見る",
+    "contact_now": "今すぐお問い合わせ",
+    "get_quote": "詳細な見積もりと技術仕様を取得"
+  },
+  "button": {
+    "contactNow": "今すぐお問い合わせ",
+    "email": "メールアドレス",
+    "telephone": "電話番号",
+    "whatsapp": "WhatsApp"
+  }
+} 

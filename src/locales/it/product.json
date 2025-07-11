@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "products": "Prodotti"
+  },
+  "product": {
+    "advantages": "Vantaggi del Prodotto",
+    "advantages_list": [
+      "Alta efficienza e risparmio energetico, prestazioni eccellenti",
+      "Operazione facile e manutenzione conveniente",
+      "Struttura compatta e forte applicabilità",
+      "Qualità affidabile e servizio perfetto"
+    ],
+    "contact_us": "Contattaci",
+    "share_to": "Condividi su:",
+    "details": "Dettagli del Prodotto",
+    "specifications": "Specifiche Tecniche",
+    "features": "Caratteristiche del Prodotto",
+    "applications": "Applicazioni",
+    "applications_text": "Ampiamente utilizzato in cantieri edili, ingegneria municipale, costruzione stradale, paesaggistica, magazzinaggio e logistica e molti altri campi. Con le sue prestazioni e affidabilità eccellenti, fornisce soluzioni efficienti per vari progetti di ingegneria."
+  },
+  "navigation": {
+    "previous_product": "Prodotto Precedente",
+    "next_product": "Prodotto Successivo"
+  },
+  "form": {
+    "title": "Lascia il Tuo Messaggio",
+    "name": "Nome",
+    "name_placeholder": "Inserisci il tuo nome",
+    "telephone": "Telefono",
+    "telephone_placeholder": "Inserisci il tuo telefono",
+    "email": "Email",
+    "email_placeholder": "Inserisci la tua email",
+    "email_required": "Richiesto",
+    "message": "Contenuto di Consultazione",
+    "message_placeholder": "Prodotti che ti interessano",
+    "captcha": "Codice di Verifica",
+    "send": "Invia"
+  },
+  "related": {
+    "products": "Prodotti Correlati",
+    "news": "Notizie Correlate",
+    "recommended": "Prodotti Raccomandati",
+    "view_more": "Vedi Altri Prodotti",
+    "contact_now": "Contatta Ora",
+    "get_quote": "Ottieni preventivi dettagliati e specifiche tecniche"
+  },
+  "button": {
+    "contactNow": "Contatta Ora",
+    "email": "E-Mail",
+    "telephone": "Telefono",
+    "whatsapp": "WhatsApp"
+  }
+} 

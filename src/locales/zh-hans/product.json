@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "首页",
+    "products": "产品中心"
+  },
+  "product": {
+    "advantages": "产品优势",
+    "advantages_list": [
+      "高效节能，性能卓越",
+      "操作简便，维护方便",
+      "结构紧凑，适用性强",
+      "质量可靠，服务完善"
+    ],
+    "contact_us": "联系我们",
+    "share_to": "分享到：",
+    "details": "产品详情",
+    "specifications": "技术规格",
+    "features": "产品特点",
+    "applications": "应用领域",
+    "applications_text": "广泛应用于建筑工地、市政工程、道路建设、园林绿化、仓储物流等多个领域。凭借其卓越的性能和可靠性，为各种工程项目提供高效解决方案。"
+  },
+  "navigation": {
+    "previous_product": "上一个产品",
+    "next_product": "下一个产品"
+  },
+  "form": {
+    "title": "留言咨询",
+    "name": "姓名",
+    "name_placeholder": "请输入您的姓名",
+    "telephone": "电话",
+    "telephone_placeholder": "请输入您的电话",
+    "email": "邮箱",
+    "email_placeholder": "请输入您的邮箱",
+    "email_required": "必填",
+    "message": "咨询内容",
+    "message_placeholder": "您感兴趣的产品",
+    "captcha": "验证码",
+    "send": "发送"
+  },
+  "related": {
+    "products": "相关产品",
+    "news": "相关新闻",
+    "recommended": "推荐产品",
+    "view_more": "查看更多产品",
+    "contact_now": "立即咨询",
+    "get_quote": "获取详细报价和技术规格"
+  },
+  "button": {
+    "contactNow": "立即联系",
+    "email": "邮箱",
+    "telephone": "电话",
+    "whatsapp": "WhatsApp"
+  }
+} 

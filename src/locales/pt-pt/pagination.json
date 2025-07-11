@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página",
+    "of": "de",
+    "first": "Primeira",
+    "last": "Última",
+    "showing": "Mostrando",
+    "to": "a",
+    "ofTotal": "de",
+    "items": "itens",
+    "pages": "páginas"
+  },
+  "aria": {
+    "pagination": "Navegação de paginação",
+    "previous": "Página anterior",
+    "next": "Página seguinte",
+    "page": "Ir para a página",
+    "first": "Ir para a primeira página",
+    "last": "Ir para a última página"
+  }
+}

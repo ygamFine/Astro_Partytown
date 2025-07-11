@@ -1,0 +1,54 @@
+{
+  "breadcrumb": {
+    "home": "Beranda",
+    "products": "Produk"
+  },
+  "product": {
+    "advantages": "Keunggulan Produk",
+    "advantages_list": [
+      "Efisiensi tinggi dan hemat energi, kinerja luar biasa",
+      "Operasi mudah dan perawatan nyaman",
+      "Struktur kompak dan aplikabilitas kuat",
+      "Kualitas andal dan layanan sempurna"
+    ],
+    "contact_us": "Hubungi Kami",
+    "share_to": "Bagikan ke:",
+    "details": "Detail Produk",
+    "specifications": "Spesifikasi Teknis",
+    "features": "Fitur Produk",
+    "applications": "Aplikasi",
+    "applications_text": "Digunakan secara luas di lokasi konstruksi, teknik kota, pembangunan jalan, lansekap, penyimpanan dan logistik serta banyak bidang lainnya. Dengan kinerja dan keandalan yang luar biasa, memberikan solusi efisien untuk berbagai proyek teknik."
+  },
+  "navigation": {
+    "previous_product": "Produk Sebelumnya",
+    "next_product": "Produk Berikutnya"
+  },
+  "form": {
+    "title": "Tinggalkan Pesan Anda",
+    "name": "Nama",
+    "name_placeholder": "Masukkan nama Anda",
+    "telephone": "Telepon",
+    "telephone_placeholder": "Masukkan telepon Anda",
+    "email": "Email",
+    "email_placeholder": "Masukkan email Anda",
+    "email_required": "Diperlukan",
+    "message": "Konten Konsultasi",
+    "message_placeholder": "Produk yang Anda minati",
+    "captcha": "Kode Verifikasi",
+    "send": "Kirim"
+  },
+  "related": {
+    "products": "Produk Terkait",
+    "news": "Berita Terkait",
+    "recommended": "Produk Direkomendasikan",
+    "view_more": "Lihat Lebih Banyak Produk",
+    "contact_now": "Hubungi Sekarang",
+    "get_quote": "Dapatkan penawaran detail dan spesifikasi teknis"
+  },
+  "button": {
+    "contactNow": "Hubungi Sekarang",
+    "email": "E-Mail",
+    "telephone": "Telepon",
+    "whatsapp": "WhatsApp"
+  }
+} 

@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "上一頁",
+    "next": "下一頁",
+    "page": "第",
+    "of": "頁，共",
+    "first": "首頁",
+    "last": "尾頁",
+    "showing": "顯示",
+    "to": "到",
+    "ofTotal": "共",
+    "items": "項",
+    "pages": "頁"
+  },
+  "aria": {
+    "pagination": "分頁導航",
+    "previous": "上一頁",
+    "next": "下一頁",
+    "page": "跳轉到第",
+    "first": "跳轉到首頁",
+    "last": "跳轉到尾頁"
+  }
+}

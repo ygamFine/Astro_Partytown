@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "page": "Sayfa",
+    "of": "/",
+    "first": "İlk",
+    "last": "Son",
+    "showing": "Gösteriliyor",
+    "to": "ile",
+    "ofTotal": "toplam",
+    "items": "öğe",
+    "pages": "sayfa"
+  },
+  "aria": {
+    "pagination": "Sayfalama navigasyonu",
+    "previous": "Önceki sayfa",
+    "next": "Sonraki sayfa",
+    "page": "Sayfaya git",
+    "first": "İlk sayfaya git",
+    "last": "Son sayfaya git"
+  }
+}

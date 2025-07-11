@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "previous": "Vorige",
+    "next": "Volgende",
+    "page": "Pagina",
+    "of": "van",
+    "first": "Eerste",
+    "last": "Laatste",
+    "showing": "Toon",
+    "to": "tot",
+    "ofTotal": "van",
+    "items": "items",
+    "pages": "pagina's"
+  },
+  "aria": {
+    "pagination": "Paginering navigatie",
+    "previous": "Vorige pagina",
+    "next": "Volgende pagina",
+    "page": "Ga naar pagina",
+    "first": "Ga naar eerste pagina",
+    "last": "Ga naar laatste pagina"
+  }
+}

@@ -4,6 +4,17 @@ import { getMenus } from '../lib/strapi.js';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
+const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+const currentLang = langMatch ? langMatch[1] : 'zh-hans'; // 默认中文
+// 动态生成菜单链接
+function withLang(path: string) {
+  // 如果 path 已经有 /[lang]/ 前缀，直接返回
+  if (path.startsWith(`/${currentLang}/`)) return path;
+  // 如果 path 是 /，返回 /[lang]/
+  if (path === '/') return `/${currentLang}/`;
+  // 其他情况拼接
+  return `/${currentLang}${path.startsWith('/') ? path : '/' + path}`;
+}
 
 // 在构建时获取菜单数据
 interface MenuItem {
@@ -45,7 +56,7 @@ try {
     {menuItems.map((item, index) => (
       <div class="relative dropdown-container">
     <a 
-      href={item.path} 
+      href={withLang(item.path)} 
           class={`menu-item text-white font-semibold text-center py-4 ${
             (currentPath === item.path) || (currentPath === '/' && item.path === '/') ? 'active' : ''
           } ${item.children ? 'has-dropdown' : ''}`}
@@ -69,14 +80,14 @@ try {
             </div>
             {item.children.map((child, index) => (
               <a 
-                href={child.path} 
+                href={withLang(child.path)} 
                 class={`product-menu-item flex items-center px-6 py-4 text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border-b border-gray-100 last:border-b-0 ${index === 0 ? 'featured-item' : ''}`}
                 style="font-size: 1.5rem;"
               >
                 <div class="menu-icon w-8 h-8 mr-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
                   {index === 0 ? (
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-3z"/>
                     </svg>
                   ) : index === 1 ? (
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -126,7 +137,7 @@ try {
                   <span class="font-medium">Need help choosing?</span>
                   <br>Contact our product specialists
                 </div>
-                <a href="/contact" class="bg-red-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-red-700 transition-colors">
+                <a href={withLang('/contact')} class="bg-red-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-red-700 transition-colors">
                   Get Quote
                 </a>
               </div>
@@ -186,30 +197,22 @@ try {
       </button>
 
       <!-- 下拉菜单 -->
-      <div id="language-dropdown" class="absolute top-full right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50 hidden" style="min-width: 16rem;">
+      <div id="language-dropdown" class="absolute top-full right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50 hidden" style="min-width: 16rem; max-height: 60vh; overflow-y: auto;">
         <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="en">
           <span class="text-2xl">🇺🇸</span>
           <span class="text-gray-800 font-medium">English</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ru">
-          <span class="text-2xl">🇷🇺</span>
-          <span class="text-gray-800 font-medium">Русский</span>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="zh-hans">
+          <span class="text-2xl">🇨🇳</span>
+          <span class="text-gray-800 font-medium">简体中文</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="es">
-          <span class="text-2xl">🇪🇸</span>
-          <span class="text-gray-800 font-medium">Español</span>
-        </a>
-        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="pt">
-          <span class="text-2xl">🇵🇹</span>
-          <span class="text-gray-800 font-medium">Português</span>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="zh-hant">
+          <span class="text-2xl">🇹🇼</span>
+          <span class="text-gray-800 font-medium">繁體中文</span>
         </a>
         <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="fr">
           <span class="text-2xl">🇫🇷</span>
           <span class="text-gray-800 font-medium">Français</span>
-        </a>
-        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ar">
-          <span class="text-2xl">🇸🇦</span>
-          <span class="text-gray-800 font-medium">العربية</span>
         </a>
         <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="de">
           <span class="text-2xl">🇩🇪</span>
@@ -221,11 +224,67 @@ try {
         </a>
         <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="tr">
           <span class="text-2xl">🇹🇷</span>
-          <span class="text-gray-800 font-medium">Türk</span>
+          <span class="text-gray-800 font-medium">Türkçe</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="es">
+          <span class="text-2xl">🇪🇸</span>
+          <span class="text-gray-800 font-medium">Español</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="pt-pt">
+          <span class="text-2xl">🇵🇹</span>
+          <span class="text-gray-800 font-medium">Português</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="nl">
+          <span class="text-2xl">🇳🇱</span>
+          <span class="text-gray-800 font-medium">Nederlands</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="pl">
+          <span class="text-2xl">🇵🇱</span>
+          <span class="text-gray-800 font-medium">Polski</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ar">
+          <span class="text-2xl">🇸🇦</span>
+          <span class="text-gray-800 font-medium">العربية</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ru">
+          <span class="text-2xl">🇷🇺</span>
+          <span class="text-gray-800 font-medium">Русский</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="th">
+          <span class="text-2xl">🇹🇭</span>
+          <span class="text-gray-800 font-medium">ไทย</span>
         </a>
         <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="id">
           <span class="text-2xl">🇮🇩</span>
-          <span class="text-gray-800 font-medium">Indonesia</span>
+          <span class="text-gray-800 font-medium">Bahasa Indonesia</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="vi">
+          <span class="text-2xl">🇻🇳</span>
+          <span class="text-gray-800 font-medium">Tiếng Việt</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ms">
+          <span class="text-2xl">🇲🇾</span>
+          <span class="text-gray-800 font-medium">Bahasa Melayu</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ml">
+          <span class="text-2xl">🇮🇳</span>
+          <span class="text-gray-800 font-medium">മലയാളം</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="my">
+          <span class="text-2xl">🇲🇲</span>
+          <span class="text-gray-800 font-medium">မြန်မာဘာသာ</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="hi">
+          <span class="text-2xl">🇮🇳</span>
+          <span class="text-gray-800 font-medium">हिन्दी</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ja">
+          <span class="text-2xl">🇯🇵</span>
+          <span class="text-gray-800 font-medium">日本語</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang="ko">
+          <span class="text-2xl">🇰🇷</span>
+          <span class="text-gray-800 font-medium">한국어</span>
         </a>
       </div>
     </div>
@@ -236,7 +295,7 @@ try {
 <div id="mobile-menu-items" class="hidden">
   {menuItems.map((item, index) => (
     <a 
-      href={item.path} 
+      href={withLang(item.path)} 
       class={`block text-white hover:text-red-400 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation mobile-menu-item border-b border-gray-600 last:border-b-0 ${index === 0 ? 'mobile-active' : ''}`}
       data-path={item.path}
       data-index={index}
@@ -320,10 +379,39 @@ try {
       languageOptions.forEach(option => {
         option.addEventListener('click', (e) => {
           e.preventDefault();
+          const selectedLang = option.getAttribute('data-lang');
           const selectedTextElement = option.querySelector('span:last-child');
           const selectorText = languageSelector.querySelector('span');
-          if (selectedTextElement && selectorText && selectedTextElement.textContent) {
+          
+          if (selectedLang && selectedTextElement && selectorText && selectedTextElement.textContent) {
+            // 更新选择器显示文本
             selectorText.textContent = selectedTextElement.textContent;
+            
+            // 获取当前页面路径
+            const currentPath = window.location.pathname;
+            
+            // 构建新的语言路径
+            let newPath = '';
+            
+            // 检查当前路径是否已经是多语言路径
+            const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+            
+            if (langMatch) {
+              // 当前是多语言路径，替换语言部分
+              newPath = currentPath.replace(/^\/([a-z]{2}(-[a-z]{2,4})?)\//, `/${selectedLang}/`);
+            } else {
+              // 当前不是多语言路径，添加语言前缀
+              // 对于根路径，直接跳转到对应语言的主页
+              if (currentPath === '/' || currentPath === '') {
+                newPath = `/${selectedLang}/`;
+              } else {
+                // 对于其他路径，添加语言前缀
+                newPath = `/${selectedLang}${currentPath}`;
+              }
+            }
+            
+            // 跳转到新语言页面
+            window.location.href = newPath;
           }
           
           // 关闭下拉菜单
@@ -340,6 +428,26 @@ try {
           languageArrow.style.transform = 'rotate(0deg)';
         }
       });
+      
+      // 初始化语言选择器显示当前语言
+      function initLanguageSelector() {
+        const currentPath = window.location.pathname;
+        const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+        const currentLang = langMatch ? langMatch[1] : 'zh-hans'; // 默认中文
+        
+        // 查找对应的语言选项
+        const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);
+        if (currentLangOption) {
+          const selectedTextElement = currentLangOption.querySelector('span:last-child');
+          const selectorText = languageSelector.querySelector('span');
+          if (selectedTextElement && selectorText && selectedTextElement.textContent) {
+            selectorText.textContent = selectedTextElement.textContent;
+          }
+        }
+      }
+      
+      // 初始化语言选择器
+      initLanguageSelector();
     }
 
     // 下拉菜单功能

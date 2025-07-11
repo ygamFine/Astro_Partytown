@@ -1,0 +1,37 @@
+---
+export const prerender = true;
+import Layout from '../../layouts/Layout.astro';
+import FullScreenBanner from '../../components/FullScreenBanner.astro';
+import HeroShowcase from '../../components/HeroShowcase.astro';
+import ProductShowcase from '../../components/ProductShowcase.astro';
+import CustomerNeeds from '../../components/CustomerNeeds.astro';
+import CustomerCases from '../../components/CustomerCases.astro';
+import NewsCenter from '../../components/NewsCenter.astro';
+import HotRecommendedProducts from '../../components/HotRecommendedProducts.astro';
+import StatsSection from '../../components/StatsSection.astro';
+
+import { SUPPORTED_LANGUAGES, getLocaleFromPath, mergeTranslations } from '../../locales/i18n.js';
+
+// 必须实现 getStaticPaths 为所有语言生成路由
+export async function getStaticPaths() {
+  return SUPPORTED_LANGUAGES.map((lang) => ({
+    params: { lang },
+    props: { locale: lang },
+  }));
+}
+---
+
+
+<Layout title="专业滑移装载机制造商">
+	<main>
+		<FullScreenBanner />
+		<HeroShowcase />
+		<ProductShowcase />
+		<StatsSection />
+		<HotRecommendedProducts />
+		<CustomerNeeds />
+		<CustomerCases />
+		<NewsCenter />
+
+	</main>
+</Layout>
