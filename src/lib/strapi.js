@@ -9,11 +9,11 @@ const STRAPI_TOKEN = '2980bc69d09c767b2ca2e1c211a285c9f48985775a3f1d1313025838a6
 /**
  * 获取菜单数据 (SSG模式，构建时调用)
  */
-export async function getMenus() {
+export async function getMenus(locale = 'zh-hans') {
   try {
-    console.log('🔄 构建时获取菜单数据...');
+    console.log(`🔄 构建时获取菜单数据 (语言: ${locale})...`);
     
-    const response = await fetch(`${STRAPI_BASE_URL}/menus`, {
+    const response = await fetch(`${STRAPI_BASE_URL}/menus?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -26,20 +26,81 @@ export async function getMenus() {
     
     const data = await response.json();
     
-    // 转换为标准格式
+    // 转换为标准格式，支持国际化字段
     const menus = data.data?.map(item => ({
-      name: item.name,
-      path: item.path,
-      publishedAt: item.publishedAt
+      name: item.name || item.attributes?.name,
+      path: item.path || item.attributes?.path,
+      locale: item.locale || item.attributes?.locale,
+      publishedAt: item.publishedAt || item.attributes?.publishedAt,
+      // 支持多语言子菜单
+      children: item.children || item.attributes?.children || []
     })) || [];
     
-    console.log(`✅ 构建时获取到 ${menus.length} 个菜单项`);
+    console.log(`✅ 构建时获取到 ${menus.length} 个菜单项 (${locale})`);
     return menus;
     
   } catch (error) {
-    console.error('❌ 构建时获取菜单失败:', error);
-    throw error;
+    console.error(`❌ 构建时获取菜单失败 (${locale}):`, error);
+    // 如果API调用失败，返回默认菜单
+    console.log('🔄 使用默认菜单...');
+    return getDefaultMenus(locale);
   }
+}
+
+/**
+ * 获取默认菜单 (当API调用失败时使用)
+ */
+function getDefaultMenus(locale = 'zh-hans') {
+  const menuTranslations = {
+    'zh-hans': {
+      home: '首页',
+      about: '关于我们', 
+      products: '产品中心',
+      case: '客户案例',
+      news: '新闻中心',
+      contact: '联系我们',
+      allProducts: '全部产品',
+      skidSteer: '滑移装载机',
+      backhoe: '挖掘装载机', 
+      telescopic: '伸缩臂叉装车',
+      electric: '电动工程机械'
+    },
+    'en': {
+      home: 'Home',
+      about: 'About',
+      products: 'Products', 
+      case: 'Case',
+      news: 'News',
+      contact: 'Contact',
+      allProducts: 'All Products',
+      skidSteer: 'Skid Steer Loader',
+      backhoe: 'Backhoe Loader',
+      telescopic: 'Telescopic Handler', 
+      electric: 'Electric Machinery'
+    }
+  };
+  
+  const t = menuTranslations[locale] || menuTranslations['zh-hans'];
+  
+  return [
+    { name: t.home, path: '/', locale },
+    { name: t.about, path: '/about', locale },
+    { 
+      name: t.products, 
+      path: '/products',
+      locale,
+      children: [
+        { name: t.allProducts, path: '/products', locale },
+        { name: t.skidSteer, path: '/products?category=滑移装载机', locale },
+        { name: t.backhoe, path: '/products?category=挖掘装载机', locale },
+        { name: t.telescopic, path: '/products?category=伸缩臂叉装车', locale },
+        { name: t.electric, path: '/products?category=电动工程机械', locale }
+      ]
+    },
+    { name: t.case, path: '/case', locale },
+    { name: t.news, path: '/news', locale },
+    { name: t.contact, path: '/contact', locale }
+  ];
 }
 
 // SSG模式下不需要客户端实时更新，已删除getMenusClient方法
