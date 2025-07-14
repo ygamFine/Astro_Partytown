@@ -1098,14 +1098,40 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.categ
     if (form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        alert('消息已发送，我们会尽快与您联系！');
+        
+        // 使用更优雅的反馈方式
+        const submitButton = this.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalText = submitButton.textContent;
+        submitButton.textContent = '发送中...';
+        submitButton.disabled = true;
+        
+        // 模拟发送过程
+        setTimeout(() => {
+          submitButton.textContent = '发送成功！';
+          submitButton.style.backgroundColor = '#10b981';
+          
+          setTimeout(() => {
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+            submitButton.style.backgroundColor = '';
+            this.reset();
+          }, 2000);
+        }, 1000);
       });
     }
 
     // 分享功能
     document.querySelectorAll('button[class*="bg-blue-600"], button[class*="bg-green-600"], button[class*="bg-gray-600"]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        alert('分享功能开发中...');
+        // 使用更优雅的反馈方式
+        const originalText = this.textContent;
+        this.textContent = '功能开发中...';
+        this.disabled = true;
+        
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.disabled = false;
+        }, 1500);
       });
     });
   </script>

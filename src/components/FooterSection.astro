@@ -169,13 +169,25 @@ import SocialIcons from './SocialIcons.astro';
     const data = Object.fromEntries(formData);
     
     // Here you would typically send the data to your backend
-    console.log('Quote request:', data);
     
-    // Show success message
-    alert('Thank you for your inquiry! We will contact you soon.');
+    // Show success message - 使用更优雅的方式
+    const submitButton = this.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const originalText = submitButton.textContent;
+    submitButton.textContent = '发送中...';
+    submitButton.disabled = true;
     
-    // Reset form
-    this.reset();
+    // 模拟发送过程
+    setTimeout(() => {
+      submitButton.textContent = '发送成功！';
+      submitButton.style.backgroundColor = '#10b981';
+      
+      setTimeout(() => {
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+        submitButton.style.backgroundColor = '';
+        this.reset();
+      }, 2000);
+    }, 1000);
   });
 
   // Back to top functionality

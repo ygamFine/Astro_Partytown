@@ -7,7 +7,7 @@ import partytown from '@astrojs/partytown';
 export default defineConfig({
   output: 'static',
   server: {
-    port: 3333,
+    port: 3000,
     host: true,
   },
   // 重定向规则 - 将非多语言路径重定向到默认语言
@@ -18,15 +18,6 @@ export default defineConfig({
     '/case': '/zh-hans/case',
     '/news': '/zh-hans/news',
   },
-
-  // 移除内置i18n配置，因为我们使用手动实现的多语言路由
-  // i18n: {
-  //   defaultLocale: "en",
-  //   locales: ["es", "en", "pt-br"],
-  //   routing: {
-  //     prefixDefaultLocale: true
-  //   },
-  // },
   integrations: [
     tailwind({
       applyBaseStyles: true,
@@ -38,4 +29,19 @@ export default defineConfig({
       }
     }),
   ],
+  // SSG优化配置
+  build: {
+    assets: '_astro',
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['astro'],
+          },
+        },
+      },
+    },
+  },
 });

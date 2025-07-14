@@ -55,23 +55,26 @@ try {
   <nav class="flex items-center" aria-label="主要导航">
     {menuItems.map((item, index) => (
       <div class="relative dropdown-container">
-    <a 
-      href={withLang(item.path)} 
-          class={`menu-item text-white font-semibold text-center py-4 ${
-            (currentPath === item.path) || (currentPath === '/' && item.path === '/') ? 'active' : ''
-          } ${item.children ? 'has-dropdown' : ''}`}
-          style="font-size: 2rem; width: 15rem; display: flex; align-items: center; justify-content: center;"
-          data-path={item.path}
-          data-index={index}
-    >
-      {item.name}
+        <div class="flex items-center">
+          <a 
+            href={withLang(item.path)} 
+            class={`menu-item text-white font-semibold text-center py-4 ${
+              (currentPath === item.path) || (currentPath === '/' && item.path === '/') ? 'active' : ''
+            }`}
+            style="font-size: 2rem; width: 15rem; display: flex; align-items: center; justify-content: center;"
+            data-path={item.path}
+            data-index={index}
+          >
+            {item.name}
+          </a>
           {item.children && (
-            <svg class="w-4 h-4 ml-2 dropdown-arrow transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-            </svg>
+            <button type="button" class="dropdown-toggle ml-2 flex items-center" aria-haspopup="true" aria-expanded="false" tabindex="0" style="background: none; border: none; padding: 0; cursor: pointer;">
+              <svg class="w-4 h-4 dropdown-arrow transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
           )}
-        </a>
-        
+        </div>
         {item.children && (
           <div class="dropdown-menu absolute top-full left-0 bg-white shadow-lg border border-gray-200 rounded-md overflow-hidden z-50 hidden" style="min-width: 32rem;">
             {/* 只保留子菜单列表，不显示Product Categories等弹框内容 */}
@@ -100,8 +103,8 @@ try {
           </div>
         )}
       </div>
-  ))}
-</nav>
+    ))}
+  </nav>
 
   <!-- 右侧功能区 -->
   <div class="flex items-center space-x-4">
@@ -389,15 +392,13 @@ try {
         const currentPath = window.location.pathname;
         const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
         const currentLang = langMatch ? langMatch[1] : 'zh-hans'; // 默认中文
-        
         // 查找对应的语言选项
         const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);
-        if (currentLangOption) {
-          const selectedTextElement = currentLangOption.querySelector('span:last-child');
-          const selectorText = languageSelector.querySelector('span');
-          if (selectedTextElement && selectorText && selectedTextElement.textContent) {
-            selectorText.textContent = selectedTextElement.textContent;
-          }
+        if (!languageSelector) return;
+        const selectedTextElement = currentLangOption ? currentLangOption.querySelector('span:last-child') : null;
+        const selectorText = languageSelector.querySelector('span');
+        if (selectedTextElement && selectorText && selectedTextElement.textContent) {
+          selectorText.textContent = selectedTextElement.textContent;
         }
       }
       
@@ -407,62 +408,35 @@ try {
 
     // 下拉菜单功能
     function initDropdownMenus() {
-      const dropdownContainers = document.querySelectorAll('.dropdown-container');
-      
-      dropdownContainers.forEach(container => {
-        const menuItem = container.querySelector('.menu-item') as HTMLElement;
-        const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
-        const dropdownArrow = container.querySelector('.dropdown-arrow') as HTMLElement;
-        
-        if (menuItem && dropdownMenu) {
-          // 鼠标悬停显示下拉菜单
-          container.addEventListener('mouseenter', () => {
+      // 只为.dropdown-toggle按钮绑定展开事件
+      document.querySelectorAll('.dropdown-toggle').forEach(toggleBtn => {
+        const dropdownContainer = toggleBtn.closest('.dropdown-container') as HTMLElement | null;
+        if (!dropdownContainer) return;
+        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu') as HTMLElement | null;
+        const dropdownArrow = toggleBtn.querySelector('.dropdown-arrow') as HTMLElement | null;
+        toggleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (!dropdownMenu) return;
+          const isHidden = dropdownMenu.classList.contains('hidden');
+          // 关闭其他所有下拉菜单
+          document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            if (menu !== dropdownMenu) {
+              (menu as HTMLElement).classList.add('hidden');
+            }
+          });
+          // 切换当前下拉菜单
+          if (isHidden) {
             dropdownMenu.classList.remove('hidden');
             if (dropdownArrow) {
               dropdownArrow.style.transform = 'rotate(180deg)';
             }
-          });
-          
-          // 鼠标离开隐藏下拉菜单
-          container.addEventListener('mouseleave', () => {
+          } else {
             dropdownMenu.classList.add('hidden');
             if (dropdownArrow) {
               dropdownArrow.style.transform = 'rotate(0deg)';
             }
-          });
-          
-          // 点击主菜单项的处理
-          menuItem.addEventListener('click', (e) => {
-            // 如果有子菜单，阻止默认跳转，显示下拉菜单
-            if (dropdownMenu) {
-              e.preventDefault();
-              const isHidden = dropdownMenu.classList.contains('hidden');
-              
-              // 关闭其他所有下拉菜单
-              document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                if (menu !== dropdownMenu) {
-                  menu.classList.add('hidden');
-                }
-              });
-              
-              // 切换当前下拉菜单
-              if (isHidden) {
-                dropdownMenu.classList.remove('hidden');
-                if (dropdownArrow) {
-                  dropdownArrow.style.transform = 'rotate(180deg)';
-                }
-              } else {
-                dropdownMenu.classList.add('hidden');
-                if (dropdownArrow) {
-                  dropdownArrow.style.transform = 'rotate(0deg)';
-                }
-              }
-            }
-            
-            // 更新选中状态
-            updateActiveMenuItem(menuItem);
-          });
-        }
+          }
+        });
       });
       
       // 点击页面其他地方关闭所有下拉菜单

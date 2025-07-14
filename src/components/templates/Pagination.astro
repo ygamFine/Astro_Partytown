@@ -10,8 +10,6 @@ interface Props {
 
 const { currentPage, totalPages, baseUrl, maxVisiblePages = 5, i18n } = Astro.props;
 
-console.log('组件中的国际化打印',i18n);
-
 // 计算显示的页码范围
 const getVisiblePages = (current: number, total: number, maxVisible: number) => {
   const start = Math.max(1, current - Math.floor(maxVisible / 2));

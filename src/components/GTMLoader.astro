@@ -6,9 +6,6 @@ const mode = import.meta.env.MODE;
 
 // GTM配置
 const GTM_ID = 'GTM-5MNNZB76'; // 替换成你的 GTM ID
-
-// 调试信息
-console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID: ${GTM_ID}`);
 ---
 
 <!-- 🎯 智能GTM动态加载器 - 支持URL参数控制 -->
@@ -25,10 +22,6 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
     const forceDebugMode = hasGTMDebug || hasGTMPreview;
     const usePartytown = isProd && !forceDebugMode;
     const isDebugMode = isDev || forceDebugMode;
-    
-    console.log(`🔧 [GTM] 运行模式: ${usePartytown ? 'Partytown' : 'Standard'}`);
-    console.log(`🔧 [GTM] 调试模式: ${isDebugMode ? '启用' : '禁用'}`);
-    console.log(`🔧 [GTM] URL参数: debug=${hasGTMDebug}, preview=${hasGTMPreview}`);
 
     // 初始化 dataLayer
     window.dataLayer = window.dataLayer || [];
@@ -46,23 +39,18 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
 
     // 🛠️ 调试工具和监听（调试模式下）
     if (isDebugMode) {
-      console.log('🐛 [GTM Debug] DataLayer 已初始化:', window.dataLayer);
-      
       // 监听 dataLayer 变化
       const originalPush = window.dataLayer.push;
       window.dataLayer.push = function(...args) {
-        console.log('🐛 [GTM Debug] DataLayer Push:', args);
         return originalPush.apply(this, args);
       };
 
       // 创建调试助手
       window.gtmDebug = {
         push: (data) => {
-          console.log('🧪 [GTM Debug] 手动推送事件:', data);
           window.dataLayer.push(data);
         },
         getDataLayer: () => {
-          console.log('🧪 [GTM Debug] 当前 dataLayer:', window.dataLayer);
           return window.dataLayer;
         },
         testEvent: () => {
@@ -74,19 +62,11 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
             timestamp: new Date().toISOString()
           };
           window.dataLayer.push(testData);
-          console.log('🧪 [GTM Debug] 测试事件已发送:', testData);
         },
         reload: () => {
-          console.log('🔄 [GTM Debug] 重新加载GTM...');
           location.reload();
         }
       };
-      
-      console.log('🧪 [GTM Debug] 调试助手已加载，可用命令:');
-      console.log('  - gtmDebug.push(data)     // 推送自定义事件');
-      console.log('  - gtmDebug.getDataLayer() // 查看数据层');
-      console.log('  - gtmDebug.testEvent()    // 发送测试事件');
-      console.log('  - gtmDebug.reload()       // 重新加载页面');
     }
 
     // 🚀 动态创建GTM脚本
@@ -115,23 +95,18 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
           
           j.onload=function(){
             const mode = '${usePartytown ? 'Partytown' : 'Standard'}';
-            console.log('✅ [GTM] GTM脚本加载成功 (' + mode + ' 模式)');
             ${isDebugMode ? `
             setTimeout(() => {
               if (window.google_tag_manager) {
-                console.log('🔍 [GTM Debug] GTM容器信息:', Object.keys(window.google_tag_manager));
+                // GTM容器信息已加载
               }
             }, 1000);
             ` : ''}
           };
           
           j.onerror=function(e){
-            console.error('❌ [GTM] GTM脚本加载失败:', e);
             ${isDebugMode ? `
-            console.warn('💡 [GTM Debug] 可能的原因:');
-            console.warn('  - 网络连接问题');
-            console.warn('  - GTM容器ID错误');
-            console.warn('  - CORS限制（${usePartytown ? 'Partytown模式' : '标准模式'}）');
+            // GTM脚本加载失败
             ` : ''}
           };
           
@@ -146,8 +121,6 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
 
       // 添加到页面
       document.head.appendChild(script);
-
-      console.log(`🚀 [GTM] 脚本已创建 (类型: ${script.type})`);
     }
 
     // 🏃‍♂️ 立即执行或等待加载完成
@@ -198,19 +171,12 @@ console.log(`🔧 GTM Loader - 环境: ${mode}, 生产模式: ${isProd}, GTM ID:
       const isDebugMode = urlParams.has('gtm_debug') || urlParams.has('gtm_preview');
       
       if (window.dataLayer && window.dataLayer.length > 0) {
-        console.log('✅ [GTM] 配置验证通过 - DataLayer已初始化');
-        
+        // DataLayer已初始化
         if (isDebugMode) {
-          console.log('🔍 [GTM Debug] 最终验证 - DataLayer内容:', window.dataLayer);
           if (window.google_tag_manager) {
-            console.log('🔍 [GTM Debug] GTM管理器状态: loaded');
-            console.log('🔍 [GTM Debug] 容器数量:', Object.keys(window.google_tag_manager).length);
-          } else {
-            console.warn('⚠️ [GTM Debug] GTM管理器尚未完全加载');
+            // GTM管理器状态正常
           }
         }
-      } else {
-        console.error('❌ [GTM] 验证失败 - DataLayer未正确初始化');
       }
     }, 3000);
   });

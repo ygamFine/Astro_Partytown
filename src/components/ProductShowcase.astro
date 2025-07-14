@@ -399,7 +399,6 @@ h2 {
     productItems.forEach((item, index) => {
       item.addEventListener('click', () => {
         updateDisplay(index);
-        console.log('🎯 切换到产品:', products[index].alt);
       });
     });
 
@@ -407,7 +406,6 @@ h2 {
     progressDots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
         updateDisplay(index);
-        console.log('🎯 通过进度条切换到产品:', products[index].alt);
       });
     });
 
@@ -421,7 +419,5 @@ h2 {
         updateDisplay(currentActiveIndex + 1);
       }
     });
-
-    console.log('✅ ProductShowcase 动画和交互初始化完成');
   });
 </script> 

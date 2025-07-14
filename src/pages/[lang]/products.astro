@@ -19,7 +19,6 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const translations = await mergeTranslations(lang, ['pagination']);
 const t = (translations as any).pagination || {};
-console.log('国际化打印',t);
 
 // 分页配置
 const itemsPerPage = 9; // 每页显示9个产品（3行x3列）

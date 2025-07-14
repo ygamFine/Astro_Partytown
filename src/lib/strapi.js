@@ -11,8 +11,6 @@ const STRAPI_TOKEN = '2980bc69d09c767b2ca2e1c211a285c9f48985775a3f1d1313025838a6
  */
 export async function getMenus(locale = 'zh-hans') {
   try {
-    console.log(`🔄 构建时获取菜单数据 (语言: ${locale})...`);
-    
     const response = await fetch(`${STRAPI_BASE_URL}/menus?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
@@ -36,13 +34,10 @@ export async function getMenus(locale = 'zh-hans') {
       children: item.children || item.attributes?.children || []
     })) || [];
     
-    console.log(`✅ 构建时获取到 ${menus.length} 个菜单项 (${locale})`);
     return menus;
     
   } catch (error) {
-    console.error(`❌ 构建时获取菜单失败 (${locale}):`, error);
     // 如果API调用失败，返回默认菜单
-    console.log('🔄 使用默认菜单...');
     return getDefaultMenus(locale);
   }
 }

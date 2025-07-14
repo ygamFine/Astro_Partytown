@@ -23,7 +23,6 @@ try {
     t = await import(`../../locales/en/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
   } catch (fallbackError) {
     // 如果连英文也加载失败，使用空对象
-    console.warn(`Failed to load breadcrumb translations for language: ${lang}`, e);
     t = {};
   }
 }
