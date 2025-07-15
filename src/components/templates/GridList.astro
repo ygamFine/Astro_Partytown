@@ -1,9 +1,11 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
   items: Array<{
     id: string | number;
     title: string;
-    image: string;
+    image: any; // 改为any类型，支持导入的图片对象
     excerpt?: string;
     category?: string;
     href: string;
@@ -24,9 +26,11 @@ const displayItems = items.slice(0, maxItems);
       <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <a href={item.href} class="block h-full">
           <div class="aspect-video overflow-hidden">
-            <img 
+            <Image 
               src={item.image} 
               alt={item.title}
+              width={400}
+              height={300}
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
               decoding="async"

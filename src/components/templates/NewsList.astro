@@ -1,9 +1,11 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
   items: Array<{
     id: string | number;
     title: string;
-    image: string;
+    image: any; // 改为any类型，支持导入的图片对象
     excerpt: string;
     date?: string;
     href: string;
@@ -30,9 +32,11 @@ const formatDate = (dateString: string | undefined) => {
         <!-- 左侧图片 -->
         <div class="md:w-96 md:flex-shrink-0 overflow-hidden">
           <a href={item.href} class="block aspect-[4/3] group">
-            <img 
+            <Image 
               src={item.image} 
               alt={item.title}
+              width={400}
+              height={300}
               class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
               loading="lazy"
               decoding="async"

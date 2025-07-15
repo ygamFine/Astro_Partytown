@@ -4,6 +4,9 @@ module.exports = {
     'zh-hans',
     'en',
     'fr',
-    'de'
+    'de',
+    'ja',
+    'ar',
+    'ko',
   ]
 }; 

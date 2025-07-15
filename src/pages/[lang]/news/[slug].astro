@@ -3,6 +3,7 @@ export const prerender = true;
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
 import GridList from '../../../components/templates/GridList.astro';
+import { Image } from 'astro:assets';
 import { allNews } from '../../../data/news.js';
 import { products } from '../../../data/products.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
@@ -87,13 +88,15 @@ const formatDate = (dateString: string) => {
     <!-- Article Image -->
                     {news.image && (
     <div class="mb-8">
-      <img 
+      <Image 
         src={news.image} 
         alt={news.title} 
-                        class="w-full h-auto max-h-[500px] object-cover rounded-lg"
-                        loading="eager"
+        width={800}
+        height={500}
+        class="w-full h-auto max-h-[500px] object-cover rounded-lg"
+        loading="eager"
         decoding="async"
-      >
+      />
     </div>
                     )}
 
