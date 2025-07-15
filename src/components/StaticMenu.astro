@@ -1,11 +1,16 @@
 ---
 // SSG静态菜单组件 - 构建时获取菜单数据
 import { getMenus } from '../lib/strapi.js';
+import { getCommonTextSync } from '../lib/commonTranslations.js';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
 const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
 const currentLang = langMatch ? langMatch[1] : 'zh-hans'; // 默认中文
+
+// 加载公共语言数据
+const common = await import(`../locales/${currentLang}/common.json`);
+const commonData = common.default;
 // 动态生成菜单链接
 function withLang(path: string) {
   // 如果 path 已经有 /[lang]/ 前缀，直接返回
@@ -113,7 +118,7 @@ try {
       <input 
         type="text" 
         id="header-search-input"
-        placeholder="请输入关键词" 
+        placeholder={getCommonTextSync(commonData, 'placeholders.search')}
         class="round bg-red-500/95 border border-red-400/30 text-white placeholder-white/70 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200"
         style="width: 30rem; font-size: 1.4rem;"
         autocomplete="off"
