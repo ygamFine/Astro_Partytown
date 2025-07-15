@@ -114,8 +114,8 @@ export function generateContactBreadcrumbs(lang) {
 export function generateSearchBreadcrumbs(lang, searchTerm) {
   return [
     { label: 'home', href: `/${lang}` },
-    { label: 'search' },
-    { label: searchTerm }
+    { label: 'search', href: `/${lang}/search` },
+    { label: searchTerm || 'search' }
   ];
 }
 

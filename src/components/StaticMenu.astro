@@ -109,18 +109,35 @@ try {
   <!-- 右侧功能区 -->
   <div class="flex items-center space-x-4">
     <!-- 搜索框 -->
-    <div class="relative">
+    <div class="relative" id="header-search-container">
       <input 
         type="text" 
-        placeholder="Please enter the keyword" 
+        id="header-search-input"
+        placeholder="请输入关键词" 
         class="round bg-red-500/95 border border-red-400/30 text-white placeholder-white/70 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200"
         style="width: 30rem; font-size: 1.4rem;"
+        autocomplete="off"
       />
-      <button class="absolute right-2 top-1/2 transform -translate-y-1/2">
-        <svg class="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button 
+        type="submit"
+        id="header-search-button"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2"
+      >
+        <svg class="w-5 h-5 text-white/70 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
       </button>
+      
+      <!-- 搜索结果下拉框 -->
+      <div 
+        id="header-search-results" 
+        class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+        style="width: 30rem;"
+      >
+        <div id="header-search-results-content" class="p-2">
+          <!-- 搜索结果将在这里显示 -->
+        </div>
+      </div>
     </div>
 
     <!-- 购物车图标和地球图标 - 按原型图样式 -->
@@ -530,6 +547,154 @@ try {
     if (nav) {
       nav.classList.add('menu-loaded');
     }
+    
+    // 初始化头部搜索功能
+    initHeaderSearch();
+  }
+  
+  // 头部搜索功能
+  function initHeaderSearch() {
+    const searchInput = document.getElementById('header-search-input') as HTMLInputElement;
+    const searchButton = document.getElementById('header-search-button');
+    const searchResults = document.getElementById('header-search-results');
+    const searchResultsContent = document.getElementById('header-search-results-content');
+    
+    if (!searchInput || !searchButton || !searchResults || !searchResultsContent) {
+      return;
+    }
+    
+    let debounceTimer: NodeJS.Timeout | null = null;
+    
+    // 获取当前语言
+    const currentLang = window.location.pathname.split('/')[1] || 'zh-hans';
+    
+    // 执行搜索
+    async function performSearch(query: string) {
+      if (!query || query.trim() === '') {
+        hideResults();
+        return;
+      }
+      
+      try {
+        const { performSearch: searchFunction } = await import('/src/lib/searchIndex.js');
+        const results = searchFunction(query, currentLang);
+        displayResults(results, query);
+      } catch (error) {
+        console.error('Search error:', error);
+        hideResults();
+      }
+    }
+    
+    // 显示搜索结果
+    function displayResults(results: any[], query: string) {
+      if (results.length === 0) {
+        searchResultsContent!.innerHTML = `
+          <div class="p-4 text-center text-gray-500">
+            <p>未找到 "${query}" 的相关结果</p>
+          </div>
+        `;
+      } else {
+        searchResultsContent!.innerHTML = results.slice(0, 5).map((item: any) => `
+          <a href="${item.url}" class="block p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0">
+                <img src="${item.image}" alt="${item.title}" class="w-10 h-10 object-cover rounded" onerror="this.style.display='none'">
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h4>
+                <p class="text-xs text-gray-500 mt-1">${highlightText(item.excerpt, query)}</p>
+                <span class="inline-block text-xs ${getCategoryColor(item.type)} px-2 py-1 rounded mt-1">${getCategoryLabel(item.type)}</span>
+              </div>
+            </div>
+          </a>
+        `).join('');
+        
+        if (results.length > 5) {
+          searchResultsContent!.innerHTML += `
+            <div class="p-3 text-center border-t border-gray-100">
+              <a href="/${currentLang}/search?q=${encodeURIComponent(query)}" class="text-sm text-red-600 hover:text-red-700">
+                查看全部 ${results.length} 个结果
+              </a>
+            </div>
+          `;
+        }
+      }
+      
+      showResults();
+    }
+    
+    // 高亮文本
+    function highlightText(text: string, query: string) {
+      if (!query || !text) return text;
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+    }
+    
+    // 获取分类颜色
+    function getCategoryColor(type: string) {
+      const colors: Record<string, string> = {
+        product: 'bg-blue-100 text-blue-600',
+        news: 'bg-green-100 text-green-600',
+        case: 'bg-purple-100 text-purple-600'
+      };
+      return colors[type] || 'bg-gray-100 text-gray-600';
+    }
+    
+    // 获取分类标签
+    function getCategoryLabel(type: string) {
+      const labels: Record<string, string> = {
+        product: '产品',
+        news: '新闻',
+        case: '案例'
+      };
+      return labels[type] || '其他';
+    }
+    
+    function showResults() {
+      searchResults!.classList.remove('hidden');
+    }
+    
+    function hideResults() {
+      searchResults!.classList.add('hidden');
+    }
+    
+    // 绑定事件
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer!);
+      debounceTimer = setTimeout(() => {
+        performSearch((e.target as HTMLInputElement).value.trim());
+      }, 300);
+    });
+    
+    searchButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query) {
+        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+      }
+    });
+    
+    // 点击外部关闭搜索结果
+    document.addEventListener('click', (e) => {
+      const container = document.getElementById('header-search-container');
+      if (container && !container.contains(e.target as Node)) {
+        hideResults();
+      }
+    });
+    
+    // 键盘导航
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query) {
+          window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+        }
+      } else if (e.key === 'Escape') {
+        hideResults();
+        searchInput.blur();
+      }
+    });
   }
 </script>
 
