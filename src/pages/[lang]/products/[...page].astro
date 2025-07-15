@@ -5,15 +5,17 @@ import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayo
 import GridList from '../../../components/templates/GridList.astro';
 import Pagination from '../../../components/templates/Pagination.astro';
 import { products } from '../../../data/products.js';
-import { SUPPORTED_LANGUAGES, mergeTranslations } from '../../../locales/i18n.js';
+import { getEnabledLanguages } from '../../../lib/i18n-config.js';
+import { mergeTranslations } from '../../../locales/i18n.js';
 
-// 必须实现 getStaticPaths 为所有语言和页面生成路由
+// 只为配置中启用的语言和页面生成路由
 export async function getStaticPaths() {
   const paths = [];
   const itemsPerPage = 9;
   const totalPages = Math.ceil(products.length / itemsPerPage);
+  const enabledLanguages = getEnabledLanguages();
   
-  SUPPORTED_LANGUAGES.forEach((lang) => {
+  enabledLanguages.forEach((lang) => {
     // 第一页 (无页码)
     paths.push({
       params: { lang, page: undefined },

@@ -10,11 +10,12 @@ import NewsCenter from '../../components/NewsCenter.astro';
 import HotRecommendedProducts from '../../components/HotRecommendedProducts.astro';
 import StatsSection from '../../components/StatsSection.astro';
 
-import { SUPPORTED_LANGUAGES, getLocaleFromPath, mergeTranslations } from '../../locales/i18n.js';
+import { getEnabledLanguages } from '../../lib/i18n-config.js';
 
-// 必须实现 getStaticPaths 为所有语言生成路由
+// 只为配置中启用的语言生成路由
 export async function getStaticPaths() {
-  return SUPPORTED_LANGUAGES.map((lang) => ({
+  const enabledLanguages = getEnabledLanguages();
+  return enabledLanguages.map((lang) => ({
     params: { lang },
     props: { locale: lang },
   }));

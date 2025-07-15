@@ -5,12 +5,14 @@ import SecondaryPageLayout from '../../components/templates/SecondaryPageLayout.
 import GridList from '../../components/templates/GridList.astro';
 import Pagination from '../../components/templates/Pagination.astro';
 import { products } from '../../data/products.js';
-import { SUPPORTED_LANGUAGES, getLocaleFromPath, mergeTranslations } from '../../locales/i18n.js';
+import { getEnabledLanguages } from '../../lib/i18n-config.js';
+import { getLocaleFromPath, mergeTranslations } from '../../locales/i18n.js';
 import { generateProductListBreadcrumbs } from '../../lib/breadcrumbUtils.js';
 
-// 必须实现 getStaticPaths 为所有语言生成路由
+// 只为配置中启用的语言生成路由
 export async function getStaticPaths() {
-  return SUPPORTED_LANGUAGES.map((lang) => ({
+  const enabledLanguages = getEnabledLanguages();
+  return enabledLanguages.map((lang) => ({
     params: { lang },
     props: { locale: lang },
   }));

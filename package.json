@@ -5,8 +5,12 @@
   "scripts": {
     "dev": "astro dev --port 3000",
     "build": "astro build",
+    "build:fast": "npm run i18n:generate && astro build",
+    "build:all": "npm run i18n:generate:all && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "i18n:generate": "node scripts/generate-common-translations.js",
+    "i18n:generate:all": "node scripts/generate-common-translations.js --all"
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",

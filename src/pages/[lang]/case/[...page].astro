@@ -5,19 +5,20 @@ import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayo
 import GridList from '../../../components/templates/GridList.astro';
 import Pagination from '../../../components/templates/Pagination.astro';
 import { allCases } from '../../../data/cases.js';
-import { SUPPORTED_LANGUAGES } from '../../../locales/i18n.js';
+import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 
-// 为分页生成静态路径
+// 为分页生成静态路径，只为配置中启用的语言生成
 export function getStaticPaths() {
   const casesPerPage = 6; // 每页显示6个案例（2行x3列）
   const totalPages = Math.ceil(allCases.length / casesPerPage);
+  const enabledLanguages = getEnabledLanguages();
   
   // 生成分页路径
   const paths = [];
   
-  // 为每种语言生成路径
-  SUPPORTED_LANGUAGES.forEach(lang => {
+  // 为每种启用的语言生成路径
+  enabledLanguages.forEach(lang => {
     // 第一页 (可以用 /[lang]/case 访问)
     paths.push({
       params: { lang, page: undefined },

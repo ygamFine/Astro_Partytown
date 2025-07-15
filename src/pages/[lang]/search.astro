@@ -3,12 +3,14 @@ export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
 import GlobalSearch from '../../components/GlobalSearch.astro';
-import { SUPPORTED_LANGUAGES, mergeTranslations } from '../../locales/i18n.js';
+import { getEnabledLanguages } from '../../lib/i18n-config.js';
+import { mergeTranslations } from '../../locales/i18n.js';
 import { generateSearchBreadcrumbs } from '../../lib/breadcrumbUtils.js';
 
-// 为所有语言生成静态路径
+// 只为配置中启用的语言生成静态路径
 export async function getStaticPaths() {
-  return SUPPORTED_LANGUAGES.map((lang) => ({
+  const enabledLanguages = getEnabledLanguages();
+  return enabledLanguages.map((lang) => ({
     params: { lang },
     props: { locale: lang },
   }));

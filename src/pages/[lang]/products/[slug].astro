@@ -7,13 +7,14 @@ import { products } from '../../../data/products.js';
 import { allNews } from '../../../data/news.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 
 export async function getStaticPaths() {
-  // 为所有语言和产品生成静态路径
+  // 只为配置中启用的语言和产品生成静态路径
   const paths = [];
-  const { SUPPORTED_LANGUAGES } = await import('../../../locales/i18n.js');
+  const enabledLanguages = getEnabledLanguages();
   
-  SUPPORTED_LANGUAGES.forEach(lang => {
+  enabledLanguages.forEach(lang => {
     products.forEach(product => {
       paths.push({
         params: { lang, slug: product.slug },

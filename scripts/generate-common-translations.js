@@ -7,6 +7,34 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// 检查配置文件是否变化
+function checkConfigChanged() {
+  const configPath = path.join(__dirname, '..', 'i18n.config.cjs');
+  const cachePath = path.join(__dirname, '..', '.i18n-config-cache');
+  
+  try {
+    // 读取配置文件
+    const configContent = fs.readFileSync(configPath, 'utf8');
+    const configHash = Buffer.from(configContent).toString('base64');
+    
+    // 检查缓存
+    if (fs.existsSync(cachePath)) {
+      const cachedHash = fs.readFileSync(cachePath, 'utf8');
+      if (cachedHash === configHash) {
+        console.log('📋 配置文件未变化，跳过生成公共语言文件');
+        return false;
+      }
+    }
+    
+    // 更新缓存
+    fs.writeFileSync(cachePath, configHash);
+    return true;
+  } catch (error) {
+    console.log('⚠️  无法检查配置文件变化，继续生成公共语言文件');
+    return true;
+  }
+}
+
 // 支持的语言列表
 const SUPPORTED_LANGUAGES = [
   'en', 'zh-hans', 'zh-hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
@@ -2565,6 +2593,11 @@ function generateCommonFile(lang, data) {
 
 // 主函数
 async function generateCommonFiles() {
+  // 检查配置文件是否变化
+  if (!checkConfigChanged()) {
+    return;
+  }
+
   console.log('🚀 开始生成公共语言文件...\n');
 
   const localesDir = path.join(__dirname, '../src/locales');

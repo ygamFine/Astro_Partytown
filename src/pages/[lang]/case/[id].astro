@@ -7,11 +7,12 @@ import { allCases } from '../../../data/cases.js';
 import { allNews } from '../../../data/news.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateCaseDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 
 export async function getStaticPaths() {
-  // 从案例数据生成静态路径
-  const { SUPPORTED_LANGUAGES } = await import('../../../locales/i18n.js');
-  return SUPPORTED_LANGUAGES.flatMap(lang =>
+  // 从案例数据生成静态路径，只为配置中启用的语言生成
+  const enabledLanguages = getEnabledLanguages();
+  return enabledLanguages.flatMap(lang =>
     allCases.map(caseItem => ({
       params: { lang, id: caseItem.id.toString() },
       props: { lang, caseItem }
@@ -39,7 +40,7 @@ const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
 // 格式化日期
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString(lang === 'zh-hans' || lang === 'zh-hant' ? 'zh-CN' : lang, { 
+  return date.toLocaleDateString(lang === 'zh-hans' ? 'zh-CN' : lang, { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric',

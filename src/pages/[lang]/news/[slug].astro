@@ -5,14 +5,15 @@ import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
 import GridList from '../../../components/templates/GridList.astro';
 import { allNews } from '../../../data/news.js';
 import { products } from '../../../data/products.js';
-import { SUPPORTED_LANGUAGES } from '../../../locales/i18n.js';
+import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { generateNewsDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 
 export function getStaticPaths() {
-  // 按日期降序排序所有新闻
+  // 按日期降序排序所有新闻，只为配置中启用的语言生成
   const sortedNews = allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const enabledLanguages = getEnabledLanguages();
 
-  return SUPPORTED_LANGUAGES.flatMap(lang =>
+  return enabledLanguages.flatMap(lang =>
     sortedNews.map((news, index) => {
       const previousNews = index > 0 ? sortedNews[index - 1] : null;
       const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;

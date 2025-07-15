@@ -2,11 +2,12 @@
 import Layout from '../../layouts/Layout.astro';
 import CommonTranslationsDemo from '../../components/CommonTranslationsDemo.astro';
 import { getLocaleFromPath } from '../../locales/i18n.js';
+import { getEnabledLanguages } from '../../lib/i18n-config.js';
 
 export async function getStaticPaths() {
-  const languages = ['en', 'zh-hans', 'zh-hant', 'fr', 'de', 'es', 'ja', 'ko'];
+  const enabledLanguages = getEnabledLanguages();
   
-  return languages.map(lang => ({
+  return enabledLanguages.map(lang => ({
     params: { lang }
   }));
 }
