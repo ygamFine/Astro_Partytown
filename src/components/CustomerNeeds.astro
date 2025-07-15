@@ -1,11 +1,16 @@
+---
+import { Image } from 'astro:assets';
+import factoryImage from '../assets/images/factory.webp';
+---
+
 <section class="relative min-h-screen flex items-center overflow-hidden animate-fade-up">
   <!-- 背景图片 -->
   <div class="absolute inset-0">
-    <img 
-      src="/factory.webp" 
+    <Image 
+      src={factoryImage}
       alt="Factory Workshop" 
-      width="1920"
-      height="1080"
+      width={1920}
+      height={1080}
       loading="lazy"
       decoding="async"
       class="w-full h-full object-cover"

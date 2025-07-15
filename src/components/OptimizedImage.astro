@@ -1,0 +1,243 @@
+---
+import { optimizeImage } from '../utils/imageOptimizer.js';
+
+export interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  sizes?: string;
+  className?: string;
+  priority?: boolean;
+  fallbackSrc?: string;
+  placeholder?: boolean;
+  blur?: boolean;
+}
+
+const {
+  src,
+  alt,
+  width = 600,
+  height = 400,
+  loading = 'lazy',
+  decoding = 'async',
+  sizes = '(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw',
+  className = '',
+  priority = false,
+  fallbackSrc = '/images/placeholder.webp',
+  placeholder = false,
+  blur = false
+} = Astro.props;
+
+// 生成优化的图片属性
+const optimizedProps = optimizeImage(src, {
+  alt,
+  width,
+  height,
+  loading,
+  decoding,
+  sizes,
+  className,
+  priority
+});
+
+// 生成占位符样式
+const placeholderStyle = placeholder ? `
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+` : '';
+
+// 生成模糊效果样式
+const blurStyle = blur ? 'filter: blur(10px);' : '';
+---
+
+<div class="optimized-image-container" style={placeholderStyle}>
+  <img
+    {...optimizedProps}
+    onerror={`this.onerror=null; this.src='${fallbackSrc}';`}
+    style={blurStyle}
+    data-src={src}
+    data-fallback={fallbackSrc}
+  />
+  
+  {placeholder && (
+    <div class="image-placeholder">
+      <div class="placeholder-content">
+        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+        </svg>
+        <span class="placeholder-text">图片加载中...</span>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .optimized-image-container {
+    position: relative;
+    overflow: hidden;
+    background-color: #f9fafb;
+  }
+
+  .optimized-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .optimized-image[loading="lazy"] {
+    opacity: 0;
+  }
+
+  .optimized-image[loading="lazy"].loaded {
+    opacity: 1;
+  }
+
+  .image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9fafb;
+    transition: opacity 0.3s ease;
+  }
+
+  .placeholder-content {
+    text-align: center;
+    color: #9ca3af;
+  }
+
+  .placeholder-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+
+  .placeholder-text {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* 响应式优化 */
+  @media (max-width: 768px) {
+    .optimized-image {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .optimized-image {
+      width: 100%;
+    }
+  }
+
+  /* 高对比度模式支持 */
+  @media (prefers-contrast: high) {
+    .optimized-image {
+      border: 1px solid #000;
+    }
+  }
+
+  /* 减少动画模式支持 */
+  @media (prefers-reduced-motion: reduce) {
+    .optimized-image,
+    .image-placeholder {
+      transition: none;
+    }
+    
+    @keyframes loading {
+      0%, 100% {
+        background-position: 200% 0;
+      }
+    }
+  }
+</style>
+
+<script>
+  // 图片懒加载和优化脚本
+  document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.optimized-image[loading="lazy"]');
+    
+    // 检查是否支持 Intersection Observer
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            loadImage(img);
+            observer.unobserve(img);
+          }
+        });
+      }, {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+      });
+
+      images.forEach(img => imageObserver.observe(img));
+    } else {
+      // 降级处理：直接加载所有图片
+      images.forEach(img => loadImage(img as HTMLImageElement));
+    }
+  });
+
+  function loadImage(img: HTMLImageElement) {
+    // 移除占位符
+    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
+    if (placeholder) {
+      placeholder.style.opacity = '0';
+      setTimeout(() => {
+        placeholder.style.display = 'none';
+      }, 300);
+    }
+
+    // 加载图片
+    img.addEventListener('load', function() {
+      img.classList.add('loaded');
+    });
+
+    img.addEventListener('error', function() {
+      const fallback = img.getAttribute('data-fallback');
+      if (fallback && img.src !== fallback) {
+        img.src = fallback;
+      }
+    });
+  }
+
+  // 预加载关键图片
+  function preloadCriticalImages() {
+    const criticalImages = document.querySelectorAll('.optimized-image[fetchpriority="high"]') as NodeListOf<HTMLImageElement>;
+    criticalImages.forEach(img => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = img.src;
+      (link as any).fetchPriority = 'high';
+      document.head.appendChild(link);
+    });
+  }
+
+  // 页面加载完成后预加载关键图片
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', preloadCriticalImages);
+  } else {
+    preloadCriticalImages();
+  }
+</script> 

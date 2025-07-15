@@ -1,3 +1,11 @@
+---
+import { Image } from 'astro:assets';
+import backhoeImage from '../assets/images/backhoe.webp';
+import skid1Image from '../assets/images/skid1.webp';
+import telescopicImage from '../assets/images/telescopic.webp';
+import logoImage from '../assets/images/logo.png.webp';
+---
+
 <section class="product-showcase">
   <div class="container">
     <div class="product-showcase-main">
@@ -23,11 +31,11 @@
         <div class="product-thumbnails">
         <div class="product-item active animate-fade-left animate-delay-400" data-index="0">
           <div class="overflow-hidden">
-            <img 
-              src="/backhoe.webp" 
+            <Image 
+              src={backhoeImage}
               alt="Backhoe Loader" 
-              width="200"
-              height="150"
+              width={200}
+              height={150}
               loading="lazy"
               decoding="async"
               class="thumbnail-image transition-transform duration-300 hover:scale-105" 
@@ -38,11 +46,11 @@
         </div>
         <div class="product-item animate-fade-left animate-delay-500" data-index="1">
           <div class="overflow-hidden">
-            <img 
-              src="/skid1.webp" 
+            <Image 
+              src={skid1Image}
               alt="Skid Steer Loader" 
-              width="200"
-              height="150"
+              width={200}
+              height={150}
               loading="lazy"
               decoding="async"
               class="thumbnail-image transition-transform duration-300 hover:scale-105" 
@@ -53,11 +61,11 @@
         </div>
         <div class="product-item animate-fade-left animate-delay-600" data-index="2">
           <div class="overflow-hidden">
-            <img 
-              src="/telescopic.webp" 
+            <Image 
+              src={telescopicImage}
               alt="Telescopic Forklift" 
-              width="200"
-              height="150"
+              width={200}
+              height={150}
               loading="lazy"
               decoding="async"
               class="thumbnail-image transition-transform duration-300 hover:scale-105" 
@@ -73,12 +81,12 @@
       <div class="product-main-display animate-fade-right animate-delay-400">
         <div class="main-image-container overflow-hidden">
           <div class="tevis-watermark">TEVIS</div>
-          <img 
+          <Image 
             id="mainProductImage" 
-            src="/backhoe.webp" 
+            src={backhoeImage}
             alt="Main Product" 
-            width="600"
-            height="400"
+            width={600}
+            height={400}
             loading="lazy"
             decoding="async"
             class="main-product-image transition-transform duration-300 hover:scale-105" 

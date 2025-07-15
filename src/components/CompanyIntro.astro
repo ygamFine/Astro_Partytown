@@ -1,3 +1,8 @@
+---
+import { Image } from 'astro:assets';
+import companyBuildingImage from '../assets/images/company-building.svg';
+---
+
 <section class="py-20 bg-gray-50 animate-fade-in">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -38,15 +43,15 @@
       <!-- Right image -->
       <div class="relative animate-slide-in-right">
         <div class="relative overflow-hidden rounded-2xl shadow-2xl performance-critical">
-          <img 
-            src="/company-building.svg" 
+          <Image 
+            src={companyBuildingImage}
             alt="Company Building" 
-            width="600" 
-            height="450" 
+            width={600} 
+            height={450} 
             loading="lazy"
             decoding="async"
             class="w-full h-96 object-cover hover-scale-optimized transition-transform duration-300"
-          >
+          />
           
           <!-- Overlay with company name -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">

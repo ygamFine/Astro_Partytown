@@ -1,5 +1,7 @@
 ---
 import StaticMenu from './StaticMenu.astro';
+import { Image } from 'astro:assets';
+import logoImage from '../assets/images/logo.png.webp';
 ---
 <!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
 <header class="relative z-50">
@@ -9,16 +11,16 @@ import StaticMenu from './StaticMenu.astro';
       <div class="flex items-center justify-between md:h-[9.9rem] h-24">
       <!-- TEVIS Logo -->
       <a href="/" class="flex items-center">
-          <img 
-            src="/images/logo.png.webp" 
+          <Image 
+            src={logoImage}
             alt="TEVIS Logo" 
-            width="120"
-            height="32"
+            width={120}
+            height={32}
             loading="eager"
             fetchpriority="high"
             decoding="sync"
             class="md:h-23 h-8 w-auto"
-          >
+          />
       </a>
 
       <!-- Desktop Contact Info & Quote Button -->

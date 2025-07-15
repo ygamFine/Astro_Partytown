@@ -1,5 +1,7 @@
 ---
 import SocialIcons from './SocialIcons.astro';
+import { Image } from 'astro:assets';
+import logoImage from '../assets/images/logo.png.webp';
 ---
 <footer class="bg-gray-800 text-gray-300 pt-16 pb-8">
   <div class="container mx-auto px-4">
@@ -14,15 +16,15 @@ import SocialIcons from './SocialIcons.astro';
         
         <!-- Company Logo -->
         <div class="mt-8">
-          <img 
-            src="/images/logo.png.webp" 
+          <Image 
+            src={logoImage}
             alt="TEVIS Logo" 
-            width="120"
-            height="64"
+            width={120}
+            height={64}
             loading="lazy"
             decoding="async"
             class="h-16 w-auto"
-          >
+          />
           <p class="text-gray-400 text-sm leading-relaxed">
             山东永安建设机械集团有限公司致力于为全球客户提供高品质的工程机械设备和完善的售后服务。
           </p>

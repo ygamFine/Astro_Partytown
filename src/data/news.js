@@ -1,3 +1,9 @@
+import product1Image from '../assets/images/product1.webp';
+import product2Image from '../assets/images/product2.webp';
+import case1Image from '../assets/images/case1.webp';
+import case2Image from '../assets/images/case2.webp';
+import case3Image from '../assets/images/case3.webp';
+
 export const allNews = [
   { 
     id: 1,
@@ -5,7 +11,7 @@ export const allNews = [
     title: "永安集团发布全新电动滑移装载机，引领行业绿色革命", 
     date: "2024-05-20", 
     category: "公司新闻", 
-    image: "/images/product1.webp",
+    image: product1Image,
     excerpt: "全新YN-S850电动滑移装载机在上海工程机械展上首次亮相...",
     content: `
       <p>在今日于上海举行的国际工程机械展上，山东永安建设机械集团正式发布了其最新研发的成果——YN-S850全电动滑移装载机。这款车型的亮相，不仅是永安集团产品线的一次重要升级，更被视为整个行业向绿色、可持续发展迈出的关键一步。</p>
@@ -21,7 +27,7 @@ export const allNews = [
     title: "智能制造升级：永安集团新生产基地正式投产", 
     date: "2024-04-15", 
     category: "公司新闻", 
-    image: "/images/product2.webp",
+    image: product2Image,
     excerpt: "投资5亿元的现代化新生产基地已全面投入运营...",
     content: "<p>新基地占地面积200亩，引进了德国KUKA机器人焊接生产线、自动化涂装线和智能仓储系统，实现了从原材料到成品下线的全流程自动化和信息化管理。这使得生产效率提升了200%，产品合格率达到99.8%以上。</p>"
   },
@@ -31,7 +37,7 @@ export const allNews = [
     title: "行业分析：2024年全球工程机械市场趋势", 
     date: "2024-03-28", 
     category: "行业动态", 
-    image: "/case1.webp",
+    image: case1Image,
     excerpt: "报告指出，电动化和智能化将是未来五年工程机械市场增长的主要驱动力...",
     content: "<p>报告强调，随着全球对环保要求的日益严格和人力成本的不断上升，工程机械的电动化和智能化已成为不可逆转的趋势。预计到2028年，全球电动工程机械的市场份额将从目前的5%提升至25%。</p>"
   },
@@ -41,7 +47,7 @@ export const allNews = [
     title: "永安集团荣获'年度最佳雇主'称号", 
     date: "2024-02-10", 
     category: "公司新闻", 
-    image: "/case2.webp",
+    image: case2Image,
     excerpt: "凭借卓越的员工福利和企业文化...",
     content: "<p>该奖项由行业权威媒体联合人力资源咨询机构共同评选，旨在表彰在员工发展、企业文化建设和工作环境方面有杰出贡献的企业。永安集团凭借其全面的员工培训体系、有竞争力的薪酬福利以及'家文化'的建设，从数百家参评企业中脱颖而出。</p>"
   },
@@ -51,7 +57,7 @@ export const allNews = [
     title: "客户案例：永安滑移装载机助力欧洲最大物流港口建设", 
     date: "2024-01-22", 
     category: "客户案例", 
-    image: "/case3.webp",
+    image: case3Image,
     excerpt: "超过50台永安滑移装载机在欧洲某大型港口的扩建项目中表现出色...",
     content: "<p>在项目执行期间，永安YN系列滑移装载机承担了物料搬运、场地平整和集装箱辅助装卸等多项任务。其紧凑的机身和灵活的转向能力，在狭窄的码头环境中展现出无与伦比的优势。</p>"
   },
@@ -61,7 +67,7 @@ export const allNews = [
     title: "技术前沿：永安重工发布远程遥控挖掘系统",
     date: "2023-12-18",
     category: "行业动态",
-    image: "/images/product1.webp",
+    image: product1Image,
     excerpt: "该系统允许操作员在千里之外对挖掘机进行精确操作...",
     content: "<p>该系统基于5G通信技术，实现了超低延迟的视频回传和指令传输。操作员只需在舒适的控制中心，通过高清屏幕和仿真操作手柄，即可对远在矿山或抢险救灾现场的挖掘机进行实时、精确的操作。</p>"
   },
@@ -71,7 +77,7 @@ export const allNews = [
     title: "企业社会责任：永安集团捐赠百万支持乡村教育",
     date: "2023-11-05",
     category: "公司新闻",
-    image: "/images/product2.webp",
+    image: product2Image,
     excerpt: "永安集团'希望工程'项目启动，首批捐款将用于在贫困山区建立三所希望小学。",
     content: "<p>在启动仪式上，集团董事长王建国先生表示：'企业的发展离不开社会的支持，回馈社会、关注教育是我们应尽的责任。我们希望通过'希望工程'项目，为更多贫困地区的孩子们点燃希望的火种。'</p>"
   }

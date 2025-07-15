@@ -1,3 +1,5 @@
+import { getOptimizedImage, getImageDimensions } from './imageMapping.js';
+
 export const products = [
   {
     id: 1,

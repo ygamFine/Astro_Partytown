@@ -29,6 +29,12 @@ export default defineConfig({
       }
     }),
   ],
+  // 图片优化配置
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp'
+    }
+  },
   // SSG优化配置
   build: {
     assets: '_astro',

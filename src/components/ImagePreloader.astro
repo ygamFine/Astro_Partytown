@@ -1,0 +1,56 @@
+---
+export interface Props {
+  images: string[];
+  priority?: boolean;
+}
+
+const { images, priority = false } = Astro.props;
+---
+
+{images.map(image => (
+  <link 
+    rel="preload" 
+    as="image" 
+    href={image}
+    fetchpriority={priority ? 'high' : 'auto'}
+  />
+))}
+
+<script>
+  // 动态预加载图片
+  function preloadImages(imageUrls: string[], priority: boolean = false) {
+    imageUrls.forEach(url => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = url;
+      (link as any).fetchPriority = priority ? 'high' : 'auto';
+      document.head.appendChild(link);
+    });
+  }
+
+  // 预加载关键图片
+  const criticalImages = [
+    '/images/logo.png.webp',
+    '/images/banner3.webp',
+    '/images/banner.webp'
+  ];
+
+  // 页面加载完成后预加载
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      preloadImages(criticalImages, true);
+    });
+  } else {
+    preloadImages(criticalImages, true);
+  }
+
+  // 监听页面可见性变化，在页面变为可见时预加载
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      const visibleImages = document.querySelectorAll('img[data-src]') as NodeListOf<HTMLImageElement>;
+      const imageUrls = Array.from(visibleImages).map(img => img.getAttribute('data-src')).filter(Boolean) as string[];
+      preloadImages(imageUrls);
+    }
+  });
+</script> 

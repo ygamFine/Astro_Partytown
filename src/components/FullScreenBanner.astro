@@ -1,9 +1,13 @@
 ---
+import { Image } from 'astro:assets';
+import banner3Image from '../assets/images/banner3.webp';
+import banner222Image from '../assets/images/banner222.webp';
+import bannerImage from '../assets/images/banner.webp';
 // FullScreenBanner.astro - SSG优化版本，防止CLS
 ---
 
 <!-- 预加载关键Banner图片 -->
-<link rel="preload" as="image" href="/images/banner3.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href={banner3Image.src} type="image/webp" fetchpriority="high">
 
 <!-- PC端Banner容器 -->
 <section class="banner-container desktop-banner" id="desktop-banner">
@@ -11,11 +15,11 @@
   <div class="banner-carousel">
     <!-- Banner 1 - 默认显示 -->
     <div class="banner-slide active">
-      <img 
-        src="/images/banner3.webp" 
+      <Image 
+        src={banner3Image}
         alt="专业滑移装载机制造商"
-        width="1440"
-        height="600"
+        width={1440}
+        height={600}
         loading="eager"
         fetchpriority="high"
         decoding="async"
@@ -26,11 +30,11 @@
     
     <!-- Banner 2 -->
     <div class="banner-slide">
-      <img 
-        src="/images/banner222.webp" 
+      <Image 
+        src={banner222Image}
         alt="高品质工程机械设备"
-        width="1440"
-        height="600"
+        width={1440}
+        height={600}
         loading="lazy"
         decoding="async"
         class="banner-image"
@@ -40,11 +44,11 @@
     
     <!-- Banner 3 -->
     <div class="banner-slide">
-      <img 
-        src="/images/banner.webp" 
+      <Image 
+        src={bannerImage}
         alt="值得信赖的合作伙伴"
-        width="1440"
-        height="600"
+        width={1440}
+        height={600}
         loading="lazy"
         decoding="async"
         class="banner-image"
