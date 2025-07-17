@@ -3,7 +3,7 @@ import path from 'path';
 
 // 所有支持的语言
 const SUPPORTED_LANGUAGES = [
-  'en', 'zh-hans', 'zh-hant', 'ja', 'ko', 'vi', 'th', 'ms', 'id', 'my',
+  'en', 'zh-CN', 'zh-Hant', 'ja', 'ko', 'vi', 'th', 'ms', 'id', 'my',
   'hi', 'ml', 'ar', 'tr', 'ru', 'de', 'fr', 'es', 'it', 'pt-pt', 'nl', 'pl'
 ];
 
@@ -54,7 +54,7 @@ const translations = {
       "latest_cases": "Latest Cases"
     }
   },
-  'zh-hans': {
+  'zh-CN': {
     "breadcrumb": {
       "home": "首页",
       "cases": "客户案例"
@@ -99,7 +99,7 @@ const translations = {
       "latest_cases": "最新案例"
     }
   },
-  'zh-hant': {
+  'zh-Hant': {
     "breadcrumb": {
       "home": "首頁",
       "cases": "客戶案例"

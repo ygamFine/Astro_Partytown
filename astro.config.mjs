@@ -12,11 +12,11 @@ export default defineConfig({
   },
   // 重定向规则 - 将非多语言路径重定向到默认语言
   redirects: {
-    '/products': '/zh-hans/products',
-    '/about': '/zh-hans/about',
-    '/contact': '/zh-hans/contact',
-    '/case': '/zh-hans/case',
-    '/news': '/zh-hans/news',
+    '/products': '/en/products',
+    '/about': '/en/about',
+    '/contact': '/en/contact',
+    '/case': '/en/case',
+    '/news': '/en/news',
   },
   integrations: [
     tailwind({

@@ -31,16 +31,28 @@ const { lang, news, previousNews, nextNews } = Astro.props;
 
 // 动态加载对应语言的翻译文件
 let t;
+let commonT;
 try {
   t = await import(`../../../locales/${lang}/news.json`);
+  commonT = await import(`../../../locales/${lang}/common.json`);
 } catch (error) {
   // 如果加载失败，使用英文作为默认
   t = await import(`../../../locales/en/news.json`);
+  commonT = await import(`../../../locales/en/common.json`);
 }
 
 // 获取3个相关产品（随机）
 const shuffledProducts = products.sort(() => 0.5 - Math.random());
 const relatedProducts = shuffledProducts.slice(0, 3);
+
+// 过滤有效的相关产品图片
+const validRelatedProducts = relatedProducts.filter(product => {
+  if (!product.image) return false;
+  if (typeof product.image === 'string') {
+    return product.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
 
 // 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
 const relatedNews = allNews
@@ -88,13 +100,13 @@ const formatDate = (dateString: string) => {
     <!-- Article Image -->
                     {news.image && (
     <div class="mb-8">
-      <Image 
+            <Image 
         src={news.image} 
-        alt={news.title} 
+        alt={news.title || ''} 
         width={800}
         height={500}
-        class="w-full h-auto max-h-[500px] object-cover rounded-lg"
-        loading="eager"
+                        class="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                        loading="eager"
         decoding="async"
       />
     </div>
@@ -144,7 +156,7 @@ const formatDate = (dateString: string) => {
                     {t.default.related.products}
                   </h2>
                   <GridList 
-                      items={relatedProducts.map(p => ({
+                      items={validRelatedProducts.map(p => ({
                           id: p.id,
                           title: p.name, // 使用 name 字段作为 title
                           image: p.image,
@@ -152,6 +164,7 @@ const formatDate = (dateString: string) => {
                           href: `/${lang}/products/${p.slug}`
                       }))}
                       itemsPerRow={3}
+                      translations={{ common: commonT.default }}
                   />
               </div>
 

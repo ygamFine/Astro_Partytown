@@ -227,5 +227,9 @@
     "year": "年",
     "percent": "%",
     "currency": "¥"
+  },
+  "product_card": {
+    "get_quote": "获取详细报价和技术参数",
+    "contact_now": "立即联系"
   }
 }

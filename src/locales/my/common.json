@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
-    "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "piece": "ခု",
+    "pieces": "ခု",
+    "unit": "ယူနစ်",
+    "units": "ယူနစ်",
+    "kg": "ကီလိုဂရမ်",
+    "ton": "တန်",
+    "meter": "မီတာ",
+    "kilometer": "ကီလိုမီတာ",
+    "hour": "နာရီ",
+    "day": "ရက်",
+    "week": "အပတ်",
+    "month": "လ",
+    "year": "နှစ်",
     "percent": "%",
-    "currency": "$"
+    "currency": "ကျပ်"
+  },
+  "product_card": {
+    "get_quote": "အသေးစိတ်စျေးနှုန်းနှင့်နည်းပညာဆိုင်ရာပါရာမီတာများရယူပါ",
+    "contact_now": "ယခုဆက်သွယ်ပါ"
   }
 }

@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 支持的语言列表
-const SUPPORTED_LANGS = ['en', 'zh-hans', 'zh-hant', 'fr', 'de', 'es', 'it', 'pt-pt', 'ru', 'ar', 'ja', 'ko', 'vi', 'id', 'th', 'tr', 'hi', 'ml', 'ms', 'my', 'nl', 'pl'];
+const SUPPORTED_LANGS = ['en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'es', 'it', 'pt-pt', 'ru', 'ar', 'ja', 'ko', 'vi', 'id', 'th', 'tr', 'hi', 'ml', 'ms', 'my', 'nl', 'pl'];
 
 // 新闻模块的翻译内容
 const newsTranslations = {
@@ -53,7 +53,7 @@ const newsTranslations = {
       "latest_news": "Latest News"
     }
   },
-  'zh-hans': {
+  'zh-CN': {
     "breadcrumb": {
       "home": "首页",
       "news": "新闻中心"
@@ -145,7 +145,7 @@ const caseTranslations = {
       "latest_cases": "Latest Cases"
     }
   },
-  'zh-hans': {
+  'zh-CN': {
     "breadcrumb": {
       "home": "首页",
       "cases": "客户案例"
@@ -194,7 +194,7 @@ const caseTranslations = {
 
 // 为其他语言生成基础翻译（使用英文作为模板）
 function generateTranslationsForLang(lang) {
-  if (lang === 'en' || lang === 'zh-hans') {
+  if (lang === 'en' || lang === 'zh-CN') {
     return; // 跳过已存在的语言
   }
 

@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
-    "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "piece": "ชิ้น",
+    "pieces": "ชิ้น",
+    "unit": "หน่วย",
+    "units": "หน่วย",
+    "kg": "กก.",
+    "ton": "ตัน",
+    "meter": "เมตร",
+    "kilometer": "กิโลเมตร",
+    "hour": "ชั่วโมง",
+    "day": "วัน",
+    "week": "สัปดาห์",
+    "month": "เดือน",
+    "year": "ปี",
     "percent": "%",
-    "currency": "$"
+    "currency": "฿"
+  },
+  "product_card": {
+    "get_quote": "รับใบเสนอราคารายละเอียดและพารามิเตอร์ทางเทคนิค",
+    "contact_now": "ติดต่อตอนนี้"
   }
 }

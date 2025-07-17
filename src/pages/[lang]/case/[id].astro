@@ -24,7 +24,7 @@ const { lang, caseItem } = Astro.props;
 
 // 加载国际化翻译
 const translations = await mergeTranslations(lang, ['case']);
-const t = translations['case'];
+const t = (translations as any)['case'];
 
 // 获取当前案例在列表中的位置，用于上一个/下一个导航
 const currentIndex = allCases.findIndex(c => c.id === caseItem.id);
@@ -37,10 +37,19 @@ const relatedNews = allNews.slice(0, 4);
 // 获取相关案例（排除当前案例，取前2个）
 const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
 
+// 过滤有效的相关案例图片
+const validRelatedCases = relatedCases.filter(relatedCase => {
+  if (!relatedCase.image) return false;
+  if (typeof relatedCase.image === 'string') {
+    return relatedCase.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
+
 // 格式化日期
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString(lang === 'zh-hans' ? 'zh-CN' : lang, { 
+  return date.toLocaleDateString(lang === 'zh-CN' ? 'zh-CN' : lang, { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric',
@@ -146,7 +155,7 @@ const breadcrumbs = generateCaseDetailBreadcrumbs(lang, caseItem.title);
             </h3>
             
             <div class="space-y-4">
-              {relatedCases.map(relatedCase => (
+              {validRelatedCases.map(relatedCase => (
                 <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                   <a href={`/${lang}/case/${relatedCase.id}`} class="block">
                     <div class="aspect-[5/3] overflow-hidden">

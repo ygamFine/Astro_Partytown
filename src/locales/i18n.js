@@ -1,6 +1,6 @@
 // 支持的语言列表
 export const SUPPORTED_LANGUAGES = [
-  'en', 'zh-hans', 'zh-hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
+  'en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
   'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'
 ];
 
@@ -11,8 +11,8 @@ export const DEFAULT_LANGUAGE = 'en';
 export function getLanguageName(locale) {
   const names = {
     'en': 'English',
-    'zh-hans': '简体中文',
-    'zh-hant': '繁體中文',
+    'zh-CN': '简体中文',
+    'zh-Hant': '繁體中文',
     'fr': 'Français',
     'de': 'Deutsch',
     'it': 'Italiano',

@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
-    "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "piece": "टुकड़ा",
+    "pieces": "टुकड़े",
+    "unit": "इकाई",
+    "units": "इकाइयां",
+    "kg": "किलो",
+    "ton": "टन",
+    "meter": "मीटर",
+    "kilometer": "किलोमीटर",
+    "hour": "घंटा",
+    "day": "दिन",
+    "week": "सप्ताह",
+    "month": "महीना",
+    "year": "साल",
     "percent": "%",
-    "currency": "$"
+    "currency": "₹"
+  },
+  "product_card": {
+    "get_quote": "विस्तृत कोटेशन और तकनीकी मापदंड प्राप्त करें",
+    "contact_now": "अभी संपर्क करें"
   }
 }

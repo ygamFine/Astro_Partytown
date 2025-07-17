@@ -218,14 +218,18 @@
     "units": "unidades",
     "kg": "kg",
     "ton": "tonelada",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "metro",
+    "kilometer": "kilómetro",
     "hour": "hora",
     "day": "día",
     "week": "semana",
     "month": "mes",
     "year": "año",
     "percent": "%",
-    "currency": "$"
+    "currency": "€"
+  },
+  "product_card": {
+    "get_quote": "Obtener cotización detallada y parámetros técnicos",
+    "contact_now": "Contactar ahora"
   }
 }

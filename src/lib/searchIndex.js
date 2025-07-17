@@ -109,7 +109,7 @@ function generateCaseSearchText(caseItem) {
 }
 
 // 搜索函数
-export function performSearch(query, lang = 'zh-hans', type = 'all') {
+export function performSearch(query, lang = 'en', type = 'all') {
   const searchData = generateSearchIndex();
   const allItems = [
     ...searchData.products,
@@ -167,7 +167,7 @@ export function performSearch(query, lang = 'zh-hans', type = 'all') {
 }
 
 // 获取搜索建议
-export function getSearchSuggestions(query, lang = 'zh-hans') {
+export function getSearchSuggestions(query, lang = 'en') {
   const searchData = generateSearchIndex();
   const allItems = [
     ...searchData.products,

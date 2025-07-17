@@ -218,8 +218,8 @@
     "units": "unidades",
     "kg": "kg",
     "ton": "tonelada",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "metro",
+    "kilometer": "quilómetro",
     "hour": "hora",
     "day": "dia",
     "week": "semana",
@@ -227,5 +227,9 @@
     "year": "ano",
     "percent": "%",
     "currency": "€"
+  },
+  "product_card": {
+    "get_quote": "Obter cotação detalhada e parâmetros técnicos",
+    "contact_now": "Contactar agora"
   }
 }

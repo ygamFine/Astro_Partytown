@@ -218,8 +218,8 @@
     "units": "unità",
     "kg": "kg",
     "ton": "tonnellata",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "metro",
+    "kilometer": "chilometro",
     "hour": "ora",
     "day": "giorno",
     "week": "settimana",
@@ -227,5 +227,9 @@
     "year": "anno",
     "percent": "%",
     "currency": "€"
+  },
+  "product_card": {
+    "get_quote": "Ottieni preventivo dettagliato e parametri tecnici",
+    "contact_now": "Contatta ora"
   }
 }

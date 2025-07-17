@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
+    "piece": "sztuka",
+    "pieces": "sztuk",
+    "unit": "jednostka",
+    "units": "jednostek",
     "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "ton": "tona",
+    "meter": "metr",
+    "kilometer": "kilometr",
+    "hour": "godzina",
+    "day": "dzień",
+    "week": "tydzień",
+    "month": "miesiąc",
+    "year": "rok",
     "percent": "%",
-    "currency": "$"
+    "currency": "zł"
+  },
+  "product_card": {
+    "get_quote": "Otrzymaj szczegółową wycenę i parametry techniczne",
+    "contact_now": "Skontaktuj się teraz"
   }
 }

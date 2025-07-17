@@ -218,8 +218,8 @@
     "units": "대",
     "kg": "kg",
     "ton": "톤",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "미터",
+    "kilometer": "킬로미터",
     "hour": "시간",
     "day": "일",
     "week": "주",
@@ -227,5 +227,9 @@
     "year": "년",
     "percent": "%",
     "currency": "₩"
+  },
+  "product_card": {
+    "get_quote": "상세 견적 및 기술 매개변수 받기",
+    "contact_now": "지금 연락하기"
   }
 }

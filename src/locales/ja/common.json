@@ -218,14 +218,18 @@
     "units": "台",
     "kg": "kg",
     "ton": "トン",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "メートル",
+    "kilometer": "キロメートル",
     "hour": "時間",
     "day": "日",
     "week": "週間",
-    "month": "ヶ月",
+    "month": "月",
     "year": "年",
     "percent": "%",
     "currency": "¥"
+  },
+  "product_card": {
+    "get_quote": "詳細な見積もりと技術仕様を取得",
+    "contact_now": "今すぐ連絡"
   }
 }

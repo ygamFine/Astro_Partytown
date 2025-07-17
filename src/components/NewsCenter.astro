@@ -2,6 +2,15 @@
 // 新闻中心组件 - 按设计稿实现
 import { allNews } from '../data/news.js';
 import { Image } from 'astro:assets';
+
+// 过滤有效的新闻
+const validNews = allNews.slice(0, 3).filter((article: any) => {
+  if (!article.image) return false;
+  if (typeof article.image === 'string') {
+    return article.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
 ---
 
 <section class="py-16 bg-white animate-fade-up">
@@ -19,12 +28,12 @@ import { Image } from 'astro:assets';
     
     <!-- 新闻网格 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-13xl mx-auto">
-      {allNews.slice(0, 3).map((article: any, index: number) => (
+      {validNews.map((article: any, index: number) => (
         <article class={`bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 card-hover-animate animate-fade-up animate-delay-${300 + (index + 1) * 100}`}>
           <div class="h-48 bg-gray-200 overflow-hidden">
             <Image 
               src={article.image} 
-              alt={article.title}
+              alt={article.title || ''}
               width={400}
               height={192}
               loading="lazy"

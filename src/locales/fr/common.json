@@ -218,8 +218,8 @@
     "units": "unités",
     "kg": "kg",
     "ton": "tonne",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "mètre",
+    "kilometer": "kilomètre",
     "hour": "heure",
     "day": "jour",
     "week": "semaine",
@@ -227,5 +227,9 @@
     "year": "année",
     "percent": "%",
     "currency": "€"
+  },
+  "product_card": {
+    "get_quote": "Obtenir un devis détaillé et les paramètres techniques",
+    "contact_now": "Contactez maintenant"
   }
 }

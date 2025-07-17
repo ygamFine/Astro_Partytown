@@ -64,13 +64,16 @@ if (urlParams && urlParams.startsWith('page-')) {
 // 动态加载对应语言的翻译文件
 let t;
 let paginationT;
+let commonT;
 try {
   t = await import(`../../../locales/${lang}/case.json`);
   paginationT = await import(`../../../locales/${lang}/pagination.json`);
+  commonT = await import(`../../../locales/${lang}/common.json`);
 } catch (error) {
   // 如果加载失败，使用英文作为默认
   t = await import(`../../../locales/en/case.json`);
   paginationT = await import(`../../../locales/en/pagination.json`);
+  commonT = await import(`../../../locales/en/common.json`);
 }
 
 // 转换案例数据格式以适配GridList组件
@@ -101,6 +104,7 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, currentPage > 1 ? currentPage 
     itemsPerRow={3}
     maxRows={2}
     mode="case"
+    translations={{ common: commonT.default }}
   />
   
   <!-- 分页 -->

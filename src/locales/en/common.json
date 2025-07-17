@@ -218,8 +218,8 @@
     "units": "units",
     "kg": "kg",
     "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
+    "meter": "meter",
+    "kilometer": "kilometer",
     "hour": "hour",
     "day": "day",
     "week": "week",
@@ -227,5 +227,9 @@
     "year": "year",
     "percent": "%",
     "currency": "$"
+  },
+  "product_card": {
+    "get_quote": "Get detailed quote and technical parameters",
+    "contact_now": "Contact Now"
   }
 }

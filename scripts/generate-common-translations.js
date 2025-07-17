@@ -37,13 +37,13 @@ function checkConfigChanged() {
 
 // 支持的语言列表
 const SUPPORTED_LANGUAGES = [
-  'en', 'zh-hans', 'zh-hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
+  'en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
   'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'
 ];
 
 // 语言翻译数据
 const translations = {
-  'zh-hans': {
+  'zh-CN': {
     placeholders: {
       name: "请输入您的姓名",
       email: "请输入您的邮箱地址",
@@ -274,7 +274,7 @@ const translations = {
       currency: "¥"
     }
   },
-  'zh-hant': {
+  'zh-Hant': {
     placeholders: {
       name: "請輸入您的姓名",
       email: "請輸入您的郵箱地址",

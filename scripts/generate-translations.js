@@ -30,7 +30,7 @@ const translations = {
       "last": "Go to last page"
     }
   },
-  'zh-hans': {
+  'zh-CN': {
     "paging": {
       "previous": "上一页",
       "next": "下一页",
@@ -53,7 +53,7 @@ const translations = {
       "last": "跳转到尾页"
     }
   },
-  'zh-hant': {
+  'zh-Hant': {
     "paging": {
       "previous": "上一頁",
       "next": "下一頁",
@@ -565,7 +565,7 @@ const productDetailTranslations = {
       "get_quote": "Get detailed quotes and technical specifications"
     }
   },
-  'zh-hans': {
+  'zh-CN': {
     "breadcrumb": {
       "home": "首页",
       "products": "产品中心"

@@ -30,16 +30,16 @@ if (isServer) {
     func(module, module.exports, require);
     
     enabledLanguages = module.exports.enabledLanguages;
-    defaultLanguage = enabledLanguages?.[0] || 'zh-hans';
+    defaultLanguage = enabledLanguages?.[0] || 'en';
   } catch (error) {
     console.warn('无法读取 i18n.config.cjs，使用默认配置:', error.message);
-    enabledLanguages = ['zh-hans', 'en', 'fr', 'de'];
-    defaultLanguage = 'zh-hans';
+    enabledLanguages = ['zh-CN', 'en', 'fr', 'de'];
+    defaultLanguage = 'en';
   }
 } else {
   // 浏览器环境使用默认配置
-  enabledLanguages = ['zh-hans', 'en', 'fr', 'de'];
-  defaultLanguage = 'zh-hans';
+  enabledLanguages = ['zh-CN', 'en', 'fr', 'de'];
+  defaultLanguage = 'en';
 }
 
 /**
@@ -47,7 +47,7 @@ if (isServer) {
  * @returns {string[]} 启用的语言代码数组
  */
 export function getEnabledLanguages() {
-  return enabledLanguages || ['zh-hans', 'en', 'fr', 'de'];
+  return enabledLanguages || ['zh-CN', 'en', 'fr', 'de'];
 }
 
 /**
@@ -65,5 +65,5 @@ export function isLanguageEnabled(lang) {
  * @returns {string} 默认语言代码
  */
 export function getDefaultLanguage() {
-  return defaultLanguage || 'zh-hans';
+  return defaultLanguage || 'en';
 } 

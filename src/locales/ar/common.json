@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
-    "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "piece": "قطعة",
+    "pieces": "قطع",
+    "unit": "وحدة",
+    "units": "وحدات",
+    "kg": "كجم",
+    "ton": "طن",
+    "meter": "متر",
+    "kilometer": "كيلومتر",
+    "hour": "ساعة",
+    "day": "يوم",
+    "week": "أسبوع",
+    "month": "شهر",
+    "year": "سنة",
     "percent": "%",
-    "currency": "$"
+    "currency": "ر.س"
+  },
+  "product_card": {
+    "get_quote": "احصل على عرض أسعار مفصل والمعايير التقنية",
+    "contact_now": "تواصل الآن"
   }
 }

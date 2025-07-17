@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
+    "piece": "stuk",
+    "pieces": "stukken",
+    "unit": "eenheid",
+    "units": "eenheden",
     "kg": "kg",
     "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
+    "meter": "meter",
+    "kilometer": "kilometer",
+    "hour": "uur",
+    "day": "dag",
     "week": "week",
-    "month": "month",
-    "year": "year",
+    "month": "maand",
+    "year": "jaar",
     "percent": "%",
-    "currency": "$"
+    "currency": "€"
+  },
+  "product_card": {
+    "get_quote": "Ontvang gedetailleerde offerte en technische parameters",
+    "contact_now": "Nu contact opnemen"
   }
 }

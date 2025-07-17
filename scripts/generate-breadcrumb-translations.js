@@ -295,7 +295,7 @@ const breadcrumbTranslations = {
     "telescopicHandler": "Máy nâng cần",
     "electricMachinery": "Máy móc điện"
   },
-  'zh-hant': {
+  'zh-Hant': {
     "home": "首頁",
     "about": "關於我們",
     "products": "產品中心",

@@ -3,7 +3,8 @@ export const prerender = true;
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
 import ContactButtons from '../../../components/ContactButtons.astro';
-import { products } from '../../../data/products.js';
+import RichTextRenderer from '../../../components/RichTextRenderer.astro';
+import { getProducts, getProduct } from '../../../lib/strapi.js';
 import { allNews } from '../../../data/news.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
@@ -11,47 +12,82 @@ import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
-  const paths = [];
+  const paths: any[] = [];
   const enabledLanguages = getEnabledLanguages();
   
-  enabledLanguages.forEach(lang => {
-    products.forEach(product => {
-      paths.push({
-        params: { lang, slug: product.slug },
-        props: { product, lang }
-      });
-    });
-  });
+  for (const lang of enabledLanguages) {
+    const products = await getProducts(lang);
+    for (const product of products) {
+      // 确保 slug 存在且不为空
+      if (product.slug && typeof product.slug === 'string') {
+        paths.push({
+          params: { lang, slug: product.slug },
+          props: { slug: product.slug, lang }
+        });
+      }
+    }
+  }
   
   return paths;
 }
 
-const { product, lang } = Astro.props;
+const { slug, lang } = Astro.props;
+
+// 单独调用 Strapi 详情接口获取产品数据
+const product = await getProduct(slug, lang);
+// 如果产品不存在，返回404
+if (!product) {
+  return Astro.redirect('/404');
+}
 
 // 加载国际化翻译
 const translations = await mergeTranslations(lang, ['product']);
-const t = translations['product'];
+const t = (translations as any)['product'] || {};
+
+// 获取所有产品数据用于相关产品计算
+const allProducts = await getProducts(lang);
 
 // 获取相关产品（同类别的其他产品，最多显示3个）
-const relatedProducts = products
-  .filter(p => p.category === product.category && p.id !== product.id)
+const relatedProducts = allProducts
+  .filter((p: any) => p.category === product.category && p.id !== product.id)
   .slice(0, 3);
+
+// 过滤有效的相关产品图片
+const validRelatedProducts = relatedProducts.filter(relatedProduct => {
+  if (!relatedProduct.image) return false;
+  if (typeof relatedProduct.image === 'string') {
+    return relatedProduct.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
 
 // 获取相关新闻（最新的4篇）
 const relatedNews = allNews.slice(0, 4);
 
 // 获取当前产品在列表中的位置，用于上一个/下一个导航
-const currentIndex = products.findIndex(p => p.id === product.id);
-const previousProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
-const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
+const currentIndex = allProducts.findIndex((p: any) => p.id === product.id);
+const previousProduct = currentIndex > 0 ? allProducts[currentIndex - 1] : null;
+const nextProduct = currentIndex < allProducts.length - 1 ? allProducts[currentIndex + 1] : null;
 
 // 推荐产品（不同类别的产品）
-const recommendedProducts = products
-  .filter(p => p.category !== product.category)
+const recommendedProducts = allProducts
+  .filter((p: any) => p.category !== product.category)
   .slice(0, 2);
+
+// 过滤有效的推荐产品图片
+const validRecommendedProducts = recommendedProducts.filter(recommended => {
+  if (!recommended.image) return false;
+  if (typeof recommended.image === 'string') {
+    return recommended.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
 
 // 面包屑导航
 const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.category);
+
+const images: string[] = (Array.isArray(product.image) ? product.image : [product.image, ...(product.gallery || [])])
+  .filter((img: unknown): img is string => !!img && typeof img === 'string' && Boolean(img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)));
 ---
 
 <Layout title={`${product.name} - 产品详情`} lang={lang}>
@@ -76,28 +112,18 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.categ
                 <div 
                   id="imageSlider" 
                   class="flex transition-transform duration-500 ease-in-out h-full"
-                  style="width: 700%;"
+                  style={`width: ${images.length * 100}%;`}
                 >
-                  <!-- 主图 -->
-                  <img 
-                    id="mainImage"
-                    src={product.image} 
-                    alt={product.name}
-                    class="object-contain cursor-crosshair select-none flex-shrink-0"
-                    style="width: 100%; height: 100%; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
-                    draggable="false"
-                    data-index="0"
-                  >
-                  <!-- Gallery 图片 -->
-                  {product.gallery.map((img, index) => (
+                  {/* 所有图片 */}
+                  {images.map((img, index) => (
                     <img 
                       src={img} 
                       alt={`${product.name} ${index + 1}`}
                       class="object-contain cursor-crosshair select-none flex-shrink-0"
                       style="width: 100%; height: 100%; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
                       draggable="false"
-                      data-index={index + 1}
-                    >
+                      data-index={index}
+                    />
                   ))}
                 </div>
                 <!-- 透明放大镜选择框 -->
@@ -127,25 +153,16 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.categ
                 class="flex space-x-2 overflow-x-hidden flex-1 scroll-smooth"
                 style="scroll-behavior: smooth;"
               >
-              <img 
-                src={product.image} 
-                alt={product.name}
-                  class="w-20 h-20 object-cover rounded border-2 border-red-600 cursor-pointer flex-shrink-0 thumbnail-img select-none"
-                  data-index="0"
-                  data-src={product.image}
-                  draggable="false"
-                  style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
-                >
-                {product.gallery.map((img, index) => (
+                {images.map((img, index) => (
                   <img 
                     src={img} 
                     alt={`${product.name} ${index + 1}`}
-                    class="w-20 h-20 object-cover rounded border border-gray-200 hover:border-red-600 cursor-pointer flex-shrink-0 thumbnail-img select-none"
-                    data-index={index + 1}
+                    class={`w-20 h-20 object-cover rounded cursor-pointer flex-shrink-0 thumbnail-img select-none ${index === 0 ? 'border-2 border-red-600' : 'border border-gray-200 hover:border-red-600'}`}
+                    data-index={index}
                     data-src={img}
                     draggable="false"
                     style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
-                  >
+                  />
                 ))}
               </div>
 
@@ -219,42 +236,53 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.categ
             <!-- 产品详情 -->
             <div class="bg-white rounded-lg p-8 shadow-sm">
               <h2 class="text-2xl font-bold text-gray-900 mb-6">{t.product.details}</h2>
+              <!-- 富文本内容 -->
+              {product.info && product.info.length > 0 && (
+                <div class="mb-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.description}</h3>
+                  <RichTextRenderer content={product.info} />
+                </div>
+              )}
               
               <!-- 完整技术参数 -->
-              <div class="mb-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.specifications}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {product.specs.map(spec => (
-                    <div class="flex justify-between py-2 border-b border-gray-100">
-                      <span class="text-gray-600">{spec.key}</span>
-                      <span class="font-medium text-gray-900">{spec.value}</span>
-                    </div>
-                  ))}
+              <!-- {product.specs && product.specs.length > 0 && (
+                <div class="mb-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.specifications}</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.specs.map(spec => (
+                      <div class="flex justify-between py-2 border-b border-gray-100">
+                        <span class="text-gray-600">{spec.key}</span>
+                        <span class="font-medium text-gray-900">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )} -->
               
               <!-- 产品特点 -->
-              <div class="mb-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.features}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {product.features.map(feature => (
-                    <div class="flex items-start">
-                      <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                      </svg>
-                      <span class="text-gray-700">{feature}</span>
-                    </div>
-                  ))}
+              <!-- {product.features && product.features.length > 0 && (
+                <div class="mb-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.features}</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.features.map(feature => (
+                      <div class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )} -->
 
               <!-- 产品应用场景 -->
-              <div>
+              <!-- <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.applications}</h3>
                 <p class="text-gray-600 leading-relaxed">
                   {t.product.applications_text}
                 </p>
-              </div>
+              </div> -->
             </div>
 
             <!-- Previous / Next 导航 -->
@@ -386,7 +414,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.categ
               </h2>
               
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedProducts.map(relatedProduct => (
+                {validRelatedProducts.map(relatedProduct => (
                   <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${relatedProduct.slug}`} class="block h-full">
                       <div class="aspect-[3/2] overflow-hidden">
@@ -474,7 +502,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.categ
               </h3>
               
               <div class="space-y-4">
-                {recommendedProducts.slice(0, 2).map(recommended => (
+                {validRecommendedProducts.slice(0, 2).map(recommended => (
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${recommended.slug}`} class="block">
                       <div class="aspect-[3/2] overflow-hidden">

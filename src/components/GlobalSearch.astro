@@ -3,7 +3,7 @@
 import { performSearch, getSearchSuggestions } from '../lib/searchIndex.js';
 import { getCommonTextSync } from '../lib/commonTranslations.js';
 
-const { lang = 'zh-hans' } = Astro.props;
+const { lang = 'en' } = Astro.props;
 const common = await import(`../locales/${lang}/common.json`);
 const commonData = common.default;
 ---
@@ -151,7 +151,7 @@ const commonData = common.default;
           <a href="${item.url}" class="block p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
             <div class="flex items-start space-x-3">
               <div class="flex-shrink-0">
-                <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">
+                <img src="${item.image}" alt="${item.title || ''}" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">
               </div>
               <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h4>

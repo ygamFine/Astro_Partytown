@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
+    "piece": "cái",
+    "pieces": "cái",
+    "unit": "đơn vị",
+    "units": "đơn vị",
     "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "ton": "tấn",
+    "meter": "mét",
+    "kilometer": "kilômét",
+    "hour": "giờ",
+    "day": "ngày",
+    "week": "tuần",
+    "month": "tháng",
+    "year": "năm",
     "percent": "%",
-    "currency": "$"
+    "currency": "₫"
+  },
+  "product_card": {
+    "get_quote": "Nhận báo giá chi tiết và thông số kỹ thuật",
+    "contact_now": "Liên hệ ngay"
   }
 }

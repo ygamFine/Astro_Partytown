@@ -16,6 +16,15 @@ interface Props {
 
 const { items, lang = 'en', t } = Astro.props;
 
+// 过滤有效的图片
+const validItems = items.filter(item => {
+  if (!item.image) return false;
+  if (typeof item.image === 'string') {
+    return item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
+
 // 格式化日期
 const formatDate = (dateString: string | undefined) => {
   if (!dateString) return '';
@@ -26,7 +35,7 @@ const formatDate = (dateString: string | undefined) => {
 ---
 
 <div class="space-y-8">
-  {items.map((item) => (
+  {validItems.map((item) => (
     <article class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
       <div class="flex flex-col md:flex-row">
         <!-- 左侧图片 -->
@@ -34,7 +43,7 @@ const formatDate = (dateString: string | undefined) => {
           <a href={item.href} class="block aspect-[4/3] group">
             <Image 
               src={item.image} 
-              alt={item.title}
+              alt={item.title || ''}
               width={400}
               height={300}
               class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"

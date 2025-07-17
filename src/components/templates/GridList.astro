@@ -13,22 +13,35 @@ interface Props {
   itemsPerRow?: number;
   maxRows?: number;
   mode?: 'product' | 'case' | 'sidebar';
+  translations?: any; // 添加翻译参数
 }
 
-const { items, itemsPerRow = 3, maxRows = 4, mode = 'product' } = Astro.props;
+const { items, itemsPerRow = 3, maxRows = 4, mode = 'product', translations = {} } = Astro.props;
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
+
+// 过滤有效的图片
+const validItems = displayItems.filter(item => {
+  if (!item.image) return false;
+  if (typeof item.image === 'string') {
+    return item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
+
+// 获取翻译文本
+const t = translations.common || {};
 ---
 
 <div class="grid-list">
   <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
-    {displayItems.map((item) => (
+    {validItems.map((item) => (
       <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <a href={item.href} class="block h-full">
           <div class="aspect-video overflow-hidden">
             <Image 
               src={item.image} 
-              alt={item.title}
+              alt={item.title || ''}
               width={400}
               height={300}
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -37,8 +50,11 @@ const displayItems = items.slice(0, maxItems);
             />
           </div>
           
-          <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-4 relative'}>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+          <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-4 relative flex flex-col justify-start'}>
+            <h3
+              class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-left"
+              style={mode === 'product' ? 'min-height:3.5rem;display:flex;align-items:flex-start;' : undefined}
+            >
               {item.title}
             </h3>
             
@@ -52,10 +68,26 @@ const displayItems = items.slice(0, maxItems);
               </>
             )}
             
-            <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
-            <div class={mode === 'sidebar' ? 'absolute inset-0 bg-red-600 text-white px-3 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center' : 'absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center'}>
-              <h4 class="font-bold text-base leading-tight">{item.title}</h4>
-            </div>
+            {/* 弹框内容根据 mode 区分 */}
+            {mode === 'product' ? (
+              <div class="absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-base leading-tight text-left">{item.title}</h4>
+                  <p class="text-xs opacity-90 mt-1">{t.product_card?.get_quote || '获取详细报价和技术参数'}</p>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                  <span class="font-medium text-sm">{t.product_card?.contact_now || '立即联系'}</span>
+                </div>
+              </div>
+            ) : (
+              <div class="absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-center">
+                <h4 class="font-bold text-base leading-tight text-center w-full">{item.title}</h4>
+              </div>
+            )}
           </div>
         </a>
       </article>

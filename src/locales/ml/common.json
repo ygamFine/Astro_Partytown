@@ -212,20 +212,24 @@
     "data_deleted": "Data deleted"
   },
   "units": {
-    "piece": "piece",
-    "pieces": "pieces",
-    "unit": "unit",
-    "units": "units",
-    "kg": "kg",
-    "ton": "ton",
-    "meter": "m",
-    "kilometer": "km",
-    "hour": "hour",
-    "day": "day",
-    "week": "week",
-    "month": "month",
-    "year": "year",
+    "piece": "കഷണം",
+    "pieces": "കഷണങ്ങൾ",
+    "unit": "യൂണിറ്റ്",
+    "units": "യൂണിറ്റുകൾ",
+    "kg": "കിലോ",
+    "ton": "ടൺ",
+    "meter": "മീറ്റർ",
+    "kilometer": "കിലോമീറ്റർ",
+    "hour": "മണിക്കൂർ",
+    "day": "ദിവസം",
+    "week": "ആഴ്ച",
+    "month": "മാസം",
+    "year": "വർഷം",
     "percent": "%",
-    "currency": "$"
+    "currency": "₹"
+  },
+  "product_card": {
+    "get_quote": "വിശദമായ ക്വോട്ടും സാങ്കേതിക പാരാമീറ്ററുകളും നേടുക",
+    "contact_now": "ഇപ്പോൾ ബന്ധപ്പെടുക"
   }
 }
