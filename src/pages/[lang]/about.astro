@@ -1,0 +1,191 @@
+---
+export const prerender = true;
+
+import Layout from '../../layouts/Layout.astro';
+import { getEnabledLanguages } from '../../lib/i18n-config.js';
+import { mergeTranslations } from '../../locales/i18n.js';
+import { generateAboutBreadcrumbs } from '../../lib/breadcrumbUtils.js';
+
+// 只为配置中启用的语言生成静态路径
+export async function getStaticPaths() {
+  const enabledLanguages = getEnabledLanguages();
+  return enabledLanguages.map((lang) => ({
+    params: { lang },
+    props: { locale: lang },
+  }));
+}
+
+const { lang } = Astro.params;
+const translations = await mergeTranslations(lang, ['common', 'breadcrumb']);
+const t = (translations as any).common || {};
+const breadcrumbT = (translations as any).breadcrumb || {};
+
+// 面包屑导航
+const breadcrumbs = generateAboutBreadcrumbs(lang);
+---
+
+<Layout title="关于我们" description="山东永安建设机械集团有限公司 - 专业工程机械制造商" lang={lang}>
+  <div class="min-h-screen bg-gray-50">
+    <!-- 页面头部 -->
+    <div class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-gray-900 mb-6">关于我们</h1>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            山东永安建设机械集团有限公司致力于为全球客户提供高品质的工程机械设备和完善的售后服务
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 公司介绍 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">公司简介</h2>
+          <div class="space-y-4 text-gray-700 leading-relaxed">
+            <p>
+              山东永安建设机械集团有限公司成立于2005年，是一家专业从事工程机械研发、生产和销售的高新技术企业。
+              公司总部位于山东省济南市章丘区，拥有现代化的生产基地和先进的生产设备。
+            </p>
+            <p>
+              我们专注于滑移装载机、挖掘装载机、伸缩臂叉装车等工程机械产品的研发与制造，
+              产品广泛应用于建筑工地、市政工程、道路建设、园林绿化、仓储物流等多个领域。
+            </p>
+            <p>
+              公司始终坚持"质量第一、客户至上"的经营理念，通过持续的技术创新和质量管理，
+              为全球客户提供可靠、高效、环保的工程机械解决方案。
+            </p>
+          </div>
+        </div>
+        <div class="relative">
+          <img 
+            src="/company-building.svg" 
+            alt="公司大楼" 
+            class="w-full h-auto rounded-lg shadow-lg"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 核心优势 -->
+    <div class="bg-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">核心优势</h2>
+          <p class="text-xl text-gray-600">我们的专业优势和服务承诺</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- 技术创新 -->
+          <div class="text-center">
+            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">技术创新</h3>
+            <p class="text-gray-600">持续投入研发，掌握核心技术，产品性能领先行业水平</p>
+          </div>
+
+          <!-- 质量保证 -->
+          <div class="text-center">
+            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">质量保证</h3>
+            <p class="text-gray-600">严格的质量管理体系，确保每台设备都符合国际标准</p>
+          </div>
+
+          <!-- 全球服务 -->
+          <div class="text-center">
+            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">全球服务</h3>
+            <p class="text-gray-600">完善的售后服务网络，为全球客户提供及时的技术支持</p>
+          </div>
+
+          <!-- 环保理念 -->
+          <div class="text-center">
+            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">环保理念</h3>
+            <p class="text-gray-600">注重环保设计，开发节能环保产品，推动绿色施工发展</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 发展历程 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">发展历程</h2>
+        <p class="text-xl text-gray-600">见证我们的成长与进步</p>
+      </div>
+      
+      <div class="space-y-8">
+        <div class="flex items-center space-x-8">
+          <div class="flex-shrink-0 w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">2005</div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">公司成立</h3>
+            <p class="text-gray-600">山东永安建设机械集团有限公司正式成立，开始工程机械研发和生产</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-8">
+          <div class="flex-shrink-0 w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">2010</div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">技术突破</h3>
+            <p class="text-gray-600">成功研发第一代滑移装载机，获得多项技术专利</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-8">
+          <div class="flex-shrink-0 w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">2015</div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">市场扩张</h3>
+            <p class="text-gray-600">产品开始出口海外，建立国际销售网络</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-8">
+          <div class="flex-shrink-0 w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">2020</div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">智能制造</h3>
+            <p class="text-gray-600">建设智能化生产基地，实现数字化转型</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-8">
+          <div class="flex-shrink-0 w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">2024</div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">全球布局</h3>
+            <p class="text-gray-600">产品销往全球50多个国家和地区，成为行业领军企业</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 联系我们 -->
+    <div class="bg-red-600 text-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6">联系我们</h2>
+        <p class="text-xl mb-8">期待与您的合作，共创美好未来</p>
+        <a 
+          href={`/${lang}/contact`}
+          class="inline-block bg-white text-red-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        >
+          立即联系
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout> 
