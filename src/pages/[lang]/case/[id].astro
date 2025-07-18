@@ -48,14 +48,31 @@ const relatedNews = allNews.slice(0, 4);
 const allCases = await getCases(lang);
 const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
 
-// 过滤有效的相关案例图片
-const validRelatedCases = relatedCases.filter(relatedCase => {
-  if (!relatedCase.image) return false;
-  if (typeof relatedCase.image === 'string') {
-    return relatedCase.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+// 处理案例图片，确保是本地路径
+const processCaseImage = (imageData: any): string => {
+  if (!imageData) return '/images/placeholder.webp';
+  
+  if (typeof imageData === 'string') {
+    // 如果是外部URL，返回占位符
+    if (imageData.startsWith('http')) {
+      return '/images/placeholder.webp';
+    }
+    // 如果是本地路径且格式正确，返回原路径
+    if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
+      return imageData;
+    }
   }
-  return true; // 如果是导入的图片对象，认为是有效的
-});
+  
+  return '/images/placeholder.webp';
+};
+
+// 过滤有效的相关案例图片
+const validRelatedCases = relatedCases
+  .map(relatedCase => ({
+    ...relatedCase,
+    image: processCaseImage(relatedCase.image)
+  }))
+  .filter(relatedCase => relatedCase.image !== '/images/placeholder.webp');
 
 // 格式化日期
 const formatDate = (dateStr: string) => {

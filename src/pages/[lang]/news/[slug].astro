@@ -89,8 +89,25 @@ const formatDate = (dateString: string) => {
   return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
 };
 
-// 过滤有效的新闻图片
-const validNewsImage = hasNews && news.image && typeof news.image === 'string' && news.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i) ? news.image : null;
+// 处理新闻图片，确保是本地路径
+const processNewsImage = (imageData: any): string | null => {
+  if (!imageData) return null;
+  
+  if (typeof imageData === 'string') {
+    // 如果是外部URL，返回占位符
+    if (imageData.startsWith('http')) {
+      return '/images/placeholder.webp';
+    }
+    // 如果是本地路径且格式正确，返回原路径
+    if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
+      return imageData;
+    }
+  }
+  
+  return null;
+};
+
+const validNewsImage = hasNews ? processNewsImage(news.image) : null;
 ---
 
 <Layout title={hasNews ? news.title : '新闻详情'} description={hasNews ? news.excerpt : ''} lang={lang}>

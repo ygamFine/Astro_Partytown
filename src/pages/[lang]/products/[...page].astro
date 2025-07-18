@@ -57,24 +57,36 @@ const startIndex = hasProducts ? (currentPage - 1) * itemsPerPage : 0;
 const endIndex = hasProducts ? startIndex + itemsPerPage : 0;
 const displayProducts = hasProducts ? products.slice(startIndex, endIndex) : [];
 
-// 转换产品数据格式以适配GridList组件，并严格过滤图片
+// 处理产品图片，确保是本地路径
+const processProductImage = (imageData: any): string => {
+  if (!imageData) return '/images/placeholder.webp';
+  
+  if (Array.isArray(imageData)) {
+    // 如果是数组，找到第一个有效的本地图片
+    const validImg = imageData.find((img: any) => 
+      typeof img === 'string' && !img.startsWith('http') && img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)
+    );
+    return validImg || '/images/placeholder.webp';
+  }
+  
+  if (typeof imageData === 'string') {
+    // 如果是外部URL，返回占位符
+    if (imageData.startsWith('http')) {
+      return '/images/placeholder.webp';
+    }
+    // 如果是本地路径且格式正确，返回原路径
+    if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
+      return imageData;
+    }
+  }
+  
+  return '/images/placeholder.webp';
+};
+
+// 转换产品数据格式以适配GridList组件
 const gridItems = hasProducts ? displayProducts
   .map((product: any) => {
-    // 处理图片字段
-    let validImage = '/images/placeholder.webp'; // 默认占位符
-    
-    if (product.image) {
-      if (Array.isArray(product.image)) {
-        // 如果是数组，找到第一个有效的图片
-        const validImg = product.image.find((img: any) => 
-          typeof img === 'string' && img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)
-        );
-        if (validImg) validImage = validImg;
-      } else if (typeof product.image === 'string' && product.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
-        // 如果是字符串且有效
-        validImage = product.image;
-      }
-    }
+    const validImage = processProductImage(product.image);
     
     return {
       id: product.id,
@@ -85,7 +97,7 @@ const gridItems = hasProducts ? displayProducts
       href: `/${lang}/products/${product.slug}`
     };
   })
-  .filter(item => !!item.image && item.image !== '/images/placeholder.webp') : [];
+  .filter(item => item.image !== '/images/placeholder.webp') : [];
 
 // 面包屑导航
 const breadcrumbs = [

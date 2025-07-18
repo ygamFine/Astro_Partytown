@@ -96,11 +96,29 @@ try {
 // 检查是否有数据
 const hasCases = cases && cases.length > 0;
 
+// 处理案例图片，确保是本地路径
+const processCaseImage = (imageData: any): string => {
+  if (!imageData) return '/images/placeholder.webp';
+  
+  if (typeof imageData === 'string') {
+    // 如果是外部URL，返回占位符
+    if (imageData.startsWith('http')) {
+      return '/images/placeholder.webp';
+    }
+    // 如果是本地路径且格式正确，返回原路径
+    if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
+      return imageData;
+    }
+  }
+  
+  return '/images/placeholder.webp';
+};
+
 // 转换案例数据格式以适配GridList组件
 const gridItems = hasCases ? cases.map(caseItem => ({
   id: caseItem.id,
   title: caseItem.title,
-  image: caseItem.image,
+  image: processCaseImage(caseItem.image),
   excerpt: caseItem.excerpt,
   category: caseItem.category,
   href: `/${lang}/case/${caseItem.id}` // 假设有详情页面

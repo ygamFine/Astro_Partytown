@@ -1,7 +1,9 @@
 /**
  * Strapi 5 API 集成 - SSG模式直接访问
- * 构建时直接从API获取数据
+ * 构建时直接从API获取数据，图片自动下载到本地
  */
+
+import { processProductImages, processSingleImage } from '../utils/imageDownloader.js';
 
 const STRAPI_BASE_URL = 'http://47.251.126.80/api';
 const STRAPI_STATIC_URL = 'http://47.251.126.80';
@@ -124,7 +126,7 @@ export async function getProducts(locale = 'en') {
       slug: item.slug,
       name: item.Title,
       category: item.cate?.name || item.category,
-      image: item.imgs?.map(img => STRAPI_STATIC_URL + (img.formats?.thumbnail?.url || img.url)) || ['/images/placeholder.webp'],
+      image: item.imgs || ['/images/placeholder.webp'],
       price: item.price,
       excerpt: item.info?.[0]?.content || item.excerpt,
       specs: item.specs || [],
@@ -134,8 +136,18 @@ export async function getProducts(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    console.log(`从 Strapi API 获取到 ${products.length} 个产品`);
-    return products;
+    // 处理所有产品的图片，下载到本地
+    const processedProducts = [];
+    for (const product of products) {
+      const processedImages = await processProductImages(product.image);
+      processedProducts.push({
+        ...product,
+        image: processedImages
+      });
+    }
+
+    console.log(`从 Strapi API 获取到 ${processedProducts.length} 个产品`);
+    return processedProducts;
 
   } catch (error) {
     console.error('获取产品列表失败:', error);
@@ -171,13 +183,16 @@ export async function getProduct(slug, locale = 'en') {
 
     const item = data.data[0];
 
+    // 处理图片，下载到本地
+    const processedImages = await processProductImages(item.imgs);
+    
     // 转换为标准格式
     return {
       id: item.id,
       slug: item.slug,
       name: item.Title,
       category: item.cate?.name || item.category,
-      image: item.imgs?.map(img => STRAPI_STATIC_URL + (img?.url || img.url)) || ['/images/placeholder.webp'],
+      image: processedImages,
       price: item.price,
       excerpt: item.info?.[0]?.content || item.excerpt,
       info: item.info || [], // 保留完整的 info 字段用于富文本显示
@@ -218,7 +233,7 @@ export async function getNews(locale = 'en') {
       title: item.title,
       excerpt: item.excerpt,
       content: item.content,
-      image: item.zhanshitu && item.zhanshitu.length > 0 ? STRAPI_STATIC_URL + item.zhanshitu[0].url : null,
+      image: item.zhanshitu && item.zhanshitu.length > 0 ? item.zhanshitu[0] : null,
       date: item.publishedAt || item.createdAt,
       author: item.author,
       category: item.category,
@@ -227,8 +242,18 @@ export async function getNews(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    console.log(`从 Strapi API 获取到 ${news.length} 条新闻`);
-    return news;
+    // 处理所有新闻的图片，下载到本地
+    const processedNews = [];
+    for (const newsItem of news) {
+      const processedImage = await processSingleImage(newsItem.image);
+      processedNews.push({
+        ...newsItem,
+        image: processedImage
+      });
+    }
+
+    console.log(`从 Strapi API 获取到 ${processedNews.length} 条新闻`);
+    return processedNews;
 
   } catch (error) {
     console.error('获取新闻列表失败:', error);
@@ -264,6 +289,9 @@ export async function getNewsById(id, locale = 'en') {
 
     const item = data.data;
 
+    // 处理图片，下载到本地
+    const processedImage = await processSingleImage(item.zhanshitu && item.zhanshitu.length > 0 ? item.zhanshitu[0] : null);
+    
     // 转换为标准格式
     return {
       id: item.id,
@@ -271,7 +299,7 @@ export async function getNewsById(id, locale = 'en') {
       title: item.title,
       excerpt: item.excerpt,
       content: item.content,
-      image: item.zhanshitu && item.zhanshitu.length > 0 ? STRAPI_STATIC_URL + item.zhanshitu[0].url : null,
+      image: processedImage,
       date: item.publishedAt || item.createdAt,
       author: item.author,
       category: item.category,
@@ -313,7 +341,7 @@ export async function getCases(locale = 'en') {
       slug: item.id,
       title: item.title,
       client: item.client,
-      image: item.image && item.image.length > 0 ? STRAPI_STATIC_URL + item.image[0].url : null,
+      image: item.image && item.image.length > 0 ? item.image[0] : null,
       excerpt: item.excerpt,
       category: item.category,
       date: item.publishedAt || item.createdAt,
@@ -328,8 +356,18 @@ export async function getCases(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    console.log(`从 Strapi API 获取到 ${cases.length} 个案例`);
-    return cases;
+    // 处理所有案例的图片，下载到本地
+    const processedCases = [];
+    for (const caseItem of cases) {
+      const processedImage = await processSingleImage(caseItem.image);
+      processedCases.push({
+        ...caseItem,
+        image: processedImage
+      });
+    }
+
+    console.log(`从 Strapi API 获取到 ${processedCases.length} 个案例`);
+    return processedCases;
 
   } catch (error) {
     console.error('获取案例列表失败:', error);
@@ -444,13 +482,16 @@ export async function getCase(id, locale = 'en') {
       return blocks;
     }
 
+    // 处理图片，下载到本地
+    const processedImage = await processSingleImage(item.image && item.image.length > 0 ? item.image[0] : null);
+    
     // 转换为标准格式
     return {
       id: item.id,
       slug: item.id, // 使用 ID 作为 slug
       title: item.title,
       client: item.client,
-      image: item.image && item.image.length > 0 ? STRAPI_STATIC_URL + item.image[0].url : '/images/placeholder.webp',
+      image: processedImage,
       excerpt: item.excerpt,
       category: item.category,
       date: item.publishedAt || item.createdAt,

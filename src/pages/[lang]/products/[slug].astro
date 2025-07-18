@@ -86,8 +86,25 @@ const validRecommendedProducts = recommendedProducts.filter(recommended => {
 // 面包屑导航
 const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.category);
 
-const images: string[] = (Array.isArray(product.image) ? product.image : [product.image, ...(product.gallery || [])])
-  .filter((img: unknown): img is string => !!img && typeof img === 'string' && Boolean(img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)));
+// 处理产品图片，确保所有图片都是本地路径
+const processImages = (imageData: any): string[] => {
+  if (!imageData) return ['/images/placeholder.webp'];
+  
+  if (Array.isArray(imageData)) {
+    return imageData
+      .filter((img: any) => img && typeof img === 'string')
+      .map((img: string) => img.startsWith('http') ? '/images/placeholder.webp' : img)
+      .filter((img: string) => img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i));
+  }
+  
+  if (typeof imageData === 'string') {
+    return imageData.startsWith('http') ? ['/images/placeholder.webp'] : [imageData];
+  }
+  
+  return ['/images/placeholder.webp'];
+};
+
+const images: string[] = processImages(product.image);
 ---
 
 <Layout title={`${product.name} - 产品详情`} lang={lang}>
