@@ -88,6 +88,9 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
 };
+
+// 过滤有效的新闻图片
+const validNewsImage = hasNews && news.image && typeof news.image === 'string' && news.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i) ? news.image : null;
 ---
 
 <Layout title={hasNews ? news.title : '新闻详情'} description={hasNews ? news.excerpt : ''} lang={lang}>
@@ -115,19 +118,19 @@ const formatDate = (dateString: string) => {
         </header>
 
         <!-- Article Image -->
-                         {news.image && typeof news.image === 'string' && news.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i) && (
+                        {validNewsImage && (
         <div class="mb-8">
-          <img
-            src={news.image}
-            alt={news.title || ''}
+                <img 
+            src={validNewsImage} 
+            alt={news.title || ''} 
             width="800"
             height="500"
-            class="w-full h-auto max-h-[500px] object-cover rounded-lg"
-            loading="eager"
+                            class="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                            loading="eager"
             decoding="async"
           />
         </div>
-                         )}
+                        )}
 
         <!-- Article Content -->
                         <div class="prose max-w-none" set:html={news.content} />

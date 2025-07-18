@@ -80,7 +80,7 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
     
     try {
       const { performSearch } = await import('/src/lib/searchIndex.js');
-      const results = performSearch(searchQuery, lang);
+      const results = await performSearch(searchQuery, lang);
       
       displaySearchResults(results, searchQuery);
     } catch (error) {

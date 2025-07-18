@@ -96,11 +96,11 @@ const commonData = common.default;
         
         if (showSuggestions) {
           // 显示搜索建议
-          const suggestions = getSearchSuggestions(query, lang);
+          const suggestions = await getSearchSuggestions(query, lang);
           displaySuggestions(suggestions, query);
         } else {
           // 执行完整搜索
-          const results = searchFunction(query, lang);
+          const results = await searchFunction(query, lang);
           displayResults(results, query);
         }
       } catch (error) {

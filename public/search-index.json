@@ -1,0 +1,222 @@
+{
+  "products": [
+    {
+      "id": 49,
+      "type": "product",
+      "slug": null,
+      "title": "wood dryer2",
+      "content": "wood dryer2 undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_979769965_f35df3da26.jpg"
+      ],
+      "url": "/en/products/null",
+      "lang": "en",
+      "searchText": "wood dryer2 undefined   undefined"
+    },
+    {
+      "id": 50,
+      "type": "product",
+      "slug": null,
+      "title": "zzzzzzz",
+      "content": "zzzzzzz undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_979769965_f35df3da26.jpg"
+      ],
+      "url": "/en/products/null",
+      "lang": "en",
+      "searchText": "zzzzzzz undefined   undefined"
+    },
+    {
+      "id": 51,
+      "type": "product",
+      "slug": null,
+      "title": "测试下架",
+      "content": "测试下架 undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_15_jpg_3aac25b9b9.webp"
+      ],
+      "url": "/en/products/null",
+      "lang": "en",
+      "searchText": "测试下架 undefined   undefined"
+    },
+    {
+      "id": 52,
+      "type": "product",
+      "slug": "111www",
+      "title": "111www",
+      "content": "111www undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_15_jpg_3aac25b9b9.webp"
+      ],
+      "url": "/en/products/111www",
+      "lang": "en",
+      "searchText": "111www undefined   undefined"
+    },
+    {
+      "id": 53,
+      "type": "product",
+      "slug": null,
+      "title": "盛怀单板烘干机",
+      "content": "盛怀单板烘干机 undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_15_jpg_3aac25b9b9.webp"
+      ],
+      "url": "/en/products/null",
+      "lang": "en",
+      "searchText": "盛怀单板烘干机 undefined   undefined"
+    },
+    {
+      "id": 56,
+      "type": "product",
+      "slug": "11product",
+      "title": "11product how are you ",
+      "content": "11product how are you  undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_979443480_b0de710d4d.jpg",
+        "http://47.251.126.80/uploads/thumbnail_934810818_f4314eae73.jpg",
+        "http://47.251.126.80/uploads/thumbnail_979769965_24c0bc8e77.jpg"
+      ],
+      "url": "/en/products/11product",
+      "lang": "en",
+      "searchText": "11product how are you  undefined   undefined"
+    },
+    {
+      "id": 57,
+      "type": "product",
+      "slug": "helloworld",
+      "title": "hello world",
+      "content": "hello world undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_sample_640_426_503e54fb3a.gif",
+        "http://47.251.126.80/uploads/thumbnail_1_fa73216b3a.webp",
+        "http://47.251.126.80/uploads/thumbnail_979443480_b0de710d4d.jpg"
+      ],
+      "url": "/en/products/helloworld",
+      "lang": "en",
+      "searchText": "hello world undefined   undefined"
+    },
+    {
+      "id": 58,
+      "type": "product",
+      "slug": "helloworld1",
+      "title": "hello world",
+      "content": "hello world undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_979769965_f35df3da26.jpg",
+        "http://47.251.126.80/uploads/thumbnail_979769965_24c0bc8e77.jpg",
+        "http://47.251.126.80/uploads/thumbnail_934810818_f4314eae73.jpg"
+      ],
+      "url": "/en/products/helloworld1",
+      "lang": "en",
+      "searchText": "hello world undefined   undefined"
+    },
+    {
+      "id": 62,
+      "type": "product",
+      "slug": "chanpin",
+      "title": "chanpin1",
+      "content": "chanpin1 undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/logo_png_c985725b0f.webp"
+      ],
+      "url": "/en/products/chanpin",
+      "lang": "en",
+      "searchText": "chanpin1 undefined   undefined"
+    },
+    {
+      "id": 64,
+      "type": "product",
+      "slug": "chanpin2",
+      "title": "chanpin2",
+      "content": "chanpin2 undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/logo_png_c985725b0f.webp"
+      ],
+      "url": "/en/products/chanpin2",
+      "lang": "en",
+      "searchText": "chanpin2 undefined   undefined"
+    },
+    {
+      "id": 60,
+      "type": "product",
+      "slug": "up01",
+      "title": "ウォータドリル",
+      "content": "ウォータドリル undefined  ",
+      "image": [
+        "http://47.251.126.80/uploads/thumbnail_15_jpg_3aac25b9b9.webp"
+      ],
+      "url": "/ja/products/up01",
+      "lang": "ja",
+      "searchText": "ウォータドリル undefined   undefined"
+    }
+  ],
+  "news": [
+    {
+      "id": 25,
+      "type": "news",
+      "slug": 25,
+      "title": "1",
+      "image": "http://47.251.126.80/uploads/11_0_a93c4269ed.jpeg",
+      "date": "2025-07-17T10:26:50.876Z",
+      "url": "/en/news/25",
+      "lang": "en",
+      "searchText": "1 undefined undefined"
+    },
+    {
+      "id": 26,
+      "type": "news",
+      "slug": 26,
+      "title": "111111",
+      "image": "http://47.251.126.80/uploads/sample_640_426_503e54fb3a.gif",
+      "date": "2025-07-18T01:36:13.939Z",
+      "url": "/en/news/26",
+      "lang": "en",
+      "searchText": "111111 undefined undefined"
+    },
+    {
+      "id": 27,
+      "type": "news",
+      "slug": 27,
+      "title": "news one",
+      "image": "http://47.251.126.80/uploads/979443480_b0de710d4d.jpg",
+      "date": "2025-07-18T01:36:30.484Z",
+      "url": "/en/news/27",
+      "lang": "en",
+      "searchText": "news one undefined undefined"
+    },
+    {
+      "id": 28,
+      "type": "news",
+      "slug": 28,
+      "title": "test",
+      "image": "http://47.251.126.80/uploads/15_jpg_3aac25b9b9.webp",
+      "date": "2025-07-18T01:36:41.845Z",
+      "url": "/en/news/28",
+      "lang": "en",
+      "searchText": "test undefined undefined"
+    },
+    {
+      "id": 29,
+      "type": "news",
+      "slug": 29,
+      "title": "test2",
+      "image": "http://47.251.126.80/uploads/979769965_f35df3da26.jpg",
+      "date": "2025-07-18T01:36:53.038Z",
+      "url": "/en/news/29",
+      "lang": "en",
+      "searchText": "test2 undefined undefined"
+    },
+    {
+      "id": 19,
+      "type": "news",
+      "slug": 19,
+      "title": "日文新闻",
+      "image": "http://47.251.126.80/uploads/979769965_f35df3da26.jpg",
+      "date": "2025-07-15T12:30:33.748Z",
+      "url": "/ja/news/19",
+      "lang": "ja",
+      "searchText": "日文新闻 undefined undefined"
+    }
+  ],
+  "cases": []
+}

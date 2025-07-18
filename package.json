@@ -4,13 +4,14 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port 3000",
-    "build": "astro build",
-    "build:fast": "npm run i18n:generate && astro build",
-    "build:all": "npm run i18n:generate:all && astro build",
+    "build": "astro build && npm run generate:search-index",
+    "build:fast": "npm run i18n:generate && astro build && npm run generate:search-index",
+    "build:all": "npm run i18n:generate:all && astro build && npm run generate:search-index",
     "preview": "astro preview",
     "astro": "astro",
     "i18n:generate": "node scripts/generate-common-translations.js",
-    "i18n:generate:all": "node scripts/generate-common-translations.js --all"
+    "i18n:generate:all": "node scripts/generate-common-translations.js --all",
+    "generate:search-index": "node scripts/generate-search-index.js"
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",

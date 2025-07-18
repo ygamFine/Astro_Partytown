@@ -568,7 +568,7 @@ try {
       
       try {
         const { performSearch: searchFunction } = await import('/src/lib/searchIndex.js');
-        const results = searchFunction(query, currentLang);
+        const results = await searchFunction(query, currentLang);
         displayResults(results, query);
       } catch (error) {
         console.error('Search error:', error);

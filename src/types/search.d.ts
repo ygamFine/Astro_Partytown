@@ -24,7 +24,7 @@ declare module '/src/lib/searchIndex.js' {
     cases: SearchResult[];
   }
 
-  export function generateSearchIndex(): SearchData;
-  export function performSearch(query: string, lang?: string, type?: string): SearchResult[];
-  export function getSearchSuggestions(query: string, lang?: string): string[];
+  export function generateSearchIndex(): Promise<SearchData>;
+  export function performSearch(query: string, lang?: string, type?: string): Promise<SearchResult[]>;
+  export function getSearchSuggestions(query: string, lang?: string): Promise<string[]>;
 } 
