@@ -18,13 +18,13 @@ export async function getMenus(locale = 'en') {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
-    
+
     // 转换为标准格式，支持国际化字段
     const menus = data.data?.map(item => ({
       name: item.name || item.attributes?.name,
@@ -34,9 +34,9 @@ export async function getMenus(locale = 'en') {
       // 支持多语言子菜单
       children: item.children || item.attributes?.children || []
     })) || [];
-    
+
     return menus;
-    
+
   } catch (error) {
     // 如果API调用失败，返回默认菜单
     return getDefaultMenus(locale);
@@ -50,39 +50,39 @@ function getDefaultMenus(locale = 'en') {
   const menuTranslations = {
     'zh-CN': {
       home: '首页',
-      about: '关于我们', 
+      about: '关于我们',
       products: '产品中心',
       case: '客户案例',
       news: '新闻中心',
       contact: '联系我们',
       allProducts: '全部产品',
       skidSteer: '滑移装载机',
-      backhoe: '挖掘装载机', 
+      backhoe: '挖掘装载机',
       telescopic: '伸缩臂叉装车',
       electric: '电动工程机械'
     },
     'en': {
       home: 'Home',
       about: 'About',
-      products: 'Products', 
+      products: 'Products',
       case: 'Case',
       news: 'News',
       contact: 'Contact',
       allProducts: 'All Products',
       skidSteer: 'Skid Steer Loader',
       backhoe: 'Backhoe Loader',
-      telescopic: 'Telescopic Handler', 
+      telescopic: 'Telescopic Handler',
       electric: 'Electric Machinery'
     }
   };
-  
+
   const t = menuTranslations[locale] || menuTranslations['en'];
-  
+
   return [
     { name: t.home, path: '/', locale },
     { name: t.about, path: '/about', locale },
-    { 
-      name: t.products, 
+    {
+      name: t.products,
       path: '/products',
       locale,
       children: [
@@ -113,11 +113,11 @@ export async function getProducts(locale = 'en') {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     const products = data.data?.map(item => ({
       id: item.id,
@@ -133,10 +133,10 @@ export async function getProducts(locale = 'en') {
       locale: item.locale,
       publishedAt: item.publishedAt
     })) || [];
-    
+
     console.log(`从 Strapi API 获取到 ${products.length} 个产品`);
     return products;
-    
+
   } catch (error) {
     console.error('获取产品列表失败:', error);
     // 如果API调用失败，返回空数组
@@ -156,23 +156,21 @@ export async function getProduct(slug, locale = 'en') {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
-    console.log('获取到产品详情的源数据', data.data);
-    
+
     // 如果没有找到数据，直接返回 null
     if (!data.data || data.data.length === 0) {
       console.log(`语言 ${locale} 没有找到产品 ${slug}`);
       return null;
     }
-    
+
     const item = data.data[0];
-    console.log('获取到产品详情的源数据富文本内容', JSON.stringify(item.info));
-    
+
     // 转换为标准格式
     return {
       id: item.id,
@@ -189,7 +187,7 @@ export async function getProduct(slug, locale = 'en') {
       locale: item.locale,
       publishedAt: item.publishedAt
     };
-    
+
   } catch (error) {
     console.error('获取产品详情失败:', error);
     return null;
@@ -208,31 +206,30 @@ export async function getNews(locale = 'en') {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
-          const data = await response.json();
-      console.log('strapi 获取到的新闻信息', data);
-      const news = data.data?.map(item => ({
-        id: item.id,
-        slug: item.id,
-        title: item.title,
-        excerpt: item.excerpt,
-        content: item.content,
-        image: item.zhanshitu && item.zhanshitu.length > 0 ? STRAPI_STATIC_URL + item.zhanshitu[0].url : null,
-        date: item.publishedAt || item.createdAt,
-        author: item.author,
+
+    const data = await response.json();
+    const news = data.data?.map(item => ({
+      id: item.id,
+      slug: item.id,
+      title: item.title,
+      excerpt: item.excerpt,
+      content: item.content,
+      image: item.zhanshitu && item.zhanshitu.length > 0 ? STRAPI_STATIC_URL + item.zhanshitu[0].url : null,
+      date: item.publishedAt || item.createdAt,
+      author: item.author,
       category: item.category,
       tags: item.tags || [],
       locale: item.locale,
       publishedAt: item.publishedAt
     })) || [];
-    
+
     console.log(`从 Strapi API 获取到 ${news.length} 条新闻`);
     return news;
-    
+
   } catch (error) {
     console.error('获取新闻列表失败:', error);
     // 如果API调用失败，返回空数组
@@ -252,22 +249,21 @@ export async function getNewsById(id, locale = 'en') {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
-    console.log('获取到新闻详情的源数据', data.data);
-    
+
     // 如果没有找到数据，直接返回 null
     if (!data.data) {
       console.log(`语言 ${locale} 没有找到新闻 ID: ${id}`);
       return null;
     }
-    
+
     const item = data.data;
-    
+
     // 转换为标准格式
     return {
       id: item.id,
@@ -283,11 +279,195 @@ export async function getNewsById(id, locale = 'en') {
       locale: item.locale,
       publishedAt: item.publishedAt
     };
-    
+
   } catch (error) {
     console.error('获取新闻详情失败:', error);
     return null;
   }
 }
 
- 
+/**
+ * 获取案例列表 (SSG模式，构建时调用)
+ */
+export async function getCases(locale = 'en') {
+  try {
+    // 只获取指定语言的数据，不回退到其他语言
+    const response = await fetch(`${STRAPI_BASE_URL}/case?locale=${locale}&populate=*`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(`案例 API 端点不存在，返回空数组`);
+        return [];
+      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const cases = data.data?.map(item => ({
+      id: item.id,
+      slug: item.id,
+      title: item.title,
+      client: item.client,
+      image: item.image && item.image.length > 0 ? STRAPI_STATIC_URL + item.image[0].url : null,
+      excerpt: item.excerpt,
+      category: item.category,
+      date: item.publishedAt || item.createdAt,
+      results: item.results || [],
+      content: item.content,
+      industry: item.industry,
+      location: item.location,
+      completionDate: item.completionDate,
+      equipmentUsed: item.equipmentUsed,
+      projectDuration: item.projectDuration,
+      locale: item.locale,
+      publishedAt: item.publishedAt
+    })) || [];
+
+    console.log(`从 Strapi API 获取到 ${cases.length} 个案例`);
+    return cases;
+
+  } catch (error) {
+    console.error('获取案例列表失败:', error);
+    // 如果API调用失败，返回空数组
+    return [];
+  }
+}
+
+/**
+ * 获取单个案例详情 (SSG模式，构建时调用)
+ */
+export async function getCase(id, locale = 'en') {
+  try {
+    // 首先尝试直接通过 ID 获取
+    let response = await fetch(`${STRAPI_BASE_URL}/case/${id}?locale=${locale}&populate=*`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // 如果直接获取失败，尝试通过过滤条件获取
+    if (!response.ok) {
+      console.log(`直接获取案例 ${id} 失败，尝试通过过滤条件获取`);
+      response = await fetch(`${STRAPI_BASE_URL}/case?filters[id][$eq]=${id}&locale=${locale}&populate=*`, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(`案例 API 端点不存在，返回 null`);
+        return null;
+      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    // 处理不同的响应格式
+    let item;
+    if (Array.isArray(data.data)) {
+      // 如果是数组格式（过滤查询的结果）
+      if (data.data.length === 0) {
+        console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
+        return null;
+      }
+      item = data.data[0];
+    } else {
+      // 如果是单个对象格式（直接查询的结果）
+      if (!data.data) {
+        console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
+        return null;
+      }
+      item = data.data;
+    }
+
+    // 将 Markdown 内容转换为 Strapi 富文本格式
+    function convertMarkdownToRichText(markdown) {
+      if (!markdown || typeof markdown !== 'string') {
+        return [];
+      }
+
+      const blocks = [];
+      const lines = markdown.split('\n');
+      let currentBlock = null;
+
+      for (const line of lines) {
+        // 处理标题
+        if (line.startsWith('#')) {
+          const level = line.match(/^#+/)[0].length;
+          const text = line.replace(/^#+\s*/, '');
+          blocks.push({
+            type: 'heading',
+            level: Math.min(level, 6),
+            children: [{ type: 'text', text }]
+          });
+        }
+        // 处理图片
+        else if (line.includes('![') && line.includes('](') && line.includes(')')) {
+          const match = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+          if (match) {
+            const [, alt, url] = match;
+            blocks.push({
+              type: 'image',
+              url: url.trim(),
+              alt: alt.trim()
+            });
+          }
+        }
+        // 处理段落
+        else if (line.trim()) {
+          if (currentBlock && currentBlock.type === 'paragraph') {
+            currentBlock.children.push({ type: 'text', text: line });
+          } else {
+            currentBlock = {
+              type: 'paragraph',
+              children: [{ type: 'text', text: line }]
+            };
+            blocks.push(currentBlock);
+          }
+        }
+        // 空行结束当前段落
+        else {
+          currentBlock = null;
+        }
+      }
+
+      return blocks;
+    }
+
+    // 转换为标准格式
+    return {
+      id: item.id,
+      slug: item.id, // 使用 ID 作为 slug
+      title: item.title,
+      client: item.client,
+      image: item.image && item.image.length > 0 ? STRAPI_STATIC_URL + item.image[0].url : '/images/placeholder.webp',
+      excerpt: item.excerpt,
+      category: item.category,
+      date: item.publishedAt || item.createdAt,
+      results: item.results || [],
+      content: convertMarkdownToRichText(item.content),
+      industry: item.industry,
+      location: item.location,
+      completionDate: item.completionDate,
+      equipmentUsed: item.equipmentUsed,
+      projectDuration: item.projectDuration,
+      locale: item.locale,
+      publishedAt: item.publishedAt
+    };
+
+  } catch (error) {
+    console.error('获取案例详情失败:', error);
+    return null;
+  }
+}
+

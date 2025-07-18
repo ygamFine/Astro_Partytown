@@ -2,6 +2,7 @@
 import { SUPPORTED_LANGUAGES } from '../locales/i18n.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
+import { getCases } from './strapi.js';
 
 // 生成搜索索引数据（在构建时执行）
 export async function generateSearchIndex() {
@@ -62,6 +63,33 @@ export async function generateSearchIndex() {
       }
     }
 
+    // 获取所有语言的案例数据
+    for (const lang of SUPPORTED_LANGUAGES) {
+      const cases = await getCases(lang);
+      if (cases && cases.length > 0) {
+        // 处理案例数据
+        cases.forEach(caseItem => {
+          const searchItem = {
+            id: caseItem.id,
+            type: 'case',
+            slug: caseItem.slug,
+            title: caseItem.title,
+            excerpt: caseItem.excerpt,
+            content: caseItem.content,
+            category: caseItem.category,
+            image: caseItem.image,
+            client: caseItem.client,
+            industry: caseItem.industry,
+            location: caseItem.location,
+            url: `/${lang}/case/${caseItem.id}`,
+            lang: lang,
+            searchText: generateCaseSearchText(caseItem)
+          };
+          searchData.cases.push(searchItem);
+        });
+      }
+    }
+
     console.log('SSG 搜索索引生成完成:', {
       products: searchData.products.length,
       news: searchData.news.length,
@@ -93,6 +121,11 @@ function generateSearchText(product) {
 // 生成新闻搜索文本
 function generateNewsSearchText(news) {
   return `${news.title} ${news.excerpt} ${news.content}`.toLowerCase();
+}
+
+// 生成案例搜索文本
+function generateCaseSearchText(caseItem) {
+  return `${caseItem.title} ${caseItem.excerpt} ${caseItem.content} ${caseItem.category} ${caseItem.client} ${caseItem.industry} ${caseItem.location}`.toLowerCase();
 }
 
 // 客户端搜索函数（使用预生成的索引）

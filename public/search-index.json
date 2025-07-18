@@ -218,5 +218,173 @@
       "searchText": "日文新闻 undefined undefined"
     }
   ],
-  "cases": []
+  "cases": [
+    {
+      "id": 6,
+      "type": "case",
+      "slug": 6,
+      "title": "飞达钻机亮相第137届中国进出口商品交易会",
+      "content": [
+        {
+          "type": "heading",
+          "children": [
+            {
+              "type": "text",
+              "text": "本届广交会以“先进制造”和“全球供应链韧性”为核心，吸引了3.1万家企业参展，其中钻机、工程机械领域的参展企业通过智能化、绿色化技术升级，成为全球采购商关注的焦点。"
+            }
+          ],
+          "level": 1
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "children": [
+            {
+              "type": "text",
+              "text": "飞达钻机亮相第137届中国进出口商品交易会"
+            }
+          ],
+          "level": 2
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "此外，商务部在展会期间推出“内外贸一体化”政策，支持钻机企业参与国际标准认证，简化出口退税流程。例如，某企业通过政策支持将新能源钻机出口到巴西、智利等南美市场，订单周期缩短了40%。此外，展会还设立了“跨境贸易服务专区”，为钻机企业提供一站式物流、金融、法律支持，助力企业“走出去”。"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "飞达钻机亮相第137届中国进出口商品交易会"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "本次展会为钻机行业搭建了优质的技术展示和市场对接平台，企业不仅通过技术创新、政策赋能巩固了传统市场，还在新兴市场取得了突破。未来，钻机行业将继续朝着智能化、绿色化方向深化全球供应链合作，为全球基础设施建设提供中国解决方案。"
+            }
+          ]
+        }
+      ],
+      "image": "http://47.251.126.80/uploads/sample_640_426_503e54fb3a.gif",
+      "url": "/en/case/6",
+      "lang": "en",
+      "searchText": "飞达钻机亮相第137届中国进出口商品交易会 undefined [object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object] undefined undefined undefined undefined"
+    }
+  ]
 }

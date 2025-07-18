@@ -1,40 +1,51 @@
 ---
 export const prerender = true;
-
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
-import { allCases } from '../../../data/cases.js';
-import { allNews } from '../../../data/news.js';
+import RichTextRenderer from '../../../components/RichTextRenderer.astro';
+import { getCases, getCase } from '../../../lib/caseService.js';
+import { getNews } from '../../../lib/newsService.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateCaseDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 
 export async function getStaticPaths() {
-  // 从案例数据生成静态路径，只为配置中启用的语言生成
   const enabledLanguages = getEnabledLanguages();
-  return enabledLanguages.flatMap(lang =>
-    allCases.map(caseItem => ({
-      params: { lang, id: caseItem.id.toString() },
-      props: { lang, caseItem }
-    }))
-  );
+  let paths: any[] = [];
+
+  // 为每种启用的语言生成路径
+  for (const lang of enabledLanguages) {
+    const cases = await getCases(lang);
+    
+    // 只有当有案例数据时才生成页面
+    if (cases && cases.length > 0) {
+      cases.forEach((caseItem, index) => {
+        const previousCase = index > 0 ? cases[index - 1] : null;
+        const nextCase = index < cases.length - 1 ? cases[index + 1] : null;
+
+        paths.push({
+          params: { lang, id: caseItem.id.toString() },
+          props: { lang, caseItem, previousCase, nextCase }
+        });
+      });
+    }
+  }
+
+  return paths;
 }
 
-const { lang, caseItem } = Astro.props;
+const { lang, caseItem, previousCase, nextCase } = Astro.props;
 
 // 加载国际化翻译
 const translations = await mergeTranslations(lang, ['case']);
 const t = (translations as any)['case'];
 
-// 获取当前案例在列表中的位置，用于上一个/下一个导航
-const currentIndex = allCases.findIndex(c => c.id === caseItem.id);
-const previousCase = currentIndex > 0 ? allCases[currentIndex - 1] : null;
-const nextCase = currentIndex < allCases.length - 1 ? allCases[currentIndex + 1] : null;
-
 // 获取相关新闻（最新的4篇）
+const allNews = await getNews(lang);
 const relatedNews = allNews.slice(0, 4);
 
 // 获取相关案例（排除当前案例，取前2个）
+const allCases = await getCases(lang);
 const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
 
 // 过滤有效的相关案例图片
@@ -84,7 +95,11 @@ const breadcrumbs = generateCaseDetailBreadcrumbs(lang, caseItem.title);
             </header>
 
             <!-- 案例详细内容 -->
-            <div class="prose max-w-none text-lg text-gray-800 leading-relaxed" set:html={caseItem.content} />
+            {caseItem.content && (
+              <div class="mb-8">
+                <RichTextRenderer content={caseItem.content} />
+              </div>
+            )}
           </div>
 
           <!-- Previous/Next 导航 -->
