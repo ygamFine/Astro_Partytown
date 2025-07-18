@@ -3,11 +3,14 @@
  * 构建时直接从API获取数据，图片自动下载到本地
  */
 
-import { processProductImages, processSingleImage } from '../utils/imageDownloader.js';
+import { processProductImages, processSingleImage, processNewsImages, processCaseImages } from '../utils/imageDownloader.js';
 
 const STRAPI_BASE_URL = 'http://47.251.126.80/api';
 const STRAPI_STATIC_URL = 'http://47.251.126.80';
 const STRAPI_TOKEN = '2980bc69d09c767b2ca2e1c211a285c9f48985775a3f1d1313025838a611abbfe6d892a29b3417407ddd798d69a9f67f063c27d13827c1765f96b4bc19601295ac11fb9552f4a16ede2745813e3b536827069875ae8c5089a36da57cf69d08b252093e2100e0cc88ac700ca6cd6ebd196f0002bd5fb8219222ed778f8858ad21';
+
+// 检查是否在服务端运行
+const isServer = typeof window === 'undefined';
 
 /**
  * 获取菜单数据 (SSG模式，构建时调用)
@@ -136,14 +139,39 @@ export async function getProducts(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    // 处理所有产品的图片，下载到本地
-    const processedProducts = [];
-    for (const product of products) {
-      const processedImages = await processProductImages(product.image);
-      processedProducts.push({
-        ...product,
-        image: processedImages
-      });
+    // 只在服务端处理图片下载
+    let processedProducts = products;
+    if (isServer) {
+      processedProducts = [];
+      for (const product of products) {
+        // 处理图片数组，将Strapi格式转换为标准格式
+        let processedImages = product.image;
+        if (Array.isArray(product.image) && product.image.length > 0) {
+          // 如果是数组，处理每个图片对象
+          const imageUrls = product.image.map(img => {
+            if (typeof img === 'string') {
+              return img;
+            } else if (img && img.url) {
+              return img.url;
+            } else if (img && typeof img === 'object') {
+              // 处理Strapi的图片对象格式
+              return img.url || img.formats?.medium?.url || img.formats?.small?.url || img.formats?.thumbnail?.url;
+            }
+            return null;
+          }).filter(url => url);
+          
+          if (imageUrls.length > 0) {
+            processedImages = imageUrls;
+          } else {
+            processedImages = ['/images/placeholder.webp'];
+          }
+        }
+        
+        processedProducts.push({
+          ...product,
+          image: processedImages
+        });
+      }
     }
 
     console.log(`从 Strapi API 获取到 ${processedProducts.length} 个产品`);
@@ -183,8 +211,28 @@ export async function getProduct(slug, locale = 'en') {
 
     const item = data.data[0];
 
-    // 处理图片，下载到本地
-    const processedImages = await processProductImages(item.imgs);
+    // 处理图片数组，将Strapi格式转换为标准格式
+    let processedImages = item.imgs || ['/images/placeholder.webp'];
+    if (Array.isArray(item.imgs) && item.imgs.length > 0) {
+      // 如果是数组，处理每个图片对象
+      const imageUrls = item.imgs.map(img => {
+        if (typeof img === 'string') {
+          return img;
+        } else if (img && img.url) {
+          return img.url;
+        } else if (img && typeof img === 'object') {
+          // 处理Strapi的图片对象格式
+          return img.url || img.formats?.medium?.url || img.formats?.small?.url || img.formats?.thumbnail?.url;
+        }
+        return null;
+      }).filter(url => url);
+      
+      if (imageUrls.length > 0) {
+        processedImages = imageUrls;
+      } else {
+        processedImages = ['/images/placeholder.webp'];
+      }
+    }
     
     // 转换为标准格式
     return {
@@ -214,8 +262,7 @@ export async function getProduct(slug, locale = 'en') {
  */
 export async function getNews(locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/news?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_BASE_URL}/news?locale=${locale}&populate=*&sort=publishedAt:desc`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -229,27 +276,27 @@ export async function getNews(locale = 'en') {
     const data = await response.json();
     const news = data.data?.map(item => ({
       id: item.id,
-      slug: item.id,
+      slug: item.slug,
       title: item.title,
       excerpt: item.excerpt,
       content: item.content,
-      image: item.zhanshitu && item.zhanshitu.length > 0 ? item.zhanshitu[0] : null,
-      date: item.publishedAt || item.createdAt,
+      image: item.image || '/images/placeholder.webp',
+      date: item.publishedAt,
       author: item.author,
-      category: item.category,
-      tags: item.tags || [],
-      locale: item.locale,
-      publishedAt: item.publishedAt
+      locale: item.locale
     })) || [];
 
-    // 处理所有新闻的图片，下载到本地
-    const processedNews = [];
-    for (const newsItem of news) {
-      const processedImage = await processSingleImage(newsItem.image);
-      processedNews.push({
-        ...newsItem,
-        image: processedImage
-      });
+    // 只在服务端处理图片下载
+    let processedNews = news;
+    if (isServer) {
+      processedNews = [];
+      for (const item of news) {
+        const processedImage = await processSingleImage(item.image);
+        processedNews.push({
+          ...item,
+          image: processedImage
+        });
+      }
     }
 
     console.log(`从 Strapi API 获取到 ${processedNews.length} 条新闻`);
@@ -257,17 +304,15 @@ export async function getNews(locale = 'en') {
 
   } catch (error) {
     console.error('获取新闻列表失败:', error);
-    // 如果API调用失败，返回空数组
     return [];
   }
 }
 
 /**
- * 获取单个新闻详情 (SSG模式，构建时调用)
+ * 根据ID获取新闻详情 (SSG模式，构建时调用)
  */
 export async function getNewsById(id, locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
     const response = await fetch(`${STRAPI_BASE_URL}/news/${id}?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
@@ -281,18 +326,19 @@ export async function getNewsById(id, locale = 'en') {
 
     const data = await response.json();
 
-    // 如果没有找到数据，直接返回 null
     if (!data.data) {
-      console.log(`语言 ${locale} 没有找到新闻 ID: ${id}`);
+      console.log(`语言 ${locale} 没有找到新闻 ${id}`);
       return null;
     }
 
     const item = data.data;
 
-    // 处理图片，下载到本地
-    const processedImage = await processSingleImage(item.zhanshitu && item.zhanshitu.length > 0 ? item.zhanshitu[0] : null);
-    
-    // 转换为标准格式
+    // 只在服务端处理图片下载
+    let processedImage = item.image;
+    if (isServer) {
+      processedImage = await processSingleImage(item.image);
+    }
+
     return {
       id: item.id,
       slug: item.slug,
@@ -300,12 +346,9 @@ export async function getNewsById(id, locale = 'en') {
       excerpt: item.excerpt,
       content: item.content,
       image: processedImage,
-      date: item.publishedAt || item.createdAt,
+      date: item.publishedAt,
       author: item.author,
-      category: item.category,
-      tags: item.tags || [],
-      locale: item.locale,
-      publishedAt: item.publishedAt
+      locale: item.locale
     };
 
   } catch (error) {
@@ -319,8 +362,7 @@ export async function getNewsById(id, locale = 'en') {
  */
 export async function getCases(locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/case?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_BASE_URL}/cases?locale=${locale}&populate=*&sort=publishedAt:desc`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -328,42 +370,36 @@ export async function getCases(locale = 'en') {
     });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        console.log(`案例 API 端点不存在，返回空数组`);
-        return [];
-      }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
     const cases = data.data?.map(item => ({
       id: item.id,
-      slug: item.id,
+      slug: item.slug,
       title: item.title,
-      client: item.client,
-      image: item.image && item.image.length > 0 ? item.image[0] : null,
       excerpt: item.excerpt,
-      category: item.category,
-      date: item.publishedAt || item.createdAt,
-      results: item.results || [],
       content: item.content,
+      category: item.category,
+      image: item.image || '/images/placeholder.webp',
+      client: item.client,
       industry: item.industry,
       location: item.location,
-      completionDate: item.completionDate,
-      equipmentUsed: item.equipmentUsed,
-      projectDuration: item.projectDuration,
       locale: item.locale,
       publishedAt: item.publishedAt
     })) || [];
 
-    // 处理所有案例的图片，下载到本地
-    const processedCases = [];
-    for (const caseItem of cases) {
-      const processedImage = await processSingleImage(caseItem.image);
-      processedCases.push({
-        ...caseItem,
-        image: processedImage
-      });
+    // 只在服务端处理图片下载
+    let processedCases = cases;
+    if (isServer) {
+      processedCases = [];
+      for (const item of cases) {
+        const processedImage = await processSingleImage(item.image);
+        processedCases.push({
+          ...item,
+          image: processedImage
+        });
+      }
     }
 
     console.log(`从 Strapi API 获取到 ${processedCases.length} 个案例`);
@@ -371,137 +407,52 @@ export async function getCases(locale = 'en') {
 
   } catch (error) {
     console.error('获取案例列表失败:', error);
-    // 如果API调用失败，返回空数组
     return [];
   }
 }
 
 /**
- * 获取单个案例详情 (SSG模式，构建时调用)
+ * 根据ID获取案例详情 (SSG模式，构建时调用)
  */
 export async function getCase(id, locale = 'en') {
   try {
-    // 首先尝试直接通过 ID 获取
-    let response = await fetch(`${STRAPI_BASE_URL}/case/${id}?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_BASE_URL}/cases/${id}?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
       }
     });
 
-    // 如果直接获取失败，尝试通过过滤条件获取
     if (!response.ok) {
-      console.log(`直接获取案例 ${id} 失败，尝试通过过滤条件获取`);
-      response = await fetch(`${STRAPI_BASE_URL}/case?filters[id][$eq]=${id}&locale=${locale}&populate=*`, {
-        headers: {
-          'Authorization': `Bearer ${STRAPI_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      });
-    }
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.log(`案例 API 端点不存在，返回 null`);
-        return null;
-      }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    // 处理不同的响应格式
-    let item;
-    if (Array.isArray(data.data)) {
-      // 如果是数组格式（过滤查询的结果）
-      if (data.data.length === 0) {
-        console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
-        return null;
-      }
-      item = data.data[0];
-    } else {
-      // 如果是单个对象格式（直接查询的结果）
-      if (!data.data) {
-        console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
-        return null;
-      }
-      item = data.data;
+    if (!data.data) {
+      console.log(`语言 ${locale} 没有找到案例 ${id}`);
+      return null;
     }
 
-    // 将 Markdown 内容转换为 Strapi 富文本格式
-    function convertMarkdownToRichText(markdown) {
-      if (!markdown || typeof markdown !== 'string') {
-        return [];
-      }
+    const item = data.data;
 
-      const blocks = [];
-      const lines = markdown.split('\n');
-      let currentBlock = null;
-
-      for (const line of lines) {
-        // 处理标题
-        if (line.startsWith('#')) {
-          const level = line.match(/^#+/)[0].length;
-          const text = line.replace(/^#+\s*/, '');
-          blocks.push({
-            type: 'heading',
-            level: Math.min(level, 6),
-            children: [{ type: 'text', text }]
-          });
-        }
-        // 处理图片
-        else if (line.includes('![') && line.includes('](') && line.includes(')')) {
-          const match = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-          if (match) {
-            const [, alt, url] = match;
-            blocks.push({
-              type: 'image',
-              url: url.trim(),
-              alt: alt.trim()
-            });
-          }
-        }
-        // 处理段落
-        else if (line.trim()) {
-          if (currentBlock && currentBlock.type === 'paragraph') {
-            currentBlock.children.push({ type: 'text', text: line });
-          } else {
-            currentBlock = {
-              type: 'paragraph',
-              children: [{ type: 'text', text: line }]
-            };
-            blocks.push(currentBlock);
-          }
-        }
-        // 空行结束当前段落
-        else {
-          currentBlock = null;
-        }
-      }
-
-      return blocks;
+    // 只在服务端处理图片下载
+    let processedImage = item.image;
+    if (isServer) {
+      processedImage = await processSingleImage(item.image);
     }
 
-    // 处理图片，下载到本地
-    const processedImage = await processSingleImage(item.image && item.image.length > 0 ? item.image[0] : null);
-    
-    // 转换为标准格式
     return {
       id: item.id,
-      slug: item.id, // 使用 ID 作为 slug
+      slug: item.slug,
       title: item.title,
-      client: item.client,
-      image: processedImage,
       excerpt: item.excerpt,
+      content: item.content,
       category: item.category,
-      date: item.publishedAt || item.createdAt,
-      results: item.results || [],
-      content: convertMarkdownToRichText(item.content),
+      image: processedImage,
+      client: item.client,
       industry: item.industry,
       location: item.location,
-      completionDate: item.completionDate,
-      equipmentUsed: item.equipmentUsed,
-      projectDuration: item.projectDuration,
       locale: item.locale,
       publishedAt: item.publishedAt
     };

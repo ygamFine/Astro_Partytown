@@ -2,90 +2,75 @@
  * 图片下载工具 - 在构建时将Strapi图片下载到本地
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+// 图片下载和本地化工具
 
-// 图片缓存目录 - 使用相对路径
-const IMAGE_CACHE_DIR = path.join(process.cwd(), 'public/images/strapi');
-const STRAPI_STATIC_URL = 'http://47.251.126.80';
+// 只在服务端运行时导入Node.js模块
+let fs, path, fileURLToPath;
+let IMAGE_CACHE_DIR;
 
-/**
- * 确保缓存目录存在
- */
-async function ensureCacheDir() {
-  try {
-    await fs.access(IMAGE_CACHE_DIR);
-  } catch {
-    await fs.mkdir(IMAGE_CACHE_DIR, { recursive: true });
-  }
+if (typeof window === 'undefined') {
+  // 服务端代码
+  fs = await import('fs');
+  path = await import('path');
+  const url = await import('url');
+  fileURLToPath = url.fileURLToPath;
+  
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  IMAGE_CACHE_DIR = path.join(process.cwd(), 'public/images/strapi');
 }
 
 /**
  * 生成图片文件名
  */
 function generateImageFileName(originalUrl) {
-  const url = new URL(originalUrl, STRAPI_STATIC_URL);
+  const url = new URL(originalUrl, 'http://47.251.126.80');
   const pathname = url.pathname;
   const ext = path.extname(pathname) || '.jpg';
   const hash = Buffer.from(pathname).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
   return `${hash}${ext}`;
 }
 
-/**
- * 下载单个图片（唯一实现）
- */
-export async function downloadImage(imageUrl) {
-  if (!imageUrl || typeof imageUrl !== 'string') {
-    return '/images/placeholder.webp';
+// 确保缓存目录存在
+function ensureCacheDir() {
+  if (typeof window !== 'undefined') return; // 客户端不执行
+  
+  if (!fs.existsSync(IMAGE_CACHE_DIR)) {
+    fs.mkdirSync(IMAGE_CACHE_DIR, { recursive: true });
   }
+}
 
-  // 如果已经是本地路径，直接返回
-  if (imageUrl.startsWith('/images/') || imageUrl.startsWith('./')) {
+// 下载单个图片
+export async function downloadImage(imageUrl, fileName) {
+  if (typeof window !== 'undefined') {
+    // 客户端返回原始URL
     return imageUrl;
   }
 
-  // 如果是完整的Strapi URL
-  if (imageUrl.startsWith(STRAPI_STATIC_URL)) {
-    try {
-      await ensureCacheDir();
-      
-      const fileName = generateImageFileName(imageUrl);
-      const localPath = path.join(IMAGE_CACHE_DIR, fileName);
-      const publicPath = `/images/strapi/${fileName}`;
-
-      // 检查文件是否已存在
-      try {
-        await fs.access(localPath);
-        return publicPath;
-      } catch {
-        // 文件不存在，需要下载
-      }
-
-      // 下载图片
-      const response = await fetch(imageUrl);
-      if (!response.ok) {
-        console.warn(`下载图片失败: ${imageUrl}`);
-        return '/images/placeholder.webp';
-      }
-
-      const buffer = await response.arrayBuffer();
-      await fs.writeFile(localPath, Buffer.from(buffer));
-      
-      return publicPath;
-    } catch (error) {
-      console.error(`下载图片出错: ${imageUrl}`, error.message);
-      return '/images/placeholder.webp';
+  try {
+    ensureCacheDir();
+    
+    // 检查文件是否已存在
+    const localPath = path.join(IMAGE_CACHE_DIR, fileName);
+    if (fs.existsSync(localPath)) {
+      return `/images/strapi/${fileName}`;
     }
-  }
 
-  // 如果是相对路径，转换为绝对路径
-  if (imageUrl.startsWith('/uploads/')) {
-    const fullUrl = `${STRAPI_STATIC_URL}${imageUrl}`;
-    return await downloadImage(fullUrl);
-  }
+    // 下载图片
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      console.warn(`Failed to download image: ${imageUrl}`);
+      return imageUrl;
+    }
 
-  // 其他情况返回占位符
-  return '/images/placeholder.webp';
+    const buffer = await response.arrayBuffer();
+    fs.writeFileSync(localPath, Buffer.from(buffer));
+    
+    console.log(`Downloaded image: ${fileName}`);
+    return `/images/strapi/${fileName}`;
+  } catch (error) {
+    console.error(`Error downloading image ${imageUrl}:`, error);
+    return imageUrl;
+  }
 }
 
 /**
@@ -109,44 +94,101 @@ export async function downloadImages(imageUrls) {
   });
 }
 
-/**
- * 处理产品图片数组
- */
+// 处理产品图片数组
 export async function processProductImages(images) {
-  if (!images || images.length === 0) {
-    return ['/images/placeholder.webp'];
+  if (typeof window !== 'undefined') {
+    // 客户端直接返回原始数据
+    return images;
+  }
+
+  if (!images || !Array.isArray(images)) {
+    return images;
   }
 
   const processedImages = [];
-  
   for (const image of images) {
-    if (typeof image === 'string') {
-      const localImage = await downloadImage(image);
-      processedImages.push(localImage);
-    } else if (image && typeof image === 'object' && image.url) {
-      const localImage = await downloadImage(image.url);
-      processedImages.push(localImage);
+    if (image && image.url) {
+      const fileName = `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+      const localUrl = await downloadImage(image.url, fileName);
+      processedImages.push({
+        ...image,
+        url: localUrl,
+        localUrl: localUrl
+      });
     }
   }
-
-  return processedImages.length > 0 ? processedImages : ['/images/placeholder.webp'];
+  return processedImages;
 }
 
-/**
- * 处理单个图片
- */
+// 处理单个图片
 export async function processSingleImage(image) {
-  if (!image) {
-    return '/images/placeholder.webp';
+  if (typeof window !== 'undefined') {
+    // 客户端直接返回原始数据
+    return image;
   }
 
-  if (typeof image === 'string') {
-    return await downloadImage(image);
+  if (!image || !image.url) {
+    return image;
   }
 
-  if (image && typeof image === 'object' && image.url) {
-    return await downloadImage(image.url);
+  const fileName = `single_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+  const localUrl = await downloadImage(image.url, fileName);
+  
+  return {
+    ...image,
+    url: localUrl,
+    localUrl: localUrl
+  };
+} 
+
+// 处理新闻图片
+export async function processNewsImages(images) {
+  if (typeof window !== 'undefined') {
+    // 客户端直接返回原始数据
+    return images;
   }
 
-  return '/images/placeholder.webp';
+  if (!images || !Array.isArray(images)) {
+    return images;
+  }
+
+  const processedImages = [];
+  for (const image of images) {
+    if (image && image.url) {
+      const fileName = `news_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+      const localUrl = await downloadImage(image.url, fileName);
+      processedImages.push({
+        ...image,
+        url: localUrl,
+        localUrl: localUrl
+      });
+    }
+  }
+  return processedImages;
+}
+
+// 处理案例图片
+export async function processCaseImages(images) {
+  if (typeof window !== 'undefined') {
+    // 客户端直接返回原始数据
+    return images;
+  }
+
+  if (!images || !Array.isArray(images)) {
+    return images;
+  }
+
+  const processedImages = [];
+  for (const image of images) {
+    if (image && image.url) {
+      const fileName = `case_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+      const localUrl = await downloadImage(image.url, fileName);
+      processedImages.push({
+        ...image,
+        url: localUrl,
+        localUrl: localUrl
+      });
+    }
+  }
+  return processedImages;
 } 
