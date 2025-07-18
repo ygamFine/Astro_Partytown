@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 
 interface Props {
   items: Array<{
@@ -24,7 +23,8 @@ const displayItems = items.slice(0, maxItems);
 const validItems = displayItems.filter(item => {
   if (!item.image) return false;
   if (typeof item.image === 'string') {
-    return item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+    // 检查是否是有效的图片URL
+    return item.image.trim() !== '' && item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
   }
   return true; // 如果是导入的图片对象，认为是有效的
 });
@@ -39,11 +39,11 @@ const t = translations.common || {};
       <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <a href={item.href} class="block h-full">
           <div class="aspect-video overflow-hidden">
-            <Image 
+            <img 
               src={item.image} 
               alt={item.title || ''}
-              width={400}
-              height={300}
+              width="400"
+              height="300"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
               decoding="async"

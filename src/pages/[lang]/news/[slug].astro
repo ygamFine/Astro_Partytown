@@ -4,30 +4,43 @@ import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
 import GridList from '../../../components/templates/GridList.astro';
 import { Image } from 'astro:assets';
-import { allNews } from '../../../data/news.js';
-import { products } from '../../../data/products.js';
+import { getNews, getNewsById } from '../../../lib/newsService.js';
+import { getProducts } from '../../../lib/productService.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { generateNewsDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 
-export function getStaticPaths() {
-  // 按日期降序排序所有新闻，只为配置中启用的语言生成
-  const sortedNews = allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+export async function getStaticPaths() {
   const enabledLanguages = getEnabledLanguages();
+  let paths: any[] = [];
 
-  return enabledLanguages.flatMap(lang =>
-    sortedNews.map((news, index) => {
-      const previousNews = index > 0 ? sortedNews[index - 1] : null;
-      const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
+  // 为每种启用的语言生成路径
+  for (const lang of enabledLanguages) {
+    const news = await getNews(lang);
+    
+    // 只有当有新闻数据时才生成页面
+    if (news && news.length > 0) {
+      // 按日期降序排序新闻
+      const sortedNews = news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      sortedNews.forEach((item, index) => {
+        const previousNews = index > 0 ? sortedNews[index - 1] : null;
+        const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
 
-      return {
-        params: { lang, slug: news.slug },
-        props: { lang, news, previousNews, nextNews }
-      };
-    })
-  );
+        paths.push({
+          params: { lang, slug: item.slug },
+          props: { lang, news: item, previousNews, nextNews }
+        });
+      });
+    }
+  }
+
+  return paths;
 }
 
 const { lang, news, previousNews, nextNews } = Astro.props;
+
+// 检查是否有新闻数据
+const hasNews = news !== null;
 
 // 动态加载对应语言的翻译文件
 let t;
@@ -42,6 +55,7 @@ try {
 }
 
 // 获取3个相关产品（随机）
+const products = await getProducts(lang);
 const shuffledProducts = products.sort(() => 0.5 - Math.random());
 const relatedProducts = shuffledProducts.slice(0, 3);
 
@@ -55,6 +69,7 @@ const validRelatedProducts = relatedProducts.filter(product => {
 });
 
 // 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
+const allNews = await getNews(lang);
 const relatedNews = allNews
   .filter(item => item.slug !== news.slug)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -66,7 +81,7 @@ const popularArticles = allNews
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   .slice(0, 5);
 
-const breadcrumbs = generateNewsDetailBreadcrumbs(lang, news.title);
+const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, news.title) : [];
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
@@ -75,47 +90,49 @@ const formatDate = (dateString: string) => {
 };
 ---
 
-<Layout title={news.title} description={news.excerpt} lang={lang}>
+<Layout title={hasNews ? news.title : '新闻详情'} description={hasNews ? news.excerpt : ''} lang={lang}>
   <main class="bg-gray-50 min-h-screen">
-    <!-- Breadcrumb -->
-    <div class="bg-white border-b">
-      <div class="container mx-auto px-4 py-4">
-        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
-      </div>
-    </div>
-    
-    <!-- Main Content Section -->
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- 中间主内容区 -->
-            <div class="lg:col-span-3">
-              <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-                <article>
-    <!-- Article Header -->
-                    <header class="mb-8">
-                      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{news.title}</h1>
-                      <time datetime={news.date} class="text-sm text-gray-500 block">{formatDate(news.date)}</time>
-    </header>
+    {hasNews ? (
+      <>
+        <!-- Breadcrumb -->
+        <div class="bg-white border-b">
+          <div class="container mx-auto px-4 py-4">
+            <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
+          </div>
+        </div>
+        
+        <!-- Main Content Section -->
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- 中间主内容区 -->
+                <div class="lg:col-span-3">
+                  <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                    <article>
+        <!-- Article Header -->
+                        <header class="mb-8">
+                          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{news.title}</h1>
+                          <time datetime={news.date} class="text-sm text-gray-500 block">{formatDate(news.date)}</time>
+        </header>
 
-    <!-- Article Image -->
-                    {news.image && (
-    <div class="mb-8">
-            <Image 
-        src={news.image} 
-        alt={news.title || ''} 
-        width={800}
-        height={500}
-                        class="w-full h-auto max-h-[500px] object-cover rounded-lg"
-                        loading="eager"
-        decoding="async"
-      />
-    </div>
-                    )}
+        <!-- Article Image -->
+                         {news.image && typeof news.image === 'string' && news.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i) && (
+        <div class="mb-8">
+          <img
+            src={news.image}
+            alt={news.title || ''}
+            width="800"
+            height="500"
+            class="w-full h-auto max-h-[500px] object-cover rounded-lg"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+                         )}
 
-    <!-- Article Content -->
-                    <div class="prose max-w-none" set:html={news.content} />
-                </article>
-              </div>
+        <!-- Article Content -->
+                        <div class="prose max-w-none" set:html={news.content} />
+                    </article>
+                  </div>
 
               <!-- Previous/Next 导航 -->
               <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
@@ -214,6 +231,30 @@ const formatDate = (dateString: string) => {
             </aside>
         </div>
     </div>
+      </>
+    ) : (
+      <!-- 空状态 -->
+      <div class="empty-state">
+        <div class="empty-state-content">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="empty-state-title">暂无新闻数据</h3>
+          <p class="empty-state-description">当前语言暂无新闻信息，请稍后再试或切换其他语言。</p>
+          <div class="empty-state-actions">
+            <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}/'`}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+              </svg>
+              返回首页
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </main>
 </Layout>
 

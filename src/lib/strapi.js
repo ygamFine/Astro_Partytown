@@ -196,4 +196,98 @@ export async function getProduct(slug, locale = 'en') {
   }
 }
 
+/**
+ * 获取新闻列表 (SSG模式，构建时调用)
+ */
+export async function getNews(locale = 'en') {
+  try {
+    // 只获取指定语言的数据，不回退到其他语言
+    const response = await fetch(`${STRAPI_BASE_URL}/news?locale=${locale}&populate=*`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+          const data = await response.json();
+      console.log('strapi 获取到的新闻信息', data);
+      const news = data.data?.map(item => ({
+        id: item.id,
+        slug: item.id,
+        title: item.title,
+        excerpt: item.excerpt,
+        content: item.content,
+        image: item.zhanshitu && item.zhanshitu.length > 0 ? STRAPI_STATIC_URL + item.zhanshitu[0].url : null,
+        date: item.publishedAt || item.createdAt,
+        author: item.author,
+      category: item.category,
+      tags: item.tags || [],
+      locale: item.locale,
+      publishedAt: item.publishedAt
+    })) || [];
+    
+    console.log(`从 Strapi API 获取到 ${news.length} 条新闻`);
+    return news;
+    
+  } catch (error) {
+    console.error('获取新闻列表失败:', error);
+    // 如果API调用失败，返回空数组
+    return [];
+  }
+}
+
+/**
+ * 获取单个新闻详情 (SSG模式，构建时调用)
+ */
+export async function getNewsById(id, locale = 'en') {
+  try {
+    // 只获取指定语言的数据，不回退到其他语言
+    const response = await fetch(`${STRAPI_BASE_URL}/news/${id}?locale=${locale}&populate=*`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('获取到新闻详情的源数据', data.data);
+    
+    // 如果没有找到数据，直接返回 null
+    if (!data.data) {
+      console.log(`语言 ${locale} 没有找到新闻 ID: ${id}`);
+      return null;
+    }
+    
+    const item = data.data;
+    
+    // 转换为标准格式
+    return {
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      excerpt: item.excerpt,
+      content: item.content,
+      image: item.zhanshitu && item.zhanshitu.length > 0 ? STRAPI_STATIC_URL + item.zhanshitu[0].url : null,
+      date: item.publishedAt || item.createdAt,
+      author: item.author,
+      category: item.category,
+      tags: item.tags || [],
+      locale: item.locale,
+      publishedAt: item.publishedAt
+    };
+    
+  } catch (error) {
+    console.error('获取新闻详情失败:', error);
+    return null;
+  }
+}
+
  

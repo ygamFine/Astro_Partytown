@@ -20,7 +20,8 @@ const { items, lang = 'en', t } = Astro.props;
 const validItems = items.filter(item => {
   if (!item.image) return false;
   if (typeof item.image === 'string') {
-    return item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+    // 检查是否是有效的图片URL
+    return item.image.trim() !== '' && item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
   }
   return true; // 如果是导入的图片对象，认为是有效的
 });
