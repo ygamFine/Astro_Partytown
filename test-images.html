@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .image-test {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .image-test img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>图片加载测试</h1>
+    
+    <div class="image-test">
+        <h3>Logo图片测试</h3>
+        <img src="/_astro/logo.png.liFxgiP3_LiJeW.webp" alt="TEVIS Logo" onload="this.nextElementSibling.textContent='✅ 加载成功'" onerror="this.nextElementSibling.textContent='❌ 加载失败'">
+        <div class="status">加载中...</div>
+    </div>
+
+    <div class="image-test">
+        <h3>Banner图片测试</h3>
+        <img src="/_astro/banner3.BqpZUtJ4_Z21b1aV.webp" alt="Banner" onload="this.nextElementSibling.textContent='✅ 加载成功'" onerror="this.nextElementSibling.textContent='❌ 加载失败'">
+        <div class="status">加载中...</div>
+    </div>
+
+    <div class="image-test">
+        <h3>产品图片测试</h3>
+        <img src="/_astro/case1.JGTyBUKx_Z14GwE9.webp" alt="Product" onload="this.nextElementSibling.textContent='✅ 加载成功'" onerror="this.nextElementSibling.textContent='❌ 加载失败'">
+        <div class="status">加载中...</div>
+    </div>
+
+    <div class="image-test">
+        <h3>原始图片路径测试</h3>
+        <img src="/images/logo.png.webp" alt="Original Logo" onload="this.nextElementSibling.textContent='✅ 加载成功'" onerror="this.nextElementSibling.textContent='❌ 加载失败'">
+        <div class="status">加载中...</div>
+    </div>
+
+    <script>
+        // 检查所有图片的加载状态
+        window.addEventListener('load', function() {
+            const images = document.querySelectorAll('img');
+            let loadedCount = 0;
+            let totalCount = images.length;
+
+            images.forEach(img => {
+                if (img.complete && img.naturalHeight !== 0) {
+                    loadedCount++;
+                }
+            });
+
+            console.log(`图片加载统计: ${loadedCount}/${totalCount} 张图片加载成功`);
+        });
+    </script>
+</body>
+</html> 
