@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 全站图片优化脚本 - WebP 转换和压缩优化
-# 提升 SSG 性能，支持响应式图片
+# 提升 SSG 性能
 
 echo "🚀 开始全站图片优化..."
 
@@ -10,13 +10,6 @@ if ! command -v cwebp &> /dev/null; then
     echo "❌ 错误: 需要安装 cwebp"
     echo "macOS: brew install webp"
     echo "Ubuntu: sudo apt-get install webp"
-    exit 1
-fi
-
-if ! command -v magick &> /dev/null; then
-    echo "❌ 错误: 需要安装 ImageMagick"
-    echo "macOS: brew install imagemagick"
-    echo "Ubuntu: sudo apt-get install imagemagick"
     exit 1
 fi
 
@@ -50,32 +43,12 @@ find public -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" | while read file; 
     fi
 done
 
-echo "📱 生成移动端响应式图片..."
-
-# 为大图生成移动端版本（包括Strapi图片）
-for img in public/images/banner*.jpg public/images/optimized/banner*.jpg public/images/strapi/*.jpg public/images/strapi/*.png; do
-    if [[ -f "$img" ]]; then
-        base_name=$(basename "$img" .jpg)
-        base_name=$(basename "$base_name" .png)
-        mobile_webp="public/images/optimized/${base_name}-mobile.webp"
-        
-        if [[ ! -f "$mobile_webp" ]]; then
-            echo "📱 生成移动端版本: $mobile_webp"
-            magick "$img" -resize 768x400^ -gravity center -extent 768x400 -quality 80 "$mobile_webp"
-        fi
-    fi
-done
-
 echo "🗂️  检查关键图片文件..."
 
-# 关键图片检查列表（包括Strapi图片）
+# 关键图片检查列表
 critical_images=(
-    "public/shouji-banner1.webp"
     "public/main-product.svg"
     "public/images/logo.png.webp"
-    "public/images/optimized/banner3.webp"
-    "public/images/optimized/banner222.webp"
-    "public/images/optimized/banner.webp"
 )
 
 missing_count=0
@@ -94,7 +67,7 @@ fi
 
 echo "📊 生成图片统计报告..."
 
-# 统计报告（包括Strapi图片）
+# 统计报告
 total_jpg=$(find public -name "*.jpg" | wc -l)
 total_webp=$(find public -name "*.webp" | wc -l)
 total_png=$(find public -name "*.png" | wc -l)
@@ -118,6 +91,5 @@ fi
 echo ""
 echo "🎉 图片优化完成！"
 echo "✨ 所有图片已转换为 WebP 格式"
-echo "📱 响应式图片已生成"
 echo "🚀 网站性能已优化" 
 echo "📥 Strapi 图片已本地化" 
