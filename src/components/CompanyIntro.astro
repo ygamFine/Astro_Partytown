@@ -1,6 +1,6 @@
 ---
-import { Image } from 'astro:assets';
-import companyBuildingImage from '../assets/images/company-building.svg';
+// 使用public目录中的图片
+const companyBuildingImage = '/company-building.svg';
 ---
 
 <section class="py-20 bg-gray-50 animate-fade-in">
@@ -43,7 +43,7 @@ import companyBuildingImage from '../assets/images/company-building.svg';
       <!-- Right image -->
       <div class="relative animate-slide-in-right">
         <div class="relative overflow-hidden rounded-2xl shadow-2xl performance-critical">
-          <Image 
+          <img 
             src={companyBuildingImage}
             alt="Company Building" 
             width={600} 

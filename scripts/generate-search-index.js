@@ -38,13 +38,50 @@ async function generateSearchIndexFile() {
     console.log(`   - 案例: ${searchData.cases.length} 个`);
     console.log(`   - 总计: ${searchData.products.length + searchData.news.length + searchData.cases.length} 项`);
     
+    // 验证数据质量
+    let validProducts = 0;
+    let validNews = 0;
+    let validCases = 0;
+    
+    searchData.products.forEach(product => {
+      if (product.title && product.title !== `产品 ${product.id}`) {
+        validProducts++;
+      }
+    });
+    
+    searchData.news.forEach(news => {
+      if (news.title && news.title !== `新闻 ${news.id}`) {
+        validNews++;
+      }
+    });
+    
+    searchData.cases.forEach(caseItem => {
+      if (caseItem.title && caseItem.title !== `案例 ${caseItem.id}`) {
+        validCases++;
+      }
+    });
+    
+    console.log(`🔍 数据质量检查:`);
+    console.log(`   - 有效产品: ${validProducts}/${searchData.products.length}`);
+    console.log(`   - 有效新闻: ${validNews}/${searchData.news.length}`);
+    console.log(`   - 有效案例: ${validCases}/${searchData.cases.length}`);
+    
+    if (validProducts === 0 && validNews === 0 && validCases === 0) {
+      console.warn('⚠️  警告: 没有找到有效的数据，搜索功能可能无法正常工作');
+    }
+    
   } catch (error) {
     console.error('❌ 生成搜索索引失败:', error);
     process.exit(1);
   }
 }
 
-// 直接执行脚本
-generateSearchIndexFile();
+// 如果直接运行此脚本
+if (import.meta.url === `file://${process.argv[1]}`) {
+  generateSearchIndexFile();
+} else {
+  // 如果作为模块导入，也执行生成
+  generateSearchIndexFile();
+}
 
 export { generateSearchIndexFile }; 

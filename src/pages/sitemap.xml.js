@@ -1,8 +1,9 @@
 import { generateFullSitemap } from '../lib/sitemapUtils.js';
 
-
-
-// 主函数
+/**
+ * 生成站点地图 XML
+ * 参考标准: https://www.sitemaps.org/protocol.html
+ */
 export async function GET() {
   try {
     console.log('🚀 开始生成站点地图...');
@@ -16,8 +17,8 @@ export async function GET() {
     return new Response(sitemapData.xml, {
       status: 200,
       headers: {
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600' // 缓存1小时
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': `public, max-age=${import.meta.env.CACHE_MAX_AGE || 3600}` // 缓存时间
       }
     });
     
@@ -32,8 +33,8 @@ export async function GET() {
     return new Response(basicXML, {
       status: 200,
       headers: {
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600'
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': `public, max-age=${import.meta.env.CACHE_MAX_AGE}`
       }
     });
   }

@@ -3,16 +3,36 @@
  * 提供站点地图生成、验证和管理功能
  */
 
-import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../locales/i18n.js';
+import { getEnabledLanguages, getDefaultLanguage } from './i18n-config.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';
 
+// 加载环境变量
+import { config } from 'dotenv';
+config();
+
+// 获取环境变量中的域名配置
+const getSiteUrl = () => {
+  // 优先使用环境变量
+  if (process.env.PUBLIC_SITE_URL) {
+    return process.env.PUBLIC_SITE_URL;
+  }
+  
+  // 根据环境使用不同的域名
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.DEV_SITE_URL;
+  }
+  
+  // 生产环境默认域名
+  return process.env.PROD_SITE_URL;
+};
+
 // 站点配置
 export const SITE_CONFIG = {
-  baseUrl: 'https://astro-partytown.vercel.app', // 请替换为您的实际域名
-  defaultLanguage: DEFAULT_LANGUAGE,
-  supportedLanguages: SUPPORTED_LANGUAGES,
+  baseUrl: getSiteUrl(),
+  defaultLanguage: getDefaultLanguage(),
+  supportedLanguages: getEnabledLanguages(),
   // 页面优先级配置
   priorities: {
     home: 1.0,
@@ -227,38 +247,13 @@ export async function generateCasePages() {
  */
 export function generateSitemapXML(pages) {
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ';
-  xml += 'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   
-  // 按URL分组，为多语言页面生成hreflang
-  const urlGroups = {};
-  
+  // 生成URL条目 - 简化版本，只包含URL和最后修改时间
   pages.forEach(page => {
-    const key = page.url.replace(/\/[a-z]{2}(-[A-Z]{2,4})?$/, ''); // 移除语言后缀
-    if (!urlGroups[key]) {
-      urlGroups[key] = [];
-    }
-    urlGroups[key].push(page);
-  });
-  
-  // 生成URL条目
-  Object.values(urlGroups).forEach(group => {
-    const primaryPage = group.find(p => p.lang === SITE_CONFIG.defaultLanguage) || group[0];
-    
     xml += '  <url>\n';
-    xml += `    <loc>${primaryPage.url}</loc>\n`;
-    xml += `    <lastmod>${primaryPage.lastmod}</lastmod>\n`;
-    xml += `    <changefreq>${primaryPage.changefreq}</changefreq>\n`;
-    xml += `    <priority>${primaryPage.priority}</priority>\n`;
-    
-    // 添加多语言hreflang标签
-    group.forEach(page => {
-      xml += `    <xhtml:link rel="alternate" hreflang="${page.lang}" href="${page.url}" />\n`;
-    });
-    
-    // 添加默认语言标签
-    xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${primaryPage.url}" />\n`;
-    
+    xml += `    <loc>${page.url}</loc>\n`;
+    xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
     xml += '  </url>\n';
   });
   

@@ -5,9 +5,23 @@
 
 import { processProductImages, processSingleImage } from '../utils/imageDownloader.js';
 
-const STRAPI_BASE_URL = 'http://47.251.126.80/api';
-const STRAPI_STATIC_URL = 'http://47.251.126.80';
-const STRAPI_TOKEN = '2980bc69d09c767b2ca2e1c211a285c9f48985775a3f1d1313025838a611abbfe6d892a29b3417407ddd798d69a9f67f063c27d13827c1765f96b4bc19601295ac11fb9552f4a16ede2745813e3b536827069875ae8c5089a36da57cf69d08b252093e2100e0cc88ac700ca6cd6ebd196f0002bd5fb8219222ed778f8858ad21';
+// 加载环境变量
+import { config } from 'dotenv';
+config();
+
+// 从环境变量获取 Strapi 配置
+const STRAPI_BASE_URL = process.env.STRAPI_API_URL;
+const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
+const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+
+// 验证环境变量
+if (!STRAPI_BASE_URL || !STRAPI_STATIC_URL || !STRAPI_TOKEN) {
+  console.error('❌ 缺少必要的环境变量:');
+  console.error('   STRAPI_API_URL:', STRAPI_BASE_URL ? '已设置' : '未设置');
+  console.error('   STRAPI_STATIC_URL:', STRAPI_STATIC_URL ? '已设置' : '未设置');
+  console.error('   STRAPI_API_TOKEN:', STRAPI_TOKEN ? '已设置' : '未设置');
+  throw new Error('缺少必要的 Strapi 环境变量配置');
+}
 
 /**
  * 获取菜单数据 (SSG模式，构建时调用)
@@ -41,67 +55,9 @@ export async function getMenus(locale = 'en') {
 
   } catch (error) {
     // 如果API调用失败，返回默认菜单
-    return getDefaultMenus(locale);
+    return []
   }
 }
-
-/**
- * 获取默认菜单 (当API调用失败时使用)
- */
-function getDefaultMenus(locale = 'en') {
-  const menuTranslations = {
-    'zh-CN': {
-      home: '首页',
-      about: '关于我们',
-      products: '产品中心',
-      case: '客户案例',
-      news: '新闻中心',
-      contact: '联系我们',
-      allProducts: '全部产品',
-      skidSteer: '滑移装载机',
-      backhoe: '挖掘装载机',
-      telescopic: '伸缩臂叉装车',
-      electric: '电动工程机械'
-    },
-    'en': {
-      home: 'Home',
-      about: 'About',
-      products: 'Products',
-      case: 'Case',
-      news: 'News',
-      contact: 'Contact',
-      allProducts: 'All Products',
-      skidSteer: 'Skid Steer Loader',
-      backhoe: 'Backhoe Loader',
-      telescopic: 'Telescopic Handler',
-      electric: 'Electric Machinery'
-    }
-  };
-
-  const t = menuTranslations[locale] || menuTranslations['en'];
-
-  return [
-    { name: t.home, path: '/', locale },
-    { name: t.about, path: '/about', locale },
-    {
-      name: t.products,
-      path: '/products',
-      locale,
-      children: [
-        { name: t.allProducts, path: '/products', locale },
-        { name: t.skidSteer, path: '/products?category=滑移装载机', locale },
-        { name: t.backhoe, path: '/products?category=挖掘装载机', locale },
-        { name: t.telescopic, path: '/products?category=伸缩臂叉装车', locale },
-        { name: t.electric, path: '/products?category=电动工程机械', locale }
-      ]
-    },
-    { name: t.case, path: '/case', locale },
-    { name: t.news, path: '/news', locale },
-    { name: t.contact, path: '/contact', locale }
-  ];
-}
-
-// SSG模式下不需要客户端实时更新，已删除getMenusClient方法
 
 /**
  * 获取产品列表 (SSG模式，构建时调用)
@@ -121,6 +77,7 @@ export async function getProducts(locale = 'en') {
     }
 
     const data = await response.json();
+
     const products = data.data?.map(item => ({
       id: item.id,
       slug: item.slug,
@@ -136,10 +93,83 @@ export async function getProducts(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    // 处理所有产品的图片，下载到本地
+    // 加载图片映射
+    let imageMapping = {};
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      imageMapping = JSON.parse(mappingData);
+    } catch (error) {
+      console.warn('无法加载图片映射文件:', error.message);
+    }
+
+    // 处理所有产品的图片，使用缓存的图片
     const processedProducts = [];
     for (const product of products) {
-      const processedImages = await processProductImages(product.image);
+      let processedImages = ['/images/placeholder.webp'];
+      
+      if (product.image && Array.isArray(product.image) && product.image.length > 0) {
+        // 处理图片数组，提取URL并映射到本地缓存
+        const processedImageUrls = product.image
+          .map(img => {
+            if (typeof img === 'string') {
+              // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+              if (img.startsWith('http')) {
+                const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+                const cachedImage = imageMapping.strapiImages?.find(cached => 
+                  cached.includes(urlHash) || cached.includes(img.split('/').pop())
+                );
+                return cachedImage || img;
+              }
+              return img;
+                         } else if (img && typeof img === 'object' && img.url) {
+               // 如果是图片对象，提取URL并映射到本地缓存
+               const originalUrl = img.url;
+               if (originalUrl.startsWith('/uploads/')) {
+                 // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+                 const fileName = originalUrl.split('/').pop();
+                 
+                 // 尝试多种匹配方式
+                 const cachedImage = imageMapping.strapiImages?.find(cached => {
+                   // 1. 直接匹配文件名
+                   if (cached.includes(fileName)) return true;
+                   
+                   // 2. 匹配hash
+                   if (img.hash && cached.includes(img.hash)) return true;
+                   
+                   // 3. Base64编码匹配
+                   try {
+                     const encodedName = Buffer.from(fileName).toString('base64');
+                     if (cached.includes(encodedName)) return true;
+                     // 处理Base64填充字符
+                     const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+                     if (cached.includes(encodedNameNoPadding)) return true;
+                   } catch (e) {}
+                   
+                   // 4. Base64解码匹配
+                   try {
+                     const decodedName = Buffer.from(fileName, 'base64').toString();
+                     if (cached.includes(decodedName)) return true;
+                   } catch (e) {}
+                   
+                   return false;
+                 });
+                 
+                 return cachedImage || originalUrl;
+               }
+               return originalUrl;
+             }
+            return null;
+          })
+          .filter(img => img && img !== '/images/placeholder.webp');
+        
+        if (processedImageUrls.length > 0) {
+          processedImages = processedImageUrls;
+        }
+      }
+      
       processedProducts.push({
         ...product,
         image: processedImages
@@ -183,8 +213,91 @@ export async function getProduct(slug, locale = 'en') {
 
     const item = data.data[0];
 
-    // 处理图片，下载到本地
-    const processedImages = await processProductImages(item.imgs);
+    // 加载图片映射
+    let imageMapping = {};
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      imageMapping = JSON.parse(mappingData);
+    } catch (error) {
+      console.warn('无法加载图片映射文件:', error.message);
+    }
+
+    // 处理图片，使用缓存的图片映射
+    const processedImages = [];
+    if (item.imgs && Array.isArray(item.imgs)) {
+      for (const img of item.imgs) {
+        if (typeof img === 'string') {
+          // 如果已经是本地缓存路径，直接使用
+          if (img.startsWith('/images/strapi/')) {
+            processedImages.push(img);
+            continue;
+          }
+          // 如果是外部URL，尝试在缓存中找到对应的本地文件
+          if (img.startsWith('http')) {
+            const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const cachedImage = imageMapping.strapiImages?.find((cached) => 
+              cached.includes(urlHash) || cached.includes(img.split('/').pop())
+            );
+            if (cachedImage) {
+              processedImages.push(cachedImage);
+            } else {
+              processedImages.push(img);
+            }
+          } else {
+            processedImages.push(img);
+          }
+        } else if (img && typeof img === 'object' && img.url) {
+          // 如果是图片对象，提取URL并映射到本地缓存
+          const originalUrl = img.url;
+          if (originalUrl.startsWith('/uploads/')) {
+            // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+            const fileName = originalUrl.split('/').pop();
+            
+            // 尝试多种匹配方式
+            const cachedImage = imageMapping.strapiImages?.find((cached) => {
+              // 1. 直接匹配文件名
+              if (cached.includes(fileName)) return true;
+              
+              // 2. 匹配hash
+              if (img.hash && cached.includes(img.hash)) return true;
+              
+              // 3. Base64编码匹配
+              try {
+                const encodedName = Buffer.from(fileName).toString('base64');
+                if (cached.includes(encodedName)) return true;
+                // 处理Base64填充字符
+                const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+                if (cached.includes(encodedNameNoPadding)) return true;
+              } catch (e) {}
+              
+              // 4. Base64解码匹配
+              try {
+                const decodedName = Buffer.from(fileName, 'base64').toString();
+                if (cached.includes(decodedName)) return true;
+              } catch (e) {}
+              
+              return false;
+            });
+            
+            if (cachedImage) {
+              processedImages.push(cachedImage);
+            } else {
+              processedImages.push(originalUrl);
+            }
+          } else {
+            processedImages.push(originalUrl);
+          }
+        }
+      }
+    }
+    
+    // 如果没有处理到任何图片，使用占位符
+    if (processedImages.length === 0) {
+      processedImages.push('/images/placeholder.webp');
+    }
     
     // 转换为标准格式
     return {
@@ -229,7 +342,7 @@ export async function getNews(locale = 'en') {
     const data = await response.json();
     const news = data.data?.map(item => ({
       id: item.id,
-      slug: item.id,
+      slug: item.slug,
       title: item.title,
       excerpt: item.excerpt,
       content: item.content,
@@ -242,10 +355,75 @@ export async function getNews(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    // 处理所有新闻的图片，下载到本地
+    // 加载图片映射
+    let imageMapping = {};
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      imageMapping = JSON.parse(mappingData);
+    } catch (error) {
+      console.warn('无法加载图片映射文件:', error.message);
+    }
+
+    // 处理所有新闻的图片，使用缓存的图片
     const processedNews = [];
     for (const newsItem of news) {
-      const processedImage = await processSingleImage(newsItem.image);
+      let processedImage = '/images/placeholder.webp';
+      
+      if (newsItem.image) {
+        if (typeof newsItem.image === 'string') {
+          // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+          if (newsItem.image.startsWith('http')) {
+            const urlHash = Buffer.from(newsItem.image).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const cachedImage = imageMapping.strapiImages?.find(cached => 
+              cached.includes(urlHash) || cached.includes(newsItem.image.split('/').pop())
+            );
+            processedImage = cachedImage || newsItem.image;
+          } else {
+            processedImage = newsItem.image;
+          }
+        } else if (newsItem.image && typeof newsItem.image === 'object' && newsItem.image.url) {
+          // 如果是图片对象，提取URL并映射到本地缓存
+          const originalUrl = newsItem.image.url;
+          if (originalUrl.startsWith('/uploads/')) {
+            // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+            const fileName = originalUrl.split('/').pop();
+            
+            // 尝试多种匹配方式
+            const cachedImage = imageMapping.strapiImages?.find(cached => {
+              // 1. 直接匹配文件名
+              if (cached.includes(fileName)) return true;
+              
+              // 2. 匹配hash
+              if (newsItem.image.hash && cached.includes(newsItem.image.hash)) return true;
+              
+              // 3. Base64编码匹配
+              try {
+                const encodedName = Buffer.from(fileName).toString('base64');
+                if (cached.includes(encodedName)) return true;
+                // 处理Base64填充字符
+                const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+                if (cached.includes(encodedNameNoPadding)) return true;
+              } catch (e) {}
+              
+              // 4. Base64解码匹配
+              try {
+                const decodedName = Buffer.from(fileName, 'base64').toString();
+                if (cached.includes(decodedName)) return true;
+              } catch (e) {}
+              
+              return false;
+            });
+            
+            processedImage = cachedImage || originalUrl;
+          } else {
+            processedImage = originalUrl;
+          }
+        }
+      }
+      
       processedNews.push({
         ...newsItem,
         image: processedImage
@@ -289,8 +467,73 @@ export async function getNewsById(id, locale = 'en') {
 
     const item = data.data;
 
-    // 处理图片，下载到本地
-    const processedImage = await processSingleImage(item.zhanshitu && item.zhanshitu.length > 0 ? item.zhanshitu[0] : null);
+    // 加载图片映射
+    let imageMapping = {};
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      imageMapping = JSON.parse(mappingData);
+    } catch (error) {
+      console.warn('无法加载图片映射文件:', error.message);
+    }
+
+    // 处理图片，使用缓存的图片
+    let processedImage = '/images/placeholder.webp';
+    const originalImage = item.zhanshitu && item.zhanshitu.length > 0 ? item.zhanshitu[0] : null;
+    
+    if (originalImage) {
+      if (typeof originalImage === 'string') {
+        // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+        if (originalImage.startsWith('http')) {
+          const urlHash = Buffer.from(originalImage).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+          const cachedImage = imageMapping.strapiImages?.find(cached => 
+            cached.includes(urlHash) || cached.includes(originalImage.split('/').pop())
+          );
+          processedImage = cachedImage || originalImage;
+        } else {
+          processedImage = originalImage;
+        }
+      } else if (originalImage && typeof originalImage === 'object' && originalImage.url) {
+        // 如果是图片对象，提取URL并映射到本地缓存
+        const originalUrl = originalImage.url;
+        if (originalUrl.startsWith('/uploads/')) {
+          // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+          const fileName = originalUrl.split('/').pop();
+          
+          // 尝试多种匹配方式
+          const cachedImage = imageMapping.strapiImages?.find(cached => {
+            // 1. 直接匹配文件名
+            if (cached.includes(fileName)) return true;
+            
+            // 2. 匹配hash
+            if (originalImage.hash && cached.includes(originalImage.hash)) return true;
+            
+            // 3. Base64编码匹配
+            try {
+              const encodedName = Buffer.from(fileName).toString('base64');
+              if (cached.includes(encodedName)) return true;
+              // 处理Base64填充字符
+              const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+              if (cached.includes(encodedNameNoPadding)) return true;
+            } catch (e) {}
+            
+            // 4. Base64解码匹配
+            try {
+              const decodedName = Buffer.from(fileName, 'base64').toString();
+              if (cached.includes(decodedName)) return true;
+            } catch (e) {}
+            
+            return false;
+          });
+          
+          processedImage = cachedImage || originalUrl;
+        } else {
+          processedImage = originalUrl;
+        }
+      }
+    }
     
     // 转换为标准格式
     return {
@@ -338,7 +581,7 @@ export async function getCases(locale = 'en') {
     const data = await response.json();
     const cases = data.data?.map(item => ({
       id: item.id,
-      slug: item.id,
+      slug: item.slug,
       title: item.title,
       client: item.client,
       image: item.image && item.image.length > 0 ? item.image[0] : null,
@@ -356,10 +599,75 @@ export async function getCases(locale = 'en') {
       publishedAt: item.publishedAt
     })) || [];
 
-    // 处理所有案例的图片，下载到本地
+    // 加载图片映射
+    let imageMapping = {};
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      imageMapping = JSON.parse(mappingData);
+    } catch (error) {
+      console.warn('无法加载图片映射文件:', error.message);
+    }
+
+    // 处理所有案例的图片，使用缓存的图片
     const processedCases = [];
     for (const caseItem of cases) {
-      const processedImage = await processSingleImage(caseItem.image);
+      let processedImage = '/images/placeholder.webp';
+      
+      if (caseItem.image) {
+        if (typeof caseItem.image === 'string') {
+          // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+          if (caseItem.image.startsWith('http')) {
+            const urlHash = Buffer.from(caseItem.image).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const cachedImage = imageMapping.strapiImages?.find(cached => 
+              cached.includes(urlHash) || cached.includes(caseItem.image.split('/').pop())
+            );
+            processedImage = cachedImage || caseItem.image;
+          } else {
+            processedImage = caseItem.image;
+          }
+        } else if (caseItem.image && typeof caseItem.image === 'object' && caseItem.image.url) {
+          // 如果是图片对象，提取URL并映射到本地缓存
+          const originalUrl = caseItem.image.url;
+          if (originalUrl.startsWith('/uploads/')) {
+            // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+            const fileName = originalUrl.split('/').pop();
+            
+            // 尝试多种匹配方式
+            const cachedImage = imageMapping.strapiImages?.find(cached => {
+              // 1. 直接匹配文件名
+              if (cached.includes(fileName)) return true;
+              
+              // 2. 匹配hash
+              if (caseItem.image.hash && cached.includes(caseItem.image.hash)) return true;
+              
+              // 3. Base64编码匹配
+              try {
+                const encodedName = Buffer.from(fileName).toString('base64');
+                if (cached.includes(encodedName)) return true;
+                // 处理Base64填充字符
+                const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+                if (cached.includes(encodedNameNoPadding)) return true;
+              } catch (e) {}
+              
+              // 4. Base64解码匹配
+              try {
+                const decodedName = Buffer.from(fileName, 'base64').toString();
+                if (cached.includes(decodedName)) return true;
+              } catch (e) {}
+              
+              return false;
+            });
+            
+            processedImage = cachedImage || originalUrl;
+          } else {
+            processedImage = originalUrl;
+          }
+        }
+      }
+      
       processedCases.push({
         ...caseItem,
         image: processedImage
@@ -381,28 +689,17 @@ export async function getCases(locale = 'en') {
  */
 export async function getCase(id, locale = 'en') {
   try {
-    // 首先尝试直接通过 ID 获取
-    let response = await fetch(`${STRAPI_BASE_URL}/case/${id}?locale=${locale}&populate=*`, {
+    // 只获取指定语言的数据，不回退到其他语言
+    const response = await fetch(`${STRAPI_BASE_URL}/case/${id}?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
       }
     });
 
-    // 如果直接获取失败，尝试通过过滤条件获取
-    if (!response.ok) {
-      console.log(`直接获取案例 ${id} 失败，尝试通过过滤条件获取`);
-      response = await fetch(`${STRAPI_BASE_URL}/case?filters[id][$eq]=${id}&locale=${locale}&populate=*`, {
-        headers: {
-          'Authorization': `Bearer ${STRAPI_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      });
-    }
-
     if (!response.ok) {
       if (response.status === 404) {
-        console.log(`案例 API 端点不存在，返回 null`);
+        console.log(`案例 ${id} 不存在`);
         return null;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -410,85 +707,86 @@ export async function getCase(id, locale = 'en') {
 
     const data = await response.json();
 
-    // 处理不同的响应格式
-    let item;
-    if (Array.isArray(data.data)) {
-      // 如果是数组格式（过滤查询的结果）
-      if (data.data.length === 0) {
-        console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
-        return null;
-      }
-      item = data.data[0];
-    } else {
-      // 如果是单个对象格式（直接查询的结果）
-      if (!data.data) {
-        console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
-        return null;
-      }
-      item = data.data;
+    // 如果没有找到数据，直接返回 null
+    if (!data.data) {
+      console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
+      return null;
     }
 
-    // 将 Markdown 内容转换为 Strapi 富文本格式
-    function convertMarkdownToRichText(markdown) {
-      if (!markdown || typeof markdown !== 'string') {
-        return [];
-      }
+    const item = data.data;
 
-      const blocks = [];
-      const lines = markdown.split('\n');
-      let currentBlock = null;
+    // 加载图片映射
+    let imageMapping = {};
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      imageMapping = JSON.parse(mappingData);
+    } catch (error) {
+      console.warn('无法加载图片映射文件:', error.message);
+    }
 
-      for (const line of lines) {
-        // 处理标题
-        if (line.startsWith('#')) {
-          const level = line.match(/^#+/)[0].length;
-          const text = line.replace(/^#+\s*/, '');
-          blocks.push({
-            type: 'heading',
-            level: Math.min(level, 6),
-            children: [{ type: 'text', text }]
+    // 处理图片，使用缓存的图片
+    let processedImage = '/images/placeholder.webp';
+    const originalImage = item.image && item.image.length > 0 ? item.image[0] : null;
+    
+    if (originalImage) {
+      if (typeof originalImage === 'string') {
+        // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+        if (originalImage.startsWith('http')) {
+          const urlHash = Buffer.from(originalImage).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+          const cachedImage = imageMapping.strapiImages?.find(cached => 
+            cached.includes(urlHash) || cached.includes(originalImage.split('/').pop())
+          );
+          processedImage = cachedImage || originalImage;
+        } else {
+          processedImage = originalImage;
+        }
+      } else if (originalImage && typeof originalImage === 'object' && originalImage.url) {
+        // 如果是图片对象，提取URL并映射到本地缓存
+        const originalUrl = originalImage.url;
+        if (originalUrl.startsWith('/uploads/')) {
+          // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+          const fileName = originalUrl.split('/').pop();
+          
+          // 尝试多种匹配方式
+          const cachedImage = imageMapping.strapiImages?.find(cached => {
+            // 1. 直接匹配文件名
+            if (cached.includes(fileName)) return true;
+            
+            // 2. 匹配hash
+            if (originalImage.hash && cached.includes(originalImage.hash)) return true;
+            
+            // 3. Base64编码匹配
+            try {
+              const encodedName = Buffer.from(fileName).toString('base64');
+              if (cached.includes(encodedName)) return true;
+              // 处理Base64填充字符
+              const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+              if (cached.includes(encodedNameNoPadding)) return true;
+            } catch (e) {}
+            
+            // 4. Base64解码匹配
+            try {
+              const decodedName = Buffer.from(fileName, 'base64').toString();
+              if (cached.includes(decodedName)) return true;
+            } catch (e) {}
+            
+            return false;
           });
-        }
-        // 处理图片
-        else if (line.includes('![') && line.includes('](') && line.includes(')')) {
-          const match = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-          if (match) {
-            const [, alt, url] = match;
-            blocks.push({
-              type: 'image',
-              url: url.trim(),
-              alt: alt.trim()
-            });
-          }
-        }
-        // 处理段落
-        else if (line.trim()) {
-          if (currentBlock && currentBlock.type === 'paragraph') {
-            currentBlock.children.push({ type: 'text', text: line });
-          } else {
-            currentBlock = {
-              type: 'paragraph',
-              children: [{ type: 'text', text: line }]
-            };
-            blocks.push(currentBlock);
-          }
-        }
-        // 空行结束当前段落
-        else {
-          currentBlock = null;
+          
+          processedImage = cachedImage || originalUrl;
+        } else {
+          processedImage = originalUrl;
         }
       }
-
-      return blocks;
     }
-
-    // 处理图片，下载到本地
-    const processedImage = await processSingleImage(item.image && item.image.length > 0 ? item.image[0] : null);
     
     // 转换为标准格式
     return {
       id: item.id,
-      slug: item.id, // 使用 ID 作为 slug
+      slug: item.slug,
       title: item.title,
       client: item.client,
       image: processedImage,
@@ -496,7 +794,7 @@ export async function getCase(id, locale = 'en') {
       category: item.category,
       date: item.publishedAt || item.createdAt,
       results: item.results || [],
-      content: convertMarkdownToRichText(item.content),
+      content: item.content,
       industry: item.industry,
       location: item.location,
       completionDate: item.completionDate,

@@ -1,10 +1,10 @@
 ---
 export const prerender = true;
 
-import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayout.astro';
-import GridList from '../../../components/templates/GridList.astro';
-import Pagination from '../../../components/templates/Pagination.astro';
-import { getProducts } from '../../../lib/productService.js';
+import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
+import GridList from '../../../components/templates/common/GridList.astro';
+import Pagination from '../../../components/templates/common/Pagination.astro';
+import { getProducts } from '../../../lib/strapi.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 
@@ -40,7 +40,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { lang } = Astro.params;
+const { lang, page } = Astro.params;
 const { currentPage, totalPages } = Astro.props;
 const translations = await mergeTranslations(lang, ['pagination', 'common']);
 const t = (translations as any).pagination || {};
@@ -57,22 +57,88 @@ const startIndex = hasProducts ? (currentPage - 1) * itemsPerPage : 0;
 const endIndex = hasProducts ? startIndex + itemsPerPage : 0;
 const displayProducts = hasProducts ? products.slice(startIndex, endIndex) : [];
 
+// 加载图片映射
+let imageMapping: any = {};
+try {
+  const fs = await import('fs/promises');
+  const path = await import('path');
+  const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+  const mappingData = await fs.readFile(mappingPath, 'utf8');
+  imageMapping = JSON.parse(mappingData);
+} catch (error: any) {
+  console.warn('无法加载图片映射文件:', error.message);
+}
+
 // 处理产品图片，确保是本地路径
 const processProductImage = (imageData: any): string => {
   if (!imageData) return '/images/placeholder.webp';
   
   if (Array.isArray(imageData)) {
-    // 如果是数组，找到第一个有效的本地图片
-    const validImg = imageData.find((img: any) => 
-      typeof img === 'string' && !img.startsWith('http') && img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)
-    );
-    return validImg || '/images/placeholder.webp';
+    // 如果是数组，找到第一个有效的图片
+    const processedImages = imageData
+      .map(img => {
+        if (typeof img === 'string') {
+          // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+          if (img.startsWith('http')) {
+            const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
+              cached.includes(urlHash) || cached.includes(img.split('/').pop())
+            );
+            return cachedImage || img;
+          }
+          return img;
+        } else if (img && typeof img === 'object' && img.url) {
+          // 如果是图片对象，提取URL并映射到本地缓存
+          const originalUrl = img.url;
+          if (originalUrl.startsWith('/uploads/')) {
+            // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+            const fileName = originalUrl.split('/').pop();
+            
+            // 尝试多种匹配方式
+            const cachedImage = imageMapping.strapiImages?.find((cached: any) => {
+              // 1. 直接匹配文件名
+              if (cached.includes(fileName)) return true;
+              
+              // 2. 匹配hash
+              if (img.hash && cached.includes(img.hash)) return true;
+              
+              // 3. Base64编码匹配
+              try {
+                const encodedName = Buffer.from(fileName).toString('base64');
+                if (cached.includes(encodedName)) return true;
+                // 处理Base64填充字符
+                const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+                if (cached.includes(encodedNameNoPadding)) return true;
+              } catch (e) {}
+              
+              // 4. Base64解码匹配
+              try {
+                const decodedName = Buffer.from(fileName, 'base64').toString();
+                if (cached.includes(decodedName)) return true;
+              } catch (e) {}
+              
+              return false;
+            });
+            
+            return cachedImage || originalUrl;
+          }
+          return originalUrl;
+        }
+        return null;
+      })
+      .filter(img => img && img !== '/images/placeholder.webp');
+    
+    return processedImages.length > 0 ? processedImages[0] : '/images/placeholder.webp';
   }
   
   if (typeof imageData === 'string') {
-    // 如果是外部URL，返回占位符
+    // 如果是外部URL，尝试在缓存中找到对应的本地文件
     if (imageData.startsWith('http')) {
-      return '/images/placeholder.webp';
+      const urlHash = Buffer.from(imageData).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+      const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
+        cached.includes(urlHash) || cached.includes(imageData.split('/').pop())
+      );
+      return cachedImage || '/images/placeholder.webp';
     }
     // 如果是本地路径且格式正确，返回原路径
     if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
@@ -94,10 +160,11 @@ const gridItems = hasProducts ? displayProducts
       image: validImage,
       excerpt: product.excerpt,
       category: product.category,
-      href: `/${lang}/products/${product.slug}`
+      href: `/${lang}/products/${product.slug || product.id}`
     };
-  })
-  .filter(item => item.image !== '/images/placeholder.webp') : [];
+  }) : [];
+
+
 
 // 面包屑导航
 const breadcrumbs = [

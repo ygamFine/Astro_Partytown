@@ -1,142 +1,52 @@
 ---
 export const prerender = true;
 
-import SecondaryPageLayout from '../../../components/templates/SecondaryPageLayout.astro';
-import GridList from '../../../components/templates/GridList.astro';
-import Pagination from '../../../components/templates/Pagination.astro';
-import { getCases } from '../../../lib/caseService.js';
-import { getEnabledLanguages } from '../../../lib/i18n-config.js';
-import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
+import GridList from '../../../components/templates/common/GridList.astro';
+import Pagination from '../../../components/templates/common/Pagination.astro';
+import EmptyState from '../../../components/templates/common/EmptyState.astro';
+import { getCases } from '../../../lib/strapi.js';
+import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
+import { processCaseData, loadTranslations, generateBreadcrumbs } from '../../../lib/dataProcessor.js';
+import { loadImageMapping } from '../../../lib/imageProcessor.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
   const casesPerPage = 6; // 每页显示6个案例（2行x3列）
-  const enabledLanguages = getEnabledLanguages();
-  
-  // 生成分页路径
-  const paths = [];
-  
-  // 为每种启用的语言生成路径
-  for (const lang of enabledLanguages) {
-    try {
-      // 从 API 获取案例数据
-      const allCases = await getCases(lang);
-      const totalPages = Math.ceil(allCases.length / casesPerPage);
-      
-      // 第一页 (可以用 /[lang]/case 访问)
-      paths.push({
-        params: { lang, page: undefined },
-        props: { 
-          lang,
-          currentPage: 1,
-          totalPages,
-          cases: allCases.slice(0, casesPerPage)
-        }
-      });
-      
-      // 其他页面 (使用 page- 前缀避免与详情页面冲突)
-      for (let i = 2; i <= totalPages; i++) {
-        paths.push({
-          params: { lang, page: `page-${i}` },
-          props: {
-            lang,
-            currentPage: i,
-            totalPages,
-            cases: allCases.slice((i - 1) * casesPerPage, i * casesPerPage)
-          }
-        });
-      }
-    } catch (error) {
-      console.error(`生成语言 ${lang} 的案例页面路径失败:`, error);
-      // 如果获取数据失败，至少生成第一页
-      paths.push({
-        params: { lang, page: undefined },
-        props: { 
-          lang,
-          currentPage: 1,
-          totalPages: 0,
-          cases: []
-        }
-      });
-    }
-  }
-  
-  return paths;
+  return generatePaginationPaths(getCases, casesPerPage, 'page');
 }
 
-const { lang, currentPage, totalPages, cases } = Astro.props;
+const { lang, currentPage, totalPages, items: cases } = Astro.props;
 
-// 从URL参数中解析当前页码
-const urlParams = Astro.params.page;
-let actualCurrentPage = currentPage;
+// 解析页码参数
+const actualCurrentPage = parsePageParam(Astro.params.page, 'page');
 
-// 如果URL参数存在且以 page- 开头，解析页码
-if (urlParams && urlParams.startsWith('page-')) {
-  const pageNumber = parseInt(urlParams.replace('page-', ''));
-  if (!isNaN(pageNumber) && pageNumber >= 1) {
-    actualCurrentPage = pageNumber;
-  }
-}
+// 加载翻译文件
+const translations = await loadTranslations(lang, ['case', 'pagination', 'common']) as any;
 
-// 动态加载对应语言的翻译文件
-let t;
-let paginationT;
-let commonT;
-try {
-  t = await import(`../../../locales/${lang}/case.json`);
-  paginationT = await import(`../../../locales/${lang}/pagination.json`);
-  commonT = await import(`../../../locales/${lang}/common.json`);
-} catch (error) {
-  // 如果加载失败，使用英文作为默认
-  t = await import(`../../../locales/en/case.json`);
-  paginationT = await import(`../../../locales/en/pagination.json`);
-  commonT = await import(`../../../locales/en/common.json`);
-}
+// 加载图片映射
+const imageMapping = await loadImageMapping();
 
-// 检查是否有数据
-const hasCases = cases && cases.length > 0;
-
-// 处理案例图片，确保是本地路径
-const processCaseImage = (imageData: any): string => {
-  if (!imageData) return '/images/placeholder.webp';
-  
-  if (typeof imageData === 'string') {
-    // 如果是外部URL，返回占位符
-    if (imageData.startsWith('http')) {
-      return '/images/placeholder.webp';
-    }
-    // 如果是本地路径且格式正确，返回原路径
-    if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
-      return imageData;
-    }
-  }
-  
-  return '/images/placeholder.webp';
-};
-
-// 转换案例数据格式以适配GridList组件
-const gridItems = hasCases ? cases.map(caseItem => ({
-  id: caseItem.id,
-  title: caseItem.title,
-  image: processCaseImage(caseItem.image),
-  excerpt: caseItem.excerpt,
-  category: caseItem.category,
-  href: `/${lang}/case/${caseItem.id}` // 假设有详情页面
-})) : [];
+// 处理案例数据
+const gridItems = processCaseData(cases, lang, imageMapping);
 
 // 面包屑导航
-const breadcrumbs = generateCaseBreadcrumbs(lang, currentPage > 1 ? currentPage : undefined);
+const breadcrumbs = generateBreadcrumbs(lang, 'case', actualCurrentPage > 1 ? actualCurrentPage : undefined)
+  .map(item => ({
+    label: item.name,
+    href: item.href
+  }));
 ---
 
 <SecondaryPageLayout 
-  title={t.default.case.title}
-  description={t.default.case.description}
+  title={translations.case.case.title}
+  description={translations.case.case.description}
   breadcrumbs={breadcrumbs}
   currentSection="cases"
   contentType="grid"
   lang={lang}
 >
-  {hasCases ? (
+  {gridItems.length > 0 ? (
     <>
       <!-- 案例网格 -->
       <GridList 
@@ -144,7 +54,7 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, currentPage > 1 ? currentPage 
         itemsPerRow={3}
         maxRows={2}
         mode="case"
-        translations={{ common: commonT.default }}
+        translations={{ common: translations.common }}
       />
       
       <!-- 分页 -->
@@ -152,30 +62,15 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, currentPage > 1 ? currentPage 
         currentPage={actualCurrentPage}
         totalPages={totalPages}
         baseUrl={`/${lang}/case`}
-        i18n={paginationT.default}
+        i18n={translations.pagination}
       />
     </>
   ) : (
-    <!-- 空状态 -->
-    <div class="empty-state">
-      <div class="empty-state-content">
-        <div class="empty-state-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 class="empty-state-title">暂无案例数据</h3>
-        <p class="empty-state-description">当前语言暂无客户案例信息，请稍后再试或切换其他语言。</p>
-        <div class="empty-state-actions">
-          <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}/'`}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9,22 9,12 15,12 15,22"/>
-            </svg>
-            返回首页
-          </button>
-        </div>
-      </div>
-    </div>
+    <EmptyState 
+      title="暂无案例数据"
+      description="当前语言暂无客户案例信息，请稍后再试或切换其他语言。"
+      icon="case"
+      lang={lang}
+    />
   )}
 </SecondaryPageLayout> 

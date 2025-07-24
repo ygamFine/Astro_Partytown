@@ -1,5 +1,5 @@
 // SSG 兼容的搜索索引生成器
-import { SUPPORTED_LANGUAGES } from '../locales/i18n.js';
+import { getEnabledLanguages } from './i18n-config.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';
@@ -13,23 +13,33 @@ export async function generateSearchIndex() {
   };
 
   try {
-    // 获取所有语言的产品数据
-    for (const lang of SUPPORTED_LANGUAGES) {
+    // 获取所有启用的语言的产品数据
+    const enabledLanguages = getEnabledLanguages();
+    for (const lang of enabledLanguages) {
       const products = await getProducts(lang);
       if (products && products.length > 0) {
         // 处理产品数据
         products.forEach(product => {
+          // 确保所有字段都有有效值
+          const safeSlug = product.slug || `product-${product.id}`;
+          const safeTitle = product.name || product.Title || product.title || `产品 ${product.id}`;
+          const safeExcerpt = product.excerpt || product.description || '';
+          const safeCategory = product.category || '产品';
+          const safeImage = Array.isArray(product.image) 
+            ? (product.image[0] || '/images/placeholder.webp')
+            : (product.image || '/images/placeholder.webp');
+          
           const searchItem = {
             id: product.id,
             type: 'product',
-            slug: product.slug,
-            title: product.name,
-            excerpt: product.excerpt,
+            slug: safeSlug,
+            title: safeTitle,
+            excerpt: safeExcerpt,
             content: generateProductContent(product),
-            category: product.category,
-            image: product.image,
-            price: product.price,
-            url: `/${lang}/products/${product.slug}`,
+            category: safeCategory,
+            image: safeImage,
+            price: product.price || '',
+            url: `/${lang}/products/${safeSlug}`,
             lang: lang,
             searchText: generateSearchText(product)
           };
@@ -38,23 +48,31 @@ export async function generateSearchIndex() {
       }
     }
 
-    // 获取所有语言的新闻数据
-    for (const lang of SUPPORTED_LANGUAGES) {
+    // 获取所有启用的语言的新闻数据
+    for (const lang of enabledLanguages) {
       const news = await getNews(lang);
       if (news && news.length > 0) {
         // 处理新闻数据
         news.forEach(item => {
+          // 确保所有字段都有有效值
+          const safeSlug = item.slug || `news-${item.id}`;
+          const safeTitle = item.title || `新闻 ${item.id}`;
+          const safeExcerpt = item.excerpt || item.description || '';
+          const safeImage = Array.isArray(item.image) 
+            ? (item.image[0] || '/images/placeholder.webp')
+            : (item.image || '/images/placeholder.webp');
+          
           const searchItem = {
             id: item.id,
             type: 'news',
-            slug: item.slug,
-            title: item.title,
-            excerpt: item.excerpt,
-            content: item.content,
-            image: item.image,
-            date: item.date,
-            author: item.author,
-            url: `/${lang}/news/${item.slug}`,
+            slug: safeSlug,
+            title: safeTitle,
+            excerpt: safeExcerpt,
+            content: item.content || '',
+            image: safeImage,
+            date: item.date || item.publishedAt || '',
+            author: item.author || '',
+            url: `/${lang}/news/${safeSlug}`,
             lang: lang,
             searchText: generateNewsSearchText(item)
           };
@@ -63,24 +81,33 @@ export async function generateSearchIndex() {
       }
     }
 
-    // 获取所有语言的案例数据
-    for (const lang of SUPPORTED_LANGUAGES) {
+    // 获取所有启用的语言的案例数据
+    for (const lang of enabledLanguages) {
       const cases = await getCases(lang);
       if (cases && cases.length > 0) {
         // 处理案例数据
         cases.forEach(caseItem => {
+          // 确保所有字段都有有效值
+          const safeSlug = caseItem.slug || `case-${caseItem.id}`;
+          const safeTitle = caseItem.title || `案例 ${caseItem.id}`;
+          const safeExcerpt = caseItem.excerpt || caseItem.description || '';
+          const safeCategory = caseItem.category || '案例';
+          const safeImage = Array.isArray(caseItem.image) 
+            ? (caseItem.image[0] || '/images/placeholder.webp')
+            : (caseItem.image || '/images/placeholder.webp');
+          
           const searchItem = {
             id: caseItem.id,
             type: 'case',
-            slug: caseItem.slug,
-            title: caseItem.title,
-            excerpt: caseItem.excerpt,
-            content: caseItem.content,
-            category: caseItem.category,
-            image: caseItem.image,
-            client: caseItem.client,
-            industry: caseItem.industry,
-            location: caseItem.location,
+            slug: safeSlug,
+            title: safeTitle,
+            excerpt: safeExcerpt,
+            content: caseItem.content || '',
+            category: safeCategory,
+            image: safeImage,
+            client: caseItem.client || '',
+            industry: caseItem.industry || '',
+            location: caseItem.location || '',
             url: `/${lang}/case/${caseItem.id}`,
             lang: lang,
             searchText: generateCaseSearchText(caseItem)
@@ -104,28 +131,42 @@ export async function generateSearchIndex() {
   }
 }
 
-// 生成产品搜索文本
+// 生成产品内容
 function generateProductContent(product) {
-  const specs = product.specs?.map(spec => `${spec.key}: ${spec.value}`).join(' ') || '';
+  const specs = product.specs?.map(spec => `${spec.key || ''} ${spec.value || ''}`).join(' ') || '';
   const features = product.features?.join(' ') || '';
-  return `${product.name} ${product.excerpt} ${specs} ${features}`;
+  const description = product.description || product.excerpt || '';
+  const title = product.name || product.Title || '';
+  return `${title} ${description} ${specs} ${features}`.trim();
 }
 
 // 生成产品搜索文本
 function generateSearchText(product) {
-  const specs = product.specs?.map(spec => `${spec.key} ${spec.value}`).join(' ') || '';
+  const specs = product.specs?.map(spec => `${spec.key || ''} ${spec.value || ''}`).join(' ') || '';
   const features = product.features?.join(' ') || '';
-  return `${product.name} ${product.excerpt} ${specs} ${features} ${product.category}`.toLowerCase();
+  const description = product.description || product.excerpt || '';
+  const category = product.category || '产品';
+  const title = product.name || product.Title || '';
+  return `${title} ${description} ${specs} ${features} ${category}`.toLowerCase().trim();
 }
 
 // 生成新闻搜索文本
 function generateNewsSearchText(news) {
-  return `${news.title} ${news.excerpt} ${news.content}`.toLowerCase();
+  const content = news.content || '';
+  const excerpt = news.excerpt || news.description || '';
+  const author = news.author || '';
+  return `${news.title || ''} ${excerpt} ${content} ${author}`.toLowerCase().trim();
 }
 
 // 生成案例搜索文本
 function generateCaseSearchText(caseItem) {
-  return `${caseItem.title} ${caseItem.excerpt} ${caseItem.content} ${caseItem.category} ${caseItem.client} ${caseItem.industry} ${caseItem.location}`.toLowerCase();
+  const content = caseItem.content || '';
+  const excerpt = caseItem.excerpt || caseItem.description || '';
+  const client = caseItem.client || '';
+  const industry = caseItem.industry || '';
+  const location = caseItem.location || '';
+  const category = caseItem.category || '案例';
+  return `${caseItem.title || ''} ${excerpt} ${content} ${client} ${industry} ${location} ${category}`.toLowerCase().trim();
 }
 
 // 客户端搜索函数（使用预生成的索引）

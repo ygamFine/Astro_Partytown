@@ -1,13 +1,15 @@
 ---
 export const prerender = true;
 
-import SecondaryPageLayout from '../../components/templates/SecondaryPageLayout.astro';
-import GridList from '../../components/templates/GridList.astro';
-import Pagination from '../../components/templates/Pagination.astro';
-import { getProducts } from '../../lib/productService.js';
+import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';
+import GridList from '../../components/templates/common/GridList.astro';
+import Pagination from '../../components/templates/common/Pagination.astro';
+import EmptyState from '../../components/templates/common/EmptyState.astro';
+import { getProducts } from '../../lib/strapi.js';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
-import { getLocaleFromPath, mergeTranslations } from '../../locales/i18n.js';
-import { generateProductListBreadcrumbs } from '../../lib/breadcrumbUtils.js';
+import { loadImageMapping } from '../../lib/imageProcessor.js';
+import { calculatePagination } from '../../lib/paginationUtils.js';
+import { processProductData, loadTranslations, generateBreadcrumbs } from '../../lib/dataProcessor.js';
 
 // 只为配置中启用的语言生成路由
 export async function getStaticPaths() {
@@ -19,53 +21,28 @@ export async function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-const translations = await mergeTranslations(lang, ['pagination', 'common']);
-const t = (translations as any).pagination || {};
+
+// 加载翻译文件
+const translations = await loadTranslations(lang, ['pagination', 'common']) as any;
 
 // 获取产品数据
 const products = await getProducts(lang);
 
-// 检查是否有数据
-const hasProducts = products && products.length > 0;
+// 加载图片映射
+const imageMapping = await loadImageMapping();
 
 // 分页配置
 const itemsPerPage = 9; // 每页显示9个产品（3行x3列）
-const totalPages = hasProducts ? Math.ceil(products.length / itemsPerPage) : 0;
-const currentPage = 1; // 第一页
-const displayProducts = hasProducts ? products.slice(0, itemsPerPage) : [];
+const pagination = calculatePagination(products, itemsPerPage, 1);
 
-// 转换产品数据格式以适配GridList组件，并严格过滤图片
-const gridItems = hasProducts ? displayProducts
-  .map((product: any) => {
-    // 处理图片字段
-    let validImage = '/images/placeholder.webp'; // 默认占位符
-    
-    if (product.image) {
-      if (Array.isArray(product.image)) {
-        // 如果是数组，找到第一个有效的图片
-        const validImg = product.image.find((img: any) => 
-          typeof img === 'string' && img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)
-        );
-        if (validImg) validImage = validImg;
-      } else if (typeof product.image === 'string' && product.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
-        // 如果是字符串且有效
-        validImage = product.image;
-      }
-    }
-    
-    return {
-  id: product.id,
-  title: product.name,
-      image: validImage,
-  excerpt: product.excerpt,
-  category: product.category,
-  href: `/${lang}/products/${product.slug}`
-    };
-  })
-  .filter(item => !!item.image && item.image !== '/images/placeholder.webp') : [];
+// 处理产品数据
+const gridItems = processProductData(pagination.displayItems, lang, imageMapping);
 
 // 面包屑导航
-const breadcrumbs = generateProductListBreadcrumbs(lang);
+const breadcrumbs = generateBreadcrumbs(lang, 'products').map(item => ({
+  label: item.name,
+  href: item.href
+}));
 ---
 
 <SecondaryPageLayout 
@@ -76,7 +53,7 @@ const breadcrumbs = generateProductListBreadcrumbs(lang);
   contentType="grid"
   lang={lang}
 >
-  {hasProducts ? (
+  {pagination.hasItems ? (
     <>
       <!-- 产品网格 -->
       <GridList 
@@ -88,36 +65,18 @@ const breadcrumbs = generateProductListBreadcrumbs(lang);
       
       <!-- 分页 -->
       <Pagination 
-        currentPage={currentPage}
-        totalPages={totalPages}
+        currentPage={pagination.currentPage}
+        totalPages={pagination.totalPages}
         baseUrl={`/${lang}/products`}
-        i18n={t}
+        i18n={translations.pagination}
       />
     </>
   ) : (
-    <!-- 空状态 -->
-    <div class="empty-state">
-      <div class="empty-state-content">
-        <div class="empty-state-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 12l8-4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 12v10" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 12L4 8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 class="empty-state-title">暂无产品数据</h3>
-        <p class="empty-state-description">当前语言暂无产品信息，请稍后再试或切换其他语言。</p>
-        <div class="empty-state-actions">
-          <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}/'`}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9,22 9,12 15,12 15,22"/>
-            </svg>
-            返回首页
-          </button>
-        </div>
-      </div>
-    </div>
+    <EmptyState 
+      title="暂无产品数据"
+      description="当前语言暂无产品信息，请稍后再试或切换其他语言。"
+      icon="product"
+      lang={lang}
+    />
   )}
 </SecondaryPageLayout> 

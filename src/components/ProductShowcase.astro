@@ -1,9 +1,9 @@
 ---
-import { Image } from 'astro:assets';
-import backhoeImage from '../assets/images/backhoe.webp';
-import skid1Image from '../assets/images/skid1.webp';
-import telescopicImage from '../assets/images/telescopic.webp';
-import logoImage from '../assets/images/logo.png.webp';
+// 使用public目录中的图片
+const backhoeImage = '/backhoe.webp';
+const skid1Image = '/skid1.webp';
+const telescopicImage = '/telescopic.webp';
+const logoImage = '/images/logo.png.webp';
 ---
 
 <section class="product-showcase">
@@ -31,7 +31,7 @@ import logoImage from '../assets/images/logo.png.webp';
         <div class="product-thumbnails">
         <div class="product-item active animate-fade-left animate-delay-400" data-index="0">
           <div class="overflow-hidden">
-            <Image 
+            <img 
               src={backhoeImage}
               alt="Backhoe Loader" 
               width={200}
@@ -46,7 +46,7 @@ import logoImage from '../assets/images/logo.png.webp';
         </div>
         <div class="product-item animate-fade-left animate-delay-500" data-index="1">
           <div class="overflow-hidden">
-            <Image 
+            <img 
               src={skid1Image}
               alt="Skid Steer Loader" 
               width={200}
@@ -61,7 +61,7 @@ import logoImage from '../assets/images/logo.png.webp';
         </div>
         <div class="product-item animate-fade-left animate-delay-600" data-index="2">
           <div class="overflow-hidden">
-            <Image 
+            <img 
               src={telescopicImage}
               alt="Telescopic Forklift" 
               width={200}
@@ -81,7 +81,7 @@ import logoImage from '../assets/images/logo.png.webp';
       <div class="product-main-display animate-fade-right animate-delay-400">
         <div class="main-image-container overflow-hidden">
           <div class="tevis-watermark">TEVIS</div>
-          <Image 
+          <img 
             id="mainProductImage" 
             src={backhoeImage}
             alt="Main Product" 

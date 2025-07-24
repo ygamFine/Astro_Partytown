@@ -4,14 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port 3000",
-    "build": "astro build && npm run generate:search-index",
-    "build:fast": "npm run i18n:generate && astro build && npm run generate:search-index",
-    "build:all": "npm run i18n:generate:all && astro build && npm run generate:search-index",
+    "build": "npm run download:strapi-images && npm run optimize:images && astro build && npm run generate:search-index",
     "preview": "astro preview",
     "astro": "astro",
-    "i18n:generate": "node scripts/generate-common-translations.js",
-    "i18n:generate:all": "node scripts/generate-common-translations.js --all",
-    "generate:search-index": "node scripts/generate-search-index.js"
+    "generate:search-index": "node scripts/generate-search-index.js",
+    "optimize:images": "bash scripts/optimize-images.sh",
+    "download:strapi-images": "node scripts/download-strapi-images.js"
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",
@@ -23,7 +21,6 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.5",
     "sharp": "^0.34.2",
-    "tailwindcss": "^3.4.3",
-    "terser": "^5.43.1"
+    "tailwindcss": "^3.4.3"
   }
 }

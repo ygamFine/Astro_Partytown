@@ -30,7 +30,7 @@ if (isServer) {
     func(module, module.exports, require);
     
     enabledLanguages = module.exports.enabledLanguages;
-    defaultLanguage = enabledLanguages?.[0] || 'en';
+    defaultLanguage = module.exports.defaultLanguage || 'en';
   } catch (error) {
     console.warn('无法读取 i18n.config.cjs，使用默认配置:', error.message);
     enabledLanguages = ['zh-CN', 'en', 'fr', 'de'];

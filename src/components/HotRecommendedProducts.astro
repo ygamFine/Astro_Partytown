@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
-import skid1Image from '../assets/images/skid1-400.webp';
-import backhoeImage from '../assets/images/backhoe-400.webp';
-import telescopicImage from '../assets/images/telescopic-400.webp';
+// 使用public目录中的图片
+const skid1Image = '/images/skid1-400.webp';
+const backhoeImage = '/images/backhoe-400.webp';
+const telescopicImage = '/images/telescopic-400.webp';
 // 热门推荐产品组件 - 按设计稿实现
 ---
 
@@ -24,7 +24,7 @@ import telescopicImage from '../assets/images/telescopic-400.webp';
       <!-- 产品1 -->
       <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300 card-hover-animate animate-fade-up animate-delay-300">
         <div class="product-image-container overflow-hidden">
-          <Image 
+          <img 
             src={skid1Image}
             alt="滑移装载机" 
             width={400}
@@ -50,7 +50,7 @@ import telescopicImage from '../assets/images/telescopic-400.webp';
       <!-- 产品2 -->
       <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300 card-hover-animate animate-fade-up animate-delay-400">
         <div class="product-image-container overflow-hidden">
-          <Image 
+          <img 
             src={backhoeImage}
             alt="挖掘装载机" 
             width={400}
@@ -76,7 +76,7 @@ import telescopicImage from '../assets/images/telescopic-400.webp';
       <!-- 产品3 -->
       <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300 card-hover-animate animate-fade-up animate-delay-500">
         <div class="product-image-container overflow-hidden">
-          <Image 
+          <img 
             src={telescopicImage}
             alt="伸缩臂叉车" 
             width={400}

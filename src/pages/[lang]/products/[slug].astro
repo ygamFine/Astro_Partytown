@@ -1,11 +1,11 @@
 ---
 export const prerender = true;
 import Layout from '../../../layouts/Layout.astro';
-import Breadcrumb from '../../../components/templates/Breadcrumb.astro';
-import ContactButtons from '../../../components/ContactButtons.astro';
-import RichTextRenderer from '../../../components/RichTextRenderer.astro';
+import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
+import ContactButtons from '../../../components/common/contact/ContactButtons.astro';
+import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
 import { getProducts, getProduct } from '../../../lib/strapi.js';
-import { allNews } from '../../../data/news.js';
+import { getNews } from '../../../lib/strapi.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
@@ -18,11 +18,12 @@ export async function getStaticPaths() {
   for (const lang of enabledLanguages) {
     const products = await getProducts(lang);
     for (const product of products) {
-      // 确保 slug 存在且不为空
-      if (product.slug && typeof product.slug === 'string') {
+      // 使用 slug 或 id 作为路径参数
+      const slugParam = product.slug || product.id;
+      if (slugParam) {
         paths.push({
-          params: { lang, slug: product.slug },
-          props: { slug: product.slug, lang }
+          params: { lang, slug: slugParam },
+          props: { slug: slugParam, lang }
         });
       }
     }
@@ -62,6 +63,7 @@ const validRelatedProducts = relatedProducts.filter(relatedProduct => {
 });
 
 // 获取相关新闻（最新的4篇）
+const allNews = await getNews(lang);
 const relatedNews = allNews.slice(0, 4);
 
 // 获取当前产品在列表中的位置，用于上一个/下一个导航
@@ -87,18 +89,95 @@ const validRecommendedProducts = recommendedProducts.filter(recommended => {
 const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.category);
 
 // 处理产品图片，确保所有图片都是本地路径
+// 加载图片映射
+let imageMapping: any = {};
+try {
+  const fs = await import('fs/promises');
+  const path = await import('path');
+  const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+  const mappingData = await fs.readFile(mappingPath, 'utf8');
+  imageMapping = JSON.parse(mappingData);
+} catch (error: any) {
+  console.warn('无法加载图片映射文件:', error.message);
+}
+
 const processImages = (imageData: any): string[] => {
   if (!imageData) return ['/images/placeholder.webp'];
   
   if (Array.isArray(imageData)) {
-    return imageData
-      .filter((img: any) => img && typeof img === 'string')
-      .map((img: string) => img.startsWith('http') ? '/images/placeholder.webp' : img)
-      .filter((img: string) => img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i));
+    const processedImages = imageData
+      .map(img => {
+        if (typeof img === 'string') {
+          // 如果已经是本地缓存路径，直接返回
+          if (img.startsWith('/images/strapi/')) {
+            return img;
+          }
+          // 如果是外部URL，尝试在缓存中找到对应的本地文件
+          if (img.startsWith('http')) {
+            const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
+              cached.includes(urlHash) || cached.includes(img.split('/').pop())
+            );
+            return cachedImage || img;
+          }
+          return img;
+        } else if (img && typeof img === 'object' && img.url) {
+          // 如果是图片对象，提取URL并映射到本地缓存
+          const originalUrl = img.url;
+          if (originalUrl.startsWith('/uploads/')) {
+            // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+            const fileName = originalUrl.split('/').pop();
+            
+            // 尝试多种匹配方式
+            const cachedImage = imageMapping.strapiImages?.find((cached: any) => {
+              // 1. 直接匹配文件名
+              if (cached.includes(fileName)) return true;
+              
+              // 2. 匹配hash
+              if (img.hash && cached.includes(img.hash)) return true;
+              
+              // 3. Base64编码匹配
+              try {
+                const encodedName = Buffer.from(fileName).toString('base64');
+                if (cached.includes(encodedName)) return true;
+                // 处理Base64填充字符
+                const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+                if (cached.includes(encodedNameNoPadding)) return true;
+              } catch (e) {}
+              
+              // 4. Base64解码匹配
+              try {
+                const decodedName = Buffer.from(fileName, 'base64').toString();
+                if (cached.includes(decodedName)) return true;
+              } catch (e) {}
+              
+              return false;
+            });
+            
+            return cachedImage || originalUrl;
+          }
+          return originalUrl;
+        }
+        return null;
+      })
+      .filter(img => img && img !== '/images/placeholder.webp');
+    
+    return processedImages.length > 0 ? processedImages : ['/images/placeholder.webp'];
   }
   
   if (typeof imageData === 'string') {
-    return imageData.startsWith('http') ? ['/images/placeholder.webp'] : [imageData];
+    // 如果已经是本地缓存路径，直接返回
+    if (imageData.startsWith('/images/strapi/')) {
+      return [imageData];
+    }
+    if (imageData.startsWith('http')) {
+      const urlHash = Buffer.from(imageData).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+      const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
+        cached.includes(urlHash) || cached.includes(imageData.split('/').pop())
+      );
+      return cachedImage ? [cachedImage] : ['/images/placeholder.webp'];
+    }
+    return [imageData];
   }
   
   return ['/images/placeholder.webp'];

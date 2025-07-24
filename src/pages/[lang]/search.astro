@@ -2,9 +2,9 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
-import GlobalSearch from '../../components/GlobalSearch.astro';
+import GlobalSearch from '../../components/templates/common/GlobalSearch.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
-import { mergeTranslations } from '../../locales/i18n.js';
+import { loadTranslations } from '../../lib/dataProcessor.js';
 import { generateSearchBreadcrumbs } from '../../lib/breadcrumbUtils.js';
 
 // 只为配置中启用的语言生成静态路径
@@ -18,9 +18,9 @@ export async function getStaticPaths() {
 
 const { lang } = Astro.params;
 const searchQuery = Astro.url.searchParams.get('q') || '';
-const translations = await mergeTranslations(lang, ['form', 'breadcrumb']);
-const t = (translations as any).form || {};
-const breadcrumbT = (translations as any).breadcrumb || {};
+const translations = await loadTranslations(lang, ['form', 'breadcrumb']) as any;
+const t = translations.form || {};
+const breadcrumbT = translations.breadcrumb || {};
 
 // 面包屑导航
 const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
@@ -74,15 +74,19 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
   async function initSearchPage() {
     const resultsContainer = document.getElementById('search-results-container');
     
-    if (!searchQuery) {
+    // 从URL参数获取搜索查询
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q') || searchQuery;
+    
+    if (!query) {
       return;
     }
     
     try {
-      const { performSearch } = await import('/src/lib/searchIndex.js');
-      const results = await performSearch(searchQuery, lang);
+      const { performSearch } = await import('../../../lib/clientSearch.js');
+      const results = await performSearch(query, lang);
       
-      displaySearchResults(results, searchQuery);
+      displaySearchResults(results, query);
     } catch (error) {
       console.error('Search error:', error);
       displaySearchError();
@@ -119,8 +123,7 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
     
     let html = `
       <div class="mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">搜索结果 (${results.length})</h2>
-        <p class="text-gray-600">找到 ${results.length} 个与 "${query}" 相关的结果</p>
+        <p class="text-gray-600">找到 <span class="font-semibold text-gray-900">${results.length}</span> 个相关结果</p>
       </div>
     `;
     
@@ -128,22 +131,25 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
     if (groupedResults.product.length > 0) {
       html += `
         <div class="mb-8">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-            <span class="inline-block w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clip-rule="evenodd" />
+            </svg>
             产品 (${groupedResults.product.length})
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          </h2>
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             ${groupedResults.product.map(item => `
-              <a href="${item.url}" class="block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div class="aspect-w-16 aspect-h-9 mb-4">
-                  <img src="${item.image}" alt="${item.title || ''}" class="w-full h-48 object-cover rounded-t-lg" onerror="this.style.display='none'">
-                </div>
+              <a href="${item.url}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                 <div class="p-4">
-                  <h4 class="font-medium text-gray-900 mb-2 line-clamp-2">${highlightText(item.title, query)}</h4>
-                  <p class="text-sm text-gray-600 mb-3 line-clamp-2">${highlightText(item.excerpt, query)}</p>
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-red-600">${item.price}</span>
-                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">${item.category}</span>
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                      <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h3>
+                      <p class="text-xs text-gray-500 mt-1 line-clamp-2">${highlightText(item.excerpt, query)}</p>
+                      ${item.price ? `<p class="text-xs text-red-600 mt-1">${item.price}</p>` : ''}
+                    </div>
                   </div>
                 </div>
               </a>
@@ -157,21 +163,27 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
     if (groupedResults.news.length > 0) {
       html += `
         <div class="mb-8">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-            <span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd" />
+            </svg>
             新闻 (${groupedResults.news.length})
-          </h3>
+          </h2>
           <div class="space-y-4">
             ${groupedResults.news.map(item => `
-              <a href="${item.url}" class="block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4">
-                <div class="flex items-start space-x-4">
-                  <img src="${item.image}" alt="${item.title || ''}" class="w-20 h-20 object-cover rounded" onerror="this.style.display='none'">
+              <a href="${item.url}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div class="p-4">
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                      <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">
+                    </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-medium text-gray-900 mb-2 line-clamp-2">${highlightText(item.title, query)}</h4>
-                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">${highlightText(item.excerpt, query)}</p>
-                    <div class="flex items-center space-x-4 text-xs text-gray-500">
-                      <span>${formatDate(item.date)}</span>
-                      <span class="bg-green-100 text-green-600 px-2 py-1 rounded">${item.category}</span>
+                      <h3 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h3>
+                      <p class="text-xs text-gray-500 mt-1 line-clamp-2">${highlightText(item.excerpt, query)}</p>
+                      <div class="flex items-center mt-2 space-x-2 text-xs text-gray-400">
+                        ${item.date ? `<span>${formatDate(item.date)}</span>` : ''}
+                        ${item.author ? `<span>• ${item.author}</span>` : ''}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -186,21 +198,27 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
     if (groupedResults.case.length > 0) {
       html += `
         <div class="mb-8">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-            <span class="inline-block w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clip-rule="evenodd" />
+            </svg>
             案例 (${groupedResults.case.length})
-          </h3>
-          <div class="space-y-4">
+          </h2>
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             ${groupedResults.case.map(item => `
-              <a href="${item.url}" class="block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4">
-                <div class="flex items-start space-x-4">
-                  <img src="${item.image}" alt="${item.title || ''}" class="w-20 h-20 object-cover rounded" onerror="this.style.display='none'">
+              <a href="${item.url}" class="block bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div class="p-4">
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                      <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">
+                    </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-medium text-gray-900 mb-2 line-clamp-2">${highlightText(item.title, query)}</h4>
-                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">${highlightText(item.excerpt, query)}</p>
-                    <div class="flex items-center space-x-4 text-xs text-gray-500">
-                      <span>${formatDate(item.date)}</span>
-                      <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded">${item.category}</span>
+                      <h3 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h3>
+                      <p class="text-xs text-gray-500 mt-1 line-clamp-2">${highlightText(item.excerpt, query)}</p>
+                      <div class="flex items-center mt-2 space-x-2 text-xs text-gray-400">
+                        ${item.client ? `<span>${item.client}</span>` : ''}
+                        ${item.location ? `<span>• ${item.location}</span>` : ''}
+                      </div>
                     </div>
                   </div>
                 </div>

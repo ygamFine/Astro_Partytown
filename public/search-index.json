@@ -3,227 +3,251 @@
     {
       "id": 49,
       "type": "product",
-      "slug": null,
+      "slug": "product-49",
       "title": "wood dryer2",
-      "content": "wood dryer2 undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg"
-      ],
-      "url": "/en/products/null",
+      "excerpt": "",
+      "content": "wood dryer2",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg",
+      "price": "",
+      "url": "/en/products/product-49",
       "lang": "en",
-      "searchText": "wood dryer2 undefined   undefined"
+      "searchText": "wood dryer2    产品"
     },
     {
       "id": 50,
       "type": "product",
-      "slug": null,
+      "slug": "product-50",
       "title": "zzzzzzz",
-      "content": "zzzzzzz undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg"
-      ],
-      "url": "/en/products/null",
+      "excerpt": "",
+      "content": "zzzzzzz",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg",
+      "price": "",
+      "url": "/en/products/product-50",
       "lang": "en",
-      "searchText": "zzzzzzz undefined   undefined"
+      "searchText": "zzzzzzz    产品"
     },
     {
       "id": 51,
       "type": "product",
-      "slug": null,
+      "slug": "product-51",
       "title": "测试下架",
-      "content": "测试下架 undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp"
-      ],
-      "url": "/en/products/null",
+      "excerpt": "",
+      "content": "测试下架",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
+      "price": "",
+      "url": "/en/products/product-51",
       "lang": "en",
-      "searchText": "测试下架 undefined   undefined"
+      "searchText": "测试下架    产品"
     },
     {
       "id": 52,
       "type": "product",
       "slug": "111www",
       "title": "111www",
-      "content": "111www undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp"
-      ],
+      "excerpt": "",
+      "content": "111www",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
+      "price": "",
       "url": "/en/products/111www",
       "lang": "en",
-      "searchText": "111www undefined   undefined"
+      "searchText": "111www    产品"
     },
     {
       "id": 53,
       "type": "product",
-      "slug": null,
+      "slug": "product-53",
       "title": "盛怀单板烘干机",
-      "content": "盛怀单板烘干机 undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp"
-      ],
-      "url": "/en/products/null",
+      "excerpt": "",
+      "content": "盛怀单板烘干机",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
+      "price": "",
+      "url": "/en/products/product-53",
       "lang": "en",
-      "searchText": "盛怀单板烘干机 undefined   undefined"
+      "searchText": "盛怀单板烘干机    产品"
     },
     {
       "id": 56,
       "type": "product",
       "slug": "11product",
       "title": "11product how are you ",
-      "content": "11product how are you  undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvOTc5NDQzNDgwX2IwZGU3MTBkNGQuanBn.jpg",
-        "/images/strapi/L3VwbG9hZHMvOTM0ODEwODE4X2Y0MzE0ZWFlNzMuanBn.jpg",
-        "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1XzI0YzBiYzhlNzcuanBn.jpg"
-      ],
+      "excerpt": "",
+      "content": "11product how are you",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvOTc5NDQzNDgwX2IwZGU3MTBkNGQuanBn.jpg",
+      "price": "",
       "url": "/en/products/11product",
       "lang": "en",
-      "searchText": "11product how are you  undefined   undefined"
+      "searchText": "11product how are you     产品"
     },
     {
       "id": 57,
       "type": "product",
       "slug": "helloworld",
       "title": "hello world",
-      "content": "hello world undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.gif",
-        "/images/strapi/L3VwbG9hZHMvMV9mYTczMjE2YjNhLndlYnA.webp",
-        "/images/strapi/L3VwbG9hZHMvOTc5NDQzNDgwX2IwZGU3MTBkNGQuanBn.jpg"
-      ],
+      "excerpt": "",
+      "content": "hello world",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.gif",
+      "price": "",
       "url": "/en/products/helloworld",
       "lang": "en",
-      "searchText": "hello world undefined   undefined"
+      "searchText": "hello world    产品"
     },
     {
       "id": 58,
       "type": "product",
       "slug": "helloworld1",
       "title": "hello world",
-      "content": "hello world undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg",
-        "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1XzI0YzBiYzhlNzcuanBn.jpg",
-        "/images/strapi/L3VwbG9hZHMvOTM0ODEwODE4X2Y0MzE0ZWFlNzMuanBn.jpg"
-      ],
+      "excerpt": "",
+      "content": "hello world",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg",
+      "price": "",
       "url": "/en/products/helloworld1",
       "lang": "en",
-      "searchText": "hello world undefined   undefined"
+      "searchText": "hello world    产品"
     },
     {
       "id": 62,
       "type": "product",
       "slug": "chanpin",
       "title": "chanpin1",
-      "content": "chanpin1 undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvbG9nb19wbmdfYzk4NTcyNWIwZi53ZWJw.webp"
-      ],
+      "excerpt": "",
+      "content": "chanpin1",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvbG9nb19wbmdfYzk4NTcyNWIwZi53ZWJw.webp",
+      "price": "",
       "url": "/en/products/chanpin",
       "lang": "en",
-      "searchText": "chanpin1 undefined   undefined"
+      "searchText": "chanpin1    产品"
     },
     {
       "id": 64,
       "type": "product",
       "slug": "chanpin2",
       "title": "chanpin2",
-      "content": "chanpin2 undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvbG9nb19wbmdfYzk4NTcyNWIwZi53ZWJw.webp"
-      ],
+      "excerpt": "",
+      "content": "chanpin2",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvbG9nb19wbmdfYzk4NTcyNWIwZi53ZWJw.webp",
+      "price": "",
       "url": "/en/products/chanpin2",
       "lang": "en",
-      "searchText": "chanpin2 undefined   undefined"
+      "searchText": "chanpin2    产品"
     },
     {
       "id": 60,
       "type": "product",
       "slug": "up01",
       "title": "ウォータドリル",
-      "content": "ウォータドリル undefined  ",
-      "image": [
-        "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp"
-      ],
+      "excerpt": "",
+      "content": "ウォータドリル",
+      "category": "产品",
+      "image": "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
+      "price": "",
       "url": "/ja/products/up01",
       "lang": "ja",
-      "searchText": "ウォータドリル undefined   undefined"
+      "searchText": "ウォータドリル    产品"
     }
   ],
   "news": [
     {
       "id": 25,
       "type": "news",
-      "slug": 25,
+      "slug": "news-25",
       "title": "1",
+      "excerpt": "",
+      "content": "",
       "image": "/images/strapi/L3VwbG9hZHMvMTFfMF9hOTNjNDI2OWVkLmpwZWc.jpeg",
       "date": "2025-07-17T10:26:50.876Z",
-      "url": "/en/news/25",
+      "author": "",
+      "url": "/en/news/news-25",
       "lang": "en",
-      "searchText": "1 undefined undefined"
+      "searchText": "1"
     },
     {
       "id": 26,
       "type": "news",
-      "slug": 26,
+      "slug": "news-26",
       "title": "111111",
+      "excerpt": "",
+      "content": "",
       "image": "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.gif",
       "date": "2025-07-18T01:36:13.939Z",
-      "url": "/en/news/26",
+      "author": "",
+      "url": "/en/news/news-26",
       "lang": "en",
-      "searchText": "111111 undefined undefined"
+      "searchText": "111111"
     },
     {
       "id": 27,
       "type": "news",
-      "slug": 27,
+      "slug": "news-27",
       "title": "news one",
+      "excerpt": "",
+      "content": "",
       "image": "/images/strapi/L3VwbG9hZHMvOTc5NDQzNDgwX2IwZGU3MTBkNGQuanBn.jpg",
       "date": "2025-07-18T01:36:30.484Z",
-      "url": "/en/news/27",
+      "author": "",
+      "url": "/en/news/news-27",
       "lang": "en",
-      "searchText": "news one undefined undefined"
+      "searchText": "news one"
     },
     {
       "id": 28,
       "type": "news",
-      "slug": 28,
+      "slug": "news-28",
       "title": "test",
+      "excerpt": "",
+      "content": "",
       "image": "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
       "date": "2025-07-18T01:36:41.845Z",
-      "url": "/en/news/28",
+      "author": "",
+      "url": "/en/news/news-28",
       "lang": "en",
-      "searchText": "test undefined undefined"
+      "searchText": "test"
     },
     {
       "id": 29,
       "type": "news",
-      "slug": 29,
+      "slug": "news-29",
       "title": "test2",
+      "excerpt": "",
+      "content": "",
       "image": "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg",
       "date": "2025-07-18T01:36:53.038Z",
-      "url": "/en/news/29",
+      "author": "",
+      "url": "/en/news/news-29",
       "lang": "en",
-      "searchText": "test2 undefined undefined"
+      "searchText": "test2"
     },
     {
       "id": 19,
       "type": "news",
-      "slug": 19,
+      "slug": "news-19",
       "title": "日文新闻",
+      "excerpt": "",
+      "content": "",
       "image": "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.jpg",
       "date": "2025-07-15T12:30:33.748Z",
-      "url": "/ja/news/19",
+      "author": "",
+      "url": "/ja/news/news-19",
       "lang": "ja",
-      "searchText": "日文新闻 undefined undefined"
+      "searchText": "日文新闻"
     }
   ],
   "cases": [
     {
       "id": 6,
       "type": "case",
-      "slug": 6,
+      "slug": "case-6",
       "title": "飞达钻机亮相第137届中国进出口商品交易会",
+      "excerpt": "",
       "content": [
         {
           "type": "heading",
@@ -381,10 +405,14 @@
           ]
         }
       ],
+      "category": "案例",
       "image": "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.gif",
+      "client": "",
+      "industry": "",
+      "location": "",
       "url": "/en/case/6",
       "lang": "en",
-      "searchText": "飞达钻机亮相第137届中国进出口商品交易会 undefined [object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object] undefined undefined undefined undefined"
+      "searchText": "飞达钻机亮相第137届中国进出口商品交易会  [object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object]    案例"
     }
   ]
 }

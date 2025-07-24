@@ -3,7 +3,6 @@ dist/
 # generated types
 .astro/
 
-
 # Vercel
 .vercel/
 
@@ -18,7 +17,10 @@ pnpm-debug.log*
 
 # environment variables
 .env
+.env.local
+.env.development
 .env.production
+.env.staging
 
 # macOS-specific files
 .DS_Store
@@ -31,12 +33,5 @@ pnpm-debug.log*
 *.temp
 *~
 
-# documentation files (keep only README.md and essential guides)
-*_REPORT.md
-*_GUIDE.md
-*_OPTIMIZATION.md
-*_STATUS.md
-*_FIX.md
-*_DIAGNOSIS.md
-!README.md
-!ANALYTICS_SETUP_GUIDE.md
+# cache files
+.i18n-config-cache

@@ -25,7 +25,7 @@ mkdir -p public/images/optimized
 
 echo "📸 转换 JPG/PNG 图片为 WebP 格式..."
 
-# 批量转换 public 目录下的图片
+# 批量转换 public 目录下的图片（包括Strapi下载的图片）
 find public -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" | while read file; do
     # 生成 WebP 文件名
     webp_file="${file%.*}.webp"
@@ -52,10 +52,11 @@ done
 
 echo "📱 生成移动端响应式图片..."
 
-# 为大图生成移动端版本
-for img in public/images/banner*.jpg public/images/optimized/banner*.jpg; do
+# 为大图生成移动端版本（包括Strapi图片）
+for img in public/images/banner*.jpg public/images/optimized/banner*.jpg public/images/strapi/*.jpg public/images/strapi/*.png; do
     if [[ -f "$img" ]]; then
         base_name=$(basename "$img" .jpg)
+        base_name=$(basename "$base_name" .png)
         mobile_webp="public/images/optimized/${base_name}-mobile.webp"
         
         if [[ ! -f "$mobile_webp" ]]; then
@@ -67,7 +68,7 @@ done
 
 echo "🗂️  检查关键图片文件..."
 
-# 关键图片检查列表
+# 关键图片检查列表（包括Strapi图片）
 critical_images=(
     "public/shouji-banner1.webp"
     "public/main-product.svg"
@@ -93,11 +94,12 @@ fi
 
 echo "📊 生成图片统计报告..."
 
-# 统计报告
+# 统计报告（包括Strapi图片）
 total_jpg=$(find public -name "*.jpg" | wc -l)
 total_webp=$(find public -name "*.webp" | wc -l)
 total_png=$(find public -name "*.png" | wc -l)
 total_svg=$(find public -name "*.svg" | wc -l)
+total_strapi=$(find public/images/strapi -name "*" 2>/dev/null | wc -l)
 
 echo ""
 echo "📈 图片统计报告:"
@@ -105,6 +107,7 @@ echo "   JPG 文件: $total_jpg"
 echo "   WebP 文件: $total_webp"
 echo "   PNG 文件: $total_png"
 echo "   SVG 文件: $total_svg"
+echo "   Strapi 图片: $total_strapi"
 
 # 计算总体文件大小
 if command -v du &> /dev/null; then
@@ -117,3 +120,4 @@ echo "🎉 图片优化完成！"
 echo "✨ 所有图片已转换为 WebP 格式"
 echo "📱 响应式图片已生成"
 echo "🚀 网站性能已优化" 
+echo "📥 Strapi 图片已本地化" 

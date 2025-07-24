@@ -1,131 +1,82 @@
 /**
- * 图片下载工具 - 在构建时将Strapi图片下载到本地
+ * 图片下载工具 - 用于从 Strapi 下载图片到本地
  */
 
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// 图片缓存目录 - 使用相对路径
-const IMAGE_CACHE_DIR = path.join(process.cwd(), 'public/images/strapi');
-const STRAPI_STATIC_URL = 'http://47.251.126.80';
+// 加载环境变量
+import { config } from 'dotenv';
+config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 图片缓存目录
+const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
 
 /**
- * 确保缓存目录存在
+ * 确保目录存在
+ * @param {string} dirPath - 目录路径
  */
-async function ensureCacheDir() {
+async function ensureDir(dirPath) {
   try {
-    await fs.access(IMAGE_CACHE_DIR);
+    await fs.access(dirPath);
   } catch {
-    await fs.mkdir(IMAGE_CACHE_DIR, { recursive: true });
+    await fs.mkdir(dirPath, { recursive: true });
   }
 }
 
 /**
- * 生成图片文件名
+ * 从 URL 下载图片
+ * @param {string} url - 图片 URL
+ * @param {string} filename - 文件名
+ * @returns {Promise<string>} 本地文件路径
  */
-function generateImageFileName(originalUrl) {
-  const url = new URL(originalUrl, STRAPI_STATIC_URL);
-  const pathname = url.pathname;
-  const ext = path.extname(pathname) || '.jpg';
-  const hash = Buffer.from(pathname).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
-  return `${hash}${ext}`;
-}
+async function downloadImage(url, filename) {
+  if (!url || url.startsWith('/')) {
+    return url; // 已经是本地路径
+  }
 
-/**
- * 下载单个图片（唯一实现）
- */
-export async function downloadImage(imageUrl) {
-  if (!imageUrl || typeof imageUrl !== 'string') {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn(`Failed to download image: ${url}`);
+      return '/images/placeholder.webp';
+    }
+
+    const buffer = await response.arrayBuffer();
+    const localPath = path.join(IMAGE_CACHE_DIR, filename);
+    
+    await ensureDir(path.dirname(localPath));
+    await fs.writeFile(localPath, Buffer.from(buffer));
+    
+    console.log(`Downloaded: ${url} -> ${localPath}`);
+    return `/${path.relative('public', localPath)}`;
+  } catch (error) {
+    console.error(`Error downloading image ${url}:`, error.message);
     return '/images/placeholder.webp';
   }
-
-  // 如果已经是本地路径，直接返回
-  if (imageUrl.startsWith('/images/') || imageUrl.startsWith('./')) {
-    return imageUrl;
-  }
-
-  // 如果是完整的Strapi URL
-  if (imageUrl.startsWith(STRAPI_STATIC_URL)) {
-    try {
-      await ensureCacheDir();
-      
-      const fileName = generateImageFileName(imageUrl);
-      const localPath = path.join(IMAGE_CACHE_DIR, fileName);
-      const publicPath = `/images/strapi/${fileName}`;
-
-      // 检查文件是否已存在
-      try {
-        await fs.access(localPath);
-        return publicPath;
-      } catch {
-        // 文件不存在，需要下载
-      }
-
-      // 下载图片
-      const response = await fetch(imageUrl);
-      if (!response.ok) {
-        console.warn(`下载图片失败: ${imageUrl}`);
-        return '/images/placeholder.webp';
-      }
-
-      const buffer = await response.arrayBuffer();
-      await fs.writeFile(localPath, Buffer.from(buffer));
-      
-      return publicPath;
-    } catch (error) {
-      console.error(`下载图片出错: ${imageUrl}`, error.message);
-      return '/images/placeholder.webp';
-    }
-  }
-
-  // 如果是相对路径，转换为绝对路径
-  if (imageUrl.startsWith('/uploads/')) {
-    const fullUrl = `${STRAPI_STATIC_URL}${imageUrl}`;
-    return await downloadImage(fullUrl);
-  }
-
-  // 其他情况返回占位符
-  return '/images/placeholder.webp';
-}
-
-/**
- * 批量下载图片
- */
-export async function downloadImages(imageUrls) {
-  if (!imageUrls || imageUrls.length === 0) {
-    return [];
-  }
-
-  const downloadPromises = imageUrls.map(url => downloadImage(url));
-  const results = await Promise.allSettled(downloadPromises);
-  
-  return results.map(result => {
-    if (result.status === 'fulfilled') {
-      return result.value;
-    } else {
-      console.error('下载图片失败:', result.reason);
-      return '/images/placeholder.webp';
-    }
-  });
 }
 
 /**
  * 处理产品图片数组
+ * @param {Array} images - 图片数组
+ * @returns {Promise<Array>} 处理后的图片路径数组
  */
 export async function processProductImages(images) {
-  if (!images || images.length === 0) {
+  if (!images || !Array.isArray(images)) {
     return ['/images/placeholder.webp'];
   }
 
   const processedImages = [];
-  
-  for (const image of images) {
-    if (typeof image === 'string') {
-      const localImage = await downloadImage(image);
-      processedImages.push(localImage);
-    } else if (image && typeof image === 'object' && image.url) {
-      const localImage = await downloadImage(image.url);
-      processedImages.push(localImage);
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    if (typeof image === 'string' && image.trim()) {
+      const filename = `product_${Date.now()}_${i}.webp`;
+      const localPath = await downloadImage(image, filename);
+      processedImages.push(localPath);
     }
   }
 
@@ -134,19 +85,36 @@ export async function processProductImages(images) {
 
 /**
  * 处理单个图片
+ * @param {string} image - 图片 URL
+ * @returns {Promise<string>} 处理后的图片路径
  */
 export async function processSingleImage(image) {
-  if (!image) {
+  if (!image || typeof image !== 'string' || !image.trim()) {
     return '/images/placeholder.webp';
   }
 
-  if (typeof image === 'string') {
-    return await downloadImage(image);
+  const filename = `single_${Date.now()}.webp`;
+  return await downloadImage(image, filename);
+}
+
+/**
+ * 批量下载图片
+ * @param {Array} imageUrls - 图片 URL 数组
+ * @returns {Promise<Array>} 本地文件路径数组
+ */
+export async function batchDownloadImages(imageUrls) {
+  if (!Array.isArray(imageUrls)) {
+    return [];
   }
 
-  if (image && typeof image === 'object' && image.url) {
-    return await downloadImage(image.url);
+  const results = [];
+  for (const url of imageUrls) {
+    if (url && typeof url === 'string') {
+      const filename = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+      const localPath = await downloadImage(url, filename);
+      results.push(localPath);
+    }
   }
 
-  return '/images/placeholder.webp';
+  return results;
 } 

@@ -1,0 +1,422 @@
+---
+import StaticMenu from './StaticMenu.astro';
+// 使用public目录中的图片
+const logoImage = '/images/logo.png.webp';
+---
+<!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
+<header class="relative z-50">
+  <!-- Main Header Row (Will scroll with page) -->
+  <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white">
+  <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between md:h-[9.9rem] h-24">
+      <!-- TEVIS Logo -->
+      <a href="/" class="flex items-center">
+          <img 
+            src={logoImage}
+            alt="TEVIS Logo" 
+            width={120}
+            height={32}
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+            class="md:h-23 h-8 w-auto"
+          />
+      </a>
+
+      <!-- Desktop Contact Info & Quote Button -->
+        <div class="hidden lg:flex items-center space-x-8">
+          <!-- Contact Items Group -->
+          <div class="flex items-center space-x-6">
+        <!-- Contact Details -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">Contact details:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">+86 156 2892 0918</p>
+              </div>
+        </div>
+
+            <!-- Divider -->
+            <div class="border-l border-gray-600 h-12"></div>
+        
+        <!-- Phone/WhatsApp -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">Phone/Whatsapp:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">+86 183 5318 1619</p>
+              </div>
+        </div>
+
+            <!-- Divider -->
+            <div class="border-l border-gray-600 h-12"></div>
+        
+        <!-- Email -->
+            <div class="flex items-center space-x-3">
+              <svg class="w-16 h-16 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+              <div>
+                <p class="text-gray-400 text-2xl">E-mail:</p>
+                <p class="font-semibold text-3xl tracking-wider" style="color: #A9AAAB;">tevis@yonancn.com</p>
+              </div>
+            </div>
+        </div>
+        
+        <!-- Request Quote Button -->
+          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-4 ml-3 font-bold transition-colors duration-200 flex items-center justify-center space-x-3" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+            <span>REQUEST A QUOTE</span>
+        </a>
+      </div>
+
+      <!-- Medium screens - Simplified contact -->
+        <div class="hidden md:flex lg:hidden items-center space-x-3 text-xs">
+          <div class="flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+            <span class="text-white font-medium text-xs">+86 156 2892 0918</span>
+        </div>
+          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-3 font-bold transition-colors duration-200 flex items-center justify-center" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+            <span>REQUEST A QUOTE</span>
+        </a>
+      </div>
+
+        <!-- Mobile - Right side icons and menu button -->
+        <div class="md:hidden flex items-center space-x-4">
+          <!-- Search Icon -->
+          <button class="p-2 text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+          
+          <!-- Globe Icon -->
+          <button class="p-2 text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+            </svg>
+          </button>
+          
+          <!-- Menu Button -->
+          <button id="mobile-menu-button" class="p-2 bg-red-600 text-white focus:outline-none focus-visible-ring rounded-md" aria-label="主菜单" aria-expanded="false" aria-controls="mobile-menu">
+          <svg id="menu-open-icon" class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg id="menu-close-icon" class="h-6 w-6 hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar (Will become sticky when banner scrolls away) -->
+  <div id="nav-menu" class="bg-red-600 border-red-500" style="color: #e81a1a; box-shadow: 0 7px 16px 0 rgba(0, 0, 0, .64); transform: translateY(0); transition: transform 0.3s ease-in-out;">
+    <div class="container mx-auto px-4">
+      <div class="hidden md:flex items-center justify-center" style="height: 6rem;">
+        <StaticMenu />
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-slate-700 border-gray-600 relative z-40">
+    <nav aria-label="移动端导航" class="px-4 pt-4 pb-4 space-y-3">
+      <!-- Navigation Links -->
+      <div class="space-y-3">
+        <a href="/" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Home</a>
+        <a href="/about" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">About</a>
+        <a href="/products" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Products</a>
+        <a href="/case" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Case</a>
+        <a href="/news" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">News</a>
+        <a href="/contact" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Contact</a>
+      </div>
+      
+      <!-- Language Selector -->
+      <div class="mt-6 pt-4 border-t border-gray-600">
+        <div class="flex items-center space-x-2 text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+          </svg>
+          <select id="mobile-language-selector" class="bg-transparent text-white border-none focus:outline-none">
+            <option value="en">🇺🇸 English</option>
+            <option value="zh-CN">🇨🇳 简体中文</option>
+            <option value="zh-Hant">🇹🇼 繁體中文</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt-pt">🇵🇹 Português</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="th">🇹🇭 ไทย</option>
+            <option value="id">🇮🇩 Bahasa Indonesia</option>
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
+            <option value="ml">🇮🇳 മലയാളം</option>
+            <option value="my">🇲🇲 မြန်မာဘာသာ</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Mobile Contact Information -->
+      <div class="mt-6 pt-4 border-t border-gray-600 space-y-3">
+        <div class="text-sm text-gray-300 space-y-3">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+            <span class="text-white">+86 156 2892 0918</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+            <span class="text-white">+86 159 5318 1619</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            <span class="text-white">tevis@yonancn.com</span>
+          </div>
+        </div>
+        <a href="/contact" class="block w-full bg-red-600 text-white mt-4 py-3 px-6 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors text-center rounded">
+          REQUEST A QUOTE
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script type="text/javascript">
+  (function() {
+    // 缓存DOM元素
+    let mobileMenuButton = null;
+    let mobileMenu = null;
+    let openIcon = null;
+    let closeIcon = null;
+    let mainHeader = null;
+    let navMenu = null;
+    
+    // 状态管理
+    let lastScrollY = 0;
+    let isMenuFixed = false;
+    let isScrolling = false;
+
+    // 节流函数
+    function throttle(func, limit) {
+      let inThrottle;
+      return function(...args) {
+        if (!inThrottle) {
+          func.apply(this, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    }
+
+    // 移动端菜单初始化
+    function initMobileMenu() {
+      mobileMenuButton = document.getElementById('mobile-menu-button');
+      mobileMenu = document.getElementById('mobile-menu');
+      openIcon = document.getElementById('menu-open-icon');
+      closeIcon = document.getElementById('menu-close-icon');
+      
+      if (!mobileMenuButton || !mobileMenu) return;
+
+      // 菜单切换 - 添加防抖
+      const toggleMenu = throttle((e) => {
+        e.preventDefault();
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        // 批量DOM操作
+        requestAnimationFrame(() => {
+          mobileMenu.classList.toggle('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+          
+          if (openIcon && closeIcon) {
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+          }
+        });
+      }, 100);
+
+      mobileMenuButton.addEventListener('click', toggleMenu);
+      
+      // 点击链接关闭菜单 - 使用事件委托
+      mobileMenu.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+          requestAnimationFrame(() => {
+            mobileMenu.classList.add('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', 'false');
+            if (openIcon && closeIcon) {
+              openIcon.classList.remove('hidden');
+              closeIcon.classList.add('hidden');
+            }
+          });
+        }
+      });
+    }
+
+    // 优化的滚动头部处理
+    function initScrollHeader() {
+      mainHeader = document.getElementById('main-header');
+      navMenu = document.getElementById('nav-menu');
+      
+      if (!mainHeader || !navMenu) return;
+      
+      lastScrollY = window.scrollY;
+      const headerHeight = mainHeader.offsetHeight;
+      
+      // 节流的滚动处理函数
+      const handleScroll = throttle(() => {
+        if (!mainHeader || !navMenu) return;
+        
+        const currentScrollY = window.scrollY;
+        
+        // 避免不必要的计算
+        if (Math.abs(currentScrollY - lastScrollY) < 5) return;
+        
+        // 批量DOM更新
+        requestAnimationFrame(() => {
+          if (currentScrollY > headerHeight && !isMenuFixed) {
+            // 固定菜单
+            Object.assign(navMenu.style, {
+              transition: 'none',
+              position: 'fixed',
+              top: '0',
+              left: '0',
+              right: '0',
+              zIndex: '50',
+              width: '100%',
+              transform: 'translateY(-100%)'
+            });
+            
+            mainHeader.style.display = 'none';
+            
+            // 触发滑入动画
+            navMenu.offsetHeight; // 强制重绘
+            navMenu.style.transition = 'transform 0.3s ease-in-out';
+            navMenu.style.transform = 'translateY(0)';
+            
+            isMenuFixed = true;
+          } else if (currentScrollY <= headerHeight && isMenuFixed) {
+            // 恢复正常布局
+            mainHeader.style.display = 'block';
+            
+            Object.assign(navMenu.style, {
+              transition: 'none',
+              position: 'relative',
+              top: 'auto',
+              left: 'auto',
+              right: 'auto',
+              width: 'auto',
+              transform: 'translateY(0)'
+            });
+            
+            // 恢复过渡
+            requestAnimationFrame(() => {
+              navMenu.style.transition = 'transform 0.3s ease-in-out';
+            });
+            
+            isMenuFixed = false;
+          }
+        });
+        
+        lastScrollY = currentScrollY;
+      }, 16); // 约60fps
+
+      // 优化的滚动监听
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      
+      // 初始状态检查
+      handleScroll();
+    }
+
+    // 页面可见性优化
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        // 页面隐藏时暂停不必要的操作
+        isScrolling = false;
+      }
+    }
+
+    // 移动端语言选择器功能
+    function initMobileLanguageSelector() {
+      const mobileLanguageSelector = document.getElementById('mobile-language-selector');
+      
+      if (mobileLanguageSelector) {
+        // 初始化当前语言
+        const currentPath = window.location.pathname;
+        const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+        const currentLang = langMatch ? langMatch[1] : 'en';
+        
+        // 设置当前选中的语言
+        mobileLanguageSelector.value = currentLang;
+        
+        // 监听语言切换
+        mobileLanguageSelector.addEventListener('change', (e) => {
+          const selectedLang = e.target.value;
+          const currentPath = window.location.pathname;
+          
+          // 构建新的语言路径
+          let newPath = '';
+          
+          // 检查当前路径是否已经是多语言路径
+          const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+          
+          if (langMatch) {
+            // 当前是多语言路径，替换语言部分
+            newPath = currentPath.replace(/^\/([a-z]{2}(-[a-z]{2,4})?)\//, `/${selectedLang}/`);
+          } else {
+            // 当前不是多语言路径，添加语言前缀
+            if (currentPath === '/' || currentPath === '') {
+              newPath = `/${selectedLang}/`;
+            } else {
+              newPath = `/${selectedLang}${currentPath}`;
+            }
+          }
+          
+          // 跳转到新语言页面
+          window.location.href = newPath;
+        });
+      }
+    }
+
+    // 初始化函数
+    function init() {
+      initMobileMenu();
+      initScrollHeader();
+      initMobileLanguageSelector();
+      
+      // 添加页面可见性监听
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+
+    // DOM就绪后初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script> 
