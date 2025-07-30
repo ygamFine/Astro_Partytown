@@ -15,7 +15,14 @@ interface Props {
   translations?: any; // 添加翻译参数
 }
 
-const { items, itemsPerRow = 4, maxRows = 4, mode = 'product', translations = {} } = Astro.props;
+// 导入主题配置
+import { themeConfig } from '../../../config/theme.js';
+
+// 根据侧边栏显示状态动态调整列数
+const sidebarVisible = themeConfig.layout.sidebar.visible;
+const defaultItemsPerRow = sidebarVisible ? 3 : 4;
+
+const { items, itemsPerRow = defaultItemsPerRow, maxRows = 4, mode = 'product', translations = {} } = Astro.props;
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
 

@@ -1,17 +1,4 @@
 ---
-interface Props {
-  title: string;
-  description?: string;
-  breadcrumbs: Array<{
-    label: string;
-    href?: string;
-  }>;
-  currentSection: 'products' | 'news' | 'cases';
-  contentType?: 'grid' | 'list';
-  lang?: string;
-  pageType?: string;
-}
-
 const { 
   title, 
   description, 
@@ -19,7 +6,9 @@ const {
   currentSection, 
   contentType = 'grid',
   lang,
-  pageType = 'home'
+  pageType = 'home',
+  listDescription,
+  showListDescription = false
 } = Astro.props;
 
 import Layout from '../../../layouts/Layout.astro';
@@ -42,9 +31,6 @@ const pageWidth = getPageWidth();
       <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
         <div class="text-center">
           <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">{title}</h1>
-          {description && (
-            <p class="text-xl opacity-90">{description}</p>
-          )}
         </div>
       </div>
     </section>
@@ -70,6 +56,21 @@ const pageWidth = getPageWidth();
 
           {/* 根据侧边栏显示状态调整内容区域宽度 */}
           <div class={themeConfig.layout.sidebar.visible ? "lg:w-3/4" : "w-full"}>
+            <!-- 内容区域标题 -->
+            <div class="mb-8">
+              <h1 class="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
+              
+              {/* 列表描述内容 - 标题下方模式 */}
+              {themeConfig.layout.listDescription.displayMode === 'below-title' && 
+               showListDescription && listDescription && (
+                <div class="mb-6">
+                  <p class="text-lg text-gray-600 leading-relaxed">
+                    {listDescription}
+                  </p>
+                </div>
+              )}
+            </div>
+            
             <!-- Content Slot -->
             <div class={`content-area ${contentType}`}>
               <slot />

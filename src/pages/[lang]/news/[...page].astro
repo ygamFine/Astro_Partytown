@@ -8,6 +8,7 @@ import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getNews } from '../../../lib/strapi.js';
 import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
 import { processNewsData, loadTranslations, generateBreadcrumbs } from '../../../lib/dataProcessor.js';
+import { themeConfig } from '../../../config/theme.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
@@ -35,13 +36,15 @@ const breadcrumbs = generateBreadcrumbs(lang, 'news', actualCurrentPage > 1 ? ac
 ---
 
 <SecondaryPageLayout 
-  title={translations.news.news.title}
+  title={translations.news.news.title || "News"}
   description={translations.news.news.description}
   breadcrumbs={breadcrumbs}
   currentSection="news"
   contentType="list"
   lang={lang}
   pageType="news"
+  listDescription="及时了解公司最新动态、行业资讯、产品更新和技术创新。我们致力于为客户提供最前沿的工程机械解决方案，推动行业发展。"
+  showListDescription={true}
 >
   {newsItems.length > 0 ? (
     <>
@@ -51,6 +54,15 @@ const breadcrumbs = generateBreadcrumbs(lang, 'news', actualCurrentPage > 1 ? ac
         lang={lang}
         t={translations.news}
       />
+      
+      {/* 列表描述内容 - 分页上方模式 */}
+      {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+        <div class="mt-8 mb-6">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            及时了解公司最新动态、行业资讯、产品更新和技术创新。我们致力于为客户提供最前沿的工程机械解决方案，推动行业发展。
+          </p>
+        </div>
+      )}
       
       <!-- 分页 -->
       <Pagination 

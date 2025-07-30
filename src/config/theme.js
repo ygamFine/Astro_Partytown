@@ -129,6 +129,14 @@ export const themeConfig = {
       
       // 是否允许同时展开多个菜单
       allowMultipleOpen: false
+    },
+
+    // 列表描述内容配置
+    listDescription: {
+      // 展示模式：'below-title' | 'above-pagination'
+      // below-title: H1标题下方
+      // above-pagination: 列表底部，分页上方
+      displayMode: 'above-pagination'
     }
   }
 };

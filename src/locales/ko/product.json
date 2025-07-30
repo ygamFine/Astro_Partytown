@@ -4,6 +4,7 @@
     "products": "제품"
   },
   "product": {
+    "title": "제품",
     "advantages": "제품의 장점",
     "advantages_list": [
       "고효율 및 에너지 절약, 뛰어난 성능",

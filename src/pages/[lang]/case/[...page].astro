@@ -9,6 +9,7 @@ import { getCases } from '../../../lib/strapi.js';
 import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
 import { processCaseData, loadTranslations, generateBreadcrumbs } from '../../../lib/dataProcessor.js';
 import { loadImageMapping } from '../../../lib/imageProcessor.js';
+import { themeConfig } from '../../../config/theme.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
@@ -39,13 +40,15 @@ const breadcrumbs = generateBreadcrumbs(lang, 'case', actualCurrentPage > 1 ? ac
 ---
 
 <SecondaryPageLayout 
-  title={translations.case.case.title}
+  title={translations.case.case.title || "Cases"}
   description={translations.case.case.description}
   breadcrumbs={breadcrumbs}
   currentSection="cases"
   contentType="grid"
   lang={lang}
   pageType="cases"
+  listDescription="展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。每个案例都体现了我们产品的卓越性能和可靠品质。"
+  showListDescription={true}
 >
   {gridItems.length > 0 ? (
     <>
@@ -57,6 +60,15 @@ const breadcrumbs = generateBreadcrumbs(lang, 'case', actualCurrentPage > 1 ? ac
     mode="case"
         translations={{ common: translations.common }}
   />
+  
+  {/* 列表描述内容 - 分页上方模式 */}
+  {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+    <div class="mt-8 mb-6">
+      <p class="text-lg text-gray-600 leading-relaxed">
+        展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。每个案例都体现了我们产品的卓越性能和可靠品质。
+      </p>
+    </div>
+  )}
   
   <!-- 分页 -->
   <Pagination 

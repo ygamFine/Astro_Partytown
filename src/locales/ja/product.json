@@ -4,6 +4,7 @@
     "products": "製品"
   },
   "product": {
+    "title": "製品",
     "advantages": "製品の利点",
     "advantages_list": [
       "高効率・省エネ、優れた性能",

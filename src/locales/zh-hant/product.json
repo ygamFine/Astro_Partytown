@@ -4,6 +4,7 @@
     "products": "產品中心"
   },
   "product": {
+    "title": "產品中心",
     "advantages": "產品優勢",
     "advantages_list": [
       "高效節能，性能卓越",

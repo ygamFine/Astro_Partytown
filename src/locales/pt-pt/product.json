@@ -4,6 +4,7 @@
     "products": "Produtos"
   },
   "product": {
+    "title": "Produtos",
     "advantages": "Vantagens do Produto",
     "advantages_list": [
       "Alta eficiência e economia de energia, desempenho excelente",

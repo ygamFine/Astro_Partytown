@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 
 // 加载翻译文件
-const translations = await loadTranslations(lang, ['pagination', 'common']) as any;
+const translations = await loadTranslations(lang, ['pagination', 'common', 'product']) as any;
 
 // 获取产品数据
 const products = await getProducts(lang);
@@ -31,8 +31,12 @@ const products = await getProducts(lang);
 // 加载图片映射
 const imageMapping = await loadImageMapping();
 
-// 分页配置
-const itemsPerPage = 16; // 每页显示16个产品（4行x4列）
+// 导入主题配置
+import { themeConfig } from '../../config/theme.js';
+
+// 根据侧边栏显示状态动态调整每页显示数量
+const sidebarVisible = themeConfig.layout.sidebar.visible;
+const itemsPerPage = sidebarVisible ? 12 : 16; // 侧边栏显示时12个（3x4），隐藏时16个（4x4）
 const pagination = calculatePagination(products, itemsPerPage, 1);
 
 // 处理产品数据
@@ -46,23 +50,34 @@ const breadcrumbs = generateBreadcrumbs(lang, 'products').map(item => ({
 ---
 
 <SecondaryPageLayout 
-  title="Products"
+  title={translations.product?.product?.title || "Products"}
   description="Explore our comprehensive range of construction machinery"
   breadcrumbs={breadcrumbs}
   currentSection="products"
   contentType="grid"
   lang={lang}
   pageType="products"
+  listDescription="我们提供专业的工程机械产品，包括滑移装载机、反铲装载机、伸缩臂装载机等多种类型，满足不同施工需求。所有产品均采用先进技术，确保高效、安全、可靠的作业性能。"
+  showListDescription={true}
 >
   {pagination.hasItems ? (
     <>
       <!-- 产品网格 -->
       <GridList 
         items={gridItems}
-        itemsPerRow={4}
-        maxRows={4}
+        itemsPerRow={sidebarVisible ? 3 : 4}
+        maxRows={sidebarVisible ? 4 : 4}
         translations={translations}
       />
+      
+      {/* 列表描述内容 - 分页上方模式 */}
+      {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+        <div class="mt-8 mb-6">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            我们提供专业的工程机械产品，包括滑移装载机、反铲装载机、伸缩臂装载机等多种类型，满足不同施工需求。所有产品均采用先进技术，确保高效、安全、可靠的作业性能。
+          </p>
+        </div>
+      )}
       
       <!-- 分页 -->
       <Pagination 
