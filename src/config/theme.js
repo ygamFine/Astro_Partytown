@@ -105,6 +105,27 @@ export const themeConfig = {
         // 默认使用 followHomePage 的默认宽度
         return themeConfig.layout.followHomePage.defaultWidth;
       }
+    },
+
+    // 侧边栏展示模式配置
+    sidebar: {
+      // 展示模式：'current-top' | 'fixed-order' | 'current-only'
+      // current-top: 当前菜单项置顶显示
+      // fixed-order: 固定菜单顺序（产品、案例、新闻）
+      // current-only: 只显示当前模块菜单
+      displayMode: 'current-top',
+      
+      // 固定顺序模式下的菜单顺序
+      fixedOrder: ['products', 'cases', 'news'],
+      
+      // 是否显示菜单项数量
+      showCount: true,
+      
+      // 是否默认展开当前菜单
+      autoExpandCurrent: true,
+      
+      // 是否允许同时展开多个菜单
+      allowMultipleOpen: false
     }
   }
 };

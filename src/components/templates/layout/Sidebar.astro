@@ -6,6 +6,12 @@ interface Props {
 const { currentSection } = Astro.props;
 const currentPath = Astro.url.pathname;
 
+// 导入主题配置
+import { themeConfig } from '../../../config/theme.js';
+
+// 获取侧边栏配置
+const sidebarConfig = themeConfig.layout.sidebar;
+
 // 定义三个主要菜单项
 const menuItems = [
   {
@@ -53,19 +59,54 @@ const menuItems = [
   }
 ];
 
-// 根据当前页面类型动态排序菜单项，把当前激活的菜单项放在第一位
-const sortedMenuItems = [...menuItems].sort((a, b) => {
-  if (a.id === currentSection) return -1;
-  if (b.id === currentSection) return 1;
-  return 0;
-});
+// 根据配置模式处理菜单项
+const getProcessedMenuItems = () => {
+  const { displayMode, fixedOrder, autoExpandCurrent } = sidebarConfig;
+  
+  // 为每个菜单项添加状态信息
+  const allMenuItems = menuItems.map(menu => ({
+    ...menu,
+    isActive: menu.id === currentSection,
+    defaultOpen: autoExpandCurrent && menu.id === currentSection
+  }));
 
-// 为每个菜单项添加状态信息
-const accordionMenus = sortedMenuItems.map(menu => ({
-  ...menu,
-  isActive: menu.id === currentSection,
-  defaultOpen: menu.id === currentSection
-}));
+  switch (displayMode) {
+    case 'current-top':
+      // 当前菜单项置顶显示
+      return [...allMenuItems].sort((a, b) => {
+        if (a.id === currentSection) return -1;
+        if (b.id === currentSection) return 1;
+        return 0;
+      });
+      
+    case 'fixed-order':
+      // 固定菜单顺序
+      const orderedItems = [];
+      const remainingItems = [...allMenuItems];
+      
+      // 按照固定顺序排列
+      fixedOrder.forEach(id => {
+        const item = remainingItems.find(item => item.id === id);
+        if (item) {
+          orderedItems.push(item);
+          remainingItems.splice(remainingItems.indexOf(item), 1);
+        }
+      });
+      
+      // 添加剩余项目
+      orderedItems.push(...remainingItems);
+      return orderedItems;
+      
+    case 'current-only':
+      // 只显示当前模块菜单
+      return allMenuItems.filter(item => item.id === currentSection);
+      
+    default:
+      return allMenuItems;
+  }
+};
+
+const accordionMenus = getProcessedMenuItems();
 ---
 
 <aside class="accordion-sidebar bg-white rounded-lg shadow-lg overflow-hidden">
@@ -116,7 +157,9 @@ const accordionMenus = sortedMenuItems.map(menu => ({
                   class={`accordion-link ${currentPath === item.href ? 'active' : ''}`}
                 >
                   <span class="flex-1">{item.label}</span>
-                  <span class="accordion-count">({item.count})</span>
+                  {sidebarConfig.showCount && (
+                    <span class="accordion-count">({item.count})</span>
+                  )}
                 </a>
               </li>
             ))}
@@ -131,6 +174,7 @@ const accordionMenus = sortedMenuItems.map(menu => ({
   // 手风琴功能实现
   function initAccordion() {
     const accordionButtons = document.querySelectorAll('.accordion-toggle-btn');
+    const { allowMultipleOpen } = JSON.parse(document.querySelector('script[data-sidebar-config]')?.textContent || '{}');
     
     accordionButtons.forEach(button => {
       button.addEventListener('click', function(event) {
@@ -145,6 +189,23 @@ const accordionMenus = sortedMenuItems.map(menu => ({
         if (!content || !chevron) return;
         
         const isOpen = content.classList.contains('accordion-open');
+        
+        // 如果不允许同时展开多个菜单，先关闭其他菜单
+        if (!allowMultipleOpen && !isOpen) {
+          accordionButtons.forEach(otherButton => {
+            if (otherButton !== button) {
+              const otherSectionId = otherButton.getAttribute('data-accordion-toggle');
+              const otherContent = document.querySelector(`[data-accordion-content="${otherSectionId}"]`) as HTMLElement;
+              const otherChevron = otherButton.querySelector('.accordion-chevron') as HTMLElement;
+              
+              if (otherContent && otherChevron) {
+                otherContent.classList.remove('accordion-open');
+                otherButton.setAttribute('aria-expanded', 'false');
+                otherChevron.style.transform = 'rotate(0deg)';
+              }
+            }
+          });
+        }
         
         // 切换展开/折叠状态
         if (isOpen) {
@@ -179,6 +240,13 @@ const accordionMenus = sortedMenuItems.map(menu => ({
   
   // 页面加载完成后初始化
   document.addEventListener('DOMContentLoaded', initAccordion);
+</script>
+
+<!-- 传递配置到客户端 -->
+<script data-sidebar-config type="application/json">
+  {
+    "allowMultipleOpen": ${sidebarConfig.allowMultipleOpen}
+  }
 </script>
 
 <style>
