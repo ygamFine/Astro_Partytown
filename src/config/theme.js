@@ -109,11 +109,14 @@ export const themeConfig = {
 
     // 侧边栏展示模式配置
     sidebar: {
+      // 是否显示侧边栏
+      visible: true,
+      
       // 展示模式：'current-top' | 'fixed-order' | 'current-only'
       // current-top: 当前菜单项置顶显示
       // fixed-order: 固定菜单顺序（产品、案例、新闻）
       // current-only: 只显示当前模块菜单
-      displayMode: 'current-top',
+      displayMode: 'current-only',
       
       // 固定顺序模式下的菜单顺序
       fixedOrder: ['products', 'cases', 'news'],

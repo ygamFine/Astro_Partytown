@@ -74,11 +74,11 @@ const getProcessedMenuItems = () => {
     case 'current-top':
       // 当前菜单项置顶显示
       return [...allMenuItems].sort((a, b) => {
-        if (a.id === currentSection) return -1;
-        if (b.id === currentSection) return 1;
-        return 0;
-      });
-      
+  if (a.id === currentSection) return -1;
+  if (b.id === currentSection) return 1;
+  return 0;
+});
+
     case 'fixed-order':
       // 固定菜单顺序
       const orderedItems = [];
@@ -158,7 +158,7 @@ const accordionMenus = getProcessedMenuItems();
                 >
                   <span class="flex-1">{item.label}</span>
                   {sidebarConfig.showCount && (
-                    <span class="accordion-count">({item.count})</span>
+                  <span class="accordion-count">({item.count})</span>
                   )}
                 </a>
               </li>

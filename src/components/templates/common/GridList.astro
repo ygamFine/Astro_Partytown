@@ -15,7 +15,7 @@ interface Props {
   translations?: any; // 添加翻译参数
 }
 
-const { items, itemsPerRow = 3, maxRows = 4, mode = 'product', translations = {} } = Astro.props;
+const { items, itemsPerRow = 4, maxRows = 4, mode = 'product', translations = {} } = Astro.props;
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
 

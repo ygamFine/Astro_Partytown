@@ -32,7 +32,7 @@ const products = await getProducts(lang);
 const imageMapping = await loadImageMapping();
 
 // 分页配置
-const itemsPerPage = 9; // 每页显示9个产品（3行x3列）
+const itemsPerPage = 16; // 每页显示16个产品（4行x4列）
 const pagination = calculatePagination(products, itemsPerPage, 1);
 
 // 处理产品数据
@@ -59,8 +59,8 @@ const breadcrumbs = generateBreadcrumbs(lang, 'products').map(item => ({
       <!-- 产品网格 -->
       <GridList 
         items={gridItems}
-        itemsPerRow={3}
-        maxRows={3}
+        itemsPerRow={4}
+        maxRows={4}
         translations={translations}
       />
       

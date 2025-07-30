@@ -60,13 +60,16 @@ const pageWidth = getPageWidth();
     <section class="py-12 bg-white">
       <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
         <div class="flex flex-col lg:flex-row gap-8">
-          <!-- Left Sidebar -->
-          <div class="lg:w-1/4">
-            <Sidebar currentSection={currentSection} />
-          </div>
+          {/* 根据配置决定是否显示侧边栏 */}
+          {themeConfig.layout.sidebar.visible && (
+            <!-- Left Sidebar -->
+            <div class="lg:w-1/4">
+              <Sidebar currentSection={currentSection} />
+            </div>
+          )}
 
-          <!-- Right Content Area -->
-          <div class="lg:w-3/4">
+          {/* 根据侧边栏显示状态调整内容区域宽度 */}
+          <div class={themeConfig.layout.sidebar.visible ? "lg:w-3/4" : "w-full"}>
             <!-- Content Slot -->
             <div class={`content-area ${contentType}`}>
               <slot />
