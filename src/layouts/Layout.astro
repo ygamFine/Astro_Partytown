@@ -2,6 +2,7 @@
 import Header from "../components/common/layout/Header.astro";
 import FooterSection from "../components/common/layout/FooterSection.astro";
 import GTMLoader from "../components/common/analytics/GTMLoader.astro";
+import RightSidebar from "../components/common/RightSidebar.astro";
 
 export interface Props {
   title: string;
@@ -469,6 +470,9 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <main id="main-content">
       <slot />
     </main>
+
+    <!-- 全局右侧侧边栏 -->
+    <RightSidebar lang={lang} />
 
 
     <!-- 大幅延迟客服脚本加载 -->
