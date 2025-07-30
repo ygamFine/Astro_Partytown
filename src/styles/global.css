@@ -217,23 +217,7 @@ input, textarea, select {
 }
 
 /* 响应式容器 */
-@media (min-width: 1200px) {
-    .container {
-    max-width: 1200px;
-    }
-}
-
-@media (min-width: 1500px) {
-    .container {
-    max-width: 1400px;
-    }
-}
-
-@media (min-width: 1700px) {
-    body .container {
-    max-width: 1600px;
-    }
-  }
+/* 容器宽度现在由主题配置动态控制，移除硬编码的媒体查询 */
 
 /* 富文本内容样式 - 使用更强的选择器覆盖 Tailwind */
 .rich-text-content,

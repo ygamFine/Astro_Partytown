@@ -6,6 +6,7 @@ import GlobalSearch from '../../components/templates/common/GlobalSearch.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { loadTranslations } from '../../lib/dataProcessor.js';
 import { generateSearchBreadcrumbs } from '../../lib/breadcrumbUtils.js';
+import { themeConfig } from '../../config/theme.js';
 
 // 只为配置中启用的语言生成静态路径
 export async function getStaticPaths() {
@@ -24,13 +25,20 @@ const breadcrumbT = translations.breadcrumb || {};
 
 // 面包屑导航
 const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
+
+// 获取页面宽度配置
+const getPageWidth = () => {
+  return themeConfig.layout.dynamicWidth.getPageWidth('search');
+};
+
+const pageWidth = getPageWidth();
 ---
 
-<Layout title="搜索" description="全站搜索功能" lang={lang}>
+<Layout title="搜索" description="全站搜索功能" lang={lang} pageType="search">
   <div class="min-h-screen bg-gray-50">
     <!-- 页面头部 -->
     <div class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8" style={`max-width: ${pageWidth}`}>
         <div class="text-center">
           <h1 class="text-3xl font-bold text-gray-900 mb-4">
             {searchQuery ? `搜索: "${searchQuery}"` : '全站搜索'}
@@ -48,7 +56,7 @@ const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
     </div>
 
     <!-- 搜索结果区域 -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8" style={`max-width: ${pageWidth}`}>
       <div id="search-results-container">
         {searchQuery ? (
           <div class="text-center py-12">

@@ -3,18 +3,28 @@ import Header from "../components/common/layout/Header.astro";
 import FooterSection from "../components/common/layout/FooterSection.astro";
 import GTMLoader from "../components/common/analytics/GTMLoader.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
+import { themeConfig } from "../config/theme.js";
 
 export interface Props {
   title: string;
   description?: string;
   lang?: string;
+  pageType?: string;
 }
 
 const {
   title,
   description = "山东永安建设机械集团有限公司 - 专业工程机械制造商",
   lang = "zh-CN",
+  pageType = "home",
 } = Astro.props;
+
+// 获取页面宽度配置
+const getPageWidth = () => {
+  return themeConfig.layout.dynamicWidth.getPageWidth(pageType);
+};
+
+const pageWidth = getPageWidth();
 
 // RTL 语言列表
 const RTL_LANGUAGES = ['ar'];
@@ -222,7 +232,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       
       /* 核心布局 - 首屏必需 */
       .container {
-        max-width: 80rem;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 0 1rem;
         width: 100%;

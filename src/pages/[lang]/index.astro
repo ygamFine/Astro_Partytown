@@ -11,6 +11,7 @@ import HotRecommendedProducts from '../../components/HotRecommendedProducts.astr
 import StatsSection from '../../components/StatsSection.astro';
 
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
+import { themeConfig } from '../../config/theme.js';
 
 // 只为配置中启用的语言生成路由
 export async function getStaticPaths() {
@@ -23,19 +24,27 @@ export async function getStaticPaths() {
 
 const { locale } = Astro.props;
 const lang = locale;
+
+// 获取页面宽度配置
+const getPageWidth = () => {
+  return themeConfig.layout.dynamicWidth.getPageWidth('home');
+};
+
+const pageWidth = getPageWidth();
 ---
 
 
-<Layout title="专业滑移装载机制造商" lang={lang}>
+<Layout title="专业滑移装载机制造商" lang={lang} pageType="home">
 	<main>
 		<FullScreenBanner />
-		<HeroShowcase />
-		<ProductShowcase />
-		<StatsSection />
-		<HotRecommendedProducts />
-		<CustomerNeeds />
-		<CustomerCases />
-		<NewsCenter />
-
+		<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
+			<HeroShowcase />
+			<ProductShowcase />
+			<StatsSection />
+			<HotRecommendedProducts />
+			<CustomerNeeds />
+			<CustomerCases />
+			<NewsCenter />
+		</div>
 	</main>
 </Layout>

@@ -5,6 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { mergeTranslations } from '../../locales/i18n.js';
 import { generateAboutBreadcrumbs } from '../../lib/breadcrumbUtils.js';
+import { themeConfig } from '../../config/theme.js';
 
 // 只为配置中启用的语言生成静态路径
 export async function getStaticPaths() {
@@ -22,13 +23,20 @@ const breadcrumbT = (translations as any).breadcrumb || {};
 
 // 面包屑导航
 const breadcrumbs = generateAboutBreadcrumbs(lang);
+
+// 获取页面宽度配置
+const getPageWidth = () => {
+  return themeConfig.layout.dynamicWidth.getPageWidth('about');
+};
+
+const pageWidth = getPageWidth();
 ---
 
-<Layout title="关于我们" description="山东永安建设机械集团有限公司 - 专业工程机械制造商" lang={lang}>
+<Layout title="关于我们" description="山东永安建设机械集团有限公司 - 专业工程机械制造商" lang={lang} pageType="about">
   <div class="min-h-screen bg-gray-50">
     <!-- 页面头部 -->
     <div class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="mx-auto px-4 sm:px-6 lg:px-8 py-16" style={`max-width: ${pageWidth}`}>
         <div class="text-center">
           <h1 class="text-4xl font-bold text-gray-900 mb-6">关于我们</h1>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -39,7 +47,7 @@ const breadcrumbs = generateAboutBreadcrumbs(lang);
     </div>
 
     <!-- 公司介绍 -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-16" style={`max-width: ${pageWidth}`}>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <h2 class="text-3xl font-bold text-gray-900 mb-6">公司简介</h2>
@@ -70,7 +78,7 @@ const breadcrumbs = generateAboutBreadcrumbs(lang);
 
     <!-- 核心优势 -->
     <div class="bg-white py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto px-4 sm:px-6 lg:px-8" style={`max-width: ${pageWidth}`}>
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold text-gray-900 mb-4">核心优势</h2>
           <p class="text-xl text-gray-600">我们的专业优势和服务承诺</p>
