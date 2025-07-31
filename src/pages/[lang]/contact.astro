@@ -125,12 +125,20 @@ const pageWidth = getPageWidth();
           <!-- 快速联系按钮 -->
           <div class="mt-8">
             <h3 class="text-xl font-semibold text-gray-900 mb-4">快速联系</h3>
-            <ContactButtons t={{
-              contactNow: "立即联系",
-              email: "发送邮件",
-              telephone: "拨打电话",
-              whatsapp: "WhatsApp"
-            }} />
+            <ContactButtons 
+              t={{
+                contactNow: "立即联系",
+                email: "发送邮件",
+                telephone: "拨打电话",
+                whatsapp: "WhatsApp",
+                downloadPdf: "下载产品目录"
+              }}
+              showContactNow={themeConfig.layout.contactButtons.showContactNow}
+              showDownloadPdf={themeConfig.layout.contactButtons.showDownloadPdf}
+              showEmail={themeConfig.layout.contactButtons.showEmail}
+              showTelephone={themeConfig.layout.contactButtons.showTelephone}
+              showWhatsapp={themeConfig.layout.contactButtons.showWhatsapp}
+            />
           </div>
         </div>
 

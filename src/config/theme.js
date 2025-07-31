@@ -164,7 +164,51 @@ export const themeConfig = {
         hoverEffect: 'lift',      // 悬停效果：'lift' | 'scale' | 'none'
         imageAspectRatio: '16/9'  // 图片宽高比
       }
-    }
+    },
+
+                // 联系按钮配置
+            contactButtons: {
+              showContactNow: true,    // 显示立即联系按钮
+              showDownloadPdf: true,   // 显示下载PDF按钮
+              showEmail: true,         // 显示邮件按钮
+              showTelephone: true,     // 显示电话按钮
+              showWhatsapp: true,      // 显示WhatsApp按钮
+
+              // PDF文件配置
+              pdfConfig: {
+                url: '/catalog.pdf',    // PDF文件路径
+                filename: 'catalog.pdf' // 下载文件名
+              }
+            },
+
+            // 产品详情页配置
+            productDetail: {
+              // 价格和购物车配置
+              pricing: {
+                showPricing: true,           // 显示价格区域
+                showMultiplePrices: true,    // 显示多币种价格
+                showAddToCart: true,         // 显示加入购物车按钮
+                
+                // 价格配置
+                priceConfig: {
+                  currency: 'USD',           // 默认货币符号
+                  
+                  // 多币种配置
+                  currencies: {
+                    USD: { symbol: '$', rate: 1.0 },
+                    CNY: { symbol: '¥', rate: 7.16 },
+                    EUR: { symbol: '€', rate: 0.92 },
+                    GBP: { symbol: '£', rate: 0.82 },
+                    JPY: { symbol: '¥', rate: 143.20 },
+                    KRW: { symbol: '₩', rate: 1314.00 },
+                    INR: { symbol: '₹', rate: 82.00 },
+                    CAD: { symbol: 'CA$', rate: 1.35 },
+                    AUD: { symbol: 'A$', rate: 1.50 },
+                    NZD: { symbol: 'NZ$', rate: 1.50 }
+                  }
+                }
+              }
+            }
   }
 };
 

@@ -231,6 +231,7 @@
   "product_card": {
     "get_quote": "获取详细报价和技术参数",
     "contact_now": "立即联系",
+    "download_pdf": "下载产品目录",
     "add_to_cart": "加入购物车"
   }
 }

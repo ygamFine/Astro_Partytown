@@ -231,6 +231,7 @@
   "product_card": {
     "get_quote": "Get detailed quote and technical parameters",
     "contact_now": "Contact Now",
+    "download_pdf": "Download Catalog",
     "add_to_cart": "Add to Cart"
   }
 }

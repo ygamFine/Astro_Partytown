@@ -9,6 +9,7 @@ import { getNews } from '../../../lib/strapi.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
+import { themeConfig } from '../../../config/theme.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -297,10 +298,53 @@ const images: string[] = processImages(product.image);
               </div>
             </div>
 
+            <!-- 价格和购物车区域 -->
+            {themeConfig.layout.productDetail.pricing.showPricing && (
+              <div class="bg-gray-50 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">产品价格</h3>
+                
+                {/* 多币种价格展示 */}
+                {themeConfig.layout.productDetail.pricing.showMultiplePrices && (
+                  <div class="grid grid-cols-5 gap-2 mb-4">
+                    {Object.entries(themeConfig.layout.productDetail.pricing.priceConfig.currencies).map(([currency, config]) => (
+                      <div class="p-2 bg-white rounded border text-center">
+                        <div class="text-xs text-gray-600 mb-1">{currency}</div>
+                        <span class="text-lg font-bold text-red-600">{config.symbol}1,299</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+
+                
+                {/* 加入购物车按钮 */}
+                {themeConfig.layout.productDetail.pricing.showAddToCart && (
+                  <div class="flex justify-start">
+                    <button 
+                      class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 flex items-center gap-2"
+                      onclick="addToCart()"
+                    >
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                      </svg>
+                      加入购物车
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <!-- 联系方式按钮 -->
             <div class="bg-gray-50 rounded-lg p-4">
               <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">{t.product.contact_us}</h3>
-              <ContactButtons t={t.button} />
+              <ContactButtons 
+                t={t.button}
+                showContactNow={themeConfig.layout.contactButtons.showContactNow}
+                showDownloadPdf={themeConfig.layout.contactButtons.showDownloadPdf}
+                showEmail={themeConfig.layout.contactButtons.showEmail}
+                showTelephone={themeConfig.layout.contactButtons.showTelephone}
+                showWhatsapp={themeConfig.layout.contactButtons.showWhatsapp}
+              />
             </div>
             
             <!-- 分享功能 -->
@@ -1259,6 +1303,28 @@ const images: string[] = processImages(product.image);
         }, 1500);
       });
     });
+
+    // 购物车功能
+    // 加入购物车函数
+    window.addToCart = function() {
+      // 显示成功提示
+      const button = event?.target as HTMLButtonElement;
+      if (button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
+        button.style.backgroundColor = '#10b981';
+        
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.style.backgroundColor = '';
+        }, 2000);
+      }
+      
+      // 这里可以添加实际的购物车逻辑
+      console.log('已添加产品到购物车');
+    };
+
+
   </script>
 
   <style>
