@@ -15,6 +15,8 @@ export function processProductData(products, lang, imageMapping) {
     image: processImage(product.image, imageMapping),
     excerpt: product.excerpt,
     category: product.category,
+    price: product.price || null, // 添加价格字段
+    advantages: product.advantages || product.advantages_list || [], // 添加优势字段
     href: `/${lang}/products/${product.slug}`
   }));
 }

@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Dapatkan sebut harga terperinci dan parameter teknikal",
-    "contact_now": "Hubungi sekarang"
+    "contact_now": "Hubungi sekarang",
+    "add_to_cart": "Tambah ke troli"
   }
 }

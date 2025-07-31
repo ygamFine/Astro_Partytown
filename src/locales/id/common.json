@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Dapatkan penawaran detail dan parameter teknis",
-    "contact_now": "Hubungi sekarang"
+    "contact_now": "Hubungi sekarang",
+    "add_to_cart": "Tambah ke keranjang"
   }
 }

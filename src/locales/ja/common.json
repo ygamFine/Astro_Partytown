@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "詳細な見積もりと技術仕様を取得",
-    "contact_now": "今すぐ連絡"
+    "contact_now": "今すぐ連絡",
+    "add_to_cart": "カートに追加"
   }
 }

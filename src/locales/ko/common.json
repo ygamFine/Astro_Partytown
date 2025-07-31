@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "상세 견적 및 기술 매개변수 받기",
-    "contact_now": "지금 연락하기"
+    "contact_now": "지금 연락하기",
+    "add_to_cart": "장바구니에 추가"
   }
 }

@@ -3,6 +3,7 @@ import Header from "../components/common/layout/Header.astro";
 import FooterSection from "../components/common/layout/FooterSection.astro";
 import GTMLoader from "../components/common/analytics/GTMLoader.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
+import ContactModal from "../components/common/contact/ContactModal.astro";
 import { themeConfig } from "../config/theme.js";
 
 export interface Props {
@@ -483,6 +484,9 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <!-- 全局右侧侧边栏 -->
     <RightSidebar lang={lang} />
+
+    <!-- 联系表单模态 -->
+    <ContactModal translations={{ common: {} }} />
 
 
     <!-- 大幅延迟客服脚本加载 -->

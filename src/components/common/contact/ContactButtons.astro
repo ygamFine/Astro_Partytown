@@ -30,15 +30,18 @@ const texts = {
 
 <div class="contact-buttons-container">
   <div class="flex flex-wrap gap-4 justify-center">
-    <!-- Contact Now 按钮 -->
-    <a href="/contact" 
-       class="contact-btn bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 flex items-center gap-3 transition-colors duration-300 min-w-[200px] justify-center">
+    <!-- Contact Now 按钮 - 修改为触发模态框 -->
+    <button 
+       type="button"
+       class="contact-btn bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 flex items-center gap-3 transition-colors duration-300 min-w-[200px] justify-center"
+       onclick="openContactModal()"
+    >
       <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
       </svg>
       {texts.contactNow}
-    </a>
+    </button>
 
     <!-- E-Mail 按钮 -->
     <a href="mailto:leiyang0501@163.com" 

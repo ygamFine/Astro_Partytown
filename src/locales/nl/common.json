@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Ontvang gedetailleerde offerte en technische parameters",
-    "contact_now": "Nu contact opnemen"
+    "contact_now": "Nu contact opnemen",
+    "add_to_cart": "Toevoegen aan winkelwagen"
   }
 }

@@ -8,6 +8,8 @@ interface Props {
     excerpt?: string;
     category?: string;
     href: string;
+    price?: string; // 添加价格字段
+    advantages?: string[]; // 添加优势字段
   }>;
   itemsPerRow?: number;
   maxRows?: number;
@@ -38,12 +40,15 @@ const validItems = displayItems.filter(item => {
 
 // 获取翻译文本
 const t = translations.common || {};
+
+// 获取产品卡片配置
+const cardConfig = themeConfig.layout.productCard;
 ---
 
 <div class="grid-list">
   <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
     {validItems.map((item) => (
-      <article class="grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
+      <article class={`grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative ${cardConfig.style.hoverEffect === 'lift' ? 'hover:-translate-y-1' : cardConfig.style.hoverEffect === 'scale' ? 'hover:scale-105' : ''}`}>
         <a href={item.href} class="block h-full">
           <div class="aspect-video overflow-hidden">
             <img 
@@ -58,15 +63,35 @@ const t = translations.common || {};
           </div>
           
           <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-4 relative flex flex-col justify-start'}>
-            <h3
-              class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-left"
-              style={mode === 'product' ? 'min-height:3.5rem;display:flex;align-items:flex-start;' : undefined}
-            >
-              {item.title}
-            </h3>
-            
-            {mode === 'product' && (
+            {/* 默认显示内容 - 根据模式区分 */}
+            {mode === 'product' ? (
               <>
+                {/* 产品卡片默认显示 */}
+                {cardConfig.defaultDisplay.showName && (
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-left" style="min-height:3.5rem;display:flex;align-items:flex-start;">
+                    {item.title}
+                  </h3>
+                )}
+                
+                {cardConfig.defaultDisplay.showPrice && item.price && (
+                  <div class="text-red-600 font-bold text-lg mb-2">
+                    {item.price}
+                  </div>
+                )}
+                
+                {cardConfig.defaultDisplay.showDescription && item.excerpt && (
+                  <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {item.excerpt}
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                {/* 案例卡片默认显示 */}
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-left">
+                  {item.title}
+                </h3>
+                
                 {item.excerpt && (
                   <p class="text-gray-600 text-sm mb-4 line-clamp-3">
                     {item.excerpt}
@@ -75,28 +100,73 @@ const t = translations.common || {};
               </>
             )}
             
-            {/* 弹框内容根据 mode 区分 */}
-            {mode === 'product' ? (
-              <div class="absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
+            {/* 鼠标悬停弹出层 - 只对产品卡片生效 */}
+            {mode === 'product' && (
+              <div class="absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex flex-col justify-between">
                 <div>
-                  <h4 class="font-bold text-base leading-tight text-left">{item.title}</h4>
-                  <p class="text-xs opacity-90 mt-1">{t.product_card?.get_quote || '获取详细报价和技术参数'}</p>
+                  {cardConfig.hoverOverlay.showName && (
+                    <h4 class="font-bold text-base leading-tight text-left mb-2">{item.title}</h4>
+                  )}
+                  
+                  {cardConfig.hoverOverlay.showDescription && item.excerpt && (
+                    <p class="text-xs opacity-90 mb-3 line-clamp-2">{item.excerpt || 'TODO: 这是描述'}</p>
+                  )}
+                  
+                  {cardConfig.hoverOverlay.showAdvantages && item.advantages && item.advantages.length > 0 && (
+                    <div class="mb-3">
+                      <p class="text-xs font-semibold mb-1">产品优势：</p>
+                      <ul class="text-xs opacity-90 space-y-1">
+                        {item.advantages.slice(0, 2).map(advantage => (
+                          <li class="flex items-center">
+                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            {advantage}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-                <div class="flex items-center space-x-1">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                  </svg>
-                  <span class="font-medium text-sm">{t.product_card?.contact_now || '立即联系'}</span>
+                
+                <div class="flex items-center justify-between">
+                  {cardConfig.hoverOverlay.showContactButton && (
+                    <button 
+                      type="button"
+                      class="contact-btn flex items-center space-x-1 hover:opacity-80 transition-opacity"
+                      data-product-name={item.title}
+                      onclick={`event.stopPropagation(); event.preventDefault(); openContactModal({name: '${item.title}'})`}
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                      </svg>
+                      <span class="font-medium text-sm">{t.product_card?.contact_now || '立即联系'}</span>
+                    </button>
+                  )}
+                  
+                  {cardConfig.hoverOverlay.showAddToCart && (
+                    <div class="flex items-center space-x-1">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
+                      </svg>
+                      <span class="font-medium text-sm">{t.product_card?.add_to_cart || 'Add to Cart'}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-            ) : (
+            )}
+            
+            {/* 案例卡片悬停效果 */}
+            {mode === 'case' && (
               <div class="absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-center">
                 <h4 class="font-bold text-base leading-tight text-center w-full">{item.title}</h4>
               </div>
             )}
           </div>
         </a>
+        
+
       </article>
     ))}
   </div>
@@ -109,10 +179,6 @@ const t = translations.common || {};
   
   .grid-item {
     @apply transform transition-all duration-300;
-  }
-  
-  .grid-item:hover {
-    @apply -translate-y-1;
   }
   
   .line-clamp-2 {

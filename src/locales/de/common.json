@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Detailliertes Angebot und technische Parameter erhalten",
-    "contact_now": "Jetzt kontaktieren"
+    "contact_now": "Jetzt kontaktieren",
+    "add_to_cart": "In den Warenkorb"
   }
 }

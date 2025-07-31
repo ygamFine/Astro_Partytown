@@ -91,13 +91,12 @@ const { lang = 'zh-CN' } = Astro.props;
       });
     }
 
-    // 邮件咨询功能
+    // 邮件咨询功能 - 改为打开联系模态框
     if (emailBtn) {
       emailBtn.addEventListener('click', () => {
-        const subject = '产品咨询';
-        const body = '您好，我想咨询产品信息，请回复我。';
-        const mailtoUrl = `mailto:info@company.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = mailtoUrl;
+        if (typeof window.openContactModal === 'function') {
+          window.openContactModal();
+        }
       });
     }
   }

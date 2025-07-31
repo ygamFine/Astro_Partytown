@@ -69,13 +69,13 @@ const logoImage = '/images/logo.png.webp';
         </div>
         
         <!-- Request Quote Button -->
-          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-4 ml-3 font-bold transition-colors duration-200 flex items-center justify-center space-x-3" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+          <button type="button" onclick="openContactModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 ml-3 font-bold transition-colors duration-200 flex items-center justify-center space-x-3" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
             <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
           </svg>
             <span>REQUEST A QUOTE</span>
-        </a>
+        </button>
       </div>
 
       <!-- Medium screens - Simplified contact -->
@@ -86,9 +86,9 @@ const logoImage = '/images/logo.png.webp';
           </svg>
             <span class="text-white font-medium text-xs">+86 156 2892 0918</span>
         </div>
-          <a href="/contact" class="bg-red-600 hover:bg-red-700 text-white px-3 font-bold transition-colors duration-200 flex items-center justify-center" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
+          <button type="button" onclick="openContactModal()" class="bg-red-600 hover:bg-red-700 text-white px-3 font-bold transition-colors duration-200 flex items-center justify-center" style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;">
             <span>REQUEST A QUOTE</span>
-        </a>
+        </button>
       </div>
 
         <!-- Mobile - Right side icons and menu button -->
@@ -140,7 +140,13 @@ const logoImage = '/images/logo.png.webp';
         <a href="/products" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Products</a>
         <a href="/case" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Case</a>
         <a href="/news" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">News</a>
-        <a href="/contact" class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors">Contact</a>
+        <button 
+          type="button"
+          onclick="openContactModal()"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors cursor-pointer w-full text-left"
+        >
+          Contact
+        </button>
       </div>
       
       <!-- Language Selector -->
@@ -199,9 +205,13 @@ const logoImage = '/images/logo.png.webp';
             <span class="text-white">tevis@yonancn.com</span>
           </div>
         </div>
-        <a href="/contact" class="block w-full bg-red-600 text-white mt-4 py-3 px-6 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors text-center rounded">
+        <button 
+          type="button"
+          onclick="openContactModal()"
+          class="block w-full bg-red-600 text-white mt-4 py-3 px-6 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors text-center rounded cursor-pointer"
+        >
           REQUEST A QUOTE
-        </a>
+        </button>
       </div>
     </nav>
   </div>

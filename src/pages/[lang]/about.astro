@@ -187,12 +187,13 @@ const pageWidth = getPageWidth();
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold mb-6">联系我们</h2>
         <p class="text-xl mb-8">期待与您的合作，共创美好未来</p>
-        <a 
-          href={`/${lang}/contact`}
-          class="inline-block bg-white text-red-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        <button 
+          type="button"
+          onclick="openContactModal()"
+          class="inline-block bg-white text-red-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
         >
           立即联系
-        </a>
+        </button>
       </div>
     </div>
   </div>

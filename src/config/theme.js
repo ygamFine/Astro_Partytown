@@ -137,6 +137,33 @@ export const themeConfig = {
       // below-title: H1标题下方
       // above-pagination: 列表底部，分页上方
       displayMode: 'above-pagination'
+    },
+
+    // 产品卡片主题配置
+    productCard: {
+      // 默认显示内容
+      defaultDisplay: {
+        showName: true,        // 显示名称
+        showPrice: false,      // 显示价格（可配置）
+        showDescription: false // 显示描述
+      },
+      
+      // 鼠标悬停弹出层配置
+      hoverOverlay: {
+        showName: true,           // 显示名称
+        showDescription: true,    // 显示描述
+        showContactButton: true,  // 显示立即联系按钮
+        showAdvantages: true,    // 显示优势（可配置）
+        showAddToCart: true      // 显示加入购物车按钮（可配置）
+      },
+      
+      // 卡片样式配置
+      style: {
+        borderRadius: '8px',      // 圆角
+        shadow: 'lg',             // 阴影
+        hoverEffect: 'lift',      // 悬停效果：'lift' | 'scale' | 'none'
+        imageAspectRatio: '16/9'  // 图片宽高比
+      }
     }
   }
 };

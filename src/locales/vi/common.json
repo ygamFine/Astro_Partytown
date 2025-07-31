@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Nhận báo giá chi tiết và thông số kỹ thuật",
-    "contact_now": "Liên hệ ngay"
+    "contact_now": "Liên hệ ngay",
+    "add_to_cart": "Thêm vào giỏ hàng"
   }
 }

@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Detaylı teklif ve teknik parametreler alın",
-    "contact_now": "Şimdi iletişime geçin"
+    "contact_now": "Şimdi iletişime geçin",
+    "add_to_cart": "Sepete ekle"
   }
 }

@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Get detailed quote and technical parameters",
-    "contact_now": "Contact Now"
+    "contact_now": "Contact Now",
+    "add_to_cart": "Add to Cart"
   }
 }

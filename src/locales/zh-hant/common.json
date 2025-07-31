@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "獲取詳細報價和技術參數",
-    "contact_now": "立即聯繫"
+    "contact_now": "立即聯繫",
+    "add_to_cart": "加入購物車"
   }
 }

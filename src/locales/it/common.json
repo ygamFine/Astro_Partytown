@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Ottieni preventivo dettagliato e parametri tecnici",
-    "contact_now": "Contatta ora"
+    "contact_now": "Contatta ora",
+    "add_to_cart": "Aggiungi al carrello"
   }
 }

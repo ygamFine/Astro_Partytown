@@ -230,6 +230,7 @@
   },
   "product_card": {
     "get_quote": "Obtenir un devis détaillé et les paramètres techniques",
-    "contact_now": "Contactez maintenant"
+    "contact_now": "Contactez maintenant",
+    "add_to_cart": "Ajouter au panier"
   }
 }

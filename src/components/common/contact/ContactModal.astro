@@ -1,0 +1,301 @@
+---
+// 联系表单模态组件
+interface Props {
+  id?: string;
+  title?: string;
+  showCloseButton?: boolean;
+  translations?: any;
+}
+
+const { 
+  id = "contactModal", 
+  title = "联系我们", 
+  showCloseButton = true,
+  translations = {}
+} = Astro.props;
+
+// 获取翻译文本
+const t = translations.common || {};
+---
+
+<!-- 模态背景遮罩 -->
+<div id={id} class="contact-modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+  <!-- 模态内容 -->
+  <div class="contact-modal bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <!-- 模态头部 -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-gray-900">{title}</h3>
+      {showCloseButton && (
+        <button 
+          class="modal-close-btn text-gray-400 hover:text-gray-600 transition-colors duration-200"
+          aria-label="关闭"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      )}
+    </div>
+
+    <!-- 表单内容 -->
+    <form class="contact-form p-6 space-y-4">
+      <!-- 姓名 -->
+      <div>
+        <label for="contact-name" class="block text-sm font-medium text-gray-700 mb-1">
+          {t.labels?.name || "姓名"}
+        </label>
+        <input 
+          type="text" 
+          id="contact-name" 
+          name="name"
+          placeholder={t.placeholders?.name || "请输入您的姓名"}
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+          required
+        />
+      </div>
+
+      <!-- 公司名称 -->
+      <div>
+        <label for="contact-company" class="block text-sm font-medium text-gray-700 mb-1">
+          {t.labels?.company || "公司名称"}
+        </label>
+        <input 
+          type="text" 
+          id="contact-company" 
+          name="company"
+          placeholder={t.placeholders?.company || "请输入您的公司名称"}
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- 邮箱和电话（两列布局） -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- 邮箱 -->
+        <div>
+          <label for="contact-email" class="block text-sm font-medium text-gray-700 mb-1">
+            {t.labels?.email || "邮箱"} <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="email" 
+            id="contact-email" 
+            name="email"
+            placeholder={t.placeholders?.email || "请输入您的邮箱地址"}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            required
+          />
+        </div>
+
+        <!-- 电话 -->
+        <div>
+          <label for="contact-phone" class="block text-sm font-medium text-gray-700 mb-1">
+            {t.labels?.telephone || "电话"} <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="tel" 
+            id="contact-phone" 
+            name="phone"
+            placeholder={t.placeholders?.telephone || "请输入您的电话号码"}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- 咨询内容 -->
+      <div>
+        <label for="contact-message" class="block text-sm font-medium text-gray-700 mb-1">
+          {t.labels?.message || "咨询内容"}
+        </label>
+        <textarea 
+          id="contact-message" 
+          name="message"
+          rows="4"
+          placeholder={t.placeholders?.message || "请输入您的留言"}
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+        ></textarea>
+      </div>
+
+      <!-- 提交按钮 -->
+      <div class="flex justify-start pt-4">
+        <button 
+          type="submit" 
+          class="contact-submit-btn bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          {t.buttons?.send || "发送"}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 联系表单模态功能
+  class ContactModal {
+    private modal: HTMLElement | null;
+    private overlay: Element | null;
+    private closeBtn: Element | null;
+    private form: HTMLFormElement | null;
+
+    constructor(modalId = 'contactModal') {
+      this.modal = document.getElementById(modalId);
+      this.overlay = this.modal?.querySelector('.contact-modal-overlay') || null;
+      this.closeBtn = this.modal?.querySelector('.modal-close-btn') || null;
+      this.form = this.modal?.querySelector('.contact-form') as HTMLFormElement | null;
+      
+      this.init();
+    }
+
+    init() {
+      if (!this.modal) return;
+
+      // 关闭按钮事件
+      this.closeBtn?.addEventListener('click', () => this.close());
+
+      // 点击遮罩关闭
+      this.overlay?.addEventListener('click', (e) => {
+        if (e.target === this.overlay) {
+          this.close();
+        }
+      });
+
+      // ESC键关闭
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen()) {
+          this.close();
+        }
+      });
+
+      // 表单提交事件
+      this.form?.addEventListener('submit', (e) => this.handleSubmit(e));
+
+      // 全局打开模态的方法
+      (window as any).openContactModal = (productInfo: { name?: string } = {}) => {
+        this.open(productInfo);
+      };
+    }
+
+    open(productInfo: { name?: string } = {}) {
+      if (!this.modal) return;
+
+      // 如果有产品信息，预填充表单
+      if (productInfo.name) {
+        const messageField = this.modal.querySelector('#contact-message') as HTMLTextAreaElement;
+        if (messageField) {
+          messageField.value = `我对产品"${productInfo.name}"感兴趣，请提供更多信息。`;
+        }
+      }
+
+      this.modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      
+      // 焦点管理
+      const firstInput = this.modal.querySelector('input, textarea') as HTMLElement;
+      firstInput?.focus();
+    }
+
+    close() {
+      if (!this.modal) return;
+
+      this.modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      
+      // 重置表单
+      this.form?.reset();
+    }
+
+    isOpen() {
+      return this.modal && !this.modal.classList.contains('hidden');
+    }
+
+    async handleSubmit(e: Event) {
+      e.preventDefault();
+      
+      const target = e.target as HTMLFormElement;
+      const formData = new FormData(target);
+      const data = Object.fromEntries(formData.entries());
+      
+      // 显示加载状态
+      const submitBtn = target.querySelector('.contact-submit-btn') as HTMLButtonElement;
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = '发送中...';
+      submitBtn.disabled = true;
+
+      try {
+        // 这里可以添加实际的表单提交逻辑
+        console.log('表单数据:', data);
+        
+        // 模拟API调用
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // 显示成功消息
+        this.showMessage('提交成功！我们会尽快与您联系。', 'success');
+        this.close();
+        
+      } catch (error) {
+        console.error('提交失败:', error);
+        this.showMessage('提交失败，请稍后重试。', 'error');
+        
+      } finally {
+        // 恢复按钮状态
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+
+    showMessage(message: string, type: 'success' | 'error' | 'info' = 'info') {
+      // 创建消息提示
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-md text-white ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+      }`;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      // 3秒后自动移除
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
+  }
+
+  // 初始化模态
+  document.addEventListener('DOMContentLoaded', () => {
+    new ContactModal();
+  });
+</script>
+
+<style>
+  .contact-modal-overlay {
+    backdrop-filter: blur(2px);
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .contact-modal {
+    animation: modalSlideIn 0.3s ease-out;
+  }
+  
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  .contact-modal-overlay.hidden {
+    display: none !important;
+  }
+  
+  /* 响应式设计 */
+  @media (max-width: 640px) {
+    .contact-modal {
+      margin: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+  }
+</style> 
