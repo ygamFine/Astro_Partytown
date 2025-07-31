@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/templates/navigation/Breadcrumb.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { mergeTranslations } from '../../locales/i18n.js';
 import { generateAboutBreadcrumbs } from '../../lib/breadcrumbUtils.js';
@@ -34,6 +35,13 @@ const pageWidth = getPageWidth();
 
 <Layout title="关于我们" description="山东永安建设机械集团有限公司 - 专业工程机械制造商" lang={lang} pageType="about">
   <div class="min-h-screen bg-gray-50">
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="mx-auto px-4 py-4" style={`max-width: ${pageWidth}`}>
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
+      </div>
+    </div>
+    
     <!-- 页面头部 -->
     <div class="bg-white shadow-sm">
       <div class="mx-auto px-4 sm:px-6 lg:px-8 py-16" style={`max-width: ${pageWidth}`}>

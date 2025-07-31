@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/templates/navigation/Breadcrumb.astro';
 import GlobalSearch from '../../components/templates/common/GlobalSearch.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { loadTranslations } from '../../lib/dataProcessor.js';
@@ -36,6 +37,13 @@ const pageWidth = getPageWidth();
 
 <Layout title="搜索" description="全站搜索功能" lang={lang} pageType="search">
   <div class="min-h-screen bg-gray-50">
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="mx-auto px-4 py-4" style={`max-width: ${pageWidth}`}>
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
+      </div>
+    </div>
+    
     <!-- 页面头部 -->
     <div class="bg-white shadow-sm">
       <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8" style={`max-width: ${pageWidth}`}>

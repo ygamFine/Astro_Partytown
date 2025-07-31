@@ -10,11 +10,35 @@
  */
 
 export const themeConfig = {
+  // 全站限制配置
+  restrictions: {
+    // 语言限制配置
+    languageRestrictions: {
+      'zh-CN': {
+        hidePricing: true,        // 中文站隐藏价格相关
+        hideShoppingCart: true,   // 中文站隐藏购物车相关
+        hideAddToCart: true       // 中文站隐藏加入购物车按钮
+      },
+      'zh-Hant': {
+        hidePricing: true,        // 繁体中文站隐藏价格相关
+        hideShoppingCart: true,   // 繁体中文站隐藏购物车相关
+        hideAddToCart: true       // 繁体中文站隐藏加入购物车按钮
+      }
+    }
+  },
+  
+  // 语言选择器配置
+  languageSelector: {
+    showLanguageSelector: true,   // 显示语言选择器
+    hideWhenSingleLanguage: true, // 只有一种语言时隐藏
+    enabledLanguages: ['en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'] // 启用的语言列表
+  },
+  
   // 网站可视化文档宽度动态配置
   layout: {
     // 控制模式：'follow' | 'dynamic' | 'mixed'
     mode: 'follow',
-    
+
     // 1、内页跟随首页宽度变化
     followHomePage: {
       defaultWidth: '1600px', // 默认宽度
@@ -27,7 +51,7 @@ export const themeConfig = {
         wide: '1400px'
       }
     },
-    
+
     // 2、可动态单独设置宽度
     dynamicWidth: {
       pages: {
@@ -83,17 +107,17 @@ export const themeConfig = {
       // 获取页面宽度
       getPageWidth: (pageName) => {
         const mode = themeConfig.layout.mode;
-        
+
         // 动态模式：优先使用页面特定配置
         if (mode === 'dynamic' && themeConfig.layout.dynamicWidth.pages[pageName]) {
           return themeConfig.layout.dynamicWidth.pages[pageName].width;
         }
-        
+
         // 跟随模式：使用首页宽度
         if (mode === 'follow') {
           return themeConfig.layout.dynamicWidth.pages.home?.width || themeConfig.layout.followHomePage.defaultWidth;
         }
-        
+
         // 混合模式：优先使用页面特定配置，没有则使用首页宽度
         if (mode === 'mixed') {
           if (themeConfig.layout.dynamicWidth.pages[pageName]) {
@@ -101,7 +125,7 @@ export const themeConfig = {
           }
           return themeConfig.layout.dynamicWidth.pages.home?.width || themeConfig.layout.followHomePage.defaultWidth;
         }
-        
+
         // 默认使用 followHomePage 的默认宽度
         return themeConfig.layout.followHomePage.defaultWidth;
       }
@@ -111,22 +135,22 @@ export const themeConfig = {
     sidebar: {
       // 是否显示侧边栏
       visible: true,
-      
+
       // 展示模式：'current-top' | 'fixed-order' | 'current-only'
       // current-top: 当前菜单项置顶显示
       // fixed-order: 固定菜单顺序（产品、案例、新闻）
       // current-only: 只显示当前模块菜单
       displayMode: 'current-only',
-      
+
       // 固定顺序模式下的菜单顺序
       fixedOrder: ['products', 'cases', 'news'],
-      
+
       // 是否显示菜单项数量
       showCount: true,
-      
+
       // 是否默认展开当前菜单
       autoExpandCurrent: true,
-      
+
       // 是否允许同时展开多个菜单
       allowMultipleOpen: false
     },
@@ -147,7 +171,7 @@ export const themeConfig = {
         showPrice: false,      // 显示价格（可配置）
         showDescription: false // 显示描述
       },
-      
+
       // 鼠标悬停弹出层配置
       hoverOverlay: {
         showName: true,           // 显示名称
@@ -156,7 +180,7 @@ export const themeConfig = {
         showAdvantages: true,    // 显示优势（可配置）
         showAddToCart: true      // 显示加入购物车按钮（可配置）
       },
-      
+
       // 卡片样式配置
       style: {
         borderRadius: '8px',      // 圆角
@@ -166,49 +190,57 @@ export const themeConfig = {
       }
     },
 
-                // 联系按钮配置
-            contactButtons: {
-              showContactNow: true,    // 显示立即联系按钮
-              showDownloadPdf: true,   // 显示下载PDF按钮
-              showEmail: true,         // 显示邮件按钮
-              showTelephone: true,     // 显示电话按钮
-              showWhatsapp: true,      // 显示WhatsApp按钮
+    // 联系按钮配置
+    contactButtons: {
+      showContactNow: true,    // 显示立即联系按钮
+      showDownloadPdf: true,   // 显示下载PDF按钮
+      showEmail: true,         // 显示邮件按钮
+      showTelephone: true,     // 显示电话按钮
+      showWhatsapp: true,      // 显示WhatsApp按钮
 
-              // PDF文件配置
-              pdfConfig: {
-                url: '/catalog.pdf',    // PDF文件路径
-                filename: 'catalog.pdf' // 下载文件名
-              }
-            },
+      // PDF文件配置
+      pdfConfig: {
+        url: '/catalog.pdf',    // PDF文件路径
+        filename: 'catalog.pdf' // 下载文件名
+      }
+    },
 
-            // 产品详情页配置
-            productDetail: {
-              // 价格和购物车配置
-              pricing: {
-                showPricing: true,           // 显示价格区域
-                showMultiplePrices: true,    // 显示多币种价格
-                showAddToCart: true,         // 显示加入购物车按钮
-                
-                // 价格配置
-                priceConfig: {
-                  currency: 'USD',           // 默认货币符号
-                  
-                  // 多币种配置
-                  currencies: {
-                    USD: { symbol: '$', rate: 1.0 },
-                    CNY: { symbol: '¥', rate: 7.16 },
-                    EUR: { symbol: '€', rate: 0.92 },
-                    GBP: { symbol: '£', rate: 0.82 },
-                    JPY: { symbol: '¥', rate: 143.20 },
-                    KRW: { symbol: '₩', rate: 1314.00 },
-                    INR: { symbol: '₹', rate: 82.00 },
-                    CAD: { symbol: 'CA$', rate: 1.35 },
-                    AUD: { symbol: 'A$', rate: 1.50 },
-                    NZD: { symbol: 'NZ$', rate: 1.50 }
-                  }
-                }
-              }
-            }
+    // 产品详情页配置
+    productDetail: {
+      // 右侧栏配置
+      sidebar: {
+        showSidebar: true,           // 显示右侧栏
+        showRecommendedProducts: true, // 显示推荐产品
+        showRelatedNews: true,       // 显示相关新闻
+        showContactForm: true        // 显示联系表单
+      },
+
+      // 价格和购物车配置
+      pricing: {
+        showPricing: true,           // 显示价格区域
+        showMultiplePrices: true,    // 显示多币种价格
+        showAddToCart: true,         // 显示加入购物车按钮
+
+        // 价格配置
+        priceConfig: {
+          currency: 'USD',           // 默认货币符号
+
+          // 多币种配置
+          currencies: {
+            USD: { symbol: '$', rate: 1.0 },
+            CNY: { symbol: '¥', rate: 7.16 },
+            EUR: { symbol: '€', rate: 0.92 },
+            GBP: { symbol: '£', rate: 0.82 },
+            JPY: { symbol: '¥', rate: 143.20 },
+            KRW: { symbol: '₩', rate: 1314.00 },
+            INR: { symbol: '₹', rate: 82.00 },
+            CAD: { symbol: 'CA$', rate: 1.35 },
+            AUD: { symbol: 'A$', rate: 1.50 },
+            NZD: { symbol: 'NZ$', rate: 1.50 }
+          }
+        }
+      }
+    }
   }
 };
 

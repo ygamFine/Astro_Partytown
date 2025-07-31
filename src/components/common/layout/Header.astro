@@ -1,5 +1,6 @@
 ---
 import StaticMenu from './StaticMenu.astro';
+import { themeConfig } from '../../../config/theme.js';
 // 使用public目录中的图片
 const logoImage = '/images/logo.png.webp';
 ---
@@ -150,6 +151,8 @@ const logoImage = '/images/logo.png.webp';
       </div>
       
       <!-- Language Selector -->
+      {themeConfig.languageSelector.showLanguageSelector && 
+       (!themeConfig.languageSelector.hideWhenSingleLanguage || themeConfig.languageSelector.enabledLanguages.length > 1) && (
       <div class="mt-6 pt-4 border-t border-gray-600">
         <div class="flex items-center space-x-2 text-white">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,6 +184,7 @@ const logoImage = '/images/logo.png.webp';
           </select>
         </div>
       </div>
+      )}
       
       <!-- Mobile Contact Information -->
       <div class="mt-6 pt-4 border-t border-gray-600 space-y-3">

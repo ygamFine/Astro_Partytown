@@ -7,7 +7,8 @@ import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getCases } from '../../../lib/strapi.js';
 import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
-import { processCaseData, loadTranslations, generateBreadcrumbs } from '../../../lib/dataProcessor.js';
+import { processCaseData, loadTranslations } from '../../../lib/dataProcessor.js';
+import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { loadImageMapping } from '../../../lib/imageProcessor.js';
 import { themeConfig } from '../../../config/theme.js';
 
@@ -32,11 +33,7 @@ const imageMapping = await loadImageMapping();
 const gridItems = processCaseData(cases, lang, imageMapping);
 
 // 面包屑导航
-const breadcrumbs = generateBreadcrumbs(lang, 'case', actualCurrentPage > 1 ? actualCurrentPage : undefined)
-  .map(item => ({
-    label: item.name,
-    href: item.href
-  }));
+const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
 ---
 
 <SecondaryPageLayout 
@@ -59,6 +56,7 @@ const breadcrumbs = generateBreadcrumbs(lang, 'case', actualCurrentPage > 1 ? ac
     maxRows={2}
     mode="case"
         translations={{ common: translations.common }}
+        lang={lang}
   />
   
   {/* 列表描述内容 - 分页上方模式 */}

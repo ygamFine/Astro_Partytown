@@ -7,7 +7,8 @@ import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getNews } from '../../../lib/strapi.js';
 import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
-import { processNewsData, loadTranslations, generateBreadcrumbs } from '../../../lib/dataProcessor.js';
+import { processNewsData, loadTranslations } from '../../../lib/dataProcessor.js';
+import { generateNewsBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { themeConfig } from '../../../config/theme.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
@@ -28,11 +29,7 @@ const translations = await loadTranslations(lang, ['news', 'pagination']) as any
 const newsItems = processNewsData(news, lang);
 
 // 面包屑导航
-const breadcrumbs = generateBreadcrumbs(lang, 'news', actualCurrentPage > 1 ? actualCurrentPage : undefined)
-  .map(item => ({
-    label: item.name,
-    href: item.href
-  }));
+const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
 ---
 
 <SecondaryPageLayout 

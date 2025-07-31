@@ -299,7 +299,8 @@ const images: string[] = processImages(product.image);
             </div>
 
             <!-- 价格和购物车区域 -->
-            {themeConfig.layout.productDetail.pricing.showPricing && (
+            {themeConfig.layout.productDetail.pricing.showPricing && 
+             !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hidePricing && (
               <div class="bg-gray-50 rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">产品价格</h3>
                 
@@ -317,8 +318,9 @@ const images: string[] = processImages(product.image);
                 
 
                 
-                {/* 加入购物车按钮 */}
-                {themeConfig.layout.productDetail.pricing.showAddToCart && (
+                <!-- 加入购物车按钮 -->
+                {themeConfig.layout.productDetail.pricing.showAddToCart && 
+                 !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hideAddToCart && (
                   <div class="flex justify-start">
                     <button 
                       class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 flex items-center gap-2"
@@ -370,9 +372,9 @@ const images: string[] = processImages(product.image);
     <!-- 第二行：详细内容 -->
     <section class="py-8">
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <!-- 左侧：详细内容（占3列） -->
-          <div class="lg:col-span-3 space-y-8">
+        <div class={`grid grid-cols-1 gap-8 ${themeConfig.layout.productDetail.sidebar.showSidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-1'}`}>
+          <!-- 左侧：详细内容 -->
+          <div class={`space-y-8 ${themeConfig.layout.productDetail.sidebar.showSidebar ? 'lg:col-span-3' : 'lg:col-span-1'}`}>
             <!-- 产品详情 -->
             <div class="bg-white rounded-lg p-8 shadow-sm">
               <h2 class="text-2xl font-bold text-gray-900 mb-6">{t.product.details}</h2>
@@ -633,8 +635,9 @@ const images: string[] = processImages(product.image);
 
           </div>
 
-          <!-- 右侧：推荐产品 -->
-          <div class="space-y-6" id="recommendedProductsSidebar">
+          {/* 右侧：推荐产品 */}
+          {themeConfig.layout.productDetail.sidebar.showSidebar && (
+            <div class="space-y-6" id="recommendedProductsSidebar">
             <div class="bg-white rounded-lg p-6 shadow-sm">
               <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <div class="w-1 h-5 bg-red-600 mr-2"></div>
@@ -700,6 +703,7 @@ const images: string[] = processImages(product.image);
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </section>

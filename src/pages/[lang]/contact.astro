@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/templates/navigation/Breadcrumb.astro';
 import ContactButtons from '../../components/common/contact/ContactButtons.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { mergeTranslations } from '../../locales/i18n.js';
@@ -36,6 +37,13 @@ const pageWidth = getPageWidth();
 
 <Layout title="联系我们" description="联系山东永安建设机械集团有限公司 - 获取产品咨询和技术支持" lang={lang} pageType="contact">
   <div class="min-h-screen bg-gray-50">
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="mx-auto px-4 py-4" style={`max-width: ${pageWidth}`}>
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
+      </div>
+    </div>
+    
     <!-- 页面头部 -->
     <div class="bg-white shadow-sm">
       <div class="mx-auto px-4 sm:px-6 lg:px-8 py-16" style={`max-width: ${pageWidth}`}>

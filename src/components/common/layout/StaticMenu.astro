@@ -2,6 +2,7 @@
 // SSG静态菜单组件 - 构建时获取菜单数据
 import { getMenus } from '../../../lib/strapi.js';
 import { getCommonTextSync } from '../../../lib/commonTranslations.js';
+import { themeConfig } from '../../../config/theme.js';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
@@ -82,7 +83,7 @@ try {
         </div>
         {item.children && (
           <div class="dropdown-menu absolute top-full left-0 bg-white shadow-lg border border-gray-200 rounded-md overflow-hidden z-50 hidden" style="min-width: 32rem;">
-            {/* 只保留子菜单列表，不显示Product Categories等弹框内容 */}
+            <!-- 只保留子菜单列表，不显示Product Categories等弹框内容 -->
             {item.children.map((child, index) => (
               <a 
                 href={withLang(child.path)} 
@@ -90,7 +91,7 @@ try {
                 style="font-size: 1.5rem;"
               >
                 <div class="menu-icon w-8 h-8 mr-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
-                  {/* 保留原有图标逻辑 */}
+                  <!-- 保留原有图标逻辑 -->
                   {index === 0 ? (
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a2.5 2.5 0 011.95 2H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"/>
@@ -166,6 +167,8 @@ try {
     </div>
 
     <!-- 语言选择器 -->
+    {themeConfig.languageSelector.showLanguageSelector && 
+     (!themeConfig.languageSelector.hideWhenSingleLanguage || themeConfig.languageSelector.enabledLanguages.length > 1) && (
     <div class="relative flex items-center space-x-2">
       
       <!-- 选择器框 -->
@@ -268,6 +271,7 @@ try {
         </a>
       </div>
     </div>
+    )}
   </div>
 </div>
 
