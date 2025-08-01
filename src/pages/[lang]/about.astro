@@ -17,9 +17,10 @@ export async function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-const translations = await mergeTranslations(lang, ['common', 'breadcrumb']);
+const translations = await mergeTranslations(lang, ['common', 'breadcrumb', 'about']);
 const t = (translations as any).common || {};
 const breadcrumbT = (translations as any).breadcrumb || {};
+const aboutT = (translations as any).about || {};
 
 // 面包屑导航
 const breadcrumbs = generateAboutBreadcrumbs(lang);
@@ -400,14 +401,12 @@ const aboutContent = [
 ---
 
 <SecondaryPageLayout 
-  title="关于我们"
-  description="山东永安建设机械集团有限公司 - 专业工程机械制造商"
-  breadcrumbs={breadcrumbs}
+  title={aboutT.page_title}
+breadcrumbs={breadcrumbs}
   currentSection="about"
   contentType="content"
   lang={lang}
   pageType="about"
-  listDescription="山东永安建设机械集团有限公司成立于2005年，是一家专业从事工程机械研发、生产和销售的高新技术企业。我们专注于滑移装载机、挖掘装载机、伸缩臂叉装车等工程机械产品的研发与制造，产品广泛应用于建筑工地、市政工程、道路建设、园林绿化、仓储物流等多个领域。"
   showListDescription={true}
 >
   <RichTextRenderer content={aboutContent} />

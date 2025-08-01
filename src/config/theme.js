@@ -240,6 +240,153 @@ export const themeConfig = {
           }
         }
       }
+    },
+
+    // Banner配置
+    banner: {
+      // 全局banner配置
+      useGlobalImage: true, // 是否使用全局共用图片
+      globalBackgroundImage: '/banner.webp', // 全局共用的banner图片
+      useGlobalHeight: true, // 是否使用全局统一高度
+      globalHeight: 'large', // 全局统一的高度 'small' | 'medium' | 'large'
+      
+      // 默认背景图片（当不使用全局图片时）
+      defaultBackgroundImage: '/banner.webp',
+      
+      // 默认高度配置（当不使用全局高度时）
+      defaultHeight: 'small', // 'small' | 'medium' | 'large'
+      
+      // 高度配置映射
+      heightClasses: {
+        small: 'py-20',
+        medium: 'py-42',
+        large: 'py-64'
+      },
+      
+      // 页面特定配置
+      pages: {
+        // 首页banner配置
+        home: {
+          backgroundImage: '/banner.webp',
+          height: 'large',
+          background: 'image'
+        },
+        // 产品页banner配置
+        products: {
+          backgroundImage: '/banner.webp',
+          height: 'medium',
+          background: 'image'
+        },
+        // 新闻页banner配置
+        news: {
+          backgroundImage: '/banner.webp',
+          height: 'medium',
+          background: 'image'
+        },
+        // 案例页banner配置
+        cases: {
+          backgroundImage: '/banner.webp',
+          height: 'medium',
+          background: 'image'
+        },
+        // 关于我们页banner配置
+        about: {
+          backgroundImage: '/banner.webp',
+          height: 'medium',
+          background: 'image'
+        },
+        // 联系我们页banner配置
+        contact: {
+          backgroundImage: '/banner.webp',
+          height: 'medium',
+          background: 'image'
+        },
+        // 搜索页banner配置
+        search: {
+          backgroundImage: '/banner.webp',
+          height: 'medium',
+          background: 'image'
+        }
+      },
+      
+      // 获取页面banner配置的方法
+      getPageBannerConfig: (pageType) => {
+        const mode = themeConfig.layout.mode;
+        
+        // 获取基础配置
+        let baseConfig = {
+          backgroundImage: themeConfig.layout.banner.defaultBackgroundImage,
+          height: themeConfig.layout.banner.defaultHeight,
+          background: 'image'
+        };
+        
+        // 如果启用全局图片，则使用全局图片
+        if (themeConfig.layout.banner.useGlobalImage) {
+          baseConfig.backgroundImage = themeConfig.layout.banner.globalBackgroundImage;
+        }
+        
+        // 如果启用全局高度，则使用全局高度
+        if (themeConfig.layout.banner.useGlobalHeight) {
+          baseConfig.height = themeConfig.layout.banner.globalHeight;
+        }
+        
+        // 动态模式：优先使用页面特定配置，但保留全局图片和高度设置
+        if (mode === 'dynamic' && themeConfig.layout.banner.pages[pageType]) {
+          const pageConfig = themeConfig.layout.banner.pages[pageType];
+          return {
+            ...pageConfig,
+            backgroundImage: themeConfig.layout.banner.useGlobalImage 
+              ? themeConfig.layout.banner.globalBackgroundImage 
+              : pageConfig.backgroundImage,
+            height: themeConfig.layout.banner.useGlobalHeight
+              ? themeConfig.layout.banner.globalHeight
+              : pageConfig.height
+          };
+        }
+        
+        // 跟随模式：使用首页配置，但保留全局图片和高度设置
+        if (mode === 'follow') {
+          const homeConfig = themeConfig.layout.banner.pages.home || baseConfig;
+          return {
+            ...homeConfig,
+            backgroundImage: themeConfig.layout.banner.useGlobalImage 
+              ? themeConfig.layout.banner.globalBackgroundImage 
+              : homeConfig.backgroundImage,
+            height: themeConfig.layout.banner.useGlobalHeight
+              ? themeConfig.layout.banner.globalHeight
+              : homeConfig.height
+          };
+        }
+        
+        // 混合模式：优先使用页面特定配置，没有则使用首页配置，但保留全局图片和高度设置
+        if (mode === 'mixed') {
+          if (themeConfig.layout.banner.pages[pageType]) {
+            const pageConfig = themeConfig.layout.banner.pages[pageType];
+            return {
+              ...pageConfig,
+              backgroundImage: themeConfig.layout.banner.useGlobalImage 
+                ? themeConfig.layout.banner.globalBackgroundImage 
+                : pageConfig.backgroundImage,
+              height: themeConfig.layout.banner.useGlobalHeight
+                ? themeConfig.layout.banner.globalHeight
+                : pageConfig.height
+            };
+          }
+          const homeConfig = themeConfig.layout.banner.pages.home || baseConfig;
+          return {
+            ...homeConfig,
+            backgroundImage: themeConfig.layout.banner.useGlobalImage 
+              ? themeConfig.layout.banner.globalBackgroundImage 
+              : homeConfig.backgroundImage,
+            height: themeConfig.layout.banner.useGlobalHeight
+              ? themeConfig.layout.banner.globalHeight
+              : homeConfig.height
+          };
+        }
+        
+                // 默认配置
+        return baseConfig;
+      }
     }
   }
 };

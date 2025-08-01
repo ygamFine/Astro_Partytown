@@ -8,12 +8,17 @@ const {
   lang,
   pageType = 'home',
   listDescription,
-  showListDescription = false
+  showListDescription = false,
+  bannerSubtitle,
+  bannerBackground,
+  bannerHeight,
+  showContentTitle = true
 } = Astro.props;
 
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../navigation/Breadcrumb.astro';
 import Sidebar from './Sidebar.astro';
+import PageBanner from '../../common/banner/PageBanner.astro';
 import { themeConfig } from '../../../config/theme.js';
 
 // 获取页面宽度配置
@@ -26,14 +31,17 @@ const pageWidth = getPageWidth();
 
 <Layout title={title} description={description} lang={lang} pageType={pageType}>
   <main>
-    <!-- Page Header -->
-    <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
-      <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
-        <div class="text-center">
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">{title}</h1>
-        </div>
-      </div>
-    </section>
+    <!-- Page Banner - 岛屿化组件 -->
+    <PageBanner
+      title={title}
+      subtitle={bannerSubtitle}
+      background={bannerBackground}
+      height={bannerHeight}
+      className="page-banner"
+      pageType={pageType}
+      showText={false}
+      showOverlay={false}
+    />
 
     <!-- Breadcrumb -->
     <div class="bg-white border-b">
@@ -56,23 +64,25 @@ const pageWidth = getPageWidth();
 
           {/* 根据侧边栏显示状态调整内容区域宽度 */}
           <div class={themeConfig.layout.sidebar.visible ? "lg:w-3/4" : "w-full"}>
-            <!-- 内容区域标题 -->
-            <div class="mb-8">
-              <h1 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                {title}
-              </h1>
-              
-              {/* 列表描述内容 - 标题下方模式 */}
-              {themeConfig.layout.listDescription.displayMode === 'below-title' && 
-               showListDescription && listDescription && (
-                <div class="mb-6">
-                  <p class="text-lg text-gray-600 leading-relaxed">
-                    {listDescription}
-                  </p>
-                </div>
-              )}
-            </div>
+            {/* 内容区域标题 - 可选显示 */}
+            {showContentTitle && (
+              <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                  <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                  {title}
+                </h1>
+                
+                {/* 列表描述内容 - 标题下方模式 */}
+                {themeConfig.layout.listDescription.displayMode === 'below-title' && 
+                 showListDescription && listDescription && (
+                  <div class="mb-6">
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                      {listDescription}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
             
             <!-- Content Slot -->
             <div class={`content-area ${contentType}`}>

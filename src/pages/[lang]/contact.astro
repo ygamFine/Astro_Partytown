@@ -2,9 +2,11 @@
 export const prerender = true;
 
 import Layout from '../../layouts/Layout.astro';
+import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';
 import Breadcrumb from '../../components/templates/navigation/Breadcrumb.astro';
 import ContactButtons from '../../components/common/contact/ContactButtons.astro';
 import ContactModal from '../../components/common/contact/ContactModal.astro';
+import ContactForm from '../../components/common/contact/ContactForm.astro';
 import RichTextRenderer from '../../components/templates/common/RichTextRenderer.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { mergeTranslations } from '../../locales/i18n.js';
@@ -21,10 +23,11 @@ export async function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-const translations = await mergeTranslations(lang, ['common', 'breadcrumb', 'form']);
+const translations = await mergeTranslations(lang, ['common', 'breadcrumb', 'form', 'contact']);
 const t = (translations as any).common || {};
 const breadcrumbT = (translations as any).breadcrumb || {};
 const formT = (translations as any).form || {};
+const contactT = (translations as any).contact || {};
 
 // 面包屑导航
 const breadcrumbs = generateContactBreadcrumbs(lang);
@@ -114,140 +117,38 @@ const contactContent = [
 ];
 ---
 
-<Layout title="联系我们" description="联系山东永安建设机械集团有限公司 - 获取产品咨询和技术支持" lang={lang} pageType="contact">
-  <main class="bg-gray-50 min-h-screen">
-    <!-- Banner图 - 面包屑上面 -->
-    <div class="bg-gradient-to-b from-red-800 to-red-600 py-16">
-      <div class="container mx-auto px-4">
-        <div class="text-center">
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4">联系我们</h1>
-          <p class="text-xl text-red-100 max-w-2xl mx-auto">
-            专业的技术团队，随时为您提供优质的工程机械解决方案
-          </p>
-        </div>
-      </div>
+<SecondaryPageLayout
+  title={contactT.page_title}
+  breadcrumbs={breadcrumbs}
+  currentSection="contact"
+  contentType="content"
+  lang={lang}
+  pageType="contact"
+  showContentTitle={false}
+>
+  <div class="grid grid-cols-1 gap-8">
+    <!-- 富文本内容 -->
+    <div class="bg-white rounded-lg p-8 shadow-sm">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        <div class="w-1 h-6 bg-red-600 mr-3"></div>
+        {contactT.page_title}
+      </h2>
+      <RichTextRenderer content={contactContent} />
     </div>
-
-    <!-- 面包屑导航 -->
-    <div class="bg-white border-b">
-      <div class="container mx-auto px-4 py-4">
-        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
-      </div>
+    
+    <!-- 联系表单 - 使用通用组件 -->
+    <div class="bg-white rounded-lg p-8 shadow-sm">
+      <ContactForm 
+        id="contact-page-form"
+        title={contactT.form?.title}
+        description={contactT.form?.description}
+        showTitle={true}
+        showDescription={true}
+        layout="inline"
+        translations={{ form: formT }}
+      />
     </div>
-
-    <!-- 主要内容区域 -->
-    <section class="py-8">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 gap-8">
-          <!-- 富文本内容 -->
-                      <div class="bg-white rounded-lg p-8 shadow-sm">
-              <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                联系我们
-              </h2>
-              <RichTextRenderer content={contactContent} />
-            </div>
-          
-          <!-- 联系表单 - 上下布局 -->
-          <div class="bg-white rounded-lg p-8 shadow-sm">
-            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-              <div class="w-1 h-6 bg-red-600 mr-3"></div>
-              在线咨询
-            </h2>
-            <p class="text-gray-600 mb-8">请填写以下表单，我们会尽快与您联系</p>
-            
-            <form id="contact-form" class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 姓名 -->
-                <div>
-                  <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                    {formT.name || '姓名'} *
-                  </label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
-                    required
-                    placeholder={formT.name_placeholder || '请输入您的姓名'}
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-
-                <!-- 电话 -->
-                <div>
-                  <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                    {formT.telephone || '电话'} *
-                  </label>
-                  <input 
-                    type="tel" 
-                    id="phone" 
-                    name="phone" 
-                    required
-                    placeholder={formT.telephone_placeholder || '请输入您的电话'}
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              <!-- 邮箱 -->
-              <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                  {formT.email || '邮箱'} *
-                </label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  required
-                  placeholder={formT.email_placeholder || '请输入您的邮箱'}
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-
-              <!-- 公司名称 -->
-              <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
-                  公司名称
-                </label>
-                <input 
-                  type="text" 
-                  id="company" 
-                  name="company" 
-                  placeholder="请输入您的公司名称"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-
-              <!-- 咨询内容 -->
-              <div>
-                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                  {formT.message || '咨询内容'} *
-                </label>
-                <textarea 
-                  id="message" 
-                  name="message" 
-                  rows="6"
-                  required
-                  placeholder={formT.message_placeholder || '请详细描述您的需求或问题'}
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
-                ></textarea>
-              </div>
-
-              <!-- 提交按钮 -->
-              <div>
-                <button 
-                  type="submit"
-                  class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-base"
-                >
-                  {formT.send || '发送咨询'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+  </div>
 
   <!-- 联系表单模态框 -->
   <ContactModal 
@@ -256,27 +157,6 @@ const contactContent = [
     showCloseButton={true}
     translations={translations}
   />
-</Layout>
+</SecondaryPageLayout>
 
-<script>
-  // 联系表单处理
-  document.addEventListener('DOMContentLoaded', function() {
-    const contactForm = document.getElementById('contact-form') as HTMLFormElement;
-    
-    if (contactForm) {
-      contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // 获取表单数据
-        const formData = new FormData(contactForm);
-        const data = Object.fromEntries(formData);
-        
-        // 显示提交成功消息
-        alert('感谢您的咨询！我们会尽快与您联系。');
-        
-        // 清空表单
-        contactForm.reset();
-      });
-    }
-  });
-</script> 
+ 

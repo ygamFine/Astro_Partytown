@@ -1,0 +1,108 @@
+---
+import { themeConfig } from '../../../config/theme.js';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  background?: 'gradient' | 'solid' | 'image';
+  gradientFrom?: string;
+  gradientTo?: string;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  height?: 'small' | 'medium' | 'large';
+  textAlign?: 'left' | 'center' | 'right';
+  className?: string;
+  pageType?: string;
+  showText?: boolean;
+  showOverlay?: boolean;
+}
+
+const {
+  title,
+  subtitle,
+  background,
+  gradientFrom = 'from-red-600',
+  gradientTo = 'to-red-700',
+  backgroundColor = 'bg-red-600',
+  backgroundImage,
+  height,
+  textAlign = 'center',
+  className = '',
+  pageType,
+  showText = true,
+  showOverlay = true
+} = Astro.props;
+
+// 从主题配置获取banner配置
+const bannerConfig = pageType ? themeConfig.layout.banner.getPageBannerConfig(pageType) : {
+  backgroundImage: themeConfig.layout.banner.defaultBackgroundImage,
+  height: themeConfig.layout.banner.defaultHeight,
+  background: 'image'
+};
+
+// 使用主题配置或props中的值
+const finalBackground = background || bannerConfig.background;
+const finalBackgroundImage = backgroundImage || bannerConfig.backgroundImage;
+const finalHeight = (height || bannerConfig.height) as 'small' | 'medium' | 'large';
+
+// 高度配置
+const heightClasses = themeConfig.layout.banner.heightClasses;
+
+// 文本对齐配置
+const textAlignClasses = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right'
+};
+
+// 背景样式
+const getBackgroundStyle = () => {
+  if (finalBackground === 'gradient') {
+    return `bg-gradient-to-r ${gradientFrom} ${gradientTo}`;
+  } else if (finalBackground === 'image' && finalBackgroundImage) {
+    return `bg-cover bg-center bg-no-repeat`;
+  } else {
+    return backgroundColor;
+  }
+};
+
+const backgroundStyle = getBackgroundStyle();
+---
+
+<div 
+  class={`${backgroundStyle} ${showText ? 'text-white' : ''} ${heightClasses[finalHeight]} ${className} ${showOverlay ? 'show-overlay' : ''}`}
+  style={finalBackground === 'image' && finalBackgroundImage ? `background-image: url(${finalBackgroundImage})` : ''}
+>
+  {showText && (
+    <div class="container mx-auto px-4">
+      <div class={textAlignClasses[textAlign]}>
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
+          {title}
+        </h1>
+        {subtitle && (
+          <p class="text-xl text-red-100 max-w-2xl mx-auto">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  /* 岛屿化组件的样式隔离 */
+  :global(.page-banner) {
+    @apply relative overflow-hidden;
+  }
+  
+  /* 背景图片遮罩 - 只在showOverlay为true时显示 */
+  .page-banner[style*="background-image"].show-overlay::before {
+    content: '';
+    @apply absolute inset-0 bg-black;
+    opacity: 0.5;
+  }
+  
+  .page-banner[style*="background-image"].show-overlay > div {
+    @apply relative z-10;
+  }
+</style> 
