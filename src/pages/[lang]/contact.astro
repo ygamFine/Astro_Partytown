@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';
 import Breadcrumb from '../../components/templates/navigation/Breadcrumb.astro';
 import ContactButtons from '../../components/common/contact/ContactButtons.astro';
-import ContactModal from '../../components/common/contact/ContactModal.astro';
+
 import ContactForm from '../../components/common/contact/ContactForm.astro';
 import RichTextRenderer from '../../components/templates/common/RichTextRenderer.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
@@ -150,13 +150,7 @@ const contactContent = [
     </div>
   </div>
 
-  <!-- 联系表单模态框 -->
-  <ContactModal 
-    id="contactModal"
-    title="联系我们"
-    showCloseButton={true}
-    translations={translations}
-  />
+
 </SecondaryPageLayout>
 
  

@@ -187,46 +187,33 @@ const accordionMenus = getProcessedMenuItems();
 <script>
   // 简化的手风琴功能实现
   function initAccordion() {
-    console.log('Initializing accordion...');
-    
     const accordionButtons = document.querySelectorAll('.accordion-toggle-btn');
-    console.log('Found accordion buttons:', accordionButtons.length);
     
-    accordionButtons.forEach((button, index) => {
-      console.log(`Setting up button ${index}:`, button);
-      
+    accordionButtons.forEach((button) => {
       button.addEventListener('click', function(event) {
-        console.log('Button clicked!');
         event.preventDefault();
         event.stopPropagation();
         
         const sectionId = this.getAttribute('data-accordion-toggle');
-        console.log('Section ID:', sectionId);
         
         if (!sectionId) return;
         
         const content = document.querySelector(`[data-accordion-content="${sectionId}"]`);
         const chevron = this.querySelector('.accordion-chevron');
         
-        console.log('Content found:', !!content);
-        console.log('Chevron found:', !!chevron);
-        
         if (!content || !chevron) return;
         
         const isOpen = content.classList.contains('accordion-open');
-        console.log('Is currently open:', isOpen);
         
         // 切换展开/折叠状态
         if (isOpen) {
           content.classList.remove('accordion-open');
           this.setAttribute('aria-expanded', 'false');
           chevron.style.transform = 'rotate(0deg)';
-          console.log('Closed accordion');
         } else {
           content.classList.add('accordion-open');
           this.setAttribute('aria-expanded', 'true');
           chevron.style.transform = 'rotate(180deg)';
-          console.log('Opened accordion');
         }
       });
     });

@@ -221,9 +221,6 @@ const t = translations.common || {};
       submitBtn.disabled = true;
 
       try {
-        // 这里可以添加实际的表单提交逻辑
-        console.log('表单数据:', data);
-        
         // 模拟API调用
         await new Promise(resolve => setTimeout(resolve, 1000));
         
@@ -238,7 +235,6 @@ const t = translations.common || {};
         this.close();
         
       } catch (error) {
-        console.error('提交失败:', error);
         this.showMessage('提交失败，请稍后重试。', 'error');
         
       } finally {
