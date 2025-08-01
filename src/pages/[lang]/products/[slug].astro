@@ -10,6 +10,7 @@ import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { themeConfig } from '../../../config/theme.js';
+import { generateImageHash } from '../../../utils/hashUtils.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -115,7 +116,7 @@ const processImages = (imageData: any): string[] => {
           }
           // 如果是外部URL，尝试在缓存中找到对应的本地文件
           if (img.startsWith('http')) {
-            const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const urlHash = generateImageHash(img);
             const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
               cached.includes(urlHash) || cached.includes(img.split('/').pop())
             );
@@ -172,7 +173,7 @@ const processImages = (imageData: any): string[] => {
       return [imageData];
     }
     if (imageData.startsWith('http')) {
-      const urlHash = Buffer.from(imageData).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+      const urlHash = generateImageHash(imageData);
       const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
         cached.includes(urlHash) || cached.includes(imageData.split('/').pop())
       );

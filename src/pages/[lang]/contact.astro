@@ -4,6 +4,8 @@ export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumb from '../../components/templates/navigation/Breadcrumb.astro';
 import ContactButtons from '../../components/common/contact/ContactButtons.astro';
+import ContactModal from '../../components/common/contact/ContactModal.astro';
+import RichTextRenderer from '../../components/templates/common/RichTextRenderer.astro';
 import { getEnabledLanguages } from '../../lib/i18n-config.js';
 import { mergeTranslations } from '../../locales/i18n.js';
 import { generateContactBreadcrumbs } from '../../lib/breadcrumbUtils.js';
@@ -27,246 +29,233 @@ const formT = (translations as any).form || {};
 // 面包屑导航
 const breadcrumbs = generateContactBreadcrumbs(lang);
 
-// 获取页面宽度配置
-const getPageWidth = () => {
-  return themeConfig.layout.dynamicWidth.getPageWidth('contact');
-};
-
-const pageWidth = getPageWidth();
+// 联系页面的富文本内容
+const contactContent = [
+  {
+    type: 'paragraph',
+    children: [
+      {
+        type: 'text',
+        text: '山东永安建设机械集团有限公司致力于为客户提供优质的工程机械解决方案。我们拥有专业的技术团队和丰富的行业经验，随时为您提供技术支持和咨询服务。'
+      }
+    ]
+  },
+  {
+    type: 'heading',
+    level: 2,
+    children: [
+      {
+        type: 'text',
+        text: '我们的优势'
+      }
+    ]
+  },
+  {
+    type: 'list',
+    format: 'unordered',
+    children: [
+      {
+        type: 'list-item',
+        children: [
+          {
+            type: 'text',
+            text: '专业的技术团队，提供全方位的技术支持'
+          }
+        ]
+      },
+      {
+        type: 'list-item',
+        children: [
+          {
+            type: 'text',
+            text: '丰富的行业经验，了解客户需求'
+          }
+        ]
+      },
+      {
+        type: 'list-item',
+        children: [
+          {
+            type: 'text',
+            text: '快速响应机制，及时解决客户问题'
+          }
+        ]
+      },
+      {
+        type: 'list-item',
+        children: [
+          {
+            type: 'text',
+            text: '完善的售后服务，保障客户权益'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    type: 'heading',
+    level: 2,
+    children: [
+      {
+        type: 'text',
+        text: '服务承诺'
+      }
+    ]
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        type: 'text',
+        text: '我们承诺为客户提供最优质的产品和服务，确保每一个项目都能达到客户的期望。我们的团队将全程跟进，确保项目的顺利进行。'
+      }
+    ]
+  }
+];
 ---
 
 <Layout title="联系我们" description="联系山东永安建设机械集团有限公司 - 获取产品咨询和技术支持" lang={lang} pageType="contact">
-  <div class="min-h-screen bg-gray-50">
-    <!-- 面包屑导航 -->
-    <div class="bg-white border-b">
-      <div class="mx-auto px-4 py-4" style={`max-width: ${pageWidth}`}>
-        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
-      </div>
-    </div>
-    
-    <!-- 页面头部 -->
-    <div class="bg-white shadow-sm">
-      <div class="mx-auto px-4 sm:px-6 lg:px-8 py-16" style={`max-width: ${pageWidth}`}>
+  <main class="bg-gray-50 min-h-screen">
+    <!-- Banner图 - 面包屑上面 -->
+    <div class="bg-gradient-to-b from-red-800 to-red-600 py-16">
+      <div class="container mx-auto px-4">
         <div class="text-center">
-          <h1 class="text-4xl font-bold text-gray-900 mb-6">联系我们</h1>
-          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            我们期待与您的合作，为您提供专业的工程机械解决方案和优质服务
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4">联系我们</h1>
+          <p class="text-xl text-red-100 max-w-2xl mx-auto">
+            专业的技术团队，随时为您提供优质的工程机械解决方案
           </p>
         </div>
       </div>
     </div>
 
-    <!-- 联系信息 -->
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-16" style={`max-width: ${pageWidth}`}>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <!-- 联系信息 -->
-        <div>
-          <h2 class="text-3xl font-bold text-gray-900 mb-8">联系信息</h2>
-          
-          <div class="space-y-6">
-            <!-- 公司地址 -->
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">公司地址</h3>
-                <p class="text-gray-600 leading-relaxed">
-                  山东省济南市章丘区枣园街道龙泉路12300号<br>
-                  山东永安建设机械集团有限公司
-                </p>
-              </div>
-            </div>
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 py-4">
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
+      </div>
+    </div>
 
-            <!-- 联系电话 -->
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">联系电话</h3>
-                <div class="space-y-1">
-                  <p class="text-gray-600">销售热线: <a href="tel:+8615069038877" class="text-red-600 hover:text-red-700">+86 150 6903 8877</a></p>
-                  <p class="text-gray-600">技术支持: <a href="tel:+8618353161619" class="text-red-600 hover:text-red-700">+86 183 5316 1619</a></p>
+    <!-- 主要内容区域 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 gap-8">
+          <!-- 富文本内容 -->
+                      <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                联系我们
+              </h2>
+              <RichTextRenderer content={contactContent} />
+            </div>
+          
+          <!-- 联系表单 - 上下布局 -->
+          <div class="bg-white rounded-lg p-8 shadow-sm">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+              <div class="w-1 h-6 bg-red-600 mr-3"></div>
+              在线咨询
+            </h2>
+            <p class="text-gray-600 mb-8">请填写以下表单，我们会尽快与您联系</p>
+            
+            <form id="contact-form" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 姓名 -->
+                <div>
+                  <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                    {formT.name || '姓名'} *
+                  </label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    required
+                    placeholder={formT.name_placeholder || '请输入您的姓名'}
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
+
+                <!-- 电话 -->
+                <div>
+                  <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    {formT.telephone || '电话'} *
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone" 
+                    required
+                    placeholder={formT.telephone_placeholder || '请输入您的电话'}
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  />
                 </div>
               </div>
-            </div>
 
-            <!-- 邮箱 -->
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
+              <!-- 邮箱 -->
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">邮箱地址</h3>
-                <p class="text-gray-600">
-                  <a href="mailto:leiyang0501@163.com" class="text-red-600 hover:text-red-700">leiyang0501@163.com</a>
-                </p>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  {formT.email || '邮箱'} *
+                </label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  required
+                  placeholder={formT.email_placeholder || '请输入您的邮箱'}
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                />
               </div>
-            </div>
 
-            <!-- 工作时间 -->
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
+              <!-- 公司名称 -->
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">工作时间</h3>
-                <p class="text-gray-600">
-                  周一至周五: 8:00 - 18:00<br>
-                  周六: 8:00 - 12:00<br>
-                  周日: 休息
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- 快速联系按钮 -->
-          <div class="mt-8">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">快速联系</h3>
-            <ContactButtons 
-              t={{
-                contactNow: "立即联系",
-                email: "发送邮件",
-                telephone: "拨打电话",
-                whatsapp: "WhatsApp",
-                downloadPdf: "下载产品目录"
-              }}
-              showContactNow={themeConfig.layout.contactButtons.showContactNow}
-              showDownloadPdf={themeConfig.layout.contactButtons.showDownloadPdf}
-              showEmail={themeConfig.layout.contactButtons.showEmail}
-              showTelephone={themeConfig.layout.contactButtons.showTelephone}
-              showWhatsapp={themeConfig.layout.contactButtons.showWhatsapp}
-            />
-          </div>
-        </div>
-
-        <!-- 联系表单 -->
-        <div class="bg-white rounded-lg shadow-lg p-8">
-          <h2 class="text-3xl font-bold text-gray-900 mb-6">在线咨询</h2>
-          <p class="text-gray-600 mb-8">请填写以下表单，我们会尽快与您联系</p>
-          
-          <form id="contact-form" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- 姓名 -->
-              <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                  {formT.name || '姓名'} *
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+                  公司名称
                 </label>
                 <input 
                   type="text" 
-                  id="name" 
-                  name="name" 
-                  required
-                  placeholder={formT.name_placeholder || '请输入您的姓名'}
+                  id="company" 
+                  name="company" 
+                  placeholder="请输入您的公司名称"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
 
-              <!-- 电话 -->
+              <!-- 咨询内容 -->
               <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                  {formT.telephone || '电话'} *
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                  {formT.message || '咨询内容'} *
                 </label>
-                <input 
-                  type="tel" 
-                  id="phone" 
-                  name="phone" 
+                <textarea 
+                  id="message" 
+                  name="message" 
+                  rows="6"
                   required
-                  placeholder={formT.telephone_placeholder || '请输入您的电话'}
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                />
+                  placeholder={formT.message_placeholder || '请详细描述您的需求或问题'}
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+                ></textarea>
               </div>
-            </div>
 
-            <!-- 邮箱 -->
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                {formT.email || '邮箱'} *
-              </label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                required
-                placeholder={formT.email_placeholder || '请输入您的邮箱'}
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-
-            <!-- 公司名称 -->
-            <div>
-              <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
-                公司名称
-              </label>
-              <input 
-                type="text" 
-                id="company" 
-                name="company" 
-                placeholder="请输入您的公司名称"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-
-            <!-- 咨询内容 -->
-            <div>
-              <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                {formT.message || '咨询内容'} *
-              </label>
-              <textarea 
-                id="message" 
-                name="message" 
-                rows="6"
-                required
-                placeholder={formT.message_placeholder || '请详细描述您的需求或问题'}
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
-              ></textarea>
-            </div>
-
-            <!-- 提交按钮 -->
-            <div>
-              <button 
-                type="submit"
-                class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-lg transition-colors duration-200 text-lg"
-              >
-                {formT.send || '发送咨询'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- 地图区域 -->
-    <div class="bg-white py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">公司位置</h2>
-          <p class="text-xl text-gray-600">欢迎您莅临参观指导</p>
-        </div>
-        
-        <div class="bg-gray-200 rounded-lg h-96 flex items-center justify-center">
-          <div class="text-center">
-            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <p class="text-gray-600">地图加载中...</p>
-            <p class="text-sm text-gray-500 mt-2">山东省济南市章丘区枣园街道龙泉路12300号</p>
+              <!-- 提交按钮 -->
+              <div>
+                <button 
+                  type="submit"
+                  class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-base"
+                >
+                  {formT.send || '发送咨询'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
+
+  <!-- 联系表单模态框 -->
+  <ContactModal 
+    id="contactModal"
+    title="联系我们"
+    showCloseButton={true}
+    translations={translations}
+  />
 </Layout>
 
 <script>

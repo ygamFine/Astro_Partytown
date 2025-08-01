@@ -4,6 +4,7 @@
  */
 
 import { processProductImages, processSingleImage } from '../utils/imageDownloader.js';
+import { generateImageHash } from '../utils/hashUtils.js';
 
 // 加载环境变量
 import { config } from 'dotenv';
@@ -117,7 +118,7 @@ export async function getProducts(locale = 'en') {
             if (typeof img === 'string') {
               // 如果是字符串URL，尝试在缓存中找到对应的本地文件
               if (img.startsWith('http')) {
-                const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+                const urlHash = generateImageHash(img);
                 const cachedImage = imageMapping.strapiImages?.find(cached => 
                   cached.includes(urlHash) || cached.includes(img.split('/').pop())
                 );
@@ -237,7 +238,7 @@ export async function getProduct(slug, locale = 'en') {
           }
           // 如果是外部URL，尝试在缓存中找到对应的本地文件
           if (img.startsWith('http')) {
-            const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const urlHash = generateImageHash(img);
             const cachedImage = imageMapping.strapiImages?.find((cached) => 
               cached.includes(urlHash) || cached.includes(img.split('/').pop())
             );
@@ -376,7 +377,7 @@ export async function getNews(locale = 'en') {
         if (typeof newsItem.image === 'string') {
           // 如果是字符串URL，尝试在缓存中找到对应的本地文件
           if (newsItem.image.startsWith('http')) {
-            const urlHash = Buffer.from(newsItem.image).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const urlHash = generateImageHash(newsItem.image);
             const cachedImage = imageMapping.strapiImages?.find(cached => 
               cached.includes(urlHash) || cached.includes(newsItem.image.split('/').pop())
             );
@@ -487,7 +488,7 @@ export async function getNewsById(id, locale = 'en') {
       if (typeof originalImage === 'string') {
         // 如果是字符串URL，尝试在缓存中找到对应的本地文件
         if (originalImage.startsWith('http')) {
-          const urlHash = Buffer.from(originalImage).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+          const urlHash = generateImageHash(originalImage);
           const cachedImage = imageMapping.strapiImages?.find(cached => 
             cached.includes(urlHash) || cached.includes(originalImage.split('/').pop())
           );
@@ -620,7 +621,7 @@ export async function getCases(locale = 'en') {
         if (typeof caseItem.image === 'string') {
           // 如果是字符串URL，尝试在缓存中找到对应的本地文件
           if (caseItem.image.startsWith('http')) {
-            const urlHash = Buffer.from(caseItem.image).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+            const urlHash = generateImageHash(caseItem.image);
             const cachedImage = imageMapping.strapiImages?.find(cached => 
               cached.includes(urlHash) || cached.includes(caseItem.image.split('/').pop())
             );
@@ -735,7 +736,7 @@ export async function getCase(id, locale = 'en') {
       if (typeof originalImage === 'string') {
         // 如果是字符串URL，尝试在缓存中找到对应的本地文件
         if (originalImage.startsWith('http')) {
-          const urlHash = Buffer.from(originalImage).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+          const urlHash = generateImageHash(originalImage);
           const cachedImage = imageMapping.strapiImages?.find(cached => 
             cached.includes(urlHash) || cached.includes(originalImage.split('/').pop())
           );

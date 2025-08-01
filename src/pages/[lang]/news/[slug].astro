@@ -7,6 +7,7 @@ import { getNews, getNewsById } from '../../../lib/strapi.js';
 import { getProducts } from '../../../lib/strapi.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { generateNewsDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+import { generateImageHash } from '../../../utils/hashUtils.js';
 
 export async function getStaticPaths() {
   const enabledLanguages = getEnabledLanguages();
@@ -107,7 +108,7 @@ const processNewsImage = (imageData: any): string | null => {
   if (typeof imageData === 'string') {
     // 如果是外部URL，尝试在缓存中找到对应的本地文件
     if (imageData.startsWith('http')) {
-      const urlHash = Buffer.from(imageData).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+      const urlHash = generateImageHash(imageData);
       const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
         cached.includes(urlHash) || cached.includes(imageData.split('/').pop())
       );

@@ -63,37 +63,37 @@ export const themeConfig = {
         },
         // 产品页宽度配置
         products: {
-          width: '1000px',
+          width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
         },
         // 新闻页宽度配置
         news: {
-          width: '1000px',
+          width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
         },
         // 案例页宽度配置
         cases: {
-          width: '1000px',
+          width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
         },
         // 关于我们页宽度配置
         about: {
-          width: '1000px',
+          width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
         },
         // 联系我们页宽度配置
         contact: {
-          width: '1000px',
+          width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
         },
         // 搜索页宽度配置
         search: {
-          width: '1000px',
+          width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
         }
@@ -140,10 +140,10 @@ export const themeConfig = {
       // current-top: 当前菜单项置顶显示
       // fixed-order: 固定菜单顺序（产品、案例、新闻）
       // current-only: 只显示当前模块菜单
-      displayMode: 'current-only',
+      displayMode: 'current-top',
 
       // 固定顺序模式下的菜单顺序
-      fixedOrder: ['products', 'cases', 'news'],
+      fixedOrder: ['products', 'cases', 'news', 'about'],
 
       // 是否显示菜单项数量
       showCount: true,

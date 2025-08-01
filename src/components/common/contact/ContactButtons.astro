@@ -62,17 +62,16 @@ const texts = {
 
     <!-- Download PDF 按钮 -->
     {showDownloadPdf && (
-              <a 
-           href="/catalog.pdf" 
-           target="_blank"
-           rel="noopener noreferrer"
-           class="contact-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 flex items-center gap-2 transition-colors duration-300 min-w-[160px] justify-center text-sm"
-        >
+      <button 
+        type="button"
+        class="contact-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 flex items-center gap-2 transition-colors duration-300 min-w-[160px] justify-center text-sm"
+        onclick="openDownloadModal()"
+      >
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"/>
         </svg>
         {texts.downloadPdf}
-      </a>
+      </button>
     )}
 
     <!-- E-Mail 按钮 -->
@@ -151,4 +150,46 @@ const texts = {
       padding: 0.875rem 1.5rem;
     }
   }
-</style> 
+</style>
+
+<script>
+  // 全局变量来跟踪是否应该下载PDF
+  let shouldDownloadPdf = false;
+
+  // 将openDownloadModal定义为全局函数
+  (window as any).openDownloadModal = function() {
+    // 设置标志，表示这是下载请求
+    shouldDownloadPdf = true;
+    
+    // 使用ContactModal组件提供的openContactModal函数
+    if ((window as any).openContactModal) {
+      (window as any).openContactModal();
+    }
+  };
+
+  // 监听表单提交成功事件
+  document.addEventListener('DOMContentLoaded', function() {
+    // 监听自定义事件，当表单提交成功时触发
+    document.addEventListener('contactFormSubmitted', function(e) {
+      if (shouldDownloadPdf) {
+        // 重置标志
+        shouldDownloadPdf = false;
+        
+        // 延迟一下再下载，让用户看到成功消息
+        setTimeout(() => {
+          // 创建下载链接
+          const link = document.createElement('a');
+          link.href = '/catalog.pdf';
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.download = 'catalog.pdf';
+          
+          // 触发下载
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }, 1500);
+      }
+    });
+  });
+</script> 

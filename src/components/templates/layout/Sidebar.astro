@@ -1,6 +1,6 @@
 ---
 interface Props {
-  currentSection?: 'products' | 'news' | 'cases';
+  currentSection?: 'products' | 'news' | 'cases' | 'about';
 }
 
 const { currentSection } = Astro.props;
@@ -12,7 +12,7 @@ import { themeConfig } from '../../../config/theme.js';
 // 获取侧边栏配置
 const sidebarConfig = themeConfig.layout.sidebar;
 
-// 定义三个主要菜单项
+// 定义主要菜单项
 const menuItems = [
   {
     id: 'products',
@@ -56,6 +56,19 @@ const menuItems = [
       { label: '欧洲地区', href: '/case/region/europe', count: 22 },
       { label: '亚太地区', href: '/case/region/asia-pacific', count: 15 },
     ]
+  },
+  {
+    id: 'about',
+    title: '关于我们',
+    icon: '🏢',
+    mainLink: '/about',
+    items: [
+      { label: '公司介绍', href: '/about#company-intro', count: 1 },
+      { label: '核心优势', href: '/about#core-advantages', count: 4 },
+      { label: '发展历程', href: '/about#development-history', count: 5 },
+      { label: '企业文化', href: '/about#company-culture', count: 3 },
+      { label: '联系方式', href: '/about#contact-info', count: 4 },
+    ]
   }
 ];
 
@@ -74,10 +87,10 @@ const getProcessedMenuItems = () => {
     case 'current-top':
       // 当前菜单项置顶显示
       return [...allMenuItems].sort((a, b) => {
-  if (a.id === currentSection) return -1;
-  if (b.id === currentSection) return 1;
-  return 0;
-});
+        if (a.id === currentSection) return -1;
+        if (b.id === currentSection) return 1;
+        return 0;
+      });
 
     case 'fixed-order':
       // 固定菜单顺序
@@ -132,6 +145,7 @@ const accordionMenus = getProcessedMenuItems();
             data-accordion-toggle={menu.id}
             aria-expanded={menu.defaultOpen ? 'true' : 'false'}
             aria-label={`展开/折叠 ${menu.title} 菜单`}
+            type="button"
           >
             <svg 
               class="accordion-chevron w-6 h-6 transform transition-transform duration-200"
@@ -171,81 +185,58 @@ const accordionMenus = getProcessedMenuItems();
 </aside>
 
 <script>
-  // 手风琴功能实现
+  // 简化的手风琴功能实现
   function initAccordion() {
-    const accordionButtons = document.querySelectorAll('.accordion-toggle-btn');
-    const { allowMultipleOpen } = JSON.parse(document.querySelector('script[data-sidebar-config]')?.textContent || '{}');
+    console.log('Initializing accordion...');
     
-    accordionButtons.forEach(button => {
+    const accordionButtons = document.querySelectorAll('.accordion-toggle-btn');
+    console.log('Found accordion buttons:', accordionButtons.length);
+    
+    accordionButtons.forEach((button, index) => {
+      console.log(`Setting up button ${index}:`, button);
+      
       button.addEventListener('click', function(event) {
-        const target = event.currentTarget as HTMLElement;
-        const sectionId = target.getAttribute('data-accordion-toggle');
+        console.log('Button clicked!');
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const sectionId = this.getAttribute('data-accordion-toggle');
+        console.log('Section ID:', sectionId);
         
         if (!sectionId) return;
         
-        const content = document.querySelector(`[data-accordion-content="${sectionId}"]`) as HTMLElement;
-        const chevron = target.querySelector('.accordion-chevron') as HTMLElement;
+        const content = document.querySelector(`[data-accordion-content="${sectionId}"]`);
+        const chevron = this.querySelector('.accordion-chevron');
+        
+        console.log('Content found:', !!content);
+        console.log('Chevron found:', !!chevron);
         
         if (!content || !chevron) return;
         
         const isOpen = content.classList.contains('accordion-open');
-        
-        // 如果不允许同时展开多个菜单，先关闭其他菜单
-        if (!allowMultipleOpen && !isOpen) {
-          accordionButtons.forEach(otherButton => {
-            if (otherButton !== button) {
-              const otherSectionId = otherButton.getAttribute('data-accordion-toggle');
-              const otherContent = document.querySelector(`[data-accordion-content="${otherSectionId}"]`) as HTMLElement;
-              const otherChevron = otherButton.querySelector('.accordion-chevron') as HTMLElement;
-              
-              if (otherContent && otherChevron) {
-                otherContent.classList.remove('accordion-open');
-                otherButton.setAttribute('aria-expanded', 'false');
-                otherChevron.style.transform = 'rotate(0deg)';
-              }
-            }
-          });
-        }
+        console.log('Is currently open:', isOpen);
         
         // 切换展开/折叠状态
         if (isOpen) {
           content.classList.remove('accordion-open');
-          target.setAttribute('aria-expanded', 'false');
+          this.setAttribute('aria-expanded', 'false');
           chevron.style.transform = 'rotate(0deg)';
+          console.log('Closed accordion');
         } else {
           content.classList.add('accordion-open');
-          target.setAttribute('aria-expanded', 'true');
+          this.setAttribute('aria-expanded', 'true');
           chevron.style.transform = 'rotate(180deg)';
+          console.log('Opened accordion');
         }
       });
-    });
-    
-    // 初始化展开状态
-    accordionButtons.forEach(button => {
-      const sectionId = button.getAttribute('data-accordion-toggle');
-      
-      if (!sectionId) return;
-      
-      const content = document.querySelector(`[data-accordion-content="${sectionId}"]`) as HTMLElement;
-      const chevron = button.querySelector('.accordion-chevron') as HTMLElement;
-      
-      if (!content || !chevron) return;
-      
-      if (content.classList.contains('accordion-open')) {
-        button.setAttribute('aria-expanded', 'true');
-        chevron.style.transform = 'rotate(180deg)';
-      }
     });
   }
   
   // 页面加载完成后初始化
-  document.addEventListener('DOMContentLoaded', initAccordion);
-</script>
-
-<!-- 传递配置到客户端 -->
-<script data-sidebar-config type="application/json">
-  {
-    "allowMultipleOpen": ${sidebarConfig.allowMultipleOpen}
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAccordion);
+  } else {
+    initAccordion();
   }
 </script>
 
@@ -277,7 +268,7 @@ const accordionMenus = getProcessedMenuItems();
   }
   
   .accordion-toggle-btn {
-    @apply flex items-center justify-center p-3 text-gray-400;
+    @apply flex items-center justify-center p-3 text-gray-400 hover:text-gray-600 cursor-pointer;
   }
   
   .accordion-toggle-btn:focus {
@@ -385,19 +376,5 @@ const accordionMenus = getProcessedMenuItems();
     .accordion-link {
       @apply text-base px-5 py-3;
     }
-  }
-  
-  /* 第一个菜单项的特殊样式 */
-  .accordion-section:first-child .accordion-header-wrapper {
-    @apply border-t-0;
-  }
-  
-  /* 激活状态的加强视觉效果 */
-  .accordion-header-wrapper.active {
-    @apply shadow-sm;
-  }
-  
-  .accordion-header-wrapper.active:hover {
-    @apply bg-gray-200;
   }
 </style> 

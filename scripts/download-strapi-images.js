@@ -8,6 +8,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { generateImageHash } from '../src/utils/hashUtils.js';
 
 // 加载环境变量
 import { config } from 'dotenv';
@@ -54,7 +55,7 @@ function generateImageFileName(originalUrl) {
   const url = new URL(originalUrl, STRAPI_STATIC_URL);
   const pathname = url.pathname;
   const ext = path.extname(pathname) || '.jpg';
-  const hash = Buffer.from(pathname).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+  const hash = generateImageHash(pathname);
   return `${hash}${ext}`;
 }
 

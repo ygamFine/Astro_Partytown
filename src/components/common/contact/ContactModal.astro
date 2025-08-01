@@ -229,6 +229,12 @@ const t = translations.common || {};
         
         // 显示成功消息
         this.showMessage('提交成功！我们会尽快与您联系。', 'success');
+        
+        // 触发自定义事件，通知其他组件表单提交成功
+        document.dispatchEvent(new CustomEvent('contactFormSubmitted', {
+          detail: { success: true, data: data }
+        }));
+        
         this.close();
         
       } catch (error) {

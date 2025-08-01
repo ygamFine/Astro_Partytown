@@ -3,6 +3,8 @@
  * 用于处理Strapi图片映射和本地缓存
  */
 
+import { generateImageHash } from '../utils/hashUtils.js';
+
 // 加载图片映射文件
 export async function loadImageMapping() {
   try {
@@ -45,7 +47,7 @@ function processSingleImage(img, imageMapping) {
   if (typeof img === 'string') {
     // 如果是字符串URL，尝试在缓存中找到对应的本地文件
     if (img.startsWith('http')) {
-      const urlHash = Buffer.from(img).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
+      const urlHash = generateImageHash(img);
       const cachedImage = imageMapping.strapiImages?.find(cached => 
         cached.includes(urlHash) || cached.includes(img.split('/').pop())
       );

@@ -30,7 +30,7 @@ const pageWidth = getPageWidth();
     <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
       <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
         <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">{title}</h1>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">{title}</h1>
         </div>
       </div>
     </section>
@@ -58,7 +58,10 @@ const pageWidth = getPageWidth();
           <div class={themeConfig.layout.sidebar.visible ? "lg:w-3/4" : "w-full"}>
             <!-- 内容区域标题 -->
             <div class="mb-8">
-              <h1 class="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
+              <h1 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                {title}
+              </h1>
               
               {/* 列表描述内容 - 标题下方模式 */}
               {themeConfig.layout.listDescription.displayMode === 'below-title' && 
