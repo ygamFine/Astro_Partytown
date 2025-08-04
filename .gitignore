@@ -35,3 +35,7 @@ pnpm-debug.log*
 
 # cache files
 .i18n-config-cache
+
+
+public/images/strapi/
+public/images/optimized/

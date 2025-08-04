@@ -8,7 +8,7 @@ import { getNews } from '../../../lib/strapi.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateCaseDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
-import { generateImageHash } from '../../../utils/hashUtils.js';
+import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 export async function getStaticPaths() {
   const enabledLanguages = getEnabledLanguages();
@@ -49,81 +49,14 @@ const relatedNews = allNews.slice(0, 4);
 const allCases = await getCases(lang);
 const relatedCases = allCases.filter(c => c.id !== caseItem.id).slice(0, 2);
 
-// 处理案例图片，确保是本地路径
 // 加载图片映射
-let imageMapping: any = {};
-try {
-  const fs = await import('fs/promises');
-  const path = await import('path');
-  const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-  const mappingData = await fs.readFile(mappingPath, 'utf8');
-  imageMapping = JSON.parse(mappingData);
-} catch (error: any) {
-  console.warn('无法加载图片映射文件:', error.message);
-}
-
-const processCaseImage = (imageData: any): string => {
-  if (!imageData) return '/images/placeholder.webp';
-  
-  if (typeof imageData === 'string') {
-    // 如果是外部URL，尝试在缓存中找到对应的本地文件
-    if (imageData.startsWith('http')) {
-      const urlHash = generateImageHash(imageData);
-      const cachedImage = imageMapping.strapiImages?.find((cached: any) => 
-        cached.includes(urlHash) || cached.includes(imageData.split('/').pop())
-      );
-      return cachedImage || '/images/placeholder.webp';
-    }
-    // 如果是本地路径且格式正确，返回原路径
-    if (imageData.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
-      return imageData;
-    }
-  } else if (imageData && typeof imageData === 'object' && imageData.url) {
-    // 如果是图片对象，提取URL并映射到本地缓存
-    const originalUrl = imageData.url;
-    if (originalUrl.startsWith('/uploads/')) {
-      // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
-      const fileName = originalUrl.split('/').pop();
-      
-      // 尝试多种匹配方式
-      const cachedImage = imageMapping.strapiImages?.find((cached: any) => {
-        // 1. 直接匹配文件名
-        if (cached.includes(fileName)) return true;
-        
-        // 2. 匹配hash
-        if (imageData.hash && cached.includes(imageData.hash)) return true;
-        
-        // 3. Base64编码匹配
-        try {
-          const encodedName = Buffer.from(fileName).toString('base64');
-          if (cached.includes(encodedName)) return true;
-          // 处理Base64填充字符
-          const encodedNameNoPadding = encodedName.replace(/=+$/, '');
-          if (cached.includes(encodedNameNoPadding)) return true;
-        } catch (e) {}
-        
-        // 4. Base64解码匹配
-        try {
-          const decodedName = Buffer.from(fileName, 'base64').toString();
-          if (cached.includes(decodedName)) return true;
-        } catch (e) {}
-        
-        return false;
-      });
-      
-      return cachedImage || originalUrl;
-    }
-    return originalUrl;
-  }
-  
-  return '/images/placeholder.webp';
-};
+const imageMapping = await loadImageMapping();
 
 // 过滤有效的相关案例图片
 const validRelatedCases = relatedCases
   .map(relatedCase => ({
     ...relatedCase,
-    image: processCaseImage(relatedCase.image)
+    image: processImageForDisplay(relatedCase.image, imageMapping)
   }))
   .filter(relatedCase => relatedCase.image !== '/images/placeholder.webp');
 

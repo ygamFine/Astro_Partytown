@@ -19,6 +19,27 @@ export async function loadImageMapping() {
   }
 }
 
+// 统一的图片处理函数 - 用于替换页面中的重复代码
+export function processImageForDisplay(imageData, imageMapping = { strapiImages: [] }) {
+  if (!imageData) return '/images/placeholder.webp';
+  
+  // 如果已经是本地缓存路径，直接返回
+  if (typeof imageData === 'string' && imageData.startsWith('/images/strapi/')) {
+    return imageData;
+  }
+  
+  if (Array.isArray(imageData)) {
+    // 如果是数组，找到第一个有效的图片
+    const processedImages = imageData
+      .map(img => processSingleImage(img, imageMapping))
+      .filter(img => img && img !== '/images/placeholder.webp');
+    
+    return processedImages.length > 0 ? processedImages[0] : '/images/placeholder.webp';
+  }
+  
+  return processSingleImage(imageData, imageMapping);
+}
+
 // 处理单个图片
 export function processImage(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return '/images/placeholder.webp';

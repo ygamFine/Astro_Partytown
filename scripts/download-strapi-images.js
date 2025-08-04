@@ -126,25 +126,49 @@ function extractImageUrls(data) {
     if (!obj || typeof obj !== 'object') return;
     
     for (const [key, value] of Object.entries(obj)) {
+      // 处理字符串类型的URL
       if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('/uploads/'))) {
         urls.push(value);
-      } else if (Array.isArray(value)) {
+      } 
+      // 处理数组类型
+      else if (Array.isArray(value)) {
         value.forEach(item => {
+          if (!item) return; // 跳过null/undefined项
           if (typeof item === 'string' && (item.startsWith('http') || item.startsWith('/uploads/'))) {
             urls.push(item);
-          } else if (typeof item === 'object' && item.url) {
+          } else if (typeof item === 'object' && item && item.url) {
+            // 处理图片对象，提取url字段
             urls.push(item.url);
+          } else if (typeof item === 'object' && item) {
+            // 递归处理数组中的对象
+            extractFromObject(item);
           }
         });
-      } else if (typeof value === 'object' && value.url) {
-        urls.push(value.url);
-      } else if (typeof value === 'object') {
-        extractFromObject(value);
+      } 
+      // 处理对象类型
+      else if (typeof value === 'object' && value) {
+        // 如果对象有url字段，直接提取
+        if (value.url) {
+          urls.push(value.url);
+        } else {
+          // 递归处理嵌套对象
+          extractFromObject(value);
+        }
       }
     }
   }
   
-  extractFromObject(data);
+  // 处理data字段（Strapi API的标准响应格式）
+  if (data && data.data) {
+    if (Array.isArray(data.data)) {
+      data.data.forEach(item => extractFromObject(item));
+    } else {
+      extractFromObject(data.data);
+    }
+  } else {
+    extractFromObject(data);
+  }
+  
   return [...new Set(urls)]; // 去重
 }
 
