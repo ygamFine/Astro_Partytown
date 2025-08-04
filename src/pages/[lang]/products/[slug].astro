@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
-import { REVALIDATE_TIME } from '../../../lib/isrConfig.js';
-export const revalidate = REVALIDATE_TIME.PRODUCTS;
+export const revalidate = 30;
+
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
 import ContactButtons from '../../../components/common/contact/ContactButtons.astro';
