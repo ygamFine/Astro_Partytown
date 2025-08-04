@@ -2,14 +2,15 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
-import vercel from '@astrojs/vercel';
+import vercelStatic from '@astrojs/vercel/static';
 
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
-  adapter: vercel({
-    isr: true,
-    
+  adapter: vercelStatic({
+    isr: {
+      expiration: 30,
+    },
     // 包含必要的文件
     includeFiles: [
       './src/data/strapi-image-mapping.json'
