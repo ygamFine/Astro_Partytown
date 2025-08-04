@@ -128,6 +128,10 @@ export async function getProducts(locale = 'en') {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
+      },
+      cache: 'no-store',
+      next: {
+        revalidate: 30,
       }
     });
 
