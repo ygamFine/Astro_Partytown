@@ -8,18 +8,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   output: 'static',
   adapter: vercel({
-    // 启用ISR（增量静态再生）
-    isr: {
-      // 绕过令牌，用于强制重新生成页面
-      bypassToken: process.env.BYPASS_TOKEN || "your-bypass-token-here",
-      
-      // 排除不需要ISR的路径
-      exclude: [
-        '/preview',
-        '/auth/[page]',
-        /^\/api\/.+/
-      ]
-    },
+    isr: true,
     
     // 包含必要的文件
     includeFiles: [

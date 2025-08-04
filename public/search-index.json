@@ -483,6 +483,32 @@
       "url": "/en/case/6",
       "lang": "en",
       "searchText": "飞达钻机亮相第137届中国进出口商品交易会  [object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object],[object object]    案例"
+    },
+    {
+      "id": 8,
+      "type": "case",
+      "slug": "case-8",
+      "title": "一条新的案例",
+      "excerpt": "",
+      "content": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "text": "一条新的案例详情"
+            }
+          ]
+        }
+      ],
+      "category": "案例",
+      "image": "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.gif",
+      "client": "",
+      "industry": "",
+      "location": "",
+      "url": "/en/case/8",
+      "lang": "en",
+      "searchText": "一条新的案例  [object object]    案例"
     }
   ]
 }

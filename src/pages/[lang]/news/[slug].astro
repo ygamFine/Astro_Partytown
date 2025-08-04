@@ -1,5 +1,7 @@
 ---
 export const prerender = true;
+import { REVALIDATE_TIME } from '../../../lib/isrConfig.js';
+export const revalidate = REVALIDATE_TIME.NEWS;
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
 import GridList from '../../../components/templates/common/GridList.astro';

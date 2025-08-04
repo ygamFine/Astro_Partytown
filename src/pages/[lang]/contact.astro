@@ -1,5 +1,7 @@
 ---
 export const prerender = true;
+import { REVALIDATE_TIME } from '../../lib/isrConfig.js';
+export const revalidate = REVALIDATE_TIME.CONTACT;
 
 import Layout from '../../layouts/Layout.astro';
 import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';

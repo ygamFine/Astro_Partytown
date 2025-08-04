@@ -1,5 +1,7 @@
 ---
 export const prerender = true;
+import { REVALIDATE_TIME } from '../../lib/isrConfig.js';
+export const revalidate = REVALIDATE_TIME.HOME;
 import Layout from '../../layouts/Layout.astro';
 import FullScreenBanner from '../../components/common/banner/FullScreenBanner.astro';
 import HeroShowcase from '../../components/common/banner/HeroShowcase.astro';
