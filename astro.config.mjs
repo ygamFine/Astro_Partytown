@@ -6,7 +6,6 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static',
   adapter: vercel({
     isr: {
       expiration: 30,
