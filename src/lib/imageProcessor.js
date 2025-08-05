@@ -140,7 +140,14 @@ function processSingleImage(img, imageMapping) {
         return false;
       });
       
-      return cachedImage || originalUrl;
+      // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
+      if (cachedImage) {
+        return cachedImage;
+      } else {
+        // 构建完整的Strapi URL
+        const strapiBaseUrl = process.env.STRAPI_BASE_URL || 'https://your-strapi-domain.com';
+        return `${strapiBaseUrl}${originalUrl}`;
+      }
     }
     return originalUrl;
   }

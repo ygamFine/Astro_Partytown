@@ -116,7 +116,13 @@ function processImageWithMapping(img, imageMapping) {
         return false;
       });
       
-      return cachedImage || originalUrl;
+      // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
+      if (cachedImage) {
+        return cachedImage;
+      } else {
+        // 构建完整的Strapi URL
+        return `${STRAPI_BASE_URL}${originalUrl}`;
+      }
     }
     return originalUrl;
   }
@@ -441,7 +447,12 @@ export async function getNews(locale = 'en') {
               return false;
             });
             
-            processedImage = cachedImage || originalUrl;
+            // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
+            if (cachedImage) {
+              processedImage = cachedImage;
+            } else {
+              processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
+            }
           } else {
             processedImage = originalUrl;
           }
@@ -543,7 +554,12 @@ export async function getNewsById(id, locale = 'en') {
             return false;
           });
           
-          processedImage = cachedImage || originalUrl;
+          // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
+          if (cachedImage) {
+            processedImage = cachedImage;
+          } else {
+            processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
+          }
         } else {
           processedImage = originalUrl;
         }
@@ -667,7 +683,12 @@ export async function getCases(locale = 'en') {
               return false;
             });
             
-            processedImage = cachedImage || originalUrl;
+            // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
+            if (cachedImage) {
+              processedImage = cachedImage;
+            } else {
+              processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
+            }
           } else {
             processedImage = originalUrl;
           }
@@ -773,7 +794,12 @@ export async function getCase(id, locale = 'en') {
             return false;
           });
           
-          processedImage = cachedImage || originalUrl;
+          // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
+          if (cachedImage) {
+            processedImage = cachedImage;
+          } else {
+            processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
+          }
         } else {
           processedImage = originalUrl;
         }
