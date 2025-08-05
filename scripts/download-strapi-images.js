@@ -21,14 +21,27 @@ const __dirname = path.dirname(__filename);
 const STRAPI_BASE_URL = process.env.STRAPI_API_URL;
 const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
-const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR;
 
+// 根据部署环境确定图片缓存目录
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+const isProduction = process.env.NODE_ENV === 'production';
+
+let IMAGE_CACHE_DIR;
+if (isVercel) {
+  // Vercel部署环境：使用 /vercel/path0/dist/images/strapi
+  IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || '/vercel/path0/dist/images/strapi';
+} else {
+  // 本地开发环境：使用相对路径
+  IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
+}
 
 // 从环境变量获取启用的语言
 const ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
 
 console.log('🌐 启用的语言:', ENABLED_LOCALES.join(', '));
 console.log('🔧 配置信息:');
+console.log('   - 部署环境:', isVercel ? 'Vercel' : '本地');
+console.log('   - 生产环境:', isProduction ? '是' : '否');
 console.log('   - Strapi API URL:', STRAPI_BASE_URL);
 console.log('   - Strapi Static URL:', STRAPI_STATIC_URL);
 console.log('   - 图片缓存目录:', IMAGE_CACHE_DIR);
@@ -41,10 +54,24 @@ console.log('🚀 开始下载 Strapi 图片...');
  */
 async function ensureCacheDir() {
   try {
+    console.log(`🔍 检查缓存目录: ${IMAGE_CACHE_DIR}`);
     await fs.access(IMAGE_CACHE_DIR);
+    console.log(`✅ 缓存目录已存在: ${IMAGE_CACHE_DIR}`);
   } catch {
+    console.log(`📁 创建图片缓存目录: ${IMAGE_CACHE_DIR}`);
     await fs.mkdir(IMAGE_CACHE_DIR, { recursive: true });
-    console.log('📁 创建图片缓存目录:', IMAGE_CACHE_DIR);
+    console.log(`✅ 缓存目录创建成功: ${IMAGE_CACHE_DIR}`);
+  }
+  
+  // 验证目录权限
+  try {
+    const testFile = path.join(IMAGE_CACHE_DIR, '.test');
+    await fs.writeFile(testFile, 'test');
+    await fs.unlink(testFile);
+    console.log(`✅ 缓存目录权限正常`);
+  } catch (error) {
+    console.error(`❌ 缓存目录权限问题: ${error.message}`);
+    throw new Error(`无法写入缓存目录: ${IMAGE_CACHE_DIR}`);
   }
 }
 
@@ -267,14 +294,34 @@ async function generateImageMapping() {
     const mapping = {
       strapiImages: imageFiles.map(file => `/images/strapi/${file}`),
       totalCount: imageFiles.length,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
+      environment: isVercel ? 'vercel' : 'local',
+      cacheDir: IMAGE_CACHE_DIR
     };
     
-    const mappingPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
+    // 根据环境确定映射文件路径
+    let mappingPath;
+    if (isVercel) {
+      // Vercel环境：写入到构建输出目录
+      mappingPath = '/vercel/path0/dist/src/data/strapi-image-mapping.json';
+    } else {
+      // 本地环境：写入到源码目录
+      mappingPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
+    }
+    
+    // 确保目录存在
+    const mappingDir = path.dirname(mappingPath);
+    try {
+      await fs.access(mappingDir);
+    } catch {
+      await fs.mkdir(mappingDir, { recursive: true });
+    }
+    
     await fs.writeFile(mappingPath, JSON.stringify(mapping, null, 2));
     
     console.log(`📝 生成图片映射文件: ${mappingPath}`);
     console.log(`📊 映射图片数量: ${imageFiles.length}`);
+    console.log(`🌍 部署环境: ${isVercel ? 'Vercel' : '本地'}`);
   } catch (error) {
     console.error('❌ 生成图片映射失败:', error.message);
   }
