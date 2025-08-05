@@ -11,7 +11,6 @@ import { join } from 'path';
 
 async function generateSearchIndexFile() {
   try {
-    console.log('🚀 开始生成 SSG 搜索索引...');
     
     // 生成搜索索引数据
     const searchData = await generateSearchIndex();
@@ -30,13 +29,7 @@ async function generateSearchIndexFile() {
     
     writeFileSync(indexPath, jsonContent, 'utf8');
     
-    console.log('✅ SSG 搜索索引生成完成!');
-    console.log(`📁 文件位置: ${indexPath}`);
-    console.log(`📊 索引统计:`);
-    console.log(`   - 产品: ${searchData.products.length} 个`);
-    console.log(`   - 新闻: ${searchData.news.length} 条`);
-    console.log(`   - 案例: ${searchData.cases.length} 个`);
-    console.log(`   - 总计: ${searchData.products.length + searchData.news.length + searchData.cases.length} 项`);
+
     
     // 验证数据质量
     let validProducts = 0;
@@ -61,17 +54,10 @@ async function generateSearchIndexFile() {
       }
     });
     
-    console.log(`🔍 数据质量检查:`);
-    console.log(`   - 有效产品: ${validProducts}/${searchData.products.length}`);
-    console.log(`   - 有效新闻: ${validNews}/${searchData.news.length}`);
-    console.log(`   - 有效案例: ${validCases}/${searchData.cases.length}`);
-    
-    if (validProducts === 0 && validNews === 0 && validCases === 0) {
-      console.warn('⚠️  警告: 没有找到有效的数据，搜索功能可能无法正常工作');
-    }
+
     
   } catch (error) {
-    console.error('❌ 生成搜索索引失败:', error);
+
     process.exit(1);
   }
 }

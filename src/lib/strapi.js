@@ -20,7 +20,7 @@ async function loadImageMappingWithCreate() {
       return JSON.parse(mappingData);
     } catch (accessError) {
       // 文件不存在，创建默认的映射文件
-      console.log('图片映射文件不存在，正在创建默认文件...');
+  
       const defaultMapping = { strapiImages: [] };
       
       // 确保目录存在
@@ -34,7 +34,7 @@ async function loadImageMappingWithCreate() {
       // 创建默认映射文件
       try {
         await fs.writeFile(mappingPath, JSON.stringify(defaultMapping, null, 2), 'utf8');
-        console.log('已创建默认图片映射文件:', mappingPath);
+
         return defaultMapping;
       } catch (writeError) {
         console.warn('无法创建图片映射文件:', writeError.message);
@@ -218,7 +218,7 @@ export async function getProducts(locale = 'en') {
       });
     }
 
-    console.log(`从 Strapi API 获取到 ${processedProducts.length} 个产品`);
+
     return processedProducts;
 
   } catch (error) {
@@ -249,7 +249,7 @@ export async function getProduct(slug, locale = 'en') {
 
     // 如果没有找到数据，直接返回 null
     if (!data.data || data.data.length === 0) {
-      console.log(`语言 ${locale} 没有找到产品 ${slug}`);
+  
       return null;
     }
 
@@ -454,7 +454,7 @@ export async function getNews(locale = 'en') {
       });
     }
 
-    console.log(`从 Strapi API 获取到 ${processedNews.length} 条新闻`);
+
     return processedNews;
 
   } catch (error) {
@@ -485,7 +485,7 @@ export async function getNewsById(id, locale = 'en') {
 
     // 如果没有找到数据，直接返回 null
     if (!data.data) {
-      console.log(`语言 ${locale} 没有找到新闻 ID: ${id}`);
+  
       return null;
     }
 
@@ -587,7 +587,7 @@ export async function getCases(locale = 'en') {
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.log(`案例 API 端点不存在，返回空数组`);
+    
         return [];
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -680,7 +680,7 @@ export async function getCases(locale = 'en') {
       });
     }
 
-    console.log(`从 Strapi API 获取到 ${processedCases.length} 个案例`);
+
     return processedCases;
 
   } catch (error) {
@@ -705,7 +705,7 @@ export async function getCase(id, locale = 'en') {
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.log(`案例 ${id} 不存在`);
+    
         return null;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -715,7 +715,7 @@ export async function getCase(id, locale = 'en') {
 
     // 如果没有找到数据，直接返回 null
     if (!data.data) {
-      console.log(`语言 ${locale} 没有找到案例 ID: ${id}`);
+  
       return null;
     }
 

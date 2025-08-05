@@ -379,7 +379,6 @@ export function generateSitemapStats(pages) {
  */
 export async function generateFullSitemap() {
   try {
-    console.log('🚀 开始生成完整站点地图...');
     
     // 生成所有页面URL
     const staticPages = generateStaticPages();
@@ -408,8 +407,7 @@ export async function generateFullSitemap() {
     // 生成XML
     const sitemapXML = generateSitemapXML(allPages);
     
-    console.log('✅ 完整站点地图生成完成!');
-    console.log(`📊 统计信息:`, stats);
+
     
     return {
       xml: sitemapXML,

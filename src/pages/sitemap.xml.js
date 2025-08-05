@@ -6,13 +6,12 @@ import { generateFullSitemap } from '../lib/sitemapUtils.js';
  */
 export async function GET() {
   try {
-    console.log('🚀 开始生成站点地图...');
+  
     
     // 使用工具函数生成完整站点地图
     const sitemapData = await generateFullSitemap();
     
-    console.log('✅ 站点地图生成完成!');
-    console.log(`📊 统计信息:`, sitemapData.stats);
+    
     
     return new Response(sitemapData.xml, {
       status: 200,
@@ -23,8 +22,6 @@ export async function GET() {
     });
     
   } catch (error) {
-    console.error('❌ 生成站点地图失败:', error);
-    
     // 返回基本的站点地图
     const { generateStaticPages, generateSitemapXML } = await import('../lib/sitemapUtils.js');
     const basicPages = generateStaticPages();

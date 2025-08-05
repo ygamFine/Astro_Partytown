@@ -117,12 +117,6 @@ export async function generateSearchIndex() {
       }
     }
 
-    console.log('SSG 搜索索引生成完成:', {
-      products: searchData.products.length,
-      news: searchData.news.length,
-      cases: searchData.cases.length
-    });
-
     return searchData;
     
   } catch (error) {

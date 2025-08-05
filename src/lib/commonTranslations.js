@@ -13,10 +13,10 @@ export async function loadCommonTranslations(locale) {
   } catch (error) {
     // 如果加载失败，回退到默认语言
     if (locale !== DEFAULT_LANGUAGE) {
-      console.warn(`Failed to load common translations for ${locale}, falling back to ${DEFAULT_LANGUAGE}`);
+  
       return loadCommonTranslations(DEFAULT_LANGUAGE);
     }
-    console.error('Failed to load common translations:', error);
+
     return {};
   }
 }

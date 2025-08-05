@@ -22,56 +22,21 @@ const STRAPI_BASE_URL = process.env.STRAPI_API_URL;
 const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
-// 根据部署环境确定图片缓存目录
-const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
-const isProduction = process.env.NODE_ENV === 'production';
-
-let IMAGE_CACHE_DIR;
-if (isVercel) {
-  // Vercel部署环境：使用 public/images/strapi，构建时会自动复制到dist
-  IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
-} else {
-  // 本地开发环境：使用相对路径
-  IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
-}
+const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
 
 // 从环境变量获取启用的语言
 const ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
 
-console.log('🌐 启用的语言:', ENABLED_LOCALES.join(', '));
-console.log('🔧 配置信息:');
-console.log('   - 部署环境:', isVercel ? 'Vercel' : '本地');
-console.log('   - 生产环境:', isProduction ? '是' : '否');
-console.log('   - Strapi API URL:', STRAPI_BASE_URL);
-console.log('   - Strapi Static URL:', STRAPI_STATIC_URL);
-console.log('   - 图片缓存目录:', IMAGE_CACHE_DIR);
-console.log('   - API Token:', STRAPI_TOKEN ? '已设置' : '未设置');
 
-console.log('🚀 开始下载 Strapi 图片...');
 
 /**
  * 确保缓存目录存在
  */
 async function ensureCacheDir() {
   try {
-    console.log(`🔍 检查缓存目录: ${IMAGE_CACHE_DIR}`);
     await fs.access(IMAGE_CACHE_DIR);
-    console.log(`✅ 缓存目录已存在: ${IMAGE_CACHE_DIR}`);
   } catch {
-    console.log(`📁 创建图片缓存目录: ${IMAGE_CACHE_DIR}`);
     await fs.mkdir(IMAGE_CACHE_DIR, { recursive: true });
-    console.log(`✅ 缓存目录创建成功: ${IMAGE_CACHE_DIR}`);
-  }
-  
-  // 验证目录权限
-  try {
-    const testFile = path.join(IMAGE_CACHE_DIR, '.test');
-    await fs.writeFile(testFile, 'test');
-    await fs.unlink(testFile);
-    console.log(`✅ 缓存目录权限正常`);
-  } catch (error) {
-    console.error(`❌ 缓存目录权限问题: ${error.message}`);
-    throw new Error(`无法写入缓存目录: ${IMAGE_CACHE_DIR}`);
   }
 }
 
@@ -108,28 +73,22 @@ async function downloadImage(imageUrl) {
       // 检查文件是否已存在
       try {
         await fs.access(localPath);
-        console.log('⏭️  跳过已存在:', fileName);
         return null;
       } catch {
         // 文件不存在，需要下载
       }
 
       // 下载图片
-      console.log('📥 下载图片:', imageUrl);
       const response = await fetch(imageUrl);
       if (!response.ok) {
-        console.warn(`❌ 下载失败: ${imageUrl} (${response.status})`);
         return null;
       }
 
       const buffer = await response.arrayBuffer();
       await fs.writeFile(localPath, Buffer.from(buffer));
       
-      const fileSize = buffer.byteLength;
-      console.log(`✅ 下载成功: ${fileName} (${(fileSize / 1024).toFixed(1)}KB)`);
       return fileName;
     } catch (error) {
-      console.error(`❌ 下载出错: ${imageUrl}`, error.message);
       return null;
     }
   }
@@ -210,8 +169,6 @@ async function downloadAllImages() {
   
   // 获取所有语言的数据
   for (const locale of ENABLED_LOCALES) {
-    console.log(`\n🌐 处理语言: ${locale}`);
-    
     try {
       // 获取产品数据
       const productsResponse = await fetch(`${STRAPI_BASE_URL}/products?locale=${locale}&populate=*`, {
@@ -225,7 +182,6 @@ async function downloadAllImages() {
         const productsData = await productsResponse.json();
         const productUrls = extractImageUrls(productsData);
         productUrls.forEach(url => allImageUrls.add(url));
-        console.log(`📦 产品图片: ${productUrls.length} 个`);
       }
       
       // 获取新闻数据
@@ -240,7 +196,6 @@ async function downloadAllImages() {
         const newsData = await newsResponse.json();
         const newsUrls = extractImageUrls(newsData);
         newsUrls.forEach(url => allImageUrls.add(url));
-        console.log(`📰 新闻图片: ${newsUrls.length} 个`);
       }
       
       // 获取案例数据
@@ -255,15 +210,12 @@ async function downloadAllImages() {
         const casesData = await casesResponse.json();
         const caseUrls = extractImageUrls(casesData);
         caseUrls.forEach(url => allImageUrls.add(url));
-        console.log(`🏗️  案例图片: ${caseUrls.length} 个`);
       }
       
     } catch (error) {
-      console.error(`❌ 获取 ${locale} 数据失败:`, error.message);
+      // 静默处理错误
     }
   }
-  
-  console.log(`\n📊 总共发现 ${allImageUrls.size} 个唯一图片URL`);
   
   // 下载所有图片
   const downloadPromises = Array.from(allImageUrls).map(url => downloadImage(url));
@@ -274,10 +226,6 @@ async function downloadAllImages() {
       totalDownloaded++;
     }
   });
-  
-  console.log(`\n🎉 下载完成！`);
-  console.log(`📥 新下载: ${totalDownloaded} 个图片`);
-  console.log(`📁 缓存目录: ${IMAGE_CACHE_DIR}`);
   
   // 生成图片映射文件
   await generateImageMapping();
@@ -294,41 +242,17 @@ async function generateImageMapping() {
     const mapping = {
       strapiImages: imageFiles.map(file => `/images/strapi/${file}`),
       totalCount: imageFiles.length,
-      generatedAt: new Date().toISOString(),
-      environment: isVercel ? 'vercel' : 'local',
-      cacheDir: IMAGE_CACHE_DIR
+      generatedAt: new Date().toISOString()
     };
     
-    // 根据环境确定映射文件路径
-    let mappingPath;
-    if (isVercel) {
-      // Vercel环境：写入到构建输出目录
-      mappingPath = '/vercel/path0/dist/src/data/strapi-image-mapping.json';
-    } else {
-      // 本地环境：写入到源码目录
-      mappingPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
-    }
-    
-    // 确保目录存在
-    const mappingDir = path.dirname(mappingPath);
-    try {
-      await fs.access(mappingDir);
-    } catch {
-      await fs.mkdir(mappingDir, { recursive: true });
-    }
-    
+    const mappingPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
     await fs.writeFile(mappingPath, JSON.stringify(mapping, null, 2));
-    
-    console.log(`📝 生成图片映射文件: ${mappingPath}`);
-    console.log(`📊 映射图片数量: ${imageFiles.length}`);
-    console.log(`🌍 部署环境: ${isVercel ? 'Vercel' : '本地'}`);
   } catch (error) {
-    console.error('❌ 生成图片映射失败:', error.message);
+    // 静默处理错误
   }
 }
 
 // 执行下载
 downloadAllImages().catch(error => {
-  console.error('❌ 脚本执行失败:', error);
   process.exit(1);
 }); 

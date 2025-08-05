@@ -20,7 +20,7 @@ export async function loadImageMapping() {
       return JSON.parse(mappingData);
     } catch (accessError) {
       // 文件不存在，创建默认的映射文件
-      console.log('图片映射文件不存在，正在创建默认文件...');
+  
       const defaultMapping = { strapiImages: [] };
       
       // 确保目录存在
@@ -34,7 +34,7 @@ export async function loadImageMapping() {
       // 创建默认映射文件
       try {
         await fs.writeFile(mappingPath, JSON.stringify(defaultMapping, null, 2), 'utf8');
-        console.log('已创建默认图片映射文件:', mappingPath);
+
         return defaultMapping;
       } catch (writeError) {
         console.warn('无法创建图片映射文件:', writeError.message);

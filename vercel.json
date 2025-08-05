@@ -1,13 +1,10 @@
 {
     "version": 2,
-    "buildCommand": "npm run build:vercel",
+    "buildCommand": "npm run build",
     "outputDirectory": "dist",
     "installCommand": "npm install",
     "framework": "astro",
-    "env": {
-        "IMAGE_CACHE_DIR": "public/images/strapi",
-        "NODE_ENV": "production"
-    },
+
 
     "rewrites": [
         { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "en.aihuazhi.cn" }] },

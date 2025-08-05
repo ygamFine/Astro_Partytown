@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port 3000",
-    "build": "npm run download:strapi-images && npm run optimize:images && astro build && npm run generate:search-index",
-    "build:vercel": "node scripts/vercel-build.js",
+        "build": "npm run download:strapi-images && npm run optimize:images && astro build && npm run generate:search-index",
     "preview": "astro preview",
     "astro": "astro",
     "generate:search-index": "node scripts/generate-search-index.js",
