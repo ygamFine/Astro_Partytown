@@ -279,6 +279,20 @@ export async function getProducts(locale = 'en') {
     }
 
     const data = await response.json();
+    
+    // 调试：查看第一个产品的图片数据格式
+    if (data.data && data.data.length > 0) {
+      const firstItem = data.data[0];
+      console.log('🔍 第一个产品的图片数据:');
+      console.log('item.imgs:', firstItem.imgs);
+      console.log('item.imgs 类型:', typeof firstItem.imgs);
+      console.log('item.imgs 是否为数组:', Array.isArray(firstItem.imgs));
+      if (Array.isArray(firstItem.imgs) && firstItem.imgs.length > 0) {
+        console.log('第一个图片:', firstItem.imgs[0]);
+        console.log('第一个图片类型:', typeof firstItem.imgs[0]);
+      }
+    }
+    
     const products = data.data?.map(item => ({
       id: item.id,
       slug: item.slug,
