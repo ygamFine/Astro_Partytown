@@ -3,6 +3,7 @@
 import { getMenus } from '../../../lib/strapi.js';
 import { getCommonTextSync } from '../../../lib/commonTranslations.js';
 import { themeConfig } from '../../../config/theme.js';
+import { buildUrl } from '../../../lib/envConfig.js';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
@@ -12,10 +13,10 @@ const currentLang = langMatch ? langMatch[1] : 'en'; // 默认英文
 // 加载公共语言数据
 const common = await import(`../../../locales/${currentLang}/common.json`);
 const commonData = common.default;
-// 动态生成菜单链接 - 使用子域名方式，不添加语言标识
+
+// 动态生成菜单链接 - 根据环境使用不同的URL策略
 function withLang(path: string) {
-  // 直接返回原始路径，不添加语言标识
-  return path;
+  return buildUrl(currentLang, path);
 }
 
 // 在构建时获取菜单数据
@@ -369,11 +370,20 @@ try {
             
             // 获取当前页面路径
             const currentPath = window.location.pathname;
-            // 构建子域名URL
-            const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
-            const newUrl = `https://${subdomain}.aihuazhi.cn${currentPath}`;
-            // 跳转到新语言页面
-            window.location.href = newUrl;
+            // 根据环境构建语言切换URL
+            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            
+            if (isDev) {
+              // 本地开发：替换语言前缀
+              const pathWithoutLang = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
+              const newPath = `/${selectedLang}${pathWithoutLang}`;
+              window.location.href = newPath;
+            } else {
+              // 生产环境：构建子域名URL
+              const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
+              const newUrl = `https://${subdomain}.aihuazhi.cn${currentPath}`;
+              window.location.href = newUrl;
+            }
           }
           
           // 关闭下拉菜单

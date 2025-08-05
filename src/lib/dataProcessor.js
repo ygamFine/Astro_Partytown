@@ -4,6 +4,7 @@
  */
 
 import { processImage } from './imageProcessor.js';
+import { buildUrl } from './envConfig.js';
 
 // 处理产品数据
 export function processProductData(products, lang, imageMapping) {
@@ -17,7 +18,7 @@ export function processProductData(products, lang, imageMapping) {
     category: product.category,
     price: product.price || null, // 添加价格字段
     advantages: product.advantages || product.advantages_list || [], // 添加优势字段
-          href: `/products/${product.slug}`
+          href: buildUrl(lang, `/products/${product.slug}`)
   }));
 }
 
@@ -34,7 +35,7 @@ export function processNewsData(news, lang) {
     image: processNewsImage(newsItem.image),
     excerpt: newsItem.excerpt,
     date: newsItem.date,
-    href: `/${lang}/news/${newsItem.slug || newsItem.id}`,
+    href: buildUrl(lang, `/news/${newsItem.slug || newsItem.id}`),
   }));
 }
 
@@ -48,7 +49,7 @@ export function processCaseData(cases, lang, imageMapping) {
     image: processImage(caseItem.image, imageMapping),
     excerpt: caseItem.excerpt,
     category: caseItem.category,
-    href: `/${lang}/case/${caseItem.id}`
+    href: buildUrl(lang, `/case/${caseItem.id}`)
   }));
 }
 
@@ -96,13 +97,13 @@ export async function loadTranslations(lang, translationKeys) {
 // 生成面包屑导航
 export function generateBreadcrumbs(lang, type, currentPage) {
   const baseBreadcrumbs = [
-    { name: 'Home', href: `/${lang}/` }
+    { name: 'Home', href: buildUrl(lang, '/') }
   ];
   
   const typeBreadcrumbs = {
-    products: { name: 'Products', href: `/products` },
-    news: { name: 'News', href: `/${lang}/news` },
-    case: { name: 'Case', href: `/${lang}/case` }
+    products: { name: 'Products', href: buildUrl(lang, '/products') },
+          news: { name: 'News', href: buildUrl(lang, '/news') },
+      case: { name: 'Case', href: buildUrl(lang, '/case') }
   };
   
   if (typeBreadcrumbs[type]) {

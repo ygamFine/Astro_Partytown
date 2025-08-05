@@ -3,19 +3,21 @@
  * 用于生成标准化的面包屑导航数据
  */
 
+import { buildUrl } from './envConfig.js';
+
 /**
  * 生成产品页面的面包屑
  */
 export function generateProductBreadcrumbs(lang, productName, category) {
   const breadcrumbs = [
-    { label: 'home', href: `/` },
-    { label: 'products', href: `/products` }
+    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'products', href: buildUrl(lang, '/products') }
   ];
 
   if (category) {
     breadcrumbs.push({
       label: 'category',
-      href: `/products?category=${encodeURIComponent(category)}`
+      href: buildUrl(lang, `/products?category=${encodeURIComponent(category)}`)
     });
   }
 
@@ -29,11 +31,11 @@ export function generateProductBreadcrumbs(lang, productName, category) {
  */
 export function generateProductListBreadcrumbs(lang, category) {
   const breadcrumbs = [
-    { label: 'home', href: `/` }
+    { label: 'home', href: buildUrl(lang, '/') }
   ];
 
   if (category) {
-    breadcrumbs.push({ label: 'products', href: `/products` });
+    breadcrumbs.push({ label: 'products', href: buildUrl(lang, '/products') });
     breadcrumbs.push({ label: category });
   } else {
     breadcrumbs.push({ label: 'products' });
@@ -47,8 +49,8 @@ export function generateProductListBreadcrumbs(lang, category) {
  */
 export function generateNewsBreadcrumbs(lang, page) {
   const breadcrumbs = [
-    { label: 'home', href: `/` },
-    { label: 'news', href: page && page > 1 ? `/news/${page}` : `/news` }
+    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'news', href: buildUrl(lang, page && page > 1 ? `/news/${page}` : `/news`) }
   ];
 
   return breadcrumbs;
@@ -59,8 +61,8 @@ export function generateNewsBreadcrumbs(lang, page) {
  */
 export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
   return [
-    { label: 'home', href: `/` },
-    { label: 'news', href: `/news` },
+    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'news', href: buildUrl(lang, '/news') },
     { label: newsTitle }
   ];
 }
@@ -70,8 +72,8 @@ export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
  */
 export function generateCaseBreadcrumbs(lang, page) {
   const breadcrumbs = [
-    { label: 'home', href: `/` },
-    { label: 'case', href: page && page > 1 ? `/case/${page}` : `/case` }
+    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'case', href: buildUrl(lang, page && page > 1 ? `/case/${page}` : `/case`) }
   ];
 
   return breadcrumbs;
@@ -82,8 +84,8 @@ export function generateCaseBreadcrumbs(lang, page) {
  */
 export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
   return [
-    { label: 'home', href: `/` },
-    { label: 'case', href: `/case` },
+    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'case', href: buildUrl(lang, '/case') },
     { label: caseTitle }
   ];
 }
@@ -93,7 +95,7 @@ export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
  */
 export function generateAboutBreadcrumbs(lang) {
   return [
-    { label: 'home', href: `/` },
+    { label: 'home', href: buildUrl(lang, '/') },
     { label: 'about' }
   ];
 }
@@ -103,7 +105,7 @@ export function generateAboutBreadcrumbs(lang) {
  */
 export function generateContactBreadcrumbs(lang) {
   return [
-    { label: 'home', href: `/` },
+    { label: 'home', href: buildUrl(lang, '/') },
     { label: 'contact' }
   ];
 }
@@ -113,8 +115,8 @@ export function generateContactBreadcrumbs(lang) {
  */
 export function generateSearchBreadcrumbs(lang, searchTerm) {
   return [
-    { label: 'home', href: `/` },
-    { label: 'search', href: `/search` },
+    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'search', href: buildUrl(lang, '/search') },
     { label: searchTerm || 'search' }
   ];
 }
@@ -124,7 +126,7 @@ export function generateSearchBreadcrumbs(lang, searchTerm) {
  */
 export function generateCustomBreadcrumbs(lang, items) {
   const breadcrumbs = [
-    { label: 'home', href: `/` }
+    { label: 'home', href: buildUrl(lang, '/') }
   ];
 
   breadcrumbs.push(...items);

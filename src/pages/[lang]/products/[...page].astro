@@ -8,6 +8,7 @@ import { getProducts } from '../../../lib/strapi.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
 import { mergeTranslations } from '../../../locales/i18n.js';
 import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
+import { buildUrl } from '../../../lib/envConfig.js';
 
 // 只为配置中启用的语言和页面生成路由
 export async function getStaticPaths() {
@@ -72,7 +73,7 @@ const gridItems = hasProducts ? displayProducts
       image: validImage,
       excerpt: product.excerpt,
       category: product.category,
-      href: `/products/${product.slug || product.id}`
+      href: buildUrl(lang, `/products/${product.slug || product.id}`)
     };
   }) : [];
 
@@ -80,12 +81,12 @@ const gridItems = hasProducts ? displayProducts
 
 // 面包屑导航
 const breadcrumbs = [
-  { label: 'Home', href: `/` },
-  { label: 'Products', href: `/products` }
+  { label: 'Home', href: buildUrl(lang, '/') },
+  { label: 'Products', href: buildUrl(lang, '/products') }
 ];
 
 // 生成分页基础URL
-const baseUrl = `/products`;
+const baseUrl = buildUrl(lang, '/products');
 ---
 
 <SecondaryPageLayout 

@@ -12,6 +12,7 @@ import { generatePaginationPaths, parsePageParam } from '../../../lib/pagination
 import { processNewsData, loadTranslations } from '../../../lib/dataProcessor.js';
 import { generateNewsBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { themeConfig } from '../../../config/theme.js';
+import { buildUrl } from '../../../lib/envConfig.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
@@ -67,7 +68,7 @@ const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actual
              <Pagination 
          currentPage={actualCurrentPage}
          totalPages={totalPages}
-         baseUrl={`/news`}
+         baseUrl={buildUrl(lang, '/news')}
          i18n={translations.pagination}
        />
     </>
