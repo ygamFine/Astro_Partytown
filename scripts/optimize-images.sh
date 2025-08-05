@@ -8,19 +8,22 @@ echo "🚀 开始全站图片优化..."
 # 在任何环境下都进行图片优化
 echo "🚀 开始全站图片优化..."
 
-# 检查依赖
-if ! command -v cwebp &> /dev/null; then
-    echo "❌ 错误: 需要安装 cwebp"
-    echo "macOS: brew install webp"
-    echo "Ubuntu: sudo apt-get install webp"
-    exit 1
+# 检查WebP工具是否可用（可选）
+HAS_CWEBP=false
+if command -v cwebp &> /dev/null; then
+    HAS_CWEBP=true
+    echo "✅ cwebp 可用"
+else
+    echo "⚠️  cwebp 不可用，跳过WebP转换"
 fi
 
-if ! command -v magick &> /dev/null; then
-    echo "❌ 错误: 需要安装 ImageMagick"
-    echo "macOS: brew install imagemagick"
-    echo "Ubuntu: sudo apt-get install imagemagick"
-    exit 1
+# 检查ImageMagick是否可用（可选）
+HAS_IMAGEMAGICK=false
+if command -v magick &> /dev/null; then
+    HAS_IMAGEMAGICK=true
+    echo "✅ ImageMagick 可用"
+else
+    echo "⚠️  ImageMagick 不可用，跳过移动端图片生成"
 fi
 
 # 创建优化目录
@@ -28,46 +31,56 @@ mkdir -p public/images/optimized
 
 echo "📸 转换 JPG/PNG 图片为 WebP 格式..."
 
-# 批量转换 public 目录下的图片（包括Strapi下载的图片）
-find public -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" | while read file; do
-    # 生成 WebP 文件名
-    webp_file="${file%.*}.webp"
-    
-    # 跳过已存在的 WebP 文件
-    if [[ -f "$webp_file" ]]; then
-        echo "⏭️  跳过已存在: $webp_file"
-        continue
-    fi
-    
-    # 转换为 WebP
-    echo "🔄 转换: $file -> $webp_file"
-    cwebp -q 80 -m 6 "$file" -o "$webp_file"
-    
-    # 检查文件大小
-    original_size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
-    webp_size=$(stat -f%z "$webp_file" 2>/dev/null || stat -c%s "$webp_file" 2>/dev/null)
-    
-    if [[ $webp_size -lt $original_size ]]; then
-        saved_bytes=$((original_size - webp_size))
-        echo "✅ 压缩成功: 节省 $saved_bytes 字节"
-    fi
-done
+# 只有在cwebp可用时才进行转换
+if [[ "$HAS_CWEBP" == "true" ]]; then
+    # 批量转换 public 目录下的图片（包括Strapi下载的图片）
+    find public -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" | while read file; do
+        # 生成 WebP 文件名
+        webp_file="${file%.*}.webp"
+        
+        # 跳过已存在的 WebP 文件
+        if [[ -f "$webp_file" ]]; then
+            echo "⏭️  跳过已存在: $webp_file"
+            continue
+        fi
+        
+        # 转换为 WebP
+        echo "🔄 转换: $file -> $webp_file"
+        cwebp -q 80 -m 6 "$file" -o "$webp_file"
+        
+        # 检查文件大小
+        original_size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+        webp_size=$(stat -f%z "$webp_file" 2>/dev/null || stat -c%s "$webp_file" 2>/dev/null)
+        
+        if [[ $webp_size -lt $original_size ]]; then
+            saved_bytes=$((original_size - webp_size))
+            echo "✅ 压缩成功: 节省 $saved_bytes 字节"
+        fi
+    done
+else
+    echo "⏭️  跳过WebP转换（cwebp不可用）"
+fi
 
 echo "📱 生成移动端响应式图片..."
 
-# 为大图生成移动端版本（包括Strapi图片）
-for img in public/images/banner*.jpg public/images/optimized/banner*.jpg public/images/strapi/*.jpg public/images/strapi/*.png; do
-    if [[ -f "$img" ]]; then
-        base_name=$(basename "$img" .jpg)
-        base_name=$(basename "$base_name" .png)
-        mobile_webp="public/images/optimized/${base_name}-mobile.webp"
-        
-        if [[ ! -f "$mobile_webp" ]]; then
-            echo "📱 生成移动端版本: $mobile_webp"
-            magick "$img" -resize 768x400^ -gravity center -extent 768x400 -quality 80 "$mobile_webp"
+# 只有在ImageMagick可用时才生成移动端版本
+if [[ "$HAS_IMAGEMAGICK" == "true" ]]; then
+    # 为大图生成移动端版本（包括Strapi图片）
+    for img in public/images/banner*.jpg public/images/optimized/banner*.jpg public/images/strapi/*.jpg public/images/strapi/*.png; do
+        if [[ -f "$img" ]]; then
+            base_name=$(basename "$img" .jpg)
+            base_name=$(basename "$base_name" .png)
+            mobile_webp="public/images/optimized/${base_name}-mobile.webp"
+            
+            if [[ ! -f "$mobile_webp" ]]; then
+                echo "📱 生成移动端版本: $mobile_webp"
+                magick "$img" -resize 768x400^ -gravity center -extent 768x400 -quality 80 "$mobile_webp"
+            fi
         fi
-    fi
-done
+    done
+else
+    echo "⏭️  跳过移动端图片生成（ImageMagick不可用）"
+fi
 
 echo "🗂️  检查关键图片文件..."
 
