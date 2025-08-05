@@ -5,9 +5,27 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
-        { "source": "en.example.com/:path*", "destination": "/en/:path*" },
-        { "source": "ja.example.com/:path*", "destination": "/ja/:path*" },
-        { "source": "de.example.com/:path*", "destination": "/de/:path*" },
-        { "source": "/:path*", "destination": "/en/:path*" }
-      ]
-  }
+        { "source": "en.aihuazhi.cn/:path*", "destination": "/en/:path*" },
+        { "source": "zh.aihuazhi.cn/:path*", "destination": "/zh-CN/:path*" },
+        { "source": "de.aihuazhi.cn/:path*", "destination": "/de/:path*" },
+        { "source": "ja.aihuazhi.cn/:path*", "destination": "/ja/:path*" },
+        { "source": "fr.aihuazhi.cn/:path*", "destination": "/fr/:path*" },
+        { "source": "ar.aihuazhi.cn/:path*", "destination": "/ar/:path*" },
+        { "source": "es.aihuazhi.cn/:path*", "destination": "/es/:path*" },
+        { "source": "it.aihuazhi.cn/:path*", "destination": "/it/:path*" },
+        { "source": "pt.aihuazhi.cn/:path*", "destination": "/pt-pt/:path*" },
+        { "source": "nl.aihuazhi.cn/:path*", "destination": "/nl/:path*" },
+        { "source": "pl.aihuazhi.cn/:path*", "destination": "/pl/:path*" },
+        { "source": "ru.aihuazhi.cn/:path*", "destination": "/ru/:path*" },
+        { "source": "th.aihuazhi.cn/:path*", "destination": "/th/:path*" },
+        { "source": "id.aihuazhi.cn/:path*", "destination": "/id/:path*" },
+        { "source": "vi.aihuazhi.cn/:path*", "destination": "/vi/:path*" },
+        { "source": "ms.aihuazhi.cn/:path*", "destination": "/ms/:path*" },
+        { "source": "ml.aihuazhi.cn/:path*", "destination": "/ml/:path*" },
+        { "source": "my.aihuazhi.cn/:path*", "destination": "/my/:path*" },
+        { "source": "hi.aihuazhi.cn/:path*", "destination": "/hi/:path*" },
+        { "source": "ko.aihuazhi.cn/:path*", "destination": "/ko/:path*" },
+        { "source": "zh-hant.aihuazhi.cn/:path*", "destination": "/zh-Hant/:path*" },
+        { "source": "tr.aihuazhi.cn/:path*", "destination": "/tr/:path*" }
+    ]
+}
