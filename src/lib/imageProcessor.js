@@ -121,6 +121,13 @@ function processSingleImage(img, imageMapping) {
           if (cached.includes(encodedUrlNoPadding)) return true;
         } catch (e) {}
         
+        // 4. 匹配相对路径的base64编码（这是关键！）
+        try {
+          const relativePath = img.replace(/^https?:\/\/[^\/]+/, '');
+          const encodedRelativePath = Buffer.from(relativePath).toString('base64');
+          if (cached.includes(encodedRelativePath)) return true;
+        } catch (e) {}
+        
         return false;
       });
       
@@ -155,6 +162,13 @@ function processSingleImage(img, imageMapping) {
           // 处理Base64填充字符
           const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
           if (cached.includes(encodedUrlNoPadding)) return true;
+        } catch (e) {}
+        
+        // 4. 匹配相对路径的base64编码（这是关键！）
+        try {
+          const relativePath = originalUrl.replace(/^https?:\/\/[^\/]+/, '');
+          const encodedRelativePath = Buffer.from(relativePath).toString('base64');
+          if (cached.includes(encodedRelativePath)) return true;
         } catch (e) {}
         
         return false;

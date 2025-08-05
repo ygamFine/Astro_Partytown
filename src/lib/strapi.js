@@ -114,6 +114,16 @@ function processImageWithMapping(img, imageMapping) {
           }
         } catch (e) {}
         
+        // 4. 匹配相对路径的base64编码（这是关键！）
+        try {
+          const relativePath = img.replace(/^https?:\/\/[^\/]+/, '');
+          const encodedRelativePath = Buffer.from(relativePath).toString('base64');
+          if (cached.includes(encodedRelativePath)) {
+            console.log('✅ 相对路径编码匹配:', cached);
+            return true;
+          }
+        } catch (e) {}
+        
         return false;
       });
       
@@ -165,6 +175,16 @@ function processImageWithMapping(img, imageMapping) {
           const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
           if (cached.includes(encodedUrlNoPadding)) {
             console.log('✅ URL编码匹配(无填充):', cached);
+            return true;
+          }
+        } catch (e) {}
+        
+        // 4. 匹配相对路径的base64编码（这是关键！）
+        try {
+          const relativePath = originalUrl.replace(/^https?:\/\/[^\/]+/, '');
+          const encodedRelativePath = Buffer.from(relativePath).toString('base64');
+          if (cached.includes(encodedRelativePath)) {
+            console.log('✅ 相对路径编码匹配:', cached);
             return true;
           }
         } catch (e) {}
