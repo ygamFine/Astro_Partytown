@@ -5,6 +5,48 @@
 
 import { generateImageHash } from '../utils/hashUtils.js';
 
+// 加载图片映射文件的通用函数
+async function loadImageMappingWithCreate() {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
+    
+    // 检查文件是否存在
+    try {
+      await fs.access(mappingPath);
+      // 文件存在，读取内容
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      return JSON.parse(mappingData);
+    } catch (accessError) {
+      // 文件不存在，创建默认的映射文件
+      console.log('图片映射文件不存在，正在创建默认文件...');
+      const defaultMapping = { strapiImages: [] };
+      
+      // 确保目录存在
+      const dirPath = path.dirname(mappingPath);
+      try {
+        await fs.mkdir(dirPath, { recursive: true });
+      } catch (mkdirError) {
+        console.warn('无法创建目录:', mkdirError.message);
+      }
+      
+      // 创建默认映射文件
+      try {
+        await fs.writeFile(mappingPath, JSON.stringify(defaultMapping, null, 2), 'utf8');
+        console.log('已创建默认图片映射文件:', mappingPath);
+        return defaultMapping;
+      } catch (writeError) {
+        console.warn('无法创建图片映射文件:', writeError.message);
+        return defaultMapping;
+      }
+    }
+  } catch (error) {
+    console.warn('无法加载图片映射文件:', error.message);
+    return { strapiImages: [] };
+  }
+}
+
 // 加载环境变量
 import { config } from 'dotenv';
 config();
@@ -152,16 +194,7 @@ export async function getProducts(locale = 'en') {
     })) || [];
 
     // 加载图片映射
-    let imageMapping = {};
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-      const mappingData = await fs.readFile(mappingPath, 'utf8');
-      imageMapping = JSON.parse(mappingData);
-    } catch (error) {
-      console.warn('无法加载图片映射文件:', error.message);
-    }
+    const imageMapping = await loadImageMappingWithCreate();
 
     // 处理所有产品的图片，使用缓存的图片
     const processedProducts = [];
@@ -223,16 +256,7 @@ export async function getProduct(slug, locale = 'en') {
     const item = data.data[0];
 
     // 加载图片映射
-    let imageMapping = {};
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-      const mappingData = await fs.readFile(mappingPath, 'utf8');
-      imageMapping = JSON.parse(mappingData);
-    } catch (error) {
-      console.warn('无法加载图片映射文件:', error.message);
-    }
+    const imageMapping = await loadImageMappingWithCreate();
 
     // 处理图片，使用缓存的图片映射
     const processedImages = [];
@@ -365,16 +389,7 @@ export async function getNews(locale = 'en') {
     })) || [];
 
     // 加载图片映射
-    let imageMapping = {};
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-      const mappingData = await fs.readFile(mappingPath, 'utf8');
-      imageMapping = JSON.parse(mappingData);
-    } catch (error) {
-      console.warn('无法加载图片映射文件:', error.message);
-    }
+    const imageMapping = await loadImageMappingWithCreate();
 
     // 处理所有新闻的图片，使用缓存的图片
     const processedNews = [];
@@ -477,16 +492,7 @@ export async function getNewsById(id, locale = 'en') {
     const item = data.data;
 
     // 加载图片映射
-    let imageMapping = {};
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-      const mappingData = await fs.readFile(mappingPath, 'utf8');
-      imageMapping = JSON.parse(mappingData);
-    } catch (error) {
-      console.warn('无法加载图片映射文件:', error.message);
-    }
+    const imageMapping = await loadImageMappingWithCreate();
 
     // 处理图片，使用缓存的图片
     let processedImage = '/images/placeholder.webp';
@@ -609,16 +615,7 @@ export async function getCases(locale = 'en') {
     })) || [];
 
     // 加载图片映射
-    let imageMapping = {};
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-      const mappingData = await fs.readFile(mappingPath, 'utf8');
-      imageMapping = JSON.parse(mappingData);
-    } catch (error) {
-      console.warn('无法加载图片映射文件:', error.message);
-    }
+    const imageMapping = await loadImageMappingWithCreate();
 
     // 处理所有案例的图片，使用缓存的图片
     const processedCases = [];
@@ -725,16 +722,7 @@ export async function getCase(id, locale = 'en') {
     const item = data.data;
 
     // 加载图片映射
-    let imageMapping = {};
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-      const mappingData = await fs.readFile(mappingPath, 'utf8');
-      imageMapping = JSON.parse(mappingData);
-    } catch (error) {
-      console.warn('无法加载图片映射文件:', error.message);
-    }
+    const imageMapping = await loadImageMappingWithCreate();
 
     // 处理图片，使用缓存的图片
     let processedImage = '/images/placeholder.webp';

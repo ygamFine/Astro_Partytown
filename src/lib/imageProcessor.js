@@ -11,8 +11,36 @@ export async function loadImageMapping() {
     const fs = await import('fs/promises');
     const path = await import('path');
     const mappingPath = path.join(process.cwd(), 'src/data/strapi-image-mapping.json');
-    const mappingData = await fs.readFile(mappingPath, 'utf8');
-    return JSON.parse(mappingData);
+    
+    // 检查文件是否存在
+    try {
+      await fs.access(mappingPath);
+      // 文件存在，读取内容
+      const mappingData = await fs.readFile(mappingPath, 'utf8');
+      return JSON.parse(mappingData);
+    } catch (accessError) {
+      // 文件不存在，创建默认的映射文件
+      console.log('图片映射文件不存在，正在创建默认文件...');
+      const defaultMapping = { strapiImages: [] };
+      
+      // 确保目录存在
+      const dirPath = path.dirname(mappingPath);
+      try {
+        await fs.mkdir(dirPath, { recursive: true });
+      } catch (mkdirError) {
+        console.warn('无法创建目录:', mkdirError.message);
+      }
+      
+      // 创建默认映射文件
+      try {
+        await fs.writeFile(mappingPath, JSON.stringify(defaultMapping, null, 2), 'utf8');
+        console.log('已创建默认图片映射文件:', mappingPath);
+        return defaultMapping;
+      } catch (writeError) {
+        console.warn('无法创建图片映射文件:', writeError.message);
+        return defaultMapping;
+      }
+    }
   } catch (error) {
     console.warn('无法加载图片映射文件:', error.message);
     return { strapiImages: [] };
