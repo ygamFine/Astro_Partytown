@@ -2,11 +2,54 @@
 // 根路径首页 - 用于子域名访问
 export const prerender = true;
 
-import { getEnabledLanguages } from '../lib/i18n-config.js';
+// 根据子域名确定语言
+const hostname = Astro.url.hostname;
+let targetLang = 'en'; // 默认英文
 
-// 获取默认语言
-const defaultLanguage = getEnabledLanguages()[0] || 'en';
+if (hostname.startsWith('zh.')) {
+  targetLang = 'zh-CN';
+} else if (hostname.startsWith('zh-hant.')) {
+  targetLang = 'zh-Hant';
+} else if (hostname.startsWith('de.')) {
+  targetLang = 'de';
+} else if (hostname.startsWith('ja.')) {
+  targetLang = 'ja';
+} else if (hostname.startsWith('fr.')) {
+  targetLang = 'fr';
+} else if (hostname.startsWith('ar.')) {
+  targetLang = 'ar';
+} else if (hostname.startsWith('es.')) {
+  targetLang = 'es';
+} else if (hostname.startsWith('it.')) {
+  targetLang = 'it';
+} else if (hostname.startsWith('pt.')) {
+  targetLang = 'pt-pt';
+} else if (hostname.startsWith('nl.')) {
+  targetLang = 'nl';
+} else if (hostname.startsWith('pl.')) {
+  targetLang = 'pl';
+} else if (hostname.startsWith('ru.')) {
+  targetLang = 'ru';
+} else if (hostname.startsWith('th.')) {
+  targetLang = 'th';
+} else if (hostname.startsWith('id.')) {
+  targetLang = 'id';
+} else if (hostname.startsWith('vi.')) {
+  targetLang = 'vi';
+} else if (hostname.startsWith('ms.')) {
+  targetLang = 'ms';
+} else if (hostname.startsWith('ml.')) {
+  targetLang = 'ml';
+} else if (hostname.startsWith('my.')) {
+  targetLang = 'my';
+} else if (hostname.startsWith('hi.')) {
+  targetLang = 'hi';
+} else if (hostname.startsWith('ko.')) {
+  targetLang = 'ko';
+} else if (hostname.startsWith('tr.')) {
+  targetLang = 'tr';
+}
 
-// 重定向到默认语言的首页
-return Astro.redirect(`/${defaultLanguage}/`);
+// 重定向到对应语言的首页
+return Astro.redirect(`/${targetLang}/`);
 --- 
