@@ -79,59 +79,32 @@ function processImageWithMapping(img, imageMapping) {
       const urlHash = generateImageHash(img);
       const fileName = img.split('/').pop();
       
-      // 调试信息
-      console.log('🔍 处理图片URL:', img);
-      console.log('📁 文件名:', fileName);
-      console.log('🔑 URL哈希:', urlHash);
-      console.log('🗂️  可用缓存:', imageMapping.strapiImages?.length || 0);
-      
       // 尝试多种匹配方式
       const cachedImage = imageMapping.strapiImages?.find((cached) => {
         // 1. 直接匹配文件名
-        if (cached.includes(fileName)) {
-          console.log('✅ 文件名匹配:', cached);
-          return true;
-        }
+        if (cached.includes(fileName)) return true;
         
         // 2. 匹配hash
-        if (cached.includes(urlHash)) {
-          console.log('✅ 哈希匹配:', cached);
-          return true;
-        }
+        if (cached.includes(urlHash)) return true;
         
         // 3. 匹配原始URL的base64编码
         try {
           const encodedUrl = Buffer.from(img).toString('base64');
-          if (cached.includes(encodedUrl)) {
-            console.log('✅ URL编码匹配:', cached);
-            return true;
-          }
+          if (cached.includes(encodedUrl)) return true;
           // 处理Base64填充字符
           const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
-          if (cached.includes(encodedUrlNoPadding)) {
-            console.log('✅ URL编码匹配(无填充):', cached);
-            return true;
-          }
+          if (cached.includes(encodedUrlNoPadding)) return true;
         } catch (e) {}
         
         // 4. 匹配相对路径的base64编码（这是关键！）
         try {
           const relativePath = img.replace(/^https?:\/\/[^\/]+/, '');
           const encodedRelativePath = Buffer.from(relativePath).toString('base64');
-          if (cached.includes(encodedRelativePath)) {
-            console.log('✅ 相对路径编码匹配:', cached);
-            return true;
-          }
+          if (cached.includes(encodedRelativePath)) return true;
         } catch (e) {}
         
         return false;
       });
-      
-      if (cachedImage) {
-        console.log('🎯 找到匹配:', cachedImage);
-      } else {
-        console.log('❌ 未找到匹配，使用原始URL');
-      }
       
       return cachedImage || img;
     }
@@ -145,58 +118,32 @@ function processImageWithMapping(img, imageMapping) {
       const urlHash = generateImageHash(originalUrl);
       const fileName = originalUrl.split('/').pop();
       
-      // 调试信息
-      console.log('🔍 处理图片对象URL:', originalUrl);
-      console.log('📁 文件名:', fileName);
-      console.log('🔑 URL哈希:', urlHash);
-      
       // 尝试多种匹配方式
       const cachedImage = imageMapping.strapiImages?.find((cached) => {
         // 1. 直接匹配文件名
-        if (cached.includes(fileName)) {
-          console.log('✅ 文件名匹配:', cached);
-          return true;
-        }
+        if (cached.includes(fileName)) return true;
         
         // 2. 匹配hash
-        if (cached.includes(urlHash)) {
-          console.log('✅ 哈希匹配:', cached);
-          return true;
-        }
+        if (cached.includes(urlHash)) return true;
         
         // 3. 匹配原始URL的base64编码
         try {
           const encodedUrl = Buffer.from(originalUrl).toString('base64');
-          if (cached.includes(encodedUrl)) {
-            console.log('✅ URL编码匹配:', cached);
-            return true;
-          }
+          if (cached.includes(encodedUrl)) return true;
           // 处理Base64填充字符
           const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
-          if (cached.includes(encodedUrlNoPadding)) {
-            console.log('✅ URL编码匹配(无填充):', cached);
-            return true;
-          }
+          if (cached.includes(encodedUrlNoPadding)) return true;
         } catch (e) {}
         
         // 4. 匹配相对路径的base64编码（这是关键！）
         try {
           const relativePath = originalUrl.replace(/^https?:\/\/[^\/]+/, '');
           const encodedRelativePath = Buffer.from(relativePath).toString('base64');
-          if (cached.includes(encodedRelativePath)) {
-            console.log('✅ 相对路径编码匹配:', cached);
-            return true;
-          }
+          if (cached.includes(encodedRelativePath)) return true;
         } catch (e) {}
         
         return false;
       });
-      
-      if (cachedImage) {
-        console.log('🎯 找到匹配:', cachedImage);
-      } else {
-        console.log('❌ 未找到匹配，使用原始URL');
-      }
       
       return cachedImage || originalUrl;
     }
@@ -205,56 +152,31 @@ function processImageWithMapping(img, imageMapping) {
     if (originalUrl.startsWith('/uploads/')) {
       const fileName = originalUrl.split('/').pop();
       
-      // 调试信息
-      console.log('🔍 处理相对路径:', originalUrl);
-      console.log('📁 文件名:', fileName);
-      
       // 尝试多种匹配方式
       const cachedImage = imageMapping.strapiImages?.find((cached) => {
         // 1. 直接匹配文件名
-        if (cached.includes(fileName)) {
-          console.log('✅ 文件名匹配:', cached);
-          return true;
-        }
+        if (cached.includes(fileName)) return true;
         
         // 2. 匹配hash
-        if (img.hash && cached.includes(img.hash)) {
-          console.log('✅ 哈希匹配:', cached);
-          return true;
-        }
+        if (img.hash && cached.includes(img.hash)) return true;
         
         // 3. Base64编码匹配
         try {
           const encodedName = Buffer.from(fileName).toString('base64');
-          if (cached.includes(encodedName)) {
-            console.log('✅ 文件名编码匹配:', cached);
-            return true;
-          }
+          if (cached.includes(encodedName)) return true;
           // 处理Base64填充字符
           const encodedNameNoPadding = encodedName.replace(/=+$/, '');
-          if (cached.includes(encodedNameNoPadding)) {
-            console.log('✅ 文件名编码匹配(无填充):', cached);
-            return true;
-          }
+          if (cached.includes(encodedNameNoPadding)) return true;
         } catch (e) {}
         
         // 4. Base64解码匹配
         try {
           const decodedName = Buffer.from(fileName, 'base64').toString();
-          if (cached.includes(decodedName)) {
-            console.log('✅ 文件名解码匹配:', cached);
-            return true;
-          }
+          if (cached.includes(decodedName)) return true;
         } catch (e) {}
         
         return false;
       });
-      
-      if (cachedImage) {
-        console.log('🎯 找到匹配:', cachedImage);
-      } else {
-        console.log('❌ 未找到匹配，使用原始URL');
-      }
       
       return cachedImage || originalUrl;
     }
