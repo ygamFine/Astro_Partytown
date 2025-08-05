@@ -23,9 +23,8 @@ export const useSubdomainMode = () => {
     return false; // 本地开发使用语言标识
   }
   
-  const domain = getCurrentDomain();
-  // 检查是否为子域名模式（如 en.aihuazhi.cn）
-  return domain.includes('.aihuazhi.cn') && domain !== 'aihuazhi.cn' && domain !== 'www.aihuazhi.cn';
+  // 生产环境默认使用子域名模式
+  return true;
 };
 
 // 获取语言前缀
@@ -38,15 +37,14 @@ export const getLangPrefix = (lang) => {
 
 // 构建URL
 export const buildUrl = (lang, path) => {
-  const langPrefix = getLangPrefix(lang);
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
-  if (useSubdomainMode()) {
-    // 子域名模式：直接返回路径
-    return cleanPath;
-  } else {
+  if (isDevelopment) {
     // 本地开发模式：添加语言前缀
-    return `${langPrefix}${cleanPath}`;
+    return `/${lang}${cleanPath}`;
+  } else {
+    // 生产环境：子域名模式，直接返回路径
+    return cleanPath;
   }
 };
 
