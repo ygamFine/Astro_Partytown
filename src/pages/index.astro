@@ -1,0 +1,12 @@
+---
+// 根路径首页 - 用于子域名访问
+export const prerender = true;
+
+import { getEnabledLanguages } from '../lib/i18n-config.js';
+
+// 获取默认语言
+const defaultLanguage = getEnabledLanguages()[0] || 'en';
+
+// 重定向到默认语言的首页
+return Astro.redirect(`/${defaultLanguage}/`);
+--- 
