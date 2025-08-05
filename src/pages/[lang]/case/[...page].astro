@@ -22,6 +22,17 @@ export async function getStaticPaths() {
 
 const { lang, currentPage, totalPages, items: cases } = Astro.props;
 
+// 调试信息
+console.log('=== DEBUG INFO ===');
+console.log('Current URL:', Astro.url.href);
+console.log('Hostname:', Astro.url.hostname);
+console.log('Pathname:', Astro.url.pathname);
+console.log('Lang param:', lang);
+console.log('Current page:', currentPage);
+console.log('Total pages:', totalPages);
+console.log('Cases count:', cases?.length || 0);
+console.log('==================');
+
 // 解析页码参数
 const actualCurrentPage = parsePageParam(Astro.params.page, 'page');
 

@@ -27,6 +27,7 @@
         { "source": "ko.aihuazhi.cn/:path*", "destination": "/ko/:path*" },
         { "source": "zh-hant.aihuazhi.cn/:path*", "destination": "/zh-Hant/:path*" },
         { "source": "tr.aihuazhi.cn/:path*", "destination": "/tr/:path*" },
+        { "source": "www.aihuazhi.cn/:path*", "destination": "/en/:path*" },
         { "source": "aihuazhi.cn/:path*", "destination": "/en/:path*" }
     ]
 }
