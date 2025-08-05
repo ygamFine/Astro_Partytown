@@ -94,12 +94,36 @@ function processSingleImage(img, imageMapping) {
   if (!img) return null;
   
   if (typeof img === 'string') {
+    // 如果已经是本地缓存路径，直接返回
+    if (img.startsWith('/images/strapi/')) {
+      return img;
+    }
+    
     // 如果是字符串URL，尝试在缓存中找到对应的本地文件
     if (img.startsWith('http')) {
       const urlHash = generateImageHash(img);
-      const cachedImage = imageMapping.strapiImages?.find(cached => 
-        cached.includes(urlHash) || cached.includes(img.split('/').pop())
-      );
+      const fileName = img.split('/').pop();
+      
+      // 尝试多种匹配方式
+      const cachedImage = imageMapping.strapiImages?.find(cached => {
+        // 1. 直接匹配文件名
+        if (cached.includes(fileName)) return true;
+        
+        // 2. 匹配hash
+        if (cached.includes(urlHash)) return true;
+        
+        // 3. 匹配原始URL的base64编码
+        try {
+          const encodedUrl = Buffer.from(img).toString('base64');
+          if (cached.includes(encodedUrl)) return true;
+          // 处理Base64填充字符
+          const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
+          if (cached.includes(encodedUrlNoPadding)) return true;
+        } catch (e) {}
+        
+        return false;
+      });
+      
       return cachedImage || img;
     }
     
@@ -110,8 +134,37 @@ function processSingleImage(img, imageMapping) {
   } else if (img && typeof img === 'object' && img.url) {
     // 如果是图片对象，提取URL并映射到本地缓存
     const originalUrl = img.url;
+    
+    // 处理完整的Strapi URL
+    if (originalUrl.startsWith('http') && originalUrl.includes('/uploads/')) {
+      const urlHash = generateImageHash(originalUrl);
+      const fileName = originalUrl.split('/').pop();
+      
+      // 尝试多种匹配方式
+      const cachedImage = imageMapping.strapiImages?.find(cached => {
+        // 1. 直接匹配文件名
+        if (cached.includes(fileName)) return true;
+        
+        // 2. 匹配hash
+        if (cached.includes(urlHash)) return true;
+        
+        // 3. 匹配原始URL的base64编码
+        try {
+          const encodedUrl = Buffer.from(originalUrl).toString('base64');
+          if (cached.includes(encodedUrl)) return true;
+          // 处理Base64填充字符
+          const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
+          if (cached.includes(encodedUrlNoPadding)) return true;
+        } catch (e) {}
+        
+        return false;
+      });
+      
+      return cachedImage || originalUrl;
+    }
+    
+    // 处理相对路径
     if (originalUrl.startsWith('/uploads/')) {
-      // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
       const fileName = originalUrl.split('/').pop();
       
       // 尝试多种匹配方式
@@ -140,15 +193,9 @@ function processSingleImage(img, imageMapping) {
         return false;
       });
       
-      // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
-      if (cachedImage) {
-        return cachedImage;
-      } else {
-        // 构建完整的Strapi URL
-        const strapiBaseUrl = process.env.STRAPI_BASE_URL || 'https://your-strapi-domain.com';
-        return `${strapiBaseUrl}${originalUrl}`;
-      }
+      return cachedImage || originalUrl;
     }
+    
     return originalUrl;
   }
   

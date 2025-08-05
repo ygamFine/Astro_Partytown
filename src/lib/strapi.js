@@ -77,17 +77,65 @@ function processImageWithMapping(img, imageMapping) {
     // 如果是外部URL，尝试在缓存中找到对应的本地文件
     if (img.startsWith('http')) {
       const urlHash = generateImageHash(img);
-      const cachedImage = imageMapping.strapiImages?.find((cached) => 
-        cached.includes(urlHash) || cached.includes(img.split('/').pop())
-      );
+      const fileName = img.split('/').pop();
+      
+      // 尝试多种匹配方式
+      const cachedImage = imageMapping.strapiImages?.find((cached) => {
+        // 1. 直接匹配文件名
+        if (cached.includes(fileName)) return true;
+        
+        // 2. 匹配hash
+        if (cached.includes(urlHash)) return true;
+        
+        // 3. 匹配原始URL的base64编码
+        try {
+          const encodedUrl = Buffer.from(img).toString('base64');
+          if (cached.includes(encodedUrl)) return true;
+          // 处理Base64填充字符
+          const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
+          if (cached.includes(encodedUrlNoPadding)) return true;
+        } catch (e) {}
+        
+        return false;
+      });
+      
       return cachedImage || img;
     }
     return img;
   } else if (img && typeof img === 'object' && img.url) {
     // 如果是图片对象，提取URL并映射到本地缓存
     const originalUrl = img.url;
+    
+    // 处理完整的Strapi URL
+    if (originalUrl.startsWith('http') && originalUrl.includes('/uploads/')) {
+      const urlHash = generateImageHash(originalUrl);
+      const fileName = originalUrl.split('/').pop();
+      
+      // 尝试多种匹配方式
+      const cachedImage = imageMapping.strapiImages?.find((cached) => {
+        // 1. 直接匹配文件名
+        if (cached.includes(fileName)) return true;
+        
+        // 2. 匹配hash
+        if (cached.includes(urlHash)) return true;
+        
+        // 3. 匹配原始URL的base64编码
+        try {
+          const encodedUrl = Buffer.from(originalUrl).toString('base64');
+          if (cached.includes(encodedUrl)) return true;
+          // 处理Base64填充字符
+          const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
+          if (cached.includes(encodedUrlNoPadding)) return true;
+        } catch (e) {}
+        
+        return false;
+      });
+      
+      return cachedImage || originalUrl;
+    }
+    
+    // 处理相对路径
     if (originalUrl.startsWith('/uploads/')) {
-      // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
       const fileName = originalUrl.split('/').pop();
       
       // 尝试多种匹配方式
@@ -116,14 +164,9 @@ function processImageWithMapping(img, imageMapping) {
         return false;
       });
       
-      // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
-      if (cachedImage) {
-        return cachedImage;
-      } else {
-        // 构建完整的Strapi URL
-        return `${STRAPI_BASE_URL}${originalUrl}`;
-      }
+      return cachedImage || originalUrl;
     }
+    
     return originalUrl;
   }
   
@@ -447,12 +490,7 @@ export async function getNews(locale = 'en') {
               return false;
             });
             
-            // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
-            if (cachedImage) {
-              processedImage = cachedImage;
-            } else {
-              processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
-            }
+            processedImage = cachedImage || originalUrl;
           } else {
             processedImage = originalUrl;
           }
@@ -554,12 +592,7 @@ export async function getNewsById(id, locale = 'en') {
             return false;
           });
           
-          // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
-          if (cachedImage) {
-            processedImage = cachedImage;
-          } else {
-            processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
-          }
+          processedImage = cachedImage || originalUrl;
         } else {
           processedImage = originalUrl;
         }
@@ -683,12 +716,7 @@ export async function getCases(locale = 'en') {
               return false;
             });
             
-            // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
-            if (cachedImage) {
-              processedImage = cachedImage;
-            } else {
-              processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
-            }
+            processedImage = cachedImage || originalUrl;
           } else {
             processedImage = originalUrl;
           }
@@ -794,12 +822,7 @@ export async function getCase(id, locale = 'en') {
             return false;
           });
           
-          // 如果有缓存且文件存在，使用缓存；否则构建完整的Strapi URL
-          if (cachedImage) {
-            processedImage = cachedImage;
-          } else {
-            processedImage = `${STRAPI_BASE_URL}${originalUrl}`;
-          }
+          processedImage = cachedImage || originalUrl;
         } else {
           processedImage = originalUrl;
         }
