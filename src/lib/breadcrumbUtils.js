@@ -8,14 +8,14 @@
  */
 export function generateProductBreadcrumbs(lang, productName, category) {
   const breadcrumbs = [
-    { label: 'home', href: `/${lang}` },
-    { label: 'products', href: `/${lang}/products` }
+    { label: 'home', href: `/` },
+    { label: 'products', href: `/products` }
   ];
 
   if (category) {
     breadcrumbs.push({
       label: 'category',
-      href: `/${lang}/products?category=${encodeURIComponent(category)}`
+      href: `/products?category=${encodeURIComponent(category)}`
     });
   }
 
@@ -29,11 +29,11 @@ export function generateProductBreadcrumbs(lang, productName, category) {
  */
 export function generateProductListBreadcrumbs(lang, category) {
   const breadcrumbs = [
-    { label: 'home', href: `/${lang}` }
+    { label: 'home', href: `/` }
   ];
 
   if (category) {
-    breadcrumbs.push({ label: 'products', href: `/${lang}/products` });
+    breadcrumbs.push({ label: 'products', href: `/products` });
     breadcrumbs.push({ label: category });
   } else {
     breadcrumbs.push({ label: 'products' });
@@ -47,8 +47,8 @@ export function generateProductListBreadcrumbs(lang, category) {
  */
 export function generateNewsBreadcrumbs(lang, page) {
   const breadcrumbs = [
-    { label: 'home', href: `/${lang}` },
-    { label: 'news', href: page && page > 1 ? `/${lang}/news/${page}` : `/${lang}/news` }
+    { label: 'home', href: `/` },
+    { label: 'news', href: page && page > 1 ? `/news/${page}` : `/news` }
   ];
 
   return breadcrumbs;
@@ -59,8 +59,8 @@ export function generateNewsBreadcrumbs(lang, page) {
  */
 export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
   return [
-    { label: 'home', href: `/${lang}` },
-    { label: 'news', href: `/${lang}/news` },
+    { label: 'home', href: `/` },
+    { label: 'news', href: `/news` },
     { label: newsTitle }
   ];
 }
@@ -70,8 +70,8 @@ export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
  */
 export function generateCaseBreadcrumbs(lang, page) {
   const breadcrumbs = [
-    { label: 'home', href: `/${lang}` },
-    { label: 'case', href: page && page > 1 ? `/${lang}/case/${page}` : `/${lang}/case` }
+    { label: 'home', href: `/` },
+    { label: 'case', href: page && page > 1 ? `/case/${page}` : `/case` }
   ];
 
   return breadcrumbs;
@@ -82,8 +82,8 @@ export function generateCaseBreadcrumbs(lang, page) {
  */
 export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
   return [
-    { label: 'home', href: `/${lang}` },
-    { label: 'case', href: `/${lang}/case` },
+    { label: 'home', href: `/` },
+    { label: 'case', href: `/case` },
     { label: caseTitle }
   ];
 }
@@ -93,7 +93,7 @@ export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
  */
 export function generateAboutBreadcrumbs(lang) {
   return [
-    { label: 'home', href: `/${lang}` },
+    { label: 'home', href: `/` },
     { label: 'about' }
   ];
 }
@@ -103,7 +103,7 @@ export function generateAboutBreadcrumbs(lang) {
  */
 export function generateContactBreadcrumbs(lang) {
   return [
-    { label: 'home', href: `/${lang}` },
+    { label: 'home', href: `/` },
     { label: 'contact' }
   ];
 }
@@ -113,8 +113,8 @@ export function generateContactBreadcrumbs(lang) {
  */
 export function generateSearchBreadcrumbs(lang, searchTerm) {
   return [
-    { label: 'home', href: `/${lang}` },
-    { label: 'search', href: `/${lang}/search` },
+    { label: 'home', href: `/` },
+    { label: 'search', href: `/search` },
     { label: searchTerm || 'search' }
   ];
 }
@@ -124,7 +124,7 @@ export function generateSearchBreadcrumbs(lang, searchTerm) {
  */
 export function generateCustomBreadcrumbs(lang, items) {
   const breadcrumbs = [
-    { label: 'home', href: `/${lang}` }
+    { label: 'home', href: `/` }
   ];
 
   breadcrumbs.push(...items);

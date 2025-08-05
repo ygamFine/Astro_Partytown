@@ -17,7 +17,7 @@ export function processProductData(products, lang, imageMapping) {
     category: product.category,
     price: product.price || null, // 添加价格字段
     advantages: product.advantages || product.advantages_list || [], // 添加优势字段
-    href: `/${lang}/products/${product.slug}`
+          href: `/products/${product.slug}`
   }));
 }
 
@@ -100,7 +100,7 @@ export function generateBreadcrumbs(lang, type, currentPage) {
   ];
   
   const typeBreadcrumbs = {
-    products: { name: 'Products', href: `/${lang}/products` },
+    products: { name: 'Products', href: `/products` },
     news: { name: 'News', href: `/${lang}/news` },
     case: { name: 'Case', href: `/${lang}/case` }
   };

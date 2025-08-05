@@ -82,12 +82,12 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actual
   )}
   
   <!-- 分页 -->
-  <Pagination 
-    currentPage={actualCurrentPage}
-    totalPages={totalPages}
-    baseUrl={`/${lang}/case`}
-        i18n={translations.pagination}
-      />
+         <Pagination 
+         currentPage={actualCurrentPage}
+         totalPages={totalPages}
+         baseUrl={`/case`}
+         i18n={translations.pagination}
+       />
     </>
   ) : (
     <EmptyState 

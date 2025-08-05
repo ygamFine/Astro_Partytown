@@ -72,7 +72,7 @@ const gridItems = hasProducts ? displayProducts
       image: validImage,
       excerpt: product.excerpt,
       category: product.category,
-      href: `/${lang}/products/${product.slug || product.id}`
+      href: `/products/${product.slug || product.id}`
     };
   }) : [];
 
@@ -80,12 +80,12 @@ const gridItems = hasProducts ? displayProducts
 
 // 面包屑导航
 const breadcrumbs = [
-  { label: 'Home', href: `/${lang}` },
-  { label: 'Products', href: `/${lang}/products` }
+  { label: 'Home', href: `/` },
+  { label: 'Products', href: `/products` }
 ];
 
 // 生成分页基础URL
-const baseUrl = `/${lang}/products`;
+const baseUrl = `/products`;
 ---
 
 <SecondaryPageLayout 
