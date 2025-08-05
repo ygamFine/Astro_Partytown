@@ -5,7 +5,7 @@
     "installCommand": "npm install",
     "framework": "astro",
     "env": {
-        "IMAGE_CACHE_DIR": "/vercel/path0/dist/images/strapi",
+        "IMAGE_CACHE_DIR": "public/images/strapi",
         "NODE_ENV": "production"
     },
 

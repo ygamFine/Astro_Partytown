@@ -28,8 +28,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 let IMAGE_CACHE_DIR;
 if (isVercel) {
-  // Vercel部署环境：使用 /vercel/path0/dist/images/strapi
-  IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || '/vercel/path0/dist/images/strapi';
+  // Vercel部署环境：使用 public/images/strapi，构建时会自动复制到dist
+  IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
 } else {
   // 本地开发环境：使用相对路径
   IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';

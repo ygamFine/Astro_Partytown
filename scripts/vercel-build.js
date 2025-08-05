@@ -27,7 +27,7 @@ async function vercelBuild() {
   try {
     // 1. 设置 Vercel 环境变量
     if (isVercel) {
-      process.env.IMAGE_CACHE_DIR = '/vercel/path0/dist/public/images/strapi';
+      process.env.IMAGE_CACHE_DIR = 'public/images/strapi';
       process.env.NODE_ENV = 'production';
       console.log('✅ Vercel 环境变量已设置');
     }
