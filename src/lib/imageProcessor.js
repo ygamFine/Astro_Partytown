@@ -94,80 +94,12 @@ function processSingleImage(img, imageMapping) {
   if (!img) return null;
   
   if (typeof img === 'string') {
-    // 如果已经是本地缓存路径，直接返回
-    if (img.startsWith('/images/strapi/')) {
-      return img;
-    }
-    
     // 如果是字符串URL，尝试在缓存中找到对应的本地文件
     if (img.startsWith('http')) {
       const urlHash = generateImageHash(img);
-      const fileName = img.split('/').pop();
-      
-      // 尝试多种匹配方式
-      const cachedImage = imageMapping.strapiImages?.find(cached => {
-        // 1. 直接匹配文件名
-        if (cached.includes(fileName)) return true;
-        
-        // 2. 匹配hash
-        if (cached.includes(urlHash)) return true;
-        
-        // 3. 匹配原始URL的base64编码
-        try {
-          const encodedUrl = Buffer.from(img).toString('base64');
-          if (cached.includes(encodedUrl)) return true;
-          // 处理Base64填充字符
-          const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
-          if (cached.includes(encodedUrlNoPadding)) return true;
-        } catch (e) {}
-        
-        // 4. 匹配相对路径的base64编码（这是关键！）
-        try {
-          const relativePath = img.replace(/^https?:\/\/[^\/]+/, '');
-          const encodedRelativePath = Buffer.from(relativePath).toString('base64');
-          if (cached.includes(encodedRelativePath)) return true;
-        } catch (e) {}
-        
-        return false;
-      });
-      
-      return cachedImage || img;
-    }
-    
-    // 处理相对路径
-    if (img.startsWith('/uploads/')) {
-      const fileName = img.split('/').pop();
-      const urlHash = generateImageHash(img);
-      
-      // 尝试多种匹配方式
-      const cachedImage = imageMapping.strapiImages?.find(cached => {
-        // 1. 直接匹配文件名
-        if (cached.includes(fileName)) return true;
-        
-        // 2. 匹配hash
-        if (cached.includes(urlHash)) return true;
-        
-        // 3. Base64编码匹配
-        try {
-          const encodedName = Buffer.from(fileName).toString('base64');
-          if (cached.includes(encodedName)) return true;
-          // 处理Base64填充字符
-          const encodedNameNoPadding = encodedName.replace(/=+$/, '');
-          if (cached.includes(encodedNameNoPadding)) return true;
-        } catch (e) {}
-        
-        // 4. 完整路径的base64编码匹配
-        try {
-          const encodedPath = Buffer.from(img).toString('base64');
-          if (cached.includes(encodedPath)) return true;
-          // 处理Base64填充字符
-          const encodedPathNoPadding = encodedPath.replace(/=+$/, '');
-          if (cached.includes(encodedPathNoPadding)) return true;
-        } catch (e) {}
-        
-        return false;
-      });
-      
+      const cachedImage = imageMapping.strapiImages?.find(cached => 
+        cached.includes(urlHash) || cached.includes(img.split('/').pop())
+      );
       return cachedImage || img;
     }
     
@@ -178,44 +110,8 @@ function processSingleImage(img, imageMapping) {
   } else if (img && typeof img === 'object' && img.url) {
     // 如果是图片对象，提取URL并映射到本地缓存
     const originalUrl = img.url;
-    
-    // 处理完整的Strapi URL
-    if (originalUrl.startsWith('http') && originalUrl.includes('/uploads/')) {
-      const urlHash = generateImageHash(originalUrl);
-      const fileName = originalUrl.split('/').pop();
-      
-      // 尝试多种匹配方式
-      const cachedImage = imageMapping.strapiImages?.find(cached => {
-        // 1. 直接匹配文件名
-        if (cached.includes(fileName)) return true;
-        
-        // 2. 匹配hash
-        if (cached.includes(urlHash)) return true;
-        
-        // 3. 匹配原始URL的base64编码
-        try {
-          const encodedUrl = Buffer.from(originalUrl).toString('base64');
-          if (cached.includes(encodedUrl)) return true;
-          // 处理Base64填充字符
-          const encodedUrlNoPadding = encodedUrl.replace(/=+$/, '');
-          if (cached.includes(encodedUrlNoPadding)) return true;
-        } catch (e) {}
-        
-        // 4. 匹配相对路径的base64编码（这是关键！）
-        try {
-          const relativePath = originalUrl.replace(/^https?:\/\/[^\/]+/, '');
-          const encodedRelativePath = Buffer.from(relativePath).toString('base64');
-          if (cached.includes(encodedRelativePath)) return true;
-        } catch (e) {}
-        
-        return false;
-      });
-      
-      return cachedImage || originalUrl;
-    }
-    
-    // 处理相对路径
     if (originalUrl.startsWith('/uploads/')) {
+      // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
       const fileName = originalUrl.split('/').pop();
       
       // 尝试多种匹配方式
@@ -246,7 +142,6 @@ function processSingleImage(img, imageMapping) {
       
       return cachedImage || originalUrl;
     }
-    
     return originalUrl;
   }
   

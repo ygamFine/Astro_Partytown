@@ -40,4 +40,4 @@ pnpm-debug.log*
 public/images/strapi/
 public/images/optimized/
 public/search-index.json
-src/data/strapi-image-mapping.json
+# src/data/strapi-image-mapping.json
