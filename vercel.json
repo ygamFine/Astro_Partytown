@@ -8,11 +8,7 @@
         "IMAGE_CACHE_DIR": "/vercel/path0/dist/images/strapi",
         "NODE_ENV": "production"
     },
-    "functions": {
-        "src/pages/**/*.js": {
-            "maxDuration": 30
-        }
-    },
+
     "rewrites": [
         { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "en.aihuazhi.cn" }] },
         { "source": "/:path*", "destination": "/zh-CN/:path*", "has": [{ "type": "host", "value": "zh.aihuazhi.cn" }] },
