@@ -9,6 +9,10 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { generateImageHash } from '../src/utils/hashUtils.js';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 // 加载环境变量
 import { config } from 'dotenv';
@@ -41,18 +45,29 @@ async function ensureCacheDir() {
 }
 
 /**
- * 生成图片文件名
+ * 生成图片文件名（WebP格式）
  */
 function generateImageFileName(originalUrl) {
   const url = new URL(originalUrl, STRAPI_STATIC_URL);
   const pathname = url.pathname;
-  const ext = path.extname(pathname) || '.jpg';
   const hash = generateImageHash(pathname);
-  return `${hash}${ext}`;
+  return `${hash}.webp`;
 }
 
 /**
- * 下载单个图片
+ * 检查WebP转换工具是否可用
+ */
+async function checkWebPTools() {
+  try {
+    await execAsync('cwebp -version');
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * 下载并转换为WebP格式
  */
 async function downloadImage(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') {
@@ -70,22 +85,55 @@ async function downloadImage(imageUrl) {
       const fileName = generateImageFileName(imageUrl);
       const localPath = path.join(IMAGE_CACHE_DIR, fileName);
 
-      // 检查文件是否已存在
+      // 检查WebP文件是否已存在
       try {
         await fs.access(localPath);
         return null;
       } catch {
-        // 文件不存在，需要下载
+        // 文件不存在，需要下载和转换
       }
 
-      // 下载图片
+      // 下载原始图片到临时文件
       const response = await fetch(imageUrl);
       if (!response.ok) {
         return null;
       }
 
       const buffer = await response.arrayBuffer();
-      await fs.writeFile(localPath, Buffer.from(buffer));
+      const tempDir = path.join(process.cwd(), 'temp');
+      await fs.mkdir(tempDir, { recursive: true });
+      
+      const originalExt = path.extname(new URL(imageUrl).pathname) || '.jpg';
+      const tempFileName = `${generateImageHash(imageUrl)}${originalExt}`;
+      const tempPath = path.join(tempDir, tempFileName);
+      
+      await fs.writeFile(tempPath, Buffer.from(buffer));
+
+      // 检查WebP工具是否可用
+      const hasWebPTools = await checkWebPTools();
+      
+      if (hasWebPTools) {
+        // 使用cwebp转换为WebP格式
+        try {
+          await execAsync(`cwebp -q 80 -m 6 "${tempPath}" -o "${localPath}"`);
+          console.log(`✅ 转换成功: ${fileName}`);
+        } catch (error) {
+          console.log(`⚠️  WebP转换失败，保存原始格式: ${fileName}`);
+          // 如果转换失败，保存原始格式
+          await fs.copyFile(tempPath, localPath);
+        }
+      } else {
+        // 如果没有WebP工具，保存原始格式
+        console.log(`⚠️  未安装WebP工具，保存原始格式: ${fileName}`);
+        await fs.copyFile(tempPath, localPath);
+      }
+
+      // 清理临时文件
+      try {
+        await fs.unlink(tempPath);
+      } catch (error) {
+        // 忽略清理错误
+      }
       
       return fileName;
     } catch (error) {
@@ -237,22 +285,41 @@ async function downloadAllImages() {
 async function generateImageMapping() {
   try {
     const files = await fs.readdir(IMAGE_CACHE_DIR);
-    const imageFiles = files.filter(file => /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(file));
+    const imageFiles = files.filter(file => /\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file));
     
     const mapping = {
       strapiImages: imageFiles.map(file => `/images/strapi/${file}`),
+      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/images/strapi/${file}`),
       totalCount: imageFiles.length,
+      webpCount: imageFiles.filter(file => file.endsWith('.webp')).length,
       generatedAt: new Date().toISOString()
     };
     
     const mappingPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
     await fs.writeFile(mappingPath, JSON.stringify(mapping, null, 2));
+    
+    console.log(`📊 图片映射生成完成: ${mapping.webpCount}/${mapping.totalCount} 为WebP格式`);
   } catch (error) {
-    // 静默处理错误
+    console.log('⚠️  生成图片映射失败:', error.message);
+  }
+}
+
+/**
+ * 清理临时目录
+ */
+async function cleanupTempDir() {
+  try {
+    const tempDir = path.join(process.cwd(), 'temp');
+    await fs.rm(tempDir, { recursive: true, force: true });
+  } catch (error) {
+    // 忽略清理错误
   }
 }
 
 // 执行下载
-downloadAllImages().catch(error => {
-  process.exit(1);
-}); 
+downloadAllImages()
+  .then(() => cleanupTempDir())
+  .catch(error => {
+    cleanupTempDir();
+    process.exit(1);
+  }); 
