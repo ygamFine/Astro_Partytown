@@ -1,7 +1,6 @@
 ---
 export const prerender = true;
-import { REVALIDATE_TIME } from '../../../lib/isrConfig.js';
-export const revalidate = REVALIDATE_TIME.NEWS;
+export const revalidate = 30;
 
 import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
 import NewsList from '../../../components/templates/common/NewsList.astro';
