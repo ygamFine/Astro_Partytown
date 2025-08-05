@@ -9,5 +9,5 @@
         { "source": "ja.example.com/:path*", "destination": "/ja/:path*" },
         { "source": "de.example.com/:path*", "destination": "/de/:path*" },
         { "source": "/:path*", "destination": "/en/:path*" }
-      ],
+      ]
   }
