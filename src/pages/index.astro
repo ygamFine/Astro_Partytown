@@ -1,55 +1,88 @@
 ---
-// 根路径首页 - 用于子域名访问
+// 根路径首页 - 用于子域名访问，直接渲染内容
 export const prerender = true;
+import { REVALIDATE_TIME } from '../lib/isrConfig.js';
+export const revalidate = REVALIDATE_TIME.HOME;
+
+import Layout from '../layouts/Layout.astro';
+import FullScreenBanner from '../components/common/banner/FullScreenBanner.astro';
+import HeroShowcase from '../components/common/banner/HeroShowcase.astro';
+import ProductShowcase from '../components/ProductShowcase.astro';
+import CustomerNeeds from '../components/CustomerNeeds.astro';
+import CustomerCases from '../components/CustomerCases.astro';
+import NewsCenter from '../components/NewsCenter.astro';
+import HotRecommendedProducts from '../components/HotRecommendedProducts.astro';
+import StatsSection from '../components/StatsSection.astro';
+
+import { themeConfig } from '../config/theme.js';
 
 // 根据子域名确定语言
 const hostname = Astro.url.hostname;
-let targetLang = 'en'; // 默认英文
+let lang = 'en'; // 默认英文
 
 if (hostname.startsWith('zh.')) {
-  targetLang = 'zh-CN';
+  lang = 'zh-CN';
 } else if (hostname.startsWith('zh-hant.')) {
-  targetLang = 'zh-Hant';
+  lang = 'zh-Hant';
 } else if (hostname.startsWith('de.')) {
-  targetLang = 'de';
+  lang = 'de';
 } else if (hostname.startsWith('ja.')) {
-  targetLang = 'ja';
+  lang = 'ja';
 } else if (hostname.startsWith('fr.')) {
-  targetLang = 'fr';
+  lang = 'fr';
 } else if (hostname.startsWith('ar.')) {
-  targetLang = 'ar';
+  lang = 'ar';
 } else if (hostname.startsWith('es.')) {
-  targetLang = 'es';
+  lang = 'es';
 } else if (hostname.startsWith('it.')) {
-  targetLang = 'it';
+  lang = 'it';
 } else if (hostname.startsWith('pt.')) {
-  targetLang = 'pt-pt';
+  lang = 'pt-pt';
 } else if (hostname.startsWith('nl.')) {
-  targetLang = 'nl';
+  lang = 'nl';
 } else if (hostname.startsWith('pl.')) {
-  targetLang = 'pl';
+  lang = 'pl';
 } else if (hostname.startsWith('ru.')) {
-  targetLang = 'ru';
+  lang = 'ru';
 } else if (hostname.startsWith('th.')) {
-  targetLang = 'th';
+  lang = 'th';
 } else if (hostname.startsWith('id.')) {
-  targetLang = 'id';
+  lang = 'id';
 } else if (hostname.startsWith('vi.')) {
-  targetLang = 'vi';
+  lang = 'vi';
 } else if (hostname.startsWith('ms.')) {
-  targetLang = 'ms';
+  lang = 'ms';
 } else if (hostname.startsWith('ml.')) {
-  targetLang = 'ml';
+  lang = 'ml';
 } else if (hostname.startsWith('my.')) {
-  targetLang = 'my';
+  lang = 'my';
 } else if (hostname.startsWith('hi.')) {
-  targetLang = 'hi';
+  lang = 'hi';
 } else if (hostname.startsWith('ko.')) {
-  targetLang = 'ko';
+  lang = 'ko';
 } else if (hostname.startsWith('tr.')) {
-  targetLang = 'tr';
+  lang = 'tr';
 }
 
-// 重定向到对应语言的首页
-return Astro.redirect(`/${targetLang}/`);
---- 
+// 获取页面宽度配置
+const getPageWidth = () => {
+  return themeConfig.layout.dynamicWidth.getPageWidth('home');
+};
+
+const pageWidth = getPageWidth();
+---
+
+<Layout title="专业滑移装载机制造商" lang={lang} pageType="home">
+	<main>
+		<FullScreenBanner />
+		<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
+			<HeroShowcase />
+			<ProductShowcase />
+			<StatsSection />
+			<HotRecommendedProducts />
+			<CustomerNeeds />
+			<CustomerCases />
+			<NewsCenter />
+		</div>
+	</main>
+</Layout> 
