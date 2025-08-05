@@ -134,6 +134,43 @@ function processSingleImage(img, imageMapping) {
       return cachedImage || img;
     }
     
+    // 处理相对路径
+    if (img.startsWith('/uploads/')) {
+      const fileName = img.split('/').pop();
+      const urlHash = generateImageHash(img);
+      
+      // 尝试多种匹配方式
+      const cachedImage = imageMapping.strapiImages?.find(cached => {
+        // 1. 直接匹配文件名
+        if (cached.includes(fileName)) return true;
+        
+        // 2. 匹配hash
+        if (cached.includes(urlHash)) return true;
+        
+        // 3. Base64编码匹配
+        try {
+          const encodedName = Buffer.from(fileName).toString('base64');
+          if (cached.includes(encodedName)) return true;
+          // 处理Base64填充字符
+          const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+          if (cached.includes(encodedNameNoPadding)) return true;
+        } catch (e) {}
+        
+        // 4. 完整路径的base64编码匹配
+        try {
+          const encodedPath = Buffer.from(img).toString('base64');
+          if (cached.includes(encodedPath)) return true;
+          // 处理Base64填充字符
+          const encodedPathNoPadding = encodedPath.replace(/=+$/, '');
+          if (cached.includes(encodedPathNoPadding)) return true;
+        } catch (e) {}
+        
+        return false;
+      });
+      
+      return cachedImage || img;
+    }
+    
     // 如果是本地路径且格式正确，返回原路径
     if (img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
       return img;

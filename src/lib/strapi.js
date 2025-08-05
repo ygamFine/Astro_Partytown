@@ -108,6 +108,44 @@ function processImageWithMapping(img, imageMapping) {
       
       return cachedImage || img;
     }
+    
+    // 处理相对路径
+    if (img.startsWith('/uploads/')) {
+      const fileName = img.split('/').pop();
+      const urlHash = generateImageHash(img);
+      
+      // 尝试多种匹配方式
+      const cachedImage = imageMapping.strapiImages?.find((cached) => {
+        // 1. 直接匹配文件名
+        if (cached.includes(fileName)) return true;
+        
+        // 2. 匹配hash
+        if (cached.includes(urlHash)) return true;
+        
+        // 3. Base64编码匹配
+        try {
+          const encodedName = Buffer.from(fileName).toString('base64');
+          if (cached.includes(encodedName)) return true;
+          // 处理Base64填充字符
+          const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+          if (cached.includes(encodedNameNoPadding)) return true;
+        } catch (e) {}
+        
+        // 4. 完整路径的base64编码匹配
+        try {
+          const encodedPath = Buffer.from(img).toString('base64');
+          if (cached.includes(encodedPath)) return true;
+          // 处理Base64填充字符
+          const encodedPathNoPadding = encodedPath.replace(/=+$/, '');
+          if (cached.includes(encodedPathNoPadding)) return true;
+        } catch (e) {}
+        
+        return false;
+      });
+      
+      return cachedImage || img;
+    }
+    
     return img;
   } else if (img && typeof img === 'object' && img.url) {
     // 如果是图片对象，提取URL并映射到本地缓存
@@ -325,67 +363,9 @@ export async function getProduct(slug, locale = 'en') {
     const processedImages = [];
     if (item.imgs && Array.isArray(item.imgs)) {
       for (const img of item.imgs) {
-        if (typeof img === 'string') {
-          // 如果已经是本地缓存路径，直接使用
-          if (img.startsWith('/images/strapi/')) {
-            processedImages.push(img);
-            continue;
-          }
-          // 如果是外部URL，尝试在缓存中找到对应的本地文件
-          if (img.startsWith('http')) {
-            const urlHash = generateImageHash(img);
-            const cachedImage = imageMapping.strapiImages?.find((cached) => 
-              cached.includes(urlHash) || cached.includes(img.split('/').pop())
-            );
-            if (cachedImage) {
-              processedImages.push(cachedImage);
-            } else {
-              processedImages.push(img);
-            }
-          } else {
-            processedImages.push(img);
-          }
-        } else if (img && typeof img === 'object' && img.url) {
-          // 如果是图片对象，提取URL并映射到本地缓存
-          const originalUrl = img.url;
-          if (originalUrl.startsWith('/uploads/')) {
-            // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
-            const fileName = originalUrl.split('/').pop();
-            
-            // 尝试多种匹配方式
-            const cachedImage = imageMapping.strapiImages?.find((cached) => {
-              // 1. 直接匹配文件名
-              if (cached.includes(fileName)) return true;
-              
-              // 2. 匹配hash
-              if (img.hash && cached.includes(img.hash)) return true;
-              
-              // 3. Base64编码匹配
-              try {
-                const encodedName = Buffer.from(fileName).toString('base64');
-                if (cached.includes(encodedName)) return true;
-                // 处理Base64填充字符
-                const encodedNameNoPadding = encodedName.replace(/=+$/, '');
-                if (cached.includes(encodedNameNoPadding)) return true;
-              } catch (e) {}
-              
-              // 4. Base64解码匹配
-              try {
-                const decodedName = Buffer.from(fileName, 'base64').toString();
-                if (cached.includes(decodedName)) return true;
-              } catch (e) {}
-              
-              return false;
-            });
-            
-            if (cachedImage) {
-              processedImages.push(cachedImage);
-            } else {
-              processedImages.push(originalUrl);
-            }
-          } else {
-            processedImages.push(originalUrl);
-          }
+        const processedImg = processImageWithMapping(img, imageMapping);
+        if (processedImg) {
+          processedImages.push(processedImg);
         }
       }
     }
