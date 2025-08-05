@@ -1,0 +1,18 @@
+{
+    "version": 2,
+    "buildCommand": "astro build",
+    "outputDirectory": "dist",
+    "installCommand": "npm install",
+    "framework": "astro",
+    "domains": [
+      { "domain": "en.aihuazhi.cn", "redirect": "/en" },
+      { "domain": "ja.aihuazhi.cn", "redirect": "/ja" },
+      { "domain": "de.aihuazhi.cn", "redirect": "/de" }
+    ],
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/en/$1" },
+      { "source": "en.aihuazhi.cn/(.*)", "destination": "/en/$1" },
+      { "source": "ja.aihuazhi.cn/(.*)", "destination": "/ja/$1" },
+      { "source": "de.aihuazhi.cn/(.*)", "destination": "/de/$1" }
+    ]
+  }

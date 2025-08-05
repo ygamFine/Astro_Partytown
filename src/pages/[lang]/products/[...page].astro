@@ -1,30 +1,38 @@
 ---
-export const prerender = true;
-export const revalidate = 60;
+export const prerender = false;
 
+import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
+import GridList from '../../../components/templates/common/GridList.astro';
+import Pagination from '../../../components/templates/common/Pagination.astro';
 import { getProducts } from '../../../lib/strapi.js';
 import { getEnabledLanguages } from '../../../lib/i18n-config.js';
+import { mergeTranslations } from '../../../locales/i18n.js';
+import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
+// 只为配置中启用的语言和页面生成路由
 export async function getStaticPaths() {
   const paths: any[] = [];
+  const itemsPerPage = 9;
   const enabledLanguages = getEnabledLanguages();
   
+  // 为每种语言获取产品数据来计算总页数
   for (const lang of enabledLanguages) {
     const products = await getProducts(lang);
-    const totalPages = Math.ceil(products.length / 9);
+    const totalPages = Math.ceil(products.length / itemsPerPage);
     
+    // 只有当有产品数据时才生成页面
     if (totalPages > 0) {
-      // 第一页
+      // 第一页 (无页码)
       paths.push({
         params: { lang, page: undefined },
-        props: { lang, currentPage: 1, totalPages }
+        props: { locale: lang, currentPage: 1, totalPages }
       });
       
       // 其他页面
       for (let page = 2; page <= totalPages; page++) {
         paths.push({
           params: { lang, page: page.toString() },
-          props: { lang, currentPage: page, totalPages }
+          props: { locale: lang, currentPage: page, totalPages }
         });
       }
     }
@@ -33,31 +41,104 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { slug } = Astro.params;
-const { lang, currentPage, totalPages } = Astro.props;
-const post = await getProducts(lang);
-console.log(post);
+const { lang, page } = Astro.params;
+const { currentPage, totalPages } = Astro.props;
+const translations = await mergeTranslations(lang, ['pagination', 'common']);
+const t = (translations as any).pagination || {};
+
+// 获取产品数据
+const products = await getProducts(lang);
+
+// 检查是否有数据
+const hasProducts = products && products.length > 0;
+
+// 分页配置
+const itemsPerPage = 9;
+const startIndex = hasProducts ? (currentPage - 1) * itemsPerPage : 0;
+const endIndex = hasProducts ? startIndex + itemsPerPage : 0;
+const displayProducts = hasProducts ? products.slice(startIndex, endIndex) : [];
+
+// 加载图片映射
+const imageMapping = await loadImageMapping();
+
+// 转换产品数据格式以适配GridList组件
+const gridItems = hasProducts ? displayProducts
+  .map((product: any) => {
+    const validImage = processImageForDisplay(product.image, imageMapping);
+    
+    return {
+      id: product.id,
+      title: product.name,
+      image: validImage,
+      excerpt: product.excerpt,
+      category: product.category,
+      href: `/${lang}/products/${product.slug || product.id}`
+    };
+  }) : [];
+
+
+
+// 面包屑导航
+const breadcrumbs = [
+  { label: 'Home', href: `/${lang}` },
+  { label: 'Products', href: `/${lang}/products` }
+];
+
+// 生成分页基础URL
+const baseUrl = `/${lang}/products`;
 ---
 
-<html>
-  <head><title>Products</title></head>
-  <body>
-    <h1>Products</h1>
-    <p>Page {currentPage} of {totalPages}</p>
-    <p>Products count: {post.length}</p>
-    
-    <div>
-      {post.map((item) => (
-        <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
-          <h3>{item.name}</h3>
-          <p>ID: {item.id}</p>
-          <p>Slug: {item.slug}</p>
-          <p>Category: {item.category}</p>
-          <p>Price: {item.price}</p>
-          <p>Excerpt: {item.excerpt}</p>
-          <p>Images: {JSON.stringify(item.image)}</p>
+<SecondaryPageLayout 
+  title="Products"
+  description="Explore our comprehensive range of construction machinery"
+  breadcrumbs={breadcrumbs}
+  currentSection="products"
+  contentType="grid"
+  lang={lang}
+>
+  {hasProducts ? (
+    <>
+      <!-- 产品网格 -->
+      <GridList 
+        items={gridItems}
+        itemsPerRow={3}
+        maxRows={3}
+        translations={translations}
+        lang={lang}
+      />
+      
+      <!-- 分页 -->
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        baseUrl={baseUrl}
+        i18n={t}
+      />
+    </>
+  ) : (
+    <!-- 空状态 -->
+    <div class="empty-state">
+      <div class="empty-state-content">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 12l8-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 12v10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 12L4 8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-      ))}
+        <h3 class="empty-state-title">暂无产品数据</h3>
+        <p class="empty-state-description">当前语言暂无产品信息，请稍后再试或切换其他语言。</p>
+        <div class="empty-state-actions">
+          <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}'`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9,22 9,12 15,12 15,22"/>
+            </svg>
+            返回首页
+          </button>
+        </div>
+      </div>
     </div>
-  </body>
-</html>
+  )}
+</SecondaryPageLayout> 
