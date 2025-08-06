@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { generateImageHash } from '../src/utils/hashUtils.js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import sharp from 'sharp';
 
 const execAsync = promisify(exec);
 
@@ -32,6 +33,54 @@ const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
 const ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
 
 
+/**
+ * 专门处理GIF文件的转换
+ */
+async function handleGifConversion(inputPath, outputPath, fileName) {
+  console.log(`🔄 处理GIF文件: ${fileName}`);
+  
+  // 方法1: 使用sharp库处理GIF（推荐方法）
+  try {
+    await sharp(inputPath, { animated: true })
+      .webp({ quality: 80, effort: 6 })
+      .toFile(outputPath);
+    console.log(`✅ Sharp GIF转换成功: ${fileName}`);
+    return true;
+  } catch (error) {
+    console.log(`⚠️  Sharp动画GIF转换失败，尝试静态处理: ${fileName}`);
+  }
+  
+  // 方法2: 使用sharp处理静态GIF（只取第一帧）
+  try {
+    await sharp(inputPath, { pages: 1 })
+      .webp({ quality: 80, effort: 6 })
+      .toFile(outputPath);
+    console.log(`✅ Sharp静态GIF转换成功: ${fileName}`);
+    return true;
+  } catch (error) {
+    console.log(`⚠️  Sharp静态GIF转换失败，尝试cwebp: ${fileName}`);
+  }
+  
+  // 方法3: 使用cwebp转换（备用方法）
+  try {
+    await execAsync(`cwebp -q 80 -m 6 "${inputPath}" -o "${outputPath}"`);
+    console.log(`✅ cwebp GIF转换成功: ${fileName}`);
+    return true;
+  } catch (error) {
+    console.log(`⚠️  cwebp转换失败: ${fileName}`);
+  }
+  
+  // 方法4: 保存原GIF文件作为回退
+  try {
+    const fallbackPath = outputPath.replace('.webp', '.gif');
+    await fs.copyFile(inputPath, fallbackPath);
+    console.log(`📋 已保存原GIF文件作为回退: ${fileName}`);
+    return false;
+  } catch (error) {
+    console.log(`❌ 所有转换方法都失败: ${fileName}`);
+    return false;
+  }
+}
 
 /**
  * 确保缓存目录存在
@@ -63,6 +112,100 @@ async function checkWebPTools() {
     return true;
   } catch (error) {
     return false;
+  }
+}
+
+/**
+ * 验证图片文件是否有效
+ */
+async function validateImageFile(filePath) {
+  try {
+    const stats = await fs.stat(filePath);
+    if (stats.size === 0) {
+      return false;
+    }
+    
+    // 读取文件头部来验证格式
+    const buffer = await fs.readFile(filePath, { start: 0, end: 12 });
+    const header = buffer.toString('hex');
+    
+    // 检查常见图片格式的魔数
+    if (header.startsWith('47494638') || header.startsWith('47494637')) {
+      // GIF格式
+      return true;
+    } else if (header.startsWith('ffd8ff')) {
+      // JPEG格式
+      return true;
+    } else if (header.startsWith('89504e47')) {
+      // PNG格式
+      return true;
+    } else if (header.startsWith('52494646') && header.includes('57454250')) {
+      // WebP格式
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.log(`⚠️  文件验证失败: ${filePath}`);
+    return false;
+  }
+}
+
+/**
+ * 安全转换为WebP格式
+ */
+async function safeConvertToWebP(inputPath, outputPath, fileName) {
+  try {
+    // 首先验证输入文件
+    const isValid = await validateImageFile(inputPath);
+    if (!isValid) {
+      console.log(`⚠️  跳过无效文件: ${fileName}`);
+      return false;
+    }
+    
+    // 获取文件扩展名
+    const ext = path.extname(inputPath).toLowerCase();
+    
+    // 对于GIF文件，使用特殊处理
+    if (ext === '.gif') {
+      return await handleGifConversion(inputPath, outputPath, fileName);
+    } else {
+      // 对于其他格式，优先使用sharp库
+      try {
+        await sharp(inputPath)
+          .webp({ quality: 80, effort: 6 })
+          .toFile(outputPath);
+        console.log(`✅ Sharp转换成功: ${fileName}`);
+        return true;
+      } catch (sharpError) {
+        console.log(`⚠️  Sharp转换失败，尝试cwebp: ${fileName}`);
+        
+        // 回退到cwebp
+        try {
+          await execAsync(`cwebp -q 80 -m 6 "${inputPath}" -o "${outputPath}"`);
+          console.log(`✅ cwebp转换成功: ${fileName}`);
+          return true;
+        } catch (cwebpError) {
+          console.log(`❌ cwebp转换也失败: ${fileName}`);
+          throw cwebpError;
+        }
+      }
+    }
+  } catch (error) {
+    console.log(`❌ WebP转换失败: ${fileName}`);
+    console.log(`错误信息: ${error.message}`);
+    
+    // 尝试保存原文件作为回退
+    try {
+      const ext = path.extname(inputPath);
+      const fallbackPath = outputPath.replace('.webp', ext);
+      await fs.copyFile(inputPath, fallbackPath);
+      console.log(`📋 已保存原文件作为回退: ${fileName}`);
+      return false;
+    } catch (fallbackError) {
+      console.log(`❌ 回退保存失败: ${fileName}`);
+      return false;
+    }
   }
 }
 
@@ -109,26 +252,10 @@ async function downloadImage(imageUrl) {
       
       await fs.writeFile(tempPath, Buffer.from(buffer));
 
-      // 检查WebP工具是否可用
-      const hasWebPTools = await checkWebPTools();
-      
-      if (hasWebPTools) {
-        // 使用cwebp转换为WebP格式
-        try {
-          await execAsync(`cwebp -q 80 -m 6 "${tempPath}" -o "${localPath}"`);
-          console.log(`✅ 转换成功: ${fileName}`);
-        } catch (error) {
-          console.log(`❌ WebP转换失败: ${fileName}`);
-          console.log(`错误信息: ${error.message}`);
-          process.exit(1);
-        }
-      } else {
-        // 如果没有WebP工具，报错退出
-        console.log(`❌ 错误: 需要安装WebP工具`);
-        console.log(`macOS: brew install webp`);
-        console.log(`Ubuntu: sudo apt-get install webp`);
-        console.log(`Vercel: 请在构建环境中安装webp工具`);
-        process.exit(1);
+      // 直接使用安全的WebP转换（优先使用sharp库）
+      const conversionSuccess = await safeConvertToWebP(tempPath, localPath, fileName);
+      if (!conversionSuccess) {
+        console.log(`⚠️  WebP转换失败，但继续处理: ${fileName}`);
       }
 
       // 清理临时文件
