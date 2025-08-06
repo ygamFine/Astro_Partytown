@@ -60,8 +60,9 @@ for (const [subdomain, language] of Object.entries(subdomainToLang)) {
   }
 }
 
-// 如果没有匹配到子域名，检查是否是主域名
-if (hostname === 'aihuazhi.cn' || hostname === 'www.aihuazhi.cn') {
+// 检查是否是主域名（非子域名）
+const isMainDomain = !hostname.includes('.') || hostname.split('.').length <= 2;
+if (isMainDomain) {
   lang = 'en';
   console.log('🏠 主域名，使用默认英语');
 }
@@ -69,7 +70,7 @@ if (hostname === 'aihuazhi.cn' || hostname === 'www.aihuazhi.cn') {
 console.log(`🎯 最终语言设置: ${lang}`);
 
 // 如果是生产环境且检测到子域名，重定向到对应的语言路径
-if (import.meta.env.PROD && hostname !== 'aihuazhi.cn' && hostname !== 'www.aihuazhi.cn') {
+if (import.meta.env.PROD && !isMainDomain && !hostname.includes('localhost')) {
   const targetPath = `/${lang}${url === '/' ? '' : url}`;
   console.log(`🔄 重定向到: ${targetPath}`);
   return Astro.redirect(targetPath);

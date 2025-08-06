@@ -5,29 +5,245 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "en.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/zh-CN/:path*", "has": [{ "type": "host", "value": "zh.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/de/:path*", "has": [{ "type": "host", "value": "de.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/ja/:path*", "has": [{ "type": "host", "value": "ja.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/fr/:path*", "has": [{ "type": "host", "value": "fr.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/ar/:path*", "has": [{ "type": "host", "value": "ar.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/es/:path*", "has": [{ "type": "host", "value": "es.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/it/:path*", "has": [{ "type": "host", "value": "it.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/pt-pt/:path*", "has": [{ "type": "host", "value": "pt.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/nl/:path*", "has": [{ "type": "host", "value": "nl.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/pl/:path*", "has": [{ "type": "host", "value": "pl.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/ru/:path*", "has": [{ "type": "host", "value": "ru.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/th/:path*", "has": [{ "type": "host", "value": "th.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/id/:path*", "has": [{ "type": "host", "value": "id.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/vi/:path*", "has": [{ "type": "host", "value": "vi.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/ms/:path*", "has": [{ "type": "host", "value": "ms.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/ml/:path*", "has": [{ "type": "host", "value": "ml.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/my/:path*", "has": [{ "type": "host", "value": "my.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/hi/:path*", "has": [{ "type": "host", "value": "hi.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/ko/:path*", "has": [{ "type": "host", "value": "ko.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/zh-Hant/:path*", "has": [{ "type": "host", "value": "zh-hant.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/tr/:path*", "has": [{ "type": "host", "value": "tr.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "www.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "aihuazhi.cn" }] }
+        {
+            "source": "/:path*",
+            "destination": "/en/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "en.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/zh-CN/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "zh.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/zh-Hant/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "zh-hant.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/de/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "de.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/ja/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ja.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/fr/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "fr.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/ar/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ar.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/es/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "es.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/it/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "it.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/pt-pt/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "pt.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/nl/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "nl.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/pl/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "pl.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/ru/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ru.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/th/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "th.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/id/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "id.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/vi/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "vi.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/ms/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ms.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/ml/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ml.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/my/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "my.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/hi/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "hi.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/ko/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "ko.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/tr/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "tr.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/en/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "www.aihuazhi.cn"
+                }
+            ]
+        },
+        {
+            "source": "/:path*",
+            "destination": "/en/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "aihuazhi.cn"
+                }
+            ]
+        }
     ]
 }

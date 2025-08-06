@@ -53,7 +53,9 @@ export const getLanguageSwitchUrl = (currentLang, targetLang, currentPath) => {
   if (useSubdomainMode()) {
     // 子域名模式：构建子域名URL
     const subdomain = targetLang === 'zh-CN' ? 'zh' : targetLang === 'zh-Hant' ? 'zh-hant' : targetLang;
-    return `https://${subdomain}.aihuazhi.cn${currentPath}`;
+    const currentDomain = getCurrentDomain();
+    const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
+    return `https://${subdomain}.${baseDomain}${currentPath}`;
   } else {
     // 本地开发模式：替换语言前缀
     const pathWithoutLang = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');

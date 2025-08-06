@@ -381,7 +381,9 @@ try {
             } else {
               // 生产环境：构建子域名URL
               const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
-              const newUrl = `https://${subdomain}.aihuazhi.cn${currentPath}`;
+              const currentDomain = window.location.hostname;
+              const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
+              const newUrl = `https://${subdomain}.${baseDomain}${currentPath}`;
               window.location.href = newUrl;
             }
           }
