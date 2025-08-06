@@ -1,29 +1,9 @@
 {
   "strapiImages": [
-    "/images/strapi/L3VwbG9hZHMvMTFfMF9hOTNjNDI2OWVkLmpwZWc.webp",
-    "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
-    "/images/strapi/L3VwbG9hZHMvMV9mYTczMjE2YjNhLndlYnA.webp",
-    "/images/strapi/L3VwbG9hZHMvOTM0ODEwODE4X2Y0MzE0ZWFlNzMuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvOTc5NDQzNDgwX2IwZGU3MTBkNGQuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1XzI0YzBiYzhlNzcuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvbG9nb181OTgzYmVmZmY5LnBuZw.webp",
-    "/images/strapi/L3VwbG9hZHMvbG9nb19wbmdfYzk4NTcyNWIwZi53ZWJw.webp",
-    "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.webp"
   ],
   "webpImages": [
-    "/images/strapi/L3VwbG9hZHMvMTFfMF9hOTNjNDI2OWVkLmpwZWc.webp",
-    "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
-    "/images/strapi/L3VwbG9hZHMvMV9mYTczMjE2YjNhLndlYnA.webp",
-    "/images/strapi/L3VwbG9hZHMvOTM0ODEwODE4X2Y0MzE0ZWFlNzMuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvOTc5NDQzNDgwX2IwZGU3MTBkNGQuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1XzI0YzBiYzhlNzcuanBn.webp",
-    "/images/strapi/L3VwbG9hZHMvbG9nb181OTgzYmVmZmY5LnBuZw.webp",
-    "/images/strapi/L3VwbG9hZHMvbG9nb19wbmdfYzk4NTcyNWIwZi53ZWJw.webp",
-    "/images/strapi/L3VwbG9hZHMvc2FtcGxlXzY0MF80MjZfNTAzZTU0ZmIzYS5naWY.webp"
   ],
-  "totalCount": 10,
-  "webpCount": 10,
+  "totalCount": 0,
+  "webpCount": 0,
   "generatedAt": "2025-08-06T02:06:08.295Z"
 }
