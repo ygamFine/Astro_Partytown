@@ -4,11 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port 3000",
-        "build": "npm run download:strapi-images && npm run optimize:images && astro build && npm run generate:search-index",
+        "build": "npm run download:strapi-images && npm run optimize:images:node && astro build && npm run generate:search-index",
     "preview": "astro preview",
     "astro": "astro",
     "generate:search-index": "node scripts/generate-search-index.js",
     "optimize:images": "bash scripts/optimize-images.sh",
+    "optimize:images:node": "node scripts/optimize-images-node.js",
     "download:strapi-images": "node scripts/download-strapi-images.js"
   },
   "dependencies": {
@@ -16,12 +17,12 @@
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vercel": "^8.2.5",
     "@builder.io/partytown": "^0.10.3",
-    "astro": "^5.9.3"
+    "astro": "^5.9.3",
+    "sharp": "^0.34.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.5",
-    "sharp": "^0.34.2",
     "tailwindcss": "^3.4.3"
   }
 }

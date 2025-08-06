@@ -1,8 +1,18 @@
 ---
 import StaticMenu from './StaticMenu.astro';
 import { themeConfig } from '../../../config/theme.js';
+import { buildUrl } from '../../../lib/envConfig.js';
+
 // 使用public目录中的图片
 const logoImage = '/images/logo.png.webp';
+
+// 获取当前语言
+const currentPath = Astro.url.pathname;
+const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)\//);
+const currentLang = langMatch ? langMatch[1] : 'en';
+
+// 生成带语言的首页链接
+const homeUrl = buildUrl(currentLang, '/');
 ---
 <!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
 <header class="relative z-50">
@@ -11,7 +21,7 @@ const logoImage = '/images/logo.png.webp';
   <div class="container mx-auto px-4">
       <div class="flex items-center justify-between md:h-[9.9rem] h-24">
       <!-- TEVIS Logo -->
-      <a href="/" class="flex items-center">
+      <a href={homeUrl} class="flex items-center">
           <img 
             src={logoImage}
             alt="TEVIS Logo" 

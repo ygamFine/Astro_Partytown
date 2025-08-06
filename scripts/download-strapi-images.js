@@ -118,14 +118,17 @@ async function downloadImage(imageUrl) {
           await execAsync(`cwebp -q 80 -m 6 "${tempPath}" -o "${localPath}"`);
           console.log(`✅ 转换成功: ${fileName}`);
         } catch (error) {
-          console.log(`⚠️  WebP转换失败，保存原始格式: ${fileName}`);
-          // 如果转换失败，保存原始格式
-          await fs.copyFile(tempPath, localPath);
+          console.log(`❌ WebP转换失败: ${fileName}`);
+          console.log(`错误信息: ${error.message}`);
+          process.exit(1);
         }
       } else {
-        // 如果没有WebP工具，保存原始格式
-        console.log(`⚠️  未安装WebP工具，保存原始格式: ${fileName}`);
-        await fs.copyFile(tempPath, localPath);
+        // 如果没有WebP工具，报错退出
+        console.log(`❌ 错误: 需要安装WebP工具`);
+        console.log(`macOS: brew install webp`);
+        console.log(`Ubuntu: sudo apt-get install webp`);
+        console.log(`Vercel: 请在构建环境中安装webp工具`);
+        process.exit(1);
       }
 
       // 清理临时文件

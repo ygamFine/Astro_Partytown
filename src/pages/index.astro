@@ -18,50 +18,61 @@ import { themeConfig } from '../config/theme.js';
 
 // 根据子域名确定语言
 const hostname = Astro.url.hostname;
+const url = Astro.url.pathname;
+
+// 调试信息
+console.log('🌐 检测到主机名:', hostname);
+console.log('🔗 当前路径:', url);
+
 let lang = 'en'; // 默认英文
 
-if (hostname.startsWith('zh.')) {
-  lang = 'zh-CN';
-} else if (hostname.startsWith('zh-hant.')) {
-  lang = 'zh-Hant';
-} else if (hostname.startsWith('de.')) {
-  lang = 'de';
-} else if (hostname.startsWith('ja.')) {
-  lang = 'ja';
-} else if (hostname.startsWith('fr.')) {
-  lang = 'fr';
-} else if (hostname.startsWith('ar.')) {
-  lang = 'ar';
-} else if (hostname.startsWith('es.')) {
-  lang = 'es';
-} else if (hostname.startsWith('it.')) {
-  lang = 'it';
-} else if (hostname.startsWith('pt.')) {
-  lang = 'pt-pt';
-} else if (hostname.startsWith('nl.')) {
-  lang = 'nl';
-} else if (hostname.startsWith('pl.')) {
-  lang = 'pl';
-} else if (hostname.startsWith('ru.')) {
-  lang = 'ru';
-} else if (hostname.startsWith('th.')) {
-  lang = 'th';
-} else if (hostname.startsWith('id.')) {
-  lang = 'id';
-} else if (hostname.startsWith('vi.')) {
-  lang = 'vi';
-} else if (hostname.startsWith('ms.')) {
-  lang = 'ms';
-} else if (hostname.startsWith('ml.')) {
-  lang = 'ml';
-} else if (hostname.startsWith('my.')) {
-  lang = 'my';
-} else if (hostname.startsWith('hi.')) {
-  lang = 'hi';
-} else if (hostname.startsWith('ko.')) {
-  lang = 'ko';
-} else if (hostname.startsWith('tr.')) {
-  lang = 'tr';
+// 子域名到语言的映射
+const subdomainToLang = {
+  'zh': 'zh-CN',
+  'zh-hant': 'zh-Hant',
+  'de': 'de',
+  'ja': 'ja',
+  'fr': 'fr',
+  'ar': 'ar',
+  'es': 'es',
+  'it': 'it',
+  'pt': 'pt-pt',
+  'nl': 'nl',
+  'pl': 'pl',
+  'ru': 'ru',
+  'th': 'th',
+  'id': 'id',
+  'vi': 'vi',
+  'ms': 'ms',
+  'ml': 'ml',
+  'my': 'my',
+  'hi': 'hi',
+  'ko': 'ko',
+  'tr': 'tr'
+};
+
+// 检查子域名
+for (const [subdomain, language] of Object.entries(subdomainToLang)) {
+  if (hostname.startsWith(`${subdomain}.`)) {
+    lang = language;
+    console.log(`✅ 检测到子域名 ${subdomain}，设置语言为 ${language}`);
+    break;
+  }
+}
+
+// 如果没有匹配到子域名，检查是否是主域名
+if (hostname === 'aihuazhi.cn' || hostname === 'www.aihuazhi.cn') {
+  lang = 'en';
+  console.log('🏠 主域名，使用默认英语');
+}
+
+console.log(`🎯 最终语言设置: ${lang}`);
+
+// 如果是生产环境且检测到子域名，重定向到对应的语言路径
+if (import.meta.env.PROD && hostname !== 'aihuazhi.cn' && hostname !== 'www.aihuazhi.cn') {
+  const targetPath = `/${lang}${url === '/' ? '' : url}`;
+  console.log(`🔄 重定向到: ${targetPath}`);
+  return Astro.redirect(targetPath);
 }
 
 // 获取页面宽度配置
