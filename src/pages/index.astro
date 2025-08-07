@@ -52,9 +52,11 @@ const subdomainToLang = {
 };
 
 // 检查子域名
+let detectedSubdomain = null;
 for (const [subdomain, language] of Object.entries(subdomainToLang)) {
   if (hostname.startsWith(`${subdomain}.`)) {
     lang = language;
+    detectedSubdomain = subdomain;
     console.log(`✅ 检测到子域名 ${subdomain}，设置语言为 ${language}`);
     break;
   }
@@ -62,17 +64,25 @@ for (const [subdomain, language] of Object.entries(subdomainToLang)) {
 
 // 检查是否是主域名（非子域名）
 const isMainDomain = !hostname.includes('.') || hostname.split('.').length <= 2;
-if (isMainDomain) {
+if (isMainDomain && !detectedSubdomain) {
   lang = 'en';
   console.log('🏠 主域名，使用默认英语');
 }
 
 console.log(`🎯 最终语言设置: ${lang}`);
+console.log(`🏗️ 环境: ${import.meta.env.DEV ? '开发' : '生产'}`);
 
 // 如果是生产环境且检测到子域名，重定向到对应的语言路径
-if (import.meta.env.PROD && !isMainDomain && !hostname.includes('localhost')) {
+if (import.meta.env.PROD && detectedSubdomain && !hostname.includes('localhost')) {
   const targetPath = `/${lang}${url === '/' ? '' : url}`;
-  console.log(`🔄 重定向到: ${targetPath}`);
+  console.log(`🔄 生产环境重定向到: ${targetPath}`);
+  return Astro.redirect(targetPath);
+}
+
+// 开发环境下的重定向逻辑
+if (import.meta.env.DEV && detectedSubdomain) {
+  const targetPath = `/${lang}${url === '/' ? '' : url}`;
+  console.log(`🔄 开发环境重定向到: ${targetPath}`);
   return Astro.redirect(targetPath);
 }
 

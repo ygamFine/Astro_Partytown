@@ -31,8 +31,13 @@ if (isServer) {
     
     enabledLanguages = module.exports.enabledLanguages;
     defaultLanguage = module.exports.defaultLanguage || 'en';
+    
+    // 确保法语在启用的语言列表中
+    if (!enabledLanguages.includes('fr')) {
+      enabledLanguages.push('fr');
+    }
   } catch (error) {
-
+    console.error('❌ i18n配置加载失败:', error.message);
     enabledLanguages = ['zh-CN', 'en', 'fr', 'de'];
     defaultLanguage = 'en';
   }

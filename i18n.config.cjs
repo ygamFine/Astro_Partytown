@@ -2,7 +2,7 @@ module.exports = {
   // 从环境变量获取启用的语言列表
   enabledLanguages: process.env.ENABLED_LANGUAGES 
     ? process.env.ENABLED_LANGUAGES.split(',') 
-    : ['zh-CN', 'en', 'de', 'ja', 'ar'],
+    : ['zh-CN', 'en', 'de', 'ja', 'ar', 'fr'],
   
   // 默认语言
   defaultLanguage: process.env.DEFAULT_LANGUAGE || 'en',
