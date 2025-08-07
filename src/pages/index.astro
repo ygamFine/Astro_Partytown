@@ -20,9 +20,16 @@ import { themeConfig } from '../config/theme.js';
 const hostname = Astro.url.hostname;
 const url = Astro.url.pathname;
 
+// 尝试从HTTP头获取原始主机名（Vercel重写支持）
+const originalHost = Astro.request.headers.get('x-forwarded-host') || 
+                    Astro.request.headers.get('x-host') || 
+                    Astro.request.headers.get('host') || 
+                    hostname;
+
 // 调试信息
 console.log('🌐 检测到主机名:', hostname);
 console.log('🔗 当前路径:', url);
+console.log('🏠 原始主机名:', originalHost);
 
 let lang = 'en'; // 默认英文
 
@@ -51,10 +58,10 @@ const subdomainToLang = {
   'tr': 'tr'
 };
 
-// 检查子域名
+// 检查子域名 - 优先使用原始主机名
 let detectedSubdomain = null;
 for (const [subdomain, language] of Object.entries(subdomainToLang)) {
-  if (hostname.startsWith(`${subdomain}.`)) {
+  if (originalHost.startsWith(`${subdomain}.`)) {
     lang = language;
     detectedSubdomain = subdomain;
     console.log(`✅ 检测到子域名 ${subdomain}，设置语言为 ${language}`);
@@ -62,8 +69,20 @@ for (const [subdomain, language] of Object.entries(subdomainToLang)) {
   }
 }
 
+// 如果原始主机名没有匹配到，再检查当前主机名
+if (!detectedSubdomain) {
+  for (const [subdomain, language] of Object.entries(subdomainToLang)) {
+    if (hostname.startsWith(`${subdomain}.`)) {
+      lang = language;
+      detectedSubdomain = subdomain;
+      console.log(`✅ 从当前主机名检测到子域名 ${subdomain}，设置语言为 ${language}`);
+      break;
+    }
+  }
+}
+
 // 检查是否是主域名（非子域名）
-const isMainDomain = !hostname.includes('.') || hostname.split('.').length <= 2;
+const isMainDomain = !originalHost.includes('.') || originalHost.split('.').length <= 2;
 if (isMainDomain && !detectedSubdomain) {
   lang = 'en';
   console.log('🏠 主域名，使用默认英语');
@@ -107,4 +126,5 @@ const pageWidth = getPageWidth();
 			<NewsCenter />
 		</div>
 	</main>
+</Layout> 
 </Layout> 
