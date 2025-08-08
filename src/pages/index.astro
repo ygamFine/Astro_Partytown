@@ -1,6 +1,6 @@
 ---
 // 根路径首页 - 用于子域名访问，直接渲染内容
-export const prerender = false; // 改为动态渲染，以支持子域名检测
+export const prerender = true; // 恢复预渲染，提高首屏加载性能
 export const revalidate = 3600; // 1小时
 
 import Layout from '../layouts/Layout.astro';
