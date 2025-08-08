@@ -93,10 +93,18 @@ function processImageWithMapping(img, imageMapping) {
         // 1. 直接匹配文件名
         if (cached.includes(fileName)) return true;
         
-        // 2. 匹配hash
+        // 2. 处理空格到下划线的转换
+        const fileNameWithUnderscore = fileName.replace(/\s+/g, '_');
+        if (cached.includes(fileNameWithUnderscore)) return true;
+        
+        // 3. 处理下划线到空格的转换
+        const fileNameWithSpace = fileName.replace(/_/g, ' ');
+        if (cached.includes(fileNameWithSpace)) return true;
+        
+        // 4. 匹配hash
         if (img.hash && cached.includes(img.hash)) return true;
         
-        // 3. Base64编码匹配
+        // 5. Base64编码匹配
         try {
           const encodedName = Buffer.from(fileName).toString('base64');
           if (cached.includes(encodedName)) return true;
@@ -105,7 +113,7 @@ function processImageWithMapping(img, imageMapping) {
           if (cached.includes(encodedNameNoPadding)) return true;
         } catch (e) {}
         
-        // 4. Base64解码匹配
+        // 6. Base64解码匹配
         try {
           const decodedName = Buffer.from(fileName, 'base64').toString();
           if (cached.includes(decodedName)) return true;

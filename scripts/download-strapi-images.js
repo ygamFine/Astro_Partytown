@@ -28,8 +28,39 @@ const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
 
-// 从环境变量获取启用的语言
-const ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
+// 从环境变量获取启用的语言，如果没有设置则从API获取
+let ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
+
+// 如果没有设置环境变量，从Strapi API获取支持的语言
+async function getSupportedLanguages() {
+  try {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/i18n/locales`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const rawList = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
+      
+      const languages = rawList
+        .map((item) => {
+          const code = item?.code || item?.attributes?.code || item?.id || item?.locale || null;
+          return code;
+        })
+        .filter(Boolean);
+
+      return languages;
+    }
+  } catch (error) {
+    console.log('⚠️  获取语言列表失败:', error.message);
+  }
+  
+  // 如果API失败，使用默认语言列表
+  return ['en', 'zh-CN', 'ja', 'de', 'fr', 'ar', 'es', 'it', 'pt-pt', 'nl', 'pl', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ko', 'tr'];
+}
 
 
 /**
@@ -340,6 +371,13 @@ function extractImageUrls(data) {
  */
 async function downloadAllImages() {
   await ensureCacheDir();
+  
+  // 如果没有设置语言列表，从API获取
+  if (ENABLED_LOCALES.length === 0) {
+    console.log('🔄 从Strapi API获取支持的语言列表...');
+    ENABLED_LOCALES = await getSupportedLanguages();
+    console.log(`📋 获取到 ${ENABLED_LOCALES.length} 种语言:`, ENABLED_LOCALES);
+  }
   
   const allImageUrls = new Set();
   let totalDownloaded = 0;
