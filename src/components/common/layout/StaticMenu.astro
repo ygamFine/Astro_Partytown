@@ -336,18 +336,17 @@ try {
             const pathWithoutLang: string = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
             
             if (isDev) {
-              // 本地开发：替换语言前缀
-              const newPath = `/${selectedLang}${pathWithoutLang}`;
+              // 本地开发：总是跳转到首页
+              const newPath = `/${selectedLang}/`;
               console.log('开发环境跳转路径:', newPath);
               // 在新标签页中打开
               window.open(newPath, '_blank');
             } else {
-              // 生产环境：构建子域名URL
+              // 生产环境：构建子域名URL，总是跳转到首页
               const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
               const currentDomain = window.location.hostname;
               const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
-              // 如果当前路径是根目录，直接使用子域名，否则保持路径
-              const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
+              const newUrl = `https://${subdomain}.${baseDomain}`;
               console.log('生产环境跳转URL:', newUrl);
               // 在新标签页中打开
               window.open(newUrl, '_blank');
