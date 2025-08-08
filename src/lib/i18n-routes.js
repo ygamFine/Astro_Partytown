@@ -3,27 +3,6 @@ import { getSupportedLanguages } from './strapi.js';
 // 默认语言列表作为回退，确保所有必要的语言路径都能生成
 const DEFAULT_LANGUAGES = [
   { code: 'en', name: 'English' },
-  { code: 'zh-CN', name: '简体中文' },
-  { code: 'zh-Hant', name: '繁體中文' },
-  { code: 'ja', name: '日本語' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'fr', name: 'Français' },
-  { code: 'ar', name: 'العربية' },
-  { code: 'es', name: 'Español' },
-  { code: 'it', name: 'Italiano' },
-  { code: 'pt-pt', name: 'Português' },
-  { code: 'nl', name: 'Nederlands' },
-  { code: 'pl', name: 'Polski' },
-  { code: 'ru', name: 'Русский' },
-  { code: 'th', name: 'ไทย' },
-  { code: 'id', name: 'Bahasa Indonesia' },
-  { code: 'vi', name: 'Tiếng Việt' },
-  { code: 'ms', name: 'Bahasa Melayu' },
-  { code: 'ml', name: 'മലയാളം' },
-  { code: 'my', name: 'မြန်မာဘာသာ' },
-  { code: 'hi', name: 'हिन्दी' },
-  { code: 'ko', name: '한국어' },
-  { code: 'tr', name: 'Türkçe' }
 ];
 
 // 尝试从后端获取语言列表，失败时使用默认列表
