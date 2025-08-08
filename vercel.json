@@ -28,6 +28,7 @@
         { "source": "/:path*", "destination": "/ko/:path*", "has": [{ "type": "host", "value": "ko.aihuazhi.cn" }] },
         { "source": "/:path*", "destination": "/tr/:path*", "has": [{ "type": "host", "value": "tr.aihuazhi.cn" }] },
         { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "www.aihuazhi.cn" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "aihuazhi.cn" }] }
+        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "aihuazhi.cn" }] },
+        { "source": "/", "destination": "/en/" }
     ]
 }
