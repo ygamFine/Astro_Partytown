@@ -8,8 +8,43 @@ import { buildUrl } from '../../../lib/envConfig.js';
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
 // 修复正则表达式，使其能够匹配 /ja 这样的路径（不需要后面的斜杠）
-const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-const currentLang = langMatch ? langMatch[1] : 'en'; // 默认英文
+let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+let currentLang = langMatch ? langMatch[1] : 'en'; // 默认英文
+
+// 如果没有从路径检测到语言，尝试从子域名检测
+if (currentLang === 'en' && currentPath === '/') {
+  const hostname = Astro.url.hostname;
+  const subdomainToLang = {
+    'zh': 'zh-CN',
+    'zh-hant': 'zh-Hant',
+    'de': 'de',
+    'ja': 'ja',
+    'fr': 'fr',
+    'ar': 'ar',
+    'es': 'es',
+    'it': 'it',
+    'pt': 'pt-pt',
+    'nl': 'nl',
+    'pl': 'pl',
+    'ru': 'ru',
+    'th': 'th',
+    'id': 'id',
+    'vi': 'vi',
+    'ms': 'ms',
+    'ml': 'ml',
+    'my': 'my',
+    'hi': 'hi',
+    'ko': 'ko',
+    'tr': 'tr'
+  };
+  
+  for (const [subdomain, language] of Object.entries(subdomainToLang)) {
+    if (hostname.startsWith(`${subdomain}.`)) {
+      currentLang = language;
+      break;
+    }
+  }
+}
 
 // 加载翻译数据
 const t = getDictionary(currentLang);
