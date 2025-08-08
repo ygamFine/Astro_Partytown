@@ -349,20 +349,6 @@
       "url": "/en/products/isrpage11",
       "lang": "en",
       "searchText": "isr 第十一次测试    产品"
-    },
-    {
-      "id": 60,
-      "type": "product",
-      "slug": "up01",
-      "title": "ウォータドリル",
-      "excerpt": "",
-      "content": "ウォータドリル",
-      "category": "产品",
-      "image": "/images/strapi/L3VwbG9hZHMvMTVfanBnXzNhYWMyNWI5Yjkud2VicA.webp",
-      "price": "",
-      "url": "/ja/products/up01",
-      "lang": "ja",
-      "searchText": "ウォータドリル    产品"
     }
   ],
   "news": [
@@ -435,20 +421,6 @@
       "url": "/en/news/news-29",
       "lang": "en",
       "searchText": "test2"
-    },
-    {
-      "id": 19,
-      "type": "news",
-      "slug": "news-19",
-      "title": "日文新闻",
-      "excerpt": "",
-      "content": "",
-      "image": "/images/strapi/L3VwbG9hZHMvOTc5NzY5OTY1X2YzNWRmM2RhMjYuanBn.webp",
-      "date": "2025-07-15T12:30:33.748Z",
-      "author": "",
-      "url": "/ja/news/news-19",
-      "lang": "ja",
-      "searchText": "日文新闻"
     }
   ],
   "cases": [

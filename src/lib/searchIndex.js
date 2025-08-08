@@ -1,5 +1,5 @@
 // SSG 兼容的搜索索引生成器
-import { getEnabledLanguages } from './i18n-config.js';
+import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';
@@ -13,9 +13,8 @@ export async function generateSearchIndex() {
   };
 
   try {
-    // 获取所有启用的语言的产品数据
-    const enabledLanguages = getEnabledLanguages();
-    for (const lang of enabledLanguages) {
+    // 获取所有支持的语言的产品数据
+    for (const lang of SUPPORTED_LANGUAGES) {
       const products = await getProducts(lang);
       if (products && products.length > 0) {
         // 处理产品数据
@@ -48,8 +47,8 @@ export async function generateSearchIndex() {
       }
     }
 
-    // 获取所有启用的语言的新闻数据
-    for (const lang of enabledLanguages) {
+    // 获取所有支持的语言的新闻数据
+    for (const lang of SUPPORTED_LANGUAGES) {
       const news = await getNews(lang);
       if (news && news.length > 0) {
         // 处理新闻数据
@@ -81,8 +80,8 @@ export async function generateSearchIndex() {
       }
     }
 
-    // 获取所有启用的语言的案例数据
-    for (const lang of enabledLanguages) {
+    // 获取所有支持的语言的案例数据
+    for (const lang of SUPPORTED_LANGUAGES) {
       const cases = await getCases(lang);
       if (cases && cases.length > 0) {
         // 处理案例数据

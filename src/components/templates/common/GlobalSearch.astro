@@ -1,10 +1,9 @@
 ---
 // 全局搜索组件
-import { getCommonTextSync } from '../../../lib/commonTranslations.js';
+import getDictionary from '../../../i18n/dictionaries.js';
 
 const { lang = 'en' } = Astro.props;
-const common = await import(`../../../locales/${lang}/common.json`);
-const commonData = common.default;
+const t = getDictionary(lang);
 ---
 
 <div class="global-search" id="global-search">
@@ -13,7 +12,7 @@ const commonData = common.default;
       <input 
         type="text" 
         id="search-input"
-        placeholder={getCommonTextSync(commonData, 'placeholders.search')}
+        placeholder={t.placeholder.search}
         class="w-full px-4 py-3 pl-12 pr-4 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
         autocomplete="off"
         aria-label="搜索"

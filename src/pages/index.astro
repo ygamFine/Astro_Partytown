@@ -1,8 +1,7 @@
 ---
 // 根路径首页 - 用于子域名访问，直接渲染内容
 export const prerender = true;
-import { REVALIDATE_TIME } from '../lib/isrConfig.js';
-export const revalidate = REVALIDATE_TIME.HOME;
+export const revalidate = 3600; // 1小时
 
 import Layout from '../layouts/Layout.astro';
 import FullScreenBanner from '../components/common/banner/FullScreenBanner.astro';

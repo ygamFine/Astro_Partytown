@@ -163,11 +163,20 @@ async function main() {
     ...await findImageFiles('public/images', ['.jpg', '.jpeg', '.png', '.webp']),
     ...await findImageFiles('public/images/strapi', ['.jpg', '.jpeg', '.png', '.webp'])
   ];
+
+  // 排除已生成目录与已为移动端命名的文件，避免二次处理
+  const filteredCandidates = mobileCandidates.filter(file => {
+    const lower = file.toLowerCase();
+    const name = path.basename(file).toLowerCase();
+    const inOptimizedDir = lower.includes(`${path.sep}images${path.sep}optimized${path.sep}`);
+    const alreadyMobileNamed = name.includes('-mobile');
+    return !inOptimizedDir && !alreadyMobileNamed;
+  });
   
   // 过滤出大图（banner等）
-  const largeImages = mobileCandidates.filter(file => {
+  const largeImages = filteredCandidates.filter(file => {
     const name = path.basename(file).toLowerCase();
-    return name.includes('banner') || name.includes('hero') || name.includes('strapi');
+    return (name.includes('banner') || name.includes('hero') || name.includes('strapi')) && !name.includes('-mobile');
   });
   
   console.log(`找到 ${largeImages.length} 个大图需要生成移动端版本`);

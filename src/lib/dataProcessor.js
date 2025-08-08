@@ -71,28 +71,7 @@ function processNewsImage(imageData) {
   return null;
 }
 
-// 加载翻译文件
-export async function loadTranslations(lang, translationKeys) {
-  const translations = {};
-  
-  for (const key of translationKeys) {
-    try {
-      const translation = await import(`../locales/${lang}/${key}.json`);
-      translations[key] = translation.default;
-    } catch (error) {
-      // 如果加载失败，使用英文作为默认
-      try {
-        const fallbackTranslation = await import(`../locales/en/${key}.json`);
-        translations[key] = fallbackTranslation.default;
-      } catch (fallbackError) {
-        console.warn(`无法加载翻译文件: ${key}`, fallbackError.message);
-        translations[key] = {};
-      }
-    }
-  }
-  
-  return translations;
-}
+
 
 // 生成面包屑导航
 export function generateBreadcrumbs(lang, type, currentPage) {

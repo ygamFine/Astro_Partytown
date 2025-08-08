@@ -3,14 +3,13 @@
  * 用于处理分页逻辑和路径生成
  */
 
-import { getEnabledLanguages } from './i18n-config.js';
+import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
 
 // 生成分页路径
 export async function generatePaginationPaths(dataFetcher, itemsPerPage, pagePrefix = '') {
-  const enabledLanguages = getEnabledLanguages();
   const paths = [];
   
-  for (const lang of enabledLanguages) {
+  for (const lang of SUPPORTED_LANGUAGES) {
     try {
       const allItems = await dataFetcher(lang);
       const totalPages = Math.ceil(allItems.length / itemsPerPage);

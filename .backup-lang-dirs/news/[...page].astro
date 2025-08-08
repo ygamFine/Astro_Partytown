@@ -8,7 +8,7 @@ import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getNews } from '../../../lib/strapi.js';
 import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
-import { processNewsData, loadTranslations } from '../../../lib/dataProcessor.js';
+import getDictionary from '../../../i18n/dictionaries.js';
 import { generateNewsBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
@@ -25,18 +25,18 @@ const { lang, currentPage, totalPages, items: news } = Astro.props;
 const actualCurrentPage = parsePageParam(Astro.params.page);
 
 // 加载翻译文件
-const translations = await loadTranslations(lang, ['news', 'pagination']) as any;
+const t = getDictionary(lang);
 
 // 处理新闻数据
-const newsItems = processNewsData(news, lang);
+const newsItems = news || [];
 
 // 面包屑导航
 const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
 ---
 
 <SecondaryPageLayout 
-  title={translations.news.news.title || "News"}
-  description={translations.news.news.description}
+  title={t.news.title || "News"}
+  description={t.news.description}
   breadcrumbs={breadcrumbs}
   currentSection="news"
   contentType="list"
@@ -51,7 +51,7 @@ const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actual
       <NewsList 
         items={newsItems}
         lang={lang}
-        t={translations.news}
+        t={t}
       />
       
       {/* 列表描述内容 - 分页上方模式 */}
@@ -68,7 +68,7 @@ const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actual
          currentPage={actualCurrentPage}
          totalPages={totalPages}
          baseUrl={buildUrl(lang, '/news')}
-         i18n={translations.pagination}
+         i18n={t}
        />
     </>
   ) : (

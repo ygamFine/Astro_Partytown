@@ -16,11 +16,11 @@ let t: BreadcrumbDict = {};
 
 try {
   // 尝试加载指定语言的翻译文件
-  t = await import(`../../../locales/${lang}/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
+  t = await import(`../../../i18n/locales/${lang}/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
 } catch (e) {
   try {
     // 如果指定语言加载失败，尝试加载英文作为fallback
-    t = await import(`../../../locales/en/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
+    t = await import(`../../../i18n/locales/en/breadcrumb.json`).then(m => m.default as BreadcrumbDict);
   } catch (fallbackError) {
     // 如果连英文也加载失败，使用空对象
     t = {};

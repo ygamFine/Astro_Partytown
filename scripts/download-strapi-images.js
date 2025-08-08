@@ -23,7 +23,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 从环境变量获取配置
-const STRAPI_BASE_URL = process.env.STRAPI_API_URL;
 const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
@@ -349,7 +348,7 @@ async function downloadAllImages() {
   for (const locale of ENABLED_LOCALES) {
     try {
       // 获取产品数据
-      const productsResponse = await fetch(`${STRAPI_BASE_URL}/products?locale=${locale}&populate=*`, {
+      const productsResponse = await fetch(`${STRAPI_STATIC_URL}/api/products?locale=${locale}&populate=*`, {
         headers: {
           'Authorization': `Bearer ${STRAPI_TOKEN}`,
           'Content-Type': 'application/json'
@@ -363,7 +362,7 @@ async function downloadAllImages() {
       }
       
       // 获取新闻数据
-      const newsResponse = await fetch(`${STRAPI_BASE_URL}/news?locale=${locale}&populate=*`, {
+      const newsResponse = await fetch(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=*`, {
         headers: {
           'Authorization': `Bearer ${STRAPI_TOKEN}`,
           'Content-Type': 'application/json'
@@ -377,7 +376,7 @@ async function downloadAllImages() {
       }
       
       // 获取案例数据
-      const casesResponse = await fetch(`${STRAPI_BASE_URL}/case?locale=${locale}&populate=*`, {
+      const casesResponse = await fetch(`${STRAPI_STATIC_URL}/api/case?locale=${locale}&populate=*`, {
         headers: {
           'Authorization': `Bearer ${STRAPI_TOKEN}`,
           'Content-Type': 'application/json'

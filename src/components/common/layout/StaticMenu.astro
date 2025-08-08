@@ -1,7 +1,7 @@
 ---
 // SSG静态菜单组件 - 构建时获取菜单数据
-import { getMenus } from '../../../lib/strapi.js';
-import { getCommonTextSync } from '../../../lib/commonTranslations.js';
+import { getMenus, getSupportedLanguages } from '../../../lib/strapi.js';
+import getDictionary from '../../../i18n/dictionaries.js';
 import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
 
@@ -11,9 +11,8 @@ const currentPath = Astro.url.pathname;
 const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
 const currentLang = langMatch ? langMatch[1] : 'en'; // 默认英文
 
-// 加载公共语言数据
-const common = await import(`../../../locales/${currentLang}/common.json`);
-const commonData = common.default;
+// 加载翻译数据
+const t = getDictionary(currentLang);
 
 // 动态生成菜单链接 - 根据环境使用不同的URL策略
 function withLang(path: string) {
@@ -34,6 +33,17 @@ try {
   console.error('获取菜单失败:', error);
   // 如果接口失败，不显示任何菜单
   menuItems = [];
+}
+
+
+
+// 获取支持的语言列表（从 Strapi API，不做硬编码回退）
+let supportedLanguages: Array<{code: string, name: string}> = [];
+try {
+  supportedLanguages = await getSupportedLanguages();
+} catch (error) {
+  console.error('获取语言列表失败:', error);
+  supportedLanguages = [];
 }
 ---
 
@@ -98,7 +108,7 @@ try {
       <input 
         type="text" 
         id="header-search-input"
-        placeholder={getCommonTextSync(commonData, 'placeholders.search')}
+        placeholder={t.placeholder.search}
         class="round bg-red-500/95 border border-red-400/30 text-white placeholder-white/70 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200"
         style="width: 30rem; font-size: 1.4rem;"
         autocomplete="off"
@@ -147,7 +157,7 @@ try {
 
     <!-- 语言选择器 -->
     {themeConfig.languageSelector.showLanguageSelector && 
-     (!themeConfig.languageSelector.hideWhenSingleLanguage || themeConfig.languageSelector.enabledLanguages.length > 1) && (
+     (!themeConfig.languageSelector.hideWhenSingleLanguage || supportedLanguages.length > 1) && (
     <div class="relative flex items-center space-x-2">
       
       <!-- 选择器框 -->
@@ -160,10 +170,10 @@ try {
 
       <!-- 下拉菜单 -->
       <div id="language-dropdown" class="absolute top-full right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50 hidden" style="min-width: 16rem; max-height: 60vh; overflow-y: auto;">
-        {themeConfig.languageSelector.enabledLanguages.map(lang => (
-          <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang={lang}>
+        {supportedLanguages.map(lang => (
+          <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang={lang.code}>
             <span class="text-2xl">🌐</span>
-            <span class="text-gray-800 font-medium">{lang}</span>
+            <span class="text-gray-800 font-medium">{lang.name}</span>
           </a>
         ))}
       </div>
@@ -235,9 +245,9 @@ try {
     }
 
     // 语言选择器功能
-    const languageSelector = document.getElementById('language-selector');
-    const languageDropdown = document.getElementById('language-dropdown');
-    const languageArrow = document.getElementById('language-arrow');
+    const languageSelector = document.getElementById('language-selector') as HTMLElement | null;
+    const languageDropdown = document.getElementById('language-dropdown') as HTMLElement | null;
+    const languageArrow = document.getElementById('language-arrow') as HTMLElement | null;
     
     if (languageSelector && languageDropdown && languageArrow) {
       // 切换下拉菜单
@@ -248,7 +258,7 @@ try {
         
         if (isHidden) {
           languageDropdown.classList.remove('hidden');
-          languageArrow.style.transform = 'rotate(180deg)';
+          (languageArrow as any).style.transform = 'rotate(180deg)';
         } else {
           languageDropdown.classList.add('hidden');
           languageArrow.style.transform = 'rotate(0deg)';
@@ -256,7 +266,7 @@ try {
       });
 
       // 语言选项点击事件
-      const languageOptions = document.querySelectorAll('.language-option');
+      const languageOptions = document.querySelectorAll('.language-option') as NodeListOf<HTMLElement>;
       languageOptions.forEach(option => {
         option.addEventListener('click', (e) => {
           e.preventDefault();
@@ -290,16 +300,16 @@ try {
           
           // 关闭下拉菜单
           languageDropdown.classList.add('hidden');
-          languageArrow.style.transform = 'rotate(0deg)';
+          (languageArrow as any).style.transform = 'rotate(0deg)';
         });
       });
 
       // 点击外部关闭下拉菜单
       document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target && !languageSelector.contains(target) && !languageDropdown.contains(target)) {
+        const target = e.target as Node;
+        if (target && !languageSelector.contains(target as Node) && !languageDropdown.contains(target as Node)) {
           languageDropdown.classList.add('hidden');
-          languageArrow.style.transform = 'rotate(0deg)';
+          (languageArrow as any).style.transform = 'rotate(0deg)';
         }
       });
       
@@ -318,6 +328,9 @@ try {
         
         if (selectedTextElement && selectorText && selectedTextElement.textContent) {
           selectorText.textContent = selectedTextElement.textContent;
+        } else if (selectorText) {
+          // 如果找不到对应的语言选项，显示语言代码
+          selectorText.textContent = currentLang;
         }
       }
       
@@ -329,46 +342,31 @@ try {
     function initDropdownMenus() {
       // 只为.dropdown-toggle按钮绑定展开事件
       document.querySelectorAll('.dropdown-toggle').forEach(toggleBtn => {
-        const dropdownContainer = toggleBtn.closest('.dropdown-container') as HTMLElement | null;
+        const dropdownContainer = toggleBtn.closest('.dropdown-container');
         if (!dropdownContainer) return;
-        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu') as HTMLElement | null;
-        const dropdownArrow = toggleBtn.querySelector('.dropdown-arrow') as HTMLElement | null;
+        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
+        const dropdownArrow = toggleBtn.querySelector('.dropdown-arrow');
         toggleBtn.addEventListener('click', (e) => {
           e.preventDefault();
           if (!dropdownMenu) return;
           const isHidden = dropdownMenu.classList.contains('hidden');
-          // 关闭其他所有下拉菜单
-          document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            if (menu !== dropdownMenu) {
-              (menu as HTMLElement).classList.add('hidden');
+          requestAnimationFrame(() => {
+            dropdownMenu.classList.toggle('hidden');
+            if (dropdownArrow) {
+              dropdownArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
             }
           });
-          // 切换当前下拉菜单
-          if (isHidden) {
-            dropdownMenu.classList.remove('hidden');
-            if (dropdownArrow) {
-              dropdownArrow.style.transform = 'rotate(180deg)';
-            }
-          } else {
-            dropdownMenu.classList.add('hidden');
-            if (dropdownArrow) {
-              dropdownArrow.style.transform = 'rotate(0deg)';
-            }
-          }
         });
       });
-      
-      // 点击页面其他地方关闭所有下拉菜单
+
+      // 点击页面其它地方关闭所有下拉
       document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target && !target.closest('.dropdown-container')) {
-          document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            menu.classList.add('hidden');
-          });
-          document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
-            (arrow as HTMLElement).style.transform = 'rotate(0deg)';
-          });
-        }
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.classList.add('hidden');
+        });
+        document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
+          arrow.style.transform = 'rotate(0deg)';
+        });
       });
     }
     

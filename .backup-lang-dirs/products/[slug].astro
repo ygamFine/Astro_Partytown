@@ -7,16 +7,16 @@ import ContactButtons from '../../../components/common/contact/ContactButtons.as
 import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
 import { getProducts, getProduct } from '../../../lib/strapi.js';
 import { getNews } from '../../../lib/strapi.js';
-import { mergeTranslations } from '../../../locales/i18n.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
-import { getEnabledLanguages } from '../../../lib/i18n-config.js';
+import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
+import getDictionary from '../../../i18n/dictionaries.js';
 import { themeConfig } from '../../../config/theme.js';
 import { loadImageMapping, processImages as processImagesFromLib } from '../../../lib/imageProcessor.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
   const paths: any[] = [];
-  const enabledLanguages = getEnabledLanguages();
+  const enabledLanguages = SUPPORTED_LANGUAGES;
   
   for (const lang of enabledLanguages) {
     const products = await getProducts(lang);
@@ -45,8 +45,7 @@ if (!product) {
 }
 
 // 加载国际化翻译
-const translations = await mergeTranslations(lang, ['product']);
-const t = (translations as any)['product'] || {};
+const t = getDictionary(lang);
 
 // 获取所有产品数据用于相关产品计算
 const allProducts = await getProducts(lang);
@@ -500,14 +499,14 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                         <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
                           <div>
                             <h4 class="font-bold text-base leading-tight">{relatedProduct.name}</h4>
-                            <p class="text-xs opacity-90">{t.product.get_quote}</p>
+                            <p class="text-xs opacity-90">{t.product.related.get_quote}</p>
                           </div>
                           <div class="flex items-center space-x-1">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                             </svg>
-                            <span class="font-medium text-sm">{t.product.contactNow}</span>
+                            <span class="font-medium text-sm">{t.product.button.contactNow}</span>
                           </div>
                         </div>
                       </div>
@@ -521,7 +520,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
             <div class="bg-white rounded-lg p-8 shadow-sm">
               <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                 <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                {t.related.news}
+                {t.product.related.news}
               </h2>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -551,7 +550,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
             <div class="bg-white rounded-lg p-6 shadow-sm">
               <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <div class="w-1 h-5 bg-red-600 mr-2"></div>
-                {t.related.recommended}
+                {t.product.related.recommended}
               </h3>
               
               <div class="space-y-4">
@@ -589,14 +588,14 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                         <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
                           <div>
                             <h5 class="font-bold text-base leading-tight">{recommended.name}</h5>
-                            <p class="text-xs opacity-90">{t.product.get_quote}</p>
+                            <p class="text-xs opacity-90">{t.product.related.get_quote}</p>
                           </div>
                           <div class="flex items-center space-x-1">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                             </svg>
-                            <span class="font-medium text-sm">{t.product.contactNow}</span>
+                            <span class="font-medium text-sm">{t.product.button.contactNow}</span>
                           </div>
                         </div>
                       </div>
@@ -608,7 +607,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               <!-- 查看更多推荐产品 -->
               <div class="mt-4 text-center">
                 <a href={`/${lang}/products`} class="text-sm text-red-600 hover:text-red-700 font-medium">
-                  {t.related.view_more} →
+                  {t.product.related.view_more} →
                 </a>
               </div>
             </div>

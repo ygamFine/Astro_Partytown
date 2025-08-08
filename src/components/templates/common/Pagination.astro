@@ -55,24 +55,10 @@ const shouldShowPagination = totalPages > 1;
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
           </svg>
-          <span class="hidden sm:inline">{i18n.paging.first}</span>
+          <span class="hidden sm:inline">{i18n.pagination.first}</span>
         </a>
       )}
-      
-      <!-- 上一页 -->
-      {currentPage > 1 && (
-        <a 
-          href={getPageUrl(currentPage - 1)}
-          class="pagination-button pagination-nav"
-          aria-label={i18n.aria.previous}
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span class="hidden sm:inline">{i18n.paging.previous}</span>
-        </a>
-      )}
-      
+
       <!-- 第一页 -->
       {visiblePages[0] > 1 && (
         <>
@@ -122,9 +108,9 @@ const shouldShowPagination = totalPages > 1;
         <a 
           href={getPageUrl(currentPage + 1)}
           class="pagination-button pagination-nav"
-          aria-label={i18n.aria.next}
+          aria-label={i18n.pagination.next}
         >
-          <span class="hidden sm:inline">{i18n.paging.next}</span>
+          <span class="hidden sm:inline">{i18n.pagination.next}</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
@@ -136,9 +122,9 @@ const shouldShowPagination = totalPages > 1;
         <a 
           href={getPageUrl(totalPages)}
           class="pagination-button pagination-nav"
-          aria-label={i18n.aria.last}
+          aria-label={i18n.pagination.last}
         >
-          <span class="hidden sm:inline">{i18n.paging.last}</span>
+          <span class="hidden sm:inline">{i18n.pagination.last}</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
           </svg>
@@ -149,10 +135,10 @@ const shouldShowPagination = totalPages > 1;
     <!-- 页面信息 -->
     <div class="mt-4 text-center text-base text-gray-600">
       <span>
-        {i18n.paging.page} {currentPage} {i18n.paging.of} {totalPages} {i18n.paging.pages}
+        {i18n.pagination.page} {currentPage} {i18n.pagination.of} {totalPages} {i18n.pagination.pages}
       </span>
       <span class="hidden sm:inline ml-4">
-        • {i18n.paging.ofTotal} {totalPages} {i18n.paging.pages}
+        • {i18n.pagination.ofTotal} {totalPages} {i18n.pagination.pages}
       </span>
     </div>
   </nav>
@@ -225,4 +211,18 @@ const shouldShowPagination = totalPages > 1;
   .pagination-button:focus {
     @apply outline-none ring-2 ring-red-500 ring-offset-2;
   }
-</style> 
+</style>       
+      <!-- 上一页 -->
+      {currentPage > 1 && (
+        <a 
+          href={getPageUrl(currentPage - 1)}
+          class="pagination-button pagination-nav"
+          aria-label={i18n.pagination.previous}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span class="hidden sm:inline">{i18n.pagination.previous}</span>
+        </a>
+      )}
+      

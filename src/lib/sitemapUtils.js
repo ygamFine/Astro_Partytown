@@ -3,7 +3,7 @@
  * 提供站点地图生成、验证和管理功能
  */
 
-import { getEnabledLanguages, getDefaultLanguage } from './i18n-config.js';
+import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';
@@ -31,8 +31,8 @@ const getSiteUrl = () => {
 // 站点配置
 export const SITE_CONFIG = {
   baseUrl: getSiteUrl(),
-  defaultLanguage: getDefaultLanguage(),
-  supportedLanguages: getEnabledLanguages(),
+  defaultLanguage: 'en',
+  supportedLanguages: SUPPORTED_LANGUAGES,
   // 页面优先级配置
   priorities: {
     home: 1.0,

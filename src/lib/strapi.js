@@ -52,14 +52,12 @@ import { config } from 'dotenv';
 config();
 
 // 从环境变量获取 Strapi 配置
-const STRAPI_BASE_URL = process.env.STRAPI_API_URL;
 const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
 // 验证环境变量
-if (!STRAPI_BASE_URL || !STRAPI_STATIC_URL || !STRAPI_TOKEN) {
+if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
   console.error('❌ 缺少必要的环境变量:');
-  console.error('   STRAPI_API_URL:', STRAPI_BASE_URL ? '已设置' : '未设置');
   console.error('   STRAPI_STATIC_URL:', STRAPI_STATIC_URL ? '已设置' : '未设置');
   console.error('   STRAPI_API_TOKEN:', STRAPI_TOKEN ? '已设置' : '未设置');
   throw new Error('缺少必要的 Strapi 环境变量配置');
@@ -129,7 +127,7 @@ function processImageWithMapping(img, imageMapping) {
  */
 export async function getMenus(locale = 'en') {
   try {
-    const response = await fetch(`${STRAPI_BASE_URL}/menus?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/menus?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -166,7 +164,7 @@ export async function getMenus(locale = 'en') {
 export async function getProducts(locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/products?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/products?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -234,7 +232,7 @@ export async function getProducts(locale = 'en') {
 export async function getProduct(slug, locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/products?filters[slug][$eq]=${slug}&locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/products?filters[slug][$eq]=${slug}&locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -361,7 +359,7 @@ export async function getProduct(slug, locale = 'en') {
 export async function getNews(locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/news?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -470,7 +468,7 @@ export async function getNews(locale = 'en') {
 export async function getNewsById(id, locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/news/${id}?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/news/${id}?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -578,7 +576,7 @@ export async function getNewsById(id, locale = 'en') {
 export async function getCases(locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/case?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/case?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -696,7 +694,7 @@ export async function getCases(locale = 'en') {
 export async function getCase(id, locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_BASE_URL}/case/${id}?locale=${locale}&populate=*`, {
+    const response = await fetch(`${STRAPI_STATIC_URL}/api/case/${id}?locale=${locale}&populate=*`, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -705,7 +703,7 @@ export async function getCase(id, locale = 'en') {
 
     if (!response.ok) {
       if (response.status === 404) {
-    
+        
         return null;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -715,7 +713,7 @@ export async function getCase(id, locale = 'en') {
 
     // 如果没有找到数据，直接返回 null
     if (!data.data) {
-  
+      
       return null;
     }
 
@@ -806,4 +804,50 @@ export async function getCase(id, locale = 'en') {
     return null;
   }
 }
+
+
+/**
+ * 从 Strapi API 获取支持的语言列表
+ * - 仅请求标准接口 /api/i18n/locales
+ * - 不做硬编码回退，失败时返回空数组
+ */
+export async function getSupportedLanguages() {
+  try {
+    const res = await fetch(`${STRAPI_STATIC_URL}/api/i18n/locales`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    const data = await res.json();
+
+    // Strapi 标准返回通常是数组；若为 { data: [...] } 亦做兼容
+    const rawList = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
+
+    const languages = rawList
+      .map((item) => {
+        const code = item?.code || item?.attributes?.code || item?.id || item?.locale || null;
+        const name = item?.name || item?.attributes?.name || code || '';
+        return code ? { code, name } : null;
+      })
+      .filter(Boolean);
+
+    // 去重并按 code 排序
+    const map = new Map();
+    for (const lang of languages) {
+      if (!map.has(lang.code)) map.set(lang.code, lang);
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.code.localeCompare(b.code));
+  } catch (err) {
+    return [];
+  }
+}
+
+
 

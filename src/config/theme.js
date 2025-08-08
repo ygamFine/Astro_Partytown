@@ -31,7 +31,7 @@ export const themeConfig = {
   languageSelector: {
     showLanguageSelector: true,   // 显示语言选择器
     hideWhenSingleLanguage: true, // 只有一种语言时隐藏
-    enabledLanguages: ['en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'] // 启用的语言列表
+    enabledLanguages: [] // 将从 Strapi API 动态获取
   },
   
   // 网站可视化文档宽度动态配置
