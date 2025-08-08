@@ -14,6 +14,7 @@ import HotRecommendedProducts from '../components/HotRecommendedProducts.astro';
 import StatsSection from '../components/StatsSection.astro';
 
 import { themeConfig } from '../config/theme.js';
+import getDictionary from '../i18n/dictionaries.js';
 
 // 根据子域名确定语言
 const hostname = Astro.url.hostname;
@@ -90,6 +91,9 @@ if (isMainDomain && !detectedSubdomain) {
 console.log(`🎯 最终语言设置: ${lang}`);
 console.log(`🏗️ 环境: ${import.meta.env.DEV ? '开发' : '生产'}`);
 
+// 获取翻译数据
+const t = getDictionary(lang);
+
 // 如果是生产环境且检测到子域名，重定向到对应的语言路径
 if (import.meta.env.PROD && detectedSubdomain && !hostname.includes('localhost')) {
   const targetPath = `/${lang}${url === '/' ? '' : url}`;
@@ -112,7 +116,7 @@ const getPageWidth = () => {
 const pageWidth = getPageWidth();
 ---
 
-<Layout title="专业滑移装载机制造商" lang={lang} pageType="home">
+<Layout title={t.nav.home} lang={lang} pageType="home">
 	<main>
 		<FullScreenBanner />
 		<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>

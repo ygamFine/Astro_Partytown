@@ -162,7 +162,9 @@ try {
       
       <!-- 选择器框 -->
       <button id="language-selector" class="flex items-center space-x-2 bg-transparent border border-white/30 rounded px-3 py-2 text-white hover:bg-white/10 transition-all duration-200" style="font-size: 1.4rem;">
-        <span>{currentLang}</span>
+        <span id="current-language-display">
+          {supportedLanguages.find(lang => lang.code === currentLang)?.name || currentLang}
+        </span>
         <svg class="w-4 h-4 transition-transform duration-200" id="language-arrow" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>
@@ -171,9 +173,14 @@ try {
       <!-- 下拉菜单 -->
       <div id="language-dropdown" class="absolute top-full right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50 hidden" style="min-width: 16rem; max-height: 60vh; overflow-y: auto;">
         {supportedLanguages.map(lang => (
-          <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option" data-lang={lang.code}>
+          <a href="#" class={`flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option ${lang.code === currentLang ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`} data-lang={lang.code} data-name={lang.name}>
             <span class="text-2xl">🌐</span>
             <span class="text-gray-800 font-medium">{lang.name}</span>
+            {lang.code === currentLang && (
+              <svg class="w-4 h-4 text-blue-500 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+            )}
           </a>
         ))}
       </div>
@@ -258,10 +265,10 @@ try {
         
         if (isHidden) {
           languageDropdown.classList.remove('hidden');
-          (languageArrow as any).style.transform = 'rotate(180deg)';
+          (languageArrow as HTMLElement).style.transform = 'rotate(180deg)';
         } else {
           languageDropdown.classList.add('hidden');
-          languageArrow.style.transform = 'rotate(0deg)';
+          (languageArrow as HTMLElement).style.transform = 'rotate(0deg)';
         }
       });
 
@@ -270,37 +277,46 @@ try {
       languageOptions.forEach(option => {
         option.addEventListener('click', (e) => {
           e.preventDefault();
-          const selectedLang = option.getAttribute('data-lang');
-          const selectedTextElement = option.querySelector('span:last-child');
-          const selectorText = languageSelector.querySelector('span');
+          e.stopPropagation();
           
-          if (selectedLang && selectedTextElement && selectorText && selectedTextElement.textContent) {
-            // 更新选择器显示文本
-            selectorText.textContent = selectedTextElement.textContent;
-            
+          const selectedLang = option.getAttribute('data-lang');
+          const selectedName = option.getAttribute('data-name');
+          
+          console.log('语言选择器点击:', { selectedLang, selectedName });
+          
+          if (selectedLang && selectedName) {
             // 获取当前页面路径
             const currentPath = window.location.pathname;
+            console.log('当前路径:', currentPath);
+            
             // 根据环境构建语言切换URL
             const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            console.log('是否开发环境:', isDev);
+            
+            // 替换语言前缀
+            const pathWithoutLang: string = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
             
             if (isDev) {
               // 本地开发：替换语言前缀
-              const pathWithoutLang = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
               const newPath = `/${selectedLang}${pathWithoutLang}`;
-              window.location.href = newPath;
+              console.log('开发环境跳转路径:', newPath);
+              // 在新标签页中打开
+              window.open(newPath, '_blank');
             } else {
               // 生产环境：构建子域名URL
               const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
               const currentDomain = window.location.hostname;
               const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
-              const newUrl = `https://${subdomain}.${baseDomain}${currentPath}`;
-              window.location.href = newUrl;
+              const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang}`;
+              console.log('生产环境跳转URL:', newUrl);
+              // 在新标签页中打开
+              window.open(newUrl, '_blank');
             }
           }
           
           // 关闭下拉菜单
           languageDropdown.classList.add('hidden');
-          (languageArrow as any).style.transform = 'rotate(0deg)';
+          (languageArrow as HTMLElement).style.transform = 'rotate(0deg)';
         });
       });
 
@@ -309,33 +325,70 @@ try {
         const target = e.target as Node;
         if (target && !languageSelector.contains(target as Node) && !languageDropdown.contains(target as Node)) {
           languageDropdown.classList.add('hidden');
-          (languageArrow as any).style.transform = 'rotate(0deg)';
+          (languageArrow as HTMLElement).style.transform = 'rotate(0deg)';
         }
       });
       
       // 初始化语言选择器显示当前语言
       function initLanguageSelector() {
         const currentPath = window.location.pathname;
-        const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)\//);
+        const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
         const currentLang = langMatch ? langMatch[1] : 'en';
+        
+        console.log('🔧 初始化语言选择器:', { currentPath, currentLang });
         
         // 查找对应的语言选项
         const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);
         
-        if (!languageSelector) return;
-        const selectedTextElement = currentLangOption ? currentLangOption.querySelector('span:last-child') : null;
-        const selectorText = languageSelector.querySelector('span');
+        if (!languageSelector) {
+          console.log('❌ 语言选择器元素未找到');
+          return;
+        }
         
-        if (selectedTextElement && selectorText && selectedTextElement.textContent) {
-          selectorText.textContent = selectedTextElement.textContent;
+        const selectorText = document.getElementById('current-language-display');
+        
+        if (currentLangOption && selectorText) {
+          const selectedName = currentLangOption.getAttribute('data-name');
+          if (selectedName) {
+            selectorText.textContent = selectedName;
+            console.log('✅ 设置语言选择器显示:', selectedName);
+          } else {
+            selectorText.textContent = currentLang;
+            console.log('⚠️ 使用语言代码显示:', currentLang);
+          }
         } else if (selectorText) {
           // 如果找不到对应的语言选项，显示语言代码
           selectorText.textContent = currentLang;
+          console.log('⚠️ 使用语言代码显示:', currentLang);
+        }
+        
+        // 更新选中状态
+        document.querySelectorAll('.language-option').forEach(option => {
+          option.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-500');
+        });
+        
+        if (currentLangOption) {
+          currentLangOption.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
+          console.log('✅ 更新语言选项选中状态:', currentLang);
         }
       }
       
       // 初始化语言选择器
       initLanguageSelector();
+      
+      // 页面加载完成后再次初始化，确保状态正确
+      window.addEventListener('load', () => {
+        setTimeout(initLanguageSelector, 100);
+      });
+      
+      // DOM变化时重新初始化（处理动态内容）
+      const observer = new MutationObserver(() => {
+        initLanguageSelector();
+      });
+      
+      if (languageSelector) {
+        observer.observe(languageSelector, { childList: true, subtree: true });
+      }
     }
 
     // 下拉菜单功能

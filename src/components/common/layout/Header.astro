@@ -9,7 +9,7 @@ const logoImage = '/images/logo.png.webp';
 
 // 获取当前语言
 const currentPath = Astro.url.pathname;
-const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)\//);
+const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
 const currentLang = langMatch ? langMatch[1] : 'en';
 
 // 生成带语言的首页链接
@@ -181,7 +181,7 @@ try {
           </svg>
           <select id="mobile-language-selector" class="bg-transparent text-white border-none focus:outline-none">
             {supportedLanguages.map(lang => (
-              <option value={lang.code}>🌐 {lang.name}</option>
+              <option value={lang.code} selected={lang.code === currentLang}>🌐 {lang.name}</option>
             ))}
           </select>
         </div>
@@ -383,7 +383,7 @@ try {
       if (mobileLanguageSelector) {
         // 初始化当前语言
         const currentPath = window.location.pathname;
-        const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+        const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
         const currentLang = langMatch ? langMatch[1] : 'en';
         
         // 设置当前选中的语言
@@ -394,26 +394,26 @@ try {
           const selectedLang = e.target.value;
           const currentPath = window.location.pathname;
           
-          // 构建新的语言路径
-          let newPath = '';
+          // 根据环境构建语言切换URL
+          const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
           
-          // 检查当前路径是否已经是多语言路径
-          const langMatch = currentPath.match(/^\/([a-z]{2}(-[a-z]{2,4})?)\//);
+          // 替换语言前缀
+          const pathWithoutLang: string = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
           
-          if (langMatch) {
-            // 当前是多语言路径，替换语言部分
-            newPath = currentPath.replace(/^\/([a-z]{2}(-[a-z]{2,4})?)\//, `/${selectedLang}/`);
+          if (isDev) {
+            // 本地开发：替换语言前缀
+            const newPath = `/${selectedLang}${pathWithoutLang}`;
+            // 在新标签页中打开
+            window.open(newPath, '_blank');
           } else {
-            // 当前不是多语言路径，添加语言前缀
-            if (currentPath === '/' || currentPath === '') {
-              newPath = `/${selectedLang}/`;
-            } else {
-              newPath = `/${selectedLang}${currentPath}`;
-            }
+            // 生产环境：构建子域名URL
+            const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
+            const currentDomain = window.location.hostname;
+            const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
+            const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang}`;
+            // 在新标签页中打开
+            window.open(newUrl, '_blank');
           }
-          
-          // 跳转到新语言页面
-          window.location.href = newPath;
         });
       }
     }
