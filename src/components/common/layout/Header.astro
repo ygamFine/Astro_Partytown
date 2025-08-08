@@ -421,40 +421,7 @@ try {
         let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
         let currentLang = langMatch ? langMatch[1] : 'en';
         
-        // 如果没有从路径检测到语言，或者路径不是根目录，都尝试从子域名检测
-        if (currentLang === 'en') {
-          const hostname = window.location.hostname;
-          const subdomainToLang = {
-            'zh': 'zh-CN',
-            'zh-hant': 'zh-Hant',
-            'de': 'de',
-            'ja': 'ja',
-            'fr': 'fr',
-            'ar': 'ar',
-            'es': 'es',
-            'it': 'it',
-            'pt': 'pt-pt',
-            'nl': 'nl',
-            'pl': 'pl',
-            'ru': 'ru',
-            'th': 'th',
-            'id': 'id',
-            'vi': 'vi',
-            'ms': 'ms',
-            'ml': 'ml',
-            'my': 'my',
-            'hi': 'hi',
-            'ko': 'ko',
-            'tr': 'tr'
-          };
-          
-          for (const [subdomain, language] of Object.entries(subdomainToLang)) {
-            if (hostname.startsWith(`${subdomain}.`)) {
-              currentLang = language;
-              break;
-            }
-          }
-        }
+        // 简化语言检测，只从URL路径获取
         
         // 设置当前选中的语言
         mobileLanguageSelector.value = currentLang;
