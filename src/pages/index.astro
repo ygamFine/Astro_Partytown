@@ -1,6 +1,6 @@
 ---
 // 根路径首页 - 用于子域名访问，直接渲染内容
-export const prerender = true;
+export const prerender = false; // 改为动态渲染，以支持子域名检测
 export const revalidate = 3600; // 1小时
 
 import Layout from '../layouts/Layout.astro';
@@ -88,6 +88,15 @@ if (isMainDomain && !detectedSubdomain) {
   console.log('🏠 主域名，使用默认英语');
 }
 
+// 调试子域名检测结果
+console.log('🔍 子域名检测结果:', {
+  originalHost,
+  hostname,
+  detectedSubdomain,
+  isMainDomain,
+  finalLang: lang
+});
+
 console.log(`🎯 最终语言设置: ${lang}`);
 console.log(`🏗️ 环境: ${import.meta.env.DEV ? '开发' : '生产'}`);
 
@@ -118,6 +127,10 @@ const pageWidth = getPageWidth();
 ---
 
 <Layout title={t.nav.home} lang={lang} pageType="home">
+  <!-- 调试信息 -->
+  <script define:vars={{ lang, detectedSubdomain, originalHost, hostname }}>
+    console.log('🔧 根目录页面调试信息:', { lang, detectedSubdomain, originalHost, hostname });
+  </script>
 	<main>
 		<FullScreenBanner />
 		<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>

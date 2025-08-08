@@ -480,7 +480,8 @@ try {
             const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
             const currentDomain = window.location.hostname;
             const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
-            const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang}`;
+            // 如果当前路径是根目录，直接使用子域名，否则保持路径
+            const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
             // 在新标签页中打开
             window.open(newUrl, '_blank');
           }

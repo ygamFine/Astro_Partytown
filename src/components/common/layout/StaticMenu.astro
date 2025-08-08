@@ -200,6 +200,10 @@ try {
         <span id="current-language-display">
           {supportedLanguages.find(lang => lang.code === currentLang)?.name || currentLang}
         </span>
+        <!-- 调试信息 -->
+        <script define:vars={{ currentLang, supportedLanguages }}>
+          console.log('🔧 StaticMenu 调试信息:', { currentLang, supportedLanguages });
+        </script>
         <svg class="w-4 h-4 transition-transform duration-200" id="language-arrow" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>
@@ -342,7 +346,8 @@ try {
               const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
               const currentDomain = window.location.hostname;
               const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
-              const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang}`;
+              // 如果当前路径是根目录，直接使用子域名，否则保持路径
+              const newUrl = `https://${subdomain}.${baseDomain}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
               console.log('生产环境跳转URL:', newUrl);
               // 在新标签页中打开
               window.open(newUrl, '_blank');
@@ -437,6 +442,15 @@ try {
       
       // 初始化语言选择器
       initLanguageSelector();
+      
+      // 确保在页面完全加载后再次初始化
+      if (document.readyState === 'complete') {
+        setTimeout(initLanguageSelector, 100);
+      } else {
+        window.addEventListener('load', () => {
+          setTimeout(initLanguageSelector, 100);
+        });
+      }
     }
 
     // 下拉菜单功能
