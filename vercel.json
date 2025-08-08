@@ -27,8 +27,6 @@
         { "source": "/:path*", "destination": "/hi/:path*", "has": [{ "type": "host", "value": "hi.*" }] },
         { "source": "/:path*", "destination": "/ko/:path*", "has": [{ "type": "host", "value": "ko.*" }] },
         { "source": "/:path*", "destination": "/tr/:path*", "has": [{ "type": "host", "value": "tr.*" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "www.*" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "*" }] },
-        { "source": "/", "destination": "/en/" }
+        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "www.*" }] }
     ]
 }
