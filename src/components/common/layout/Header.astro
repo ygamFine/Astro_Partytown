@@ -16,7 +16,7 @@ const currentLang = langMatch ? langMatch[1] : 'en';
 const homeUrl = buildUrl(currentLang, '/');
 
 // 获取支持的语言列表（从 Strapi API，不做硬编码回退）
-let supportedLanguages: Array<{code: string, name: string}> = [];
+let supportedLanguages = [];
 try {
   supportedLanguages = await getSupportedLanguages();
 } catch (error) {
@@ -383,8 +383,43 @@ try {
       if (mobileLanguageSelector) {
         // 初始化当前语言
         const currentPath = window.location.pathname;
-        const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        const currentLang = langMatch ? langMatch[1] : 'en';
+        let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+        let currentLang = langMatch ? langMatch[1] : 'en';
+        
+        // 如果没有从路径检测到语言，尝试从子域名检测
+        if (currentLang === 'en' && currentPath === '/') {
+          const hostname = window.location.hostname;
+          const subdomainToLang = {
+            'zh': 'zh-CN',
+            'zh-hant': 'zh-Hant',
+            'de': 'de',
+            'ja': 'ja',
+            'fr': 'fr',
+            'ar': 'ar',
+            'es': 'es',
+            'it': 'it',
+            'pt': 'pt-pt',
+            'nl': 'nl',
+            'pl': 'pl',
+            'ru': 'ru',
+            'th': 'th',
+            'id': 'id',
+            'vi': 'vi',
+            'ms': 'ms',
+            'ml': 'ml',
+            'my': 'my',
+            'hi': 'hi',
+            'ko': 'ko',
+            'tr': 'tr'
+          };
+          
+          for (const [subdomain, language] of Object.entries(subdomainToLang)) {
+            if (hostname.startsWith(`${subdomain}.`)) {
+              currentLang = language;
+              break;
+            }
+          }
+        }
         
         // 设置当前选中的语言
         mobileLanguageSelector.value = currentLang;
@@ -398,7 +433,7 @@ try {
           const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
           
           // 替换语言前缀
-          const pathWithoutLang: string = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
+          const pathWithoutLang = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
           
           if (isDev) {
             // 本地开发：替换语言前缀

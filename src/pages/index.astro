@@ -94,19 +94,20 @@ console.log(`🏗️ 环境: ${import.meta.env.DEV ? '开发' : '生产'}`);
 // 获取翻译数据
 const t = getDictionary(lang);
 
+// 注释掉重定向逻辑，直接渲染对应语言的内容
 // 如果是生产环境且检测到子域名，重定向到对应的语言路径
-if (import.meta.env.PROD && detectedSubdomain && !hostname.includes('localhost')) {
-  const targetPath = `/${lang}${url === '/' ? '' : url}`;
-  console.log(`🔄 生产环境重定向到: ${targetPath}`);
-  return Astro.redirect(targetPath);
-}
+// if (import.meta.env.PROD && detectedSubdomain && !hostname.includes('localhost')) {
+//   const targetPath = `/${lang}${url === '/' ? '' : url}`;
+//   console.log(`🔄 生产环境重定向到: ${targetPath}`);
+//   return Astro.redirect(targetPath);
+// }
 
 // 开发环境下的重定向逻辑
-if (import.meta.env.DEV && detectedSubdomain) {
-  const targetPath = `/${lang}${url === '/' ? '' : url}`;
-  console.log(`🔄 开发环境重定向到: ${targetPath}`);
-  return Astro.redirect(targetPath);
-}
+// if (import.meta.env.DEV && detectedSubdomain) {
+//   const targetPath = `/${lang}${url === '/' ? '' : url}`;
+//   console.log(`🔄 开发环境重定向到: ${targetPath}`);
+//   return Astro.redirect(targetPath);
+// }
 
 // 获取页面宽度配置
 const getPageWidth = () => {
