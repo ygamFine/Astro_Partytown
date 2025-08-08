@@ -88,13 +88,7 @@ const ui = getDictionary(lang);
 #### 添加新翻译
 
 1. 在 `src/i18n/locales/[lang]/[namespace].json` 中添加翻译
-2. 运行转换脚本：`node scripts/convert-translations.js`
-3. 在页面中使用新的翻译键
-
-### 📝 工具脚本
-
-- `scripts/convert-translations.js` - 转换翻译文件
-- `scripts/update-i18n-pages.js` - 批量更新页面文件
+2. 在页面中使用新的翻译键
 
 ### ⚠️ 注意事项
 

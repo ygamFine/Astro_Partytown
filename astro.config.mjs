@@ -11,8 +11,8 @@ export default defineConfig({
   }),
   
   server: {
-    port: parseInt(import.meta.env.DEV_SERVER_PORT) || 3000,
-    host: import.meta.env.DEV_SERVER_HOST === 'true',
+    port: 3000,
+    host: true,
   },
   i18n: {
     locales: [
@@ -39,13 +39,13 @@ export default defineConfig({
   // 图片优化配置
   image: {
     service: {
-      entrypoint: import.meta.env.IMAGE_SERVICE || 'astro/assets/services/sharp'
+      entrypoint: 'astro/assets/services/sharp'
     }
   },
   
   // SSG优化配置
   build: {
-    assets: import.meta.env.BUILD_ASSETS || '_astro',
+    assets: '_astro',
   },
   
   vite: {

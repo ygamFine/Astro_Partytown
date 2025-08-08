@@ -5,7 +5,7 @@ import SecondaryPageLayout from '../../../components/templates/layout/SecondaryP
 import GridList from '../../../components/templates/common/GridList.astro';
 import Pagination from '../../../components/templates/common/Pagination.astro';
 import { getProducts } from '../../../lib/strapi.js';
-import { generateStaticPaths } from '../../../lib/i18n-routes.js';
+import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
 import getDictionary from '../../../i18n/dictionaries.js';
 import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 import { buildUrl } from '../../../lib/envConfig.js';
@@ -16,12 +16,11 @@ export async function getStaticPaths() {
   const itemsPerPage = 9;
   
   // 为每种语言获取产品数据来计算总页数
-  for (const lang of ['en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko']) {
+  for (const lang of SUPPORTED_LANGUAGES) {
     const products = await getProducts(lang);
     const totalPages = Math.ceil(products.length / itemsPerPage);
     
-    // 只有当有产品数据时才生成页面
-    if (totalPages > 0) {
+    if (products.length > 0) {
       // 第一页 (无页码)
       paths.push({
         params: { lang, page: undefined },
@@ -35,6 +34,12 @@ export async function getStaticPaths() {
           props: { locale: lang, currentPage: page, totalPages }
         });
       }
+    } else {
+      // 无数据也生成第一页，避免 404，页面内展示空状态
+      paths.push({
+        params: { lang, page: undefined },
+        props: { locale: lang, currentPage: 1, totalPages: 0 }
+      });
     }
   }
   

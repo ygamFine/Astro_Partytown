@@ -1,0 +1,89 @@
+---
+export const prerender = true;
+export const revalidate = 3600; // 1小时
+
+import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
+import GridList from '../../../components/templates/common/GridList.astro';
+import Pagination from '../../../components/templates/common/Pagination.astro';
+import EmptyState from '../../../components/templates/common/EmptyState.astro';
+import { getNews } from '../../../lib/strapi.js';
+import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
+import { processNewsData } from '../../../lib/dataProcessor.js';
+import getDictionary from '../../../i18n/dictionaries.js';
+import { generateNewsBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+import { loadImageMapping } from '../../../lib/imageProcessor.js';
+import { themeConfig } from '../../../config/theme.js';
+import { buildUrl } from '../../../lib/envConfig.js';
+
+// 为分页生成静态路径，只为配置中启用的语言生成
+export async function getStaticPaths() {
+  const newsPerPage = 6; // 每页显示6个新闻（2行x3列）
+  return generatePaginationPaths(getNews, newsPerPage, 'page');
+}
+
+const { lang, currentPage, totalPages, items: news } = Astro.props;
+
+// 解析页码参数
+const actualCurrentPage = parsePageParam(Astro.params.page, 'page');
+
+// 加载翻译文件
+const t = getDictionary(lang);
+
+// 加载图片映射
+const imageMapping = await loadImageMapping();
+
+// 处理新闻数据
+const gridItems = processNewsData(news, lang);
+
+// 面包屑导航
+const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
+---
+
+<SecondaryPageLayout 
+  title={t.news.title || "News"}
+  description="了解我们最新的公司动态、产品资讯、行业趋势和技术创新。"
+  breadcrumbs={breadcrumbs}
+  currentSection="news"
+  contentType="grid"
+  lang={lang}
+  pageType="news"
+  listDescription="了解我们最新的公司动态、产品资讯、行业趋势和技术创新。及时获取行业前沿信息，掌握市场动态。"
+  showListDescription={true}
+>
+  {gridItems.length > 0 ? (
+    <>
+  <!-- 新闻网格 -->
+  <GridList 
+    items={gridItems}
+    itemsPerRow={3}
+    maxRows={2}
+    translations={t}
+    lang={lang}
+  />
+  
+  {/* 列表描述内容 - 分页上方模式 */}
+  {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+    <div class="mt-8 mb-6">
+      <p class="text-lg text-gray-600 leading-relaxed">
+        了解我们最新的公司动态、产品资讯、行业趋势和技术创新。及时获取行业前沿信息，掌握市场动态。
+      </p>
+    </div>
+  )}
+  
+  <!-- 分页 -->
+         <Pagination 
+         currentPage={actualCurrentPage}
+         totalPages={totalPages}
+         baseUrl={buildUrl(lang, '/news')}
+         i18n={t}
+       />
+    </>
+  ) : (
+    <EmptyState 
+      title="暂无新闻数据"
+      description="当前语言暂无新闻信息，请稍后再试或切换其他语言。"
+      icon="news"
+      lang={lang}
+  />
+  )}
+</SecondaryPageLayout> 

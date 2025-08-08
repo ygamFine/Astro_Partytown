@@ -18,8 +18,8 @@ export async function getStaticPaths() {
   for (const lang of enabledLanguages) {
     const news = await getNews(lang);
     
-    // 只有当有新闻数据时才生成页面
     if (news && news.length > 0) {
+      // 只有当有新闻数据时才生成页面
       // 按日期降序排序新闻
       const sortedNews = news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       
@@ -31,6 +31,13 @@ export async function getStaticPaths() {
           params: { lang, slug: item.slug || item.id },
           props: { lang, news: item, previousNews, nextNews }
         });
+      });
+    } else {
+      // 没有数据时，生成一个通用的空状态页面
+      // 使用一个特殊的 slug 来标识空状态
+      paths.push({
+        params: { lang, slug: 'no-content' },
+        props: { lang, news: null, previousNews: null, nextNews: null }
       });
     }
   }
@@ -248,15 +255,15 @@ const validNewsImage = hasNews ? processImageForDisplay(news.image, imageMapping
               <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3 class="empty-state-title">暂无新闻数据</h3>
+          <h3 class="empty-state-title">暂无新闻内容</h3>
           <p class="empty-state-description">当前语言暂无新闻信息，请稍后再试或切换其他语言。</p>
           <div class="empty-state-actions">
-            <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}/'`}>
+            <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}/news'`}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                 <polyline points="9,22 9,12 15,12 15,22"/>
               </svg>
-              返回首页
+              返回新闻列表
             </button>
           </div>
         </div>
