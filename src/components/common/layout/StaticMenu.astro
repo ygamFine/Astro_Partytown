@@ -369,7 +369,42 @@ try {
         // 从URL路径获取语言
         const currentPath = window.location.pathname;
         const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        const currentLang = langMatch ? langMatch[1] : 'en';
+        let currentLang = langMatch ? langMatch[1] : 'en';
+        
+        // 如果没有从路径检测到语言或检测到的是英文，尝试从子域名检测
+        if (currentLang === 'en' && (currentPath === '/' || currentPath === '/en/')) {
+          const hostname = window.location.hostname;
+          const subdomainToLang = {
+            'zh': 'zh-CN',
+            'zh-hant': 'zh-Hant',
+            'de': 'de',
+            'ja': 'ja',
+            'fr': 'fr',
+            'ar': 'ar',
+            'es': 'es',
+            'it': 'it',
+            'pt': 'pt-pt',
+            'nl': 'nl',
+            'pl': 'pl',
+            'ru': 'ru',
+            'th': 'th',
+            'id': 'id',
+            'vi': 'vi',
+            'ms': 'ms',
+            'ml': 'ml',
+            'my': 'my',
+            'hi': 'hi',
+            'ko': 'ko',
+            'tr': 'tr'
+          };
+          
+          for (const [subdomain, language] of Object.entries(subdomainToLang)) {
+            if (hostname.startsWith(`${subdomain}.`)) {
+              currentLang = language;
+              break;
+            }
+          }
+        }
         
         // 查找对应的语言选项
         const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);
