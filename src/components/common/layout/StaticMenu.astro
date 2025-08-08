@@ -376,8 +376,8 @@ try {
         let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
         let currentLang = langMatch ? langMatch[1] : 'en';
         
-        // 如果没有从路径检测到语言，尝试从子域名检测
-        if (currentLang === 'en' && currentPath === '/') {
+        // 如果没有从路径检测到语言，或者路径不是根目录，都尝试从子域名检测
+        if (currentLang === 'en') {
           const hostname = window.location.hostname;
           const subdomainToLang = {
             'zh': 'zh-CN',
