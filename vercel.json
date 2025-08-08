@@ -5,6 +5,7 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
+        { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/", "destination": "/ja/", "has": [{ "type": "host", "value": "ja.*" }] },
         { "source": "/", "destination": "/zh-CN/", "has": [{ "type": "host", "value": "zh.*" }] },
         { "source": "/", "destination": "/zh-Hant/", "has": [{ "type": "host", "value": "zh-hant.*" }] },
