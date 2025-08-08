@@ -335,15 +335,10 @@ try {
         const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
         const currentLang = langMatch ? langMatch[1] : 'en';
         
-        console.log('🔧 初始化语言选择器:', { currentPath, currentLang });
-        
         // 查找对应的语言选项
         const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);
         
-        if (!languageSelector) {
-          console.log('❌ 语言选择器元素未找到');
-          return;
-        }
+        if (!languageSelector) return;
         
         const selectorText = document.getElementById('current-language-display');
         
@@ -351,15 +346,12 @@ try {
           const selectedName = currentLangOption.getAttribute('data-name');
           if (selectedName) {
             selectorText.textContent = selectedName;
-            console.log('✅ 设置语言选择器显示:', selectedName);
           } else {
             selectorText.textContent = currentLang;
-            console.log('⚠️ 使用语言代码显示:', currentLang);
           }
         } else if (selectorText) {
           // 如果找不到对应的语言选项，显示语言代码
           selectorText.textContent = currentLang;
-          console.log('⚠️ 使用语言代码显示:', currentLang);
         }
         
         // 更新选中状态
@@ -369,26 +361,11 @@ try {
         
         if (currentLangOption) {
           currentLangOption.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
-          console.log('✅ 更新语言选项选中状态:', currentLang);
         }
       }
       
       // 初始化语言选择器
       initLanguageSelector();
-      
-      // 页面加载完成后再次初始化，确保状态正确
-      window.addEventListener('load', () => {
-        setTimeout(initLanguageSelector, 100);
-      });
-      
-      // DOM变化时重新初始化（处理动态内容）
-      const observer = new MutationObserver(() => {
-        initLanguageSelector();
-      });
-      
-      if (languageSelector) {
-        observer.observe(languageSelector, { childList: true, subtree: true });
-      }
     }
 
     // 下拉菜单功能
