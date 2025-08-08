@@ -27,6 +27,7 @@
         { "source": "/", "destination": "/hi/", "has": [{ "type": "host", "value": "hi.*" }] },
         { "source": "/", "destination": "/ko/", "has": [{ "type": "host", "value": "ko.*" }] },
         { "source": "/", "destination": "/tr/", "has": [{ "type": "host", "value": "tr.*" }] },
+        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/:path*", "destination": "/zh-CN/:path*", "has": [{ "type": "host", "value": "zh.*" }] },
         { "source": "/:path*", "destination": "/zh-Hant/:path*", "has": [{ "type": "host", "value": "zh-hant.*" }] },
         { "source": "/:path*", "destination": "/de/:path*", "has": [{ "type": "host", "value": "de.*" }] },
