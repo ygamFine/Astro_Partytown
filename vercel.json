@@ -5,7 +5,6 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/:path*", "destination": "/zh-CN/:path*", "has": [{ "type": "host", "value": "zh.*" }] },
         { "source": "/:path*", "destination": "/zh-Hant/:path*", "has": [{ "type": "host", "value": "zh-hant.*" }] },
         { "source": "/:path*", "destination": "/de/:path*", "has": [{ "type": "host", "value": "de.*" }] },
@@ -26,10 +25,6 @@
         { "source": "/:path*", "destination": "/my/:path*", "has": [{ "type": "host", "value": "my.*" }] },
         { "source": "/:path*", "destination": "/hi/:path*", "has": [{ "type": "host", "value": "hi.*" }] },
         { "source": "/:path*", "destination": "/ko/:path*", "has": [{ "type": "host", "value": "ko.*" }] },
-        { "source": "/:path*", "destination": "/tr/:path*", "has": [{ "type": "host", "value": "tr.*" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "www.*" }] },
-        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "aihuazhi.cn" }] },
-        { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "aihuazhi.cn" }] },
-        { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "www.aihuazhi.cn" }] }
+        { "source": "/:path*", "destination": "/tr/:path*", "has": [{ "type": "host", "value": "tr.*" }] }
     ]
 }
