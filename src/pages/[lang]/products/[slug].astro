@@ -11,7 +11,7 @@ import getDictionary from '../../../i18n/dictionaries.js';
 import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { themeConfig } from '../../../config/theme.js';
-import { loadImageMapping, processImages as processImagesFromLib } from '../../../lib/imageProcessor.js';
+import { loadImageMapping, processImages as processImagesFromLib, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -54,14 +54,14 @@ const relatedProducts = allProducts
   .filter((p: any) => p.category === product.category && p.id !== product.id)
   .slice(0, 3);
 
-// 过滤有效的相关产品图片
-const validRelatedProducts = relatedProducts.filter(relatedProduct => {
-  if (!relatedProduct.image) return false;
-  if (typeof relatedProduct.image === 'string') {
-    return relatedProduct.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
-  }
-  return true; // 如果是导入的图片对象，认为是有效的
-});
+// 加载图片映射
+const imageMapping = await loadImageMapping();
+
+// 相关产品：生成可展示的首图
+const relatedProductsDisplay = relatedProducts.map((p: any) => ({
+  ...p,
+  displayImage: processImageForDisplay(p.image, imageMapping)
+}));
 
 // 获取相关新闻（最新的4篇）
 const allNews = await getNews(lang);
@@ -77,20 +77,14 @@ const recommendedProducts = allProducts
   .filter((p: any) => p.category !== product.category)
   .slice(0, 2);
 
-// 过滤有效的推荐产品图片
-const validRecommendedProducts = recommendedProducts.filter(recommended => {
-  if (!recommended.image) return false;
-  if (typeof recommended.image === 'string') {
-    return recommended.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
-  }
-  return true; // 如果是导入的图片对象，认为是有效的
-});
+// 推荐产品：生成可展示的首图
+const recommendedProductsDisplay = recommendedProducts.map((p: any) => ({
+  ...p,
+  displayImage: processImageForDisplay(p.image, imageMapping)
+}));
 
 // 面包屑导航
 const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.category);
-
-// 加载图片映射
-const imageMapping = await loadImageMapping();
 
 const images: string[] = processImagesFromLib(product.image, imageMapping);
 ---
@@ -464,12 +458,12 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               </h2>
               
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {validRelatedProducts.map(relatedProduct => (
+                {relatedProductsDisplay.map(relatedProduct => (
                   <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${relatedProduct.slug}`} class="block h-full">
                       <div class="aspect-[3/2] overflow-hidden">
                         <img 
-                          src={relatedProduct.image} 
+                          src={relatedProduct.displayImage} 
                           alt={relatedProduct.name}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"
@@ -478,7 +472,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                       </div>
                       
                       <div class="p-4 relative">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+                         <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
                           {relatedProduct.name}
                         </h3>
                         
@@ -553,12 +547,12 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               </h3>
               
               <div class="space-y-4">
-                {validRecommendedProducts.slice(0, 2).map(recommended => (
+                {recommendedProductsDisplay.slice(0, 2).map(recommended => (
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${recommended.slug}`} class="block">
                       <div class="aspect-[3/2] overflow-hidden">
                         <img 
-                          src={recommended.image} 
+                          src={recommended.displayImage} 
                           alt={recommended.name}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"
