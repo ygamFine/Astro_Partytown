@@ -7,13 +7,10 @@ import { getSupportedLanguages } from '../../../lib/strapi.js';
 // 使用public目录中的图片
 const logoImage = '/images/logo.png.webp';
 
-// 获取当前语言
+// 获取当前语言：优先路径，其次子域名
 const currentPath = Astro.url.pathname;
-let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = langMatch ? langMatch[1] : 'en';
-
-// 如果没有从路径检测到语言，尝试从子域名检测
-if (currentLang === 'en' && currentPath === '/') {
+const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+let currentLang = pathLangMatch ? pathLangMatch[1] : (() => {
   const hostname = Astro.url.hostname;
   const subdomainToLang = {
     'zh': 'zh-CN',
@@ -37,15 +34,12 @@ if (currentLang === 'en' && currentPath === '/') {
     'hi': 'hi',
     'ko': 'ko',
     'tr': 'tr'
-  };
-  
-  for (const [subdomain, language] of Object.entries(subdomainToLang)) {
-    if (hostname.startsWith(`${subdomain}.`)) {
-      currentLang = language;
-      break;
-    }
+  } as Record<string, string>;
+  for (const [sub, lang] of Object.entries(subdomainToLang)) {
+    if (hostname.startsWith(`${sub}.`)) return lang;
   }
-}
+  return 'en';
+})();
 
 // 生成带语言的首页链接
 const homeUrl = buildUrl(currentLang, '/');
@@ -416,13 +410,11 @@ try {
       const mobileLanguageSelector = document.getElementById('mobile-language-selector');
       
       if (mobileLanguageSelector) {
-        // 初始化当前语言
+        // 初始化当前语言：优先路径，其次子域名
         const currentPath = window.location.pathname;
-        let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        let currentLang = langMatch ? langMatch[1] : 'en';
-        
-        // 如果没有从路径检测到语言或检测到的是英文，尝试从子域名检测
-        if (currentLang === 'en' && (currentPath === '/' || currentPath === '/en/')) {
+        const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+        let currentLang = pathLangMatch ? pathLangMatch[1] : null;
+        if (!currentLang) {
           const hostname = window.location.hostname;
           const subdomainToLang = {
             'zh': 'zh-CN',
@@ -447,13 +439,10 @@ try {
             'ko': 'ko',
             'tr': 'tr'
           };
-          
-          for (const [subdomain, language] of Object.entries(subdomainToLang)) {
-            if (hostname.startsWith(`${subdomain}.`)) {
-              currentLang = language;
-              break;
-            }
+          for (const [sub, lang] of Object.entries(subdomainToLang)) {
+            if (hostname.startsWith(`${sub}.`)) { currentLang = lang; break; }
           }
+          if (!currentLang) currentLang = 'en';
         }
         
         // 设置当前选中的语言

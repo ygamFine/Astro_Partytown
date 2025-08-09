@@ -7,12 +7,9 @@ import { buildUrl } from '../../../lib/envConfig.js';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
-// 修复正则表达式，使其能够匹配 /ja 这样的路径（不需要后面的斜杠）
-let langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = langMatch ? langMatch[1] : 'en'; // 默认英文
-
-// 如果没有从路径检测到语言，尝试从子域名检测
-if (currentLang === 'en' && currentPath === '/') {
+// 优先从路径解析语言；若路径无语言前缀，再尝试从子域名解析
+const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+let currentLang = pathLangMatch ? pathLangMatch[1] : (() => {
   const hostname = Astro.url.hostname;
   const subdomainToLang = {
     'zh': 'zh-CN',
@@ -36,15 +33,12 @@ if (currentLang === 'en' && currentPath === '/') {
     'hi': 'hi',
     'ko': 'ko',
     'tr': 'tr'
-  };
-  
-  for (const [subdomain, language] of Object.entries(subdomainToLang)) {
-    if (hostname.startsWith(`${subdomain}.`)) {
-      currentLang = language;
-      break;
-    }
+  } as Record<string, string>;
+  for (const [sub, lang] of Object.entries(subdomainToLang)) {
+    if (hostname.startsWith(`${sub}.`)) return lang;
   }
-}
+  return 'en';
+})();
 
 // 加载翻译数据
 const t = getDictionary(currentLang);
@@ -366,13 +360,11 @@ try {
       
       // 初始化语言选择器显示当前语言
       function initLanguageSelector() {
-        // 从URL路径获取语言
+        // 从URL路径或子域名获取语言
         const currentPath = window.location.pathname;
-        const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        let currentLang = langMatch ? langMatch[1] : 'en';
-        
-        // 如果没有从路径检测到语言或检测到的是英文，尝试从子域名检测
-        if (currentLang === 'en' && (currentPath === '/' || currentPath === '/en/')) {
+        const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+        let currentLang = pathLangMatch ? pathLangMatch[1] : null;
+        if (!currentLang) {
           const hostname = window.location.hostname;
           const subdomainToLang = {
             'zh': 'zh-CN',
@@ -396,14 +388,11 @@ try {
             'hi': 'hi',
             'ko': 'ko',
             'tr': 'tr'
-          };
-          
-          for (const [subdomain, language] of Object.entries(subdomainToLang)) {
-            if (hostname.startsWith(`${subdomain}.`)) {
-              currentLang = language;
-              break;
-            }
+          } as Record<string, string>;
+          for (const [sub, lang] of Object.entries(subdomainToLang)) {
+            if (hostname.startsWith(`${sub}.`)) { currentLang = lang; break; }
           }
+          if (!currentLang) currentLang = 'en';
         }
         
         // 查找对应的语言选项
@@ -462,7 +451,7 @@ try {
           const isHidden = dropdownMenu.classList.contains('hidden');
           requestAnimationFrame(() => {
             dropdownMenu.classList.toggle('hidden');
-            if (dropdownArrow) {
+            if (dropdownArrow && dropdownArrow instanceof HTMLElement) {
               dropdownArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
             }
           });
@@ -475,7 +464,9 @@ try {
           menu.classList.add('hidden');
         });
         document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
-          arrow.style.transform = 'rotate(0deg)';
+          if (arrow instanceof HTMLElement) {
+            arrow.style.transform = 'rotate(0deg)';
+          }
         });
       });
     }
@@ -586,7 +577,7 @@ try {
       }
       
       try {
-        const { performSearch: searchFunction } = await import('/src/lib/clientSearch.js');
+        const { performSearch: searchFunction } = await import('../../../lib/clientSearch.js');
         const results = await searchFunction(query, currentLang);
         displayResults(results, query);
       } catch (error) {
