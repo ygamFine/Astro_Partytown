@@ -5,6 +5,7 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
+        { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "www.*" }] },
         { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/", "destination": "/ja/", "has": [{ "type": "host", "value": "ja.*" }] },
         { "source": "/", "destination": "/zh-CN/", "has": [{ "type": "host", "value": "zh.*" }] },
@@ -27,6 +28,7 @@
         { "source": "/", "destination": "/hi/", "has": [{ "type": "host", "value": "hi.*" }] },
         { "source": "/", "destination": "/ko/", "has": [{ "type": "host", "value": "ko.*" }] },
         { "source": "/", "destination": "/tr/", "has": [{ "type": "host", "value": "tr.*" }] },
+        { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "www.*" }] },
         { "source": "/:path*", "destination": "/en/:path*", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/:path*", "destination": "/zh-CN/:path*", "has": [{ "type": "host", "value": "zh.*" }] },
         { "source": "/:path*", "destination": "/zh-Hant/:path*", "has": [{ "type": "host", "value": "zh-hant.*" }] },
