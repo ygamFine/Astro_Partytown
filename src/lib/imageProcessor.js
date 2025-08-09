@@ -7,14 +7,9 @@ import { generateImageHash } from '../utils/hashUtils.js';
 
 // 由构建脚本生成的URL映射（指向最终发射到/_astro/...的绝对URL）
 let EMITTED_URLS = {};
-async function getEmittedUrls() {
-  if (Object.keys(EMITTED_URLS).length) return EMITTED_URLS;
-  try {
-    const mod = await import('../data/strapi-image-urls.js');
-    EMITTED_URLS = mod?.STRAPI_IMAGE_URLS || {};
-  } catch {}
-  return EMITTED_URLS;
-}
+try {
+  EMITTED_URLS = (await import('../data/strapi-image-urls.js')).STRAPI_IMAGE_URLS || {};
+} catch {}
 
 function resolveEmittedUrlSync(fileNameOrHash, fallback) {
   const table = EMITTED_URLS;
@@ -72,8 +67,8 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
   if (!imageData) return '/images/placeholder.webp';
   
   // 如果已经是本地缓存路径，直接返回
-  // 命中打包资产（assets/strapi）或旧的 public 映射，尝试解析发射后的URL
-  if (typeof imageData === 'string' && (imageData.startsWith('/assets/strapi/') || imageData.startsWith('/images/strapi/'))) {
+  // 命中 public 映射(images/strapi) 或源码资产(assets/strapi)，尝试解析发射后的URL
+  if (typeof imageData === 'string' && (imageData.startsWith('/images/strapi/') || imageData.startsWith('/assets/strapi/'))) {
     const file = imageData.split('/').pop();
     if (file) {
       return resolveEmittedUrlSync(file, imageData);
@@ -98,7 +93,9 @@ export function processImage(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return '/images/placeholder.webp';
   
   // 如果已经是本地缓存路径，直接返回
-  if (typeof imageData === 'string' && imageData.startsWith('/images/strapi/')) {
+  if (typeof imageData === 'string' && (imageData.startsWith('/images/strapi/') || imageData.startsWith('/assets/strapi/'))) {
+    const file = imageData.split('/').pop();
+    if (file) return resolveEmittedUrlSync(file, imageData);
     return imageData;
   }
   

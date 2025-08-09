@@ -451,13 +451,31 @@ async function downloadAllImages() {
  */
 async function generateImageMapping() {
   try {
+    // 若 assets 目录为空，则尝试从 public 缓存同步一次，保证有可发射的源文件
+    try {
+      const assetFiles = await fs.readdir(IMAGE_CACHE_DIR);
+      if (!assetFiles || assetFiles.length === 0) {
+        const publicDir = path.join(process.cwd(), 'public/images/strapi');
+        try {
+          const publicFiles = await fs.readdir(publicDir);
+          await fs.mkdir(IMAGE_CACHE_DIR, { recursive: true });
+          await Promise.all((publicFiles || []).map(async (f) => {
+            const src = path.join(publicDir, f);
+            const dest = path.join(IMAGE_CACHE_DIR, f);
+            try { await fs.copyFile(src, dest); } catch {}
+          }));
+        } catch {}
+      }
+    } catch {}
+
     const files = await fs.readdir(IMAGE_CACHE_DIR);
     const imageFiles = files.filter(file => /\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file));
     
     // 1) 生成 JSON 映射（可供其它工具参考）
     const jsonMapping = {
-      strapiImages: imageFiles.map(file => `/assets/strapi/${file}`),
-      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/assets/strapi/${file}`),
+      // 可直接访问的公开目录路径（不经过打包哈希），用于兜底
+      strapiImages: imageFiles.map(file => `/images/strapi/${file}`),
+      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/images/strapi/${file}`),
       totalCount: imageFiles.length,
       webpCount: imageFiles.filter(file => file.endsWith('.webp')).length,
       generatedAt: new Date().toISOString()
@@ -469,9 +487,15 @@ async function generateImageMapping() {
     const lines = [];
     lines.push('// 自动生成：Strapi 图片 URL 映射 (由构建脚本生成)');
     lines.push('');
-    // 为每个文件创建导入（?url 以获取最终 URL 字符串）
+    // 为每个文件创建导入（?url 以获取最终 URL 字符串）——从源码资产导入，发射到/_astro
     imageFiles.forEach((file, idx) => {
-      lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
+      // 若 src/assets/strapi 不存在，改从 public 侧导入，确保构建可用
+      const preferSrcAssets = true;
+      if (preferSrcAssets) {
+        lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
+      } else {
+        lines.push(`import u${idx} from '../../public/images/strapi/${file}?url';`);
+      }
     });
     lines.push('');
     lines.push('export const STRAPI_IMAGE_URLS = {');
