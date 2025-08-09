@@ -5,6 +5,9 @@
 
 import { generateImageHash } from '../utils/hashUtils.js';
 
+// 从环境变量读取 Strapi 基础地址，用于在未命中本地映射时回退为绝对URL
+const STRAPI_STATIC_URL = typeof process !== 'undefined' ? (process.env.STRAPI_STATIC_URL || '') : '';
+
 // 加载图片映射文件
 export async function loadImageMapping() {
   try {
@@ -94,6 +97,10 @@ function processSingleImage(img, imageMapping) {
   if (!img) return null;
   
   if (typeof img === 'string') {
+    // Strapi 相对路径，回退为绝对URL
+    if (img.startsWith('/uploads/')) {
+      return STRAPI_STATIC_URL ? `${STRAPI_STATIC_URL}${img}` : img;
+    }
     // 如果是字符串URL，尝试在缓存中找到对应的本地文件
     if (img.startsWith('http')) {
       const urlHash = generateImageHash(img);
@@ -139,8 +146,9 @@ function processSingleImage(img, imageMapping) {
         
         return false;
       });
+      // 未命中映射时，回退为绝对URL，避免生成 /uploads/... 导致生产环境404
       
-      return cachedImage || originalUrl;
+      return cachedImage || (STRAPI_STATIC_URL ? `${STRAPI_STATIC_URL}${originalUrl}` : originalUrl);
     }
     return originalUrl;
   }

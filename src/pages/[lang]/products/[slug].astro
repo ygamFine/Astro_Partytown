@@ -1,0 +1,1316 @@
+---
+export const prerender = true;
+
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
+import ContactButtons from '../../../components/common/contact/ContactButtons.astro';
+import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
+import { getProducts, getProduct } from '../../../lib/strapi.js';
+import { getNews } from '../../../lib/strapi.js';
+import getDictionary from '../../../i18n/dictionaries.js';
+import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
+import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
+import { themeConfig } from '../../../config/theme.js';
+import { loadImageMapping, processImages as processImagesFromLib } from '../../../lib/imageProcessor.js';
+
+export async function getStaticPaths() {
+  // 只为配置中启用的语言和产品生成静态路径
+  const paths: any[] = [];
+  const enabledLanguages = SUPPORTED_LANGUAGES;
+  
+  for (const lang of enabledLanguages) {
+    const products = await getProducts(lang);
+    for (const product of products) {
+      // 仅为有有效 slug 的产品生成详情页
+      if (product && typeof product.slug === 'string' && product.slug.trim().length > 0) {
+        paths.push({
+          params: { lang, slug: product.slug },
+          props: { slug: product.slug, lang }
+        });
+      }
+    }
+  }
+  
+  return paths;
+}
+
+const { slug, lang } = Astro.props;
+
+// 单独调用 Strapi 详情接口获取产品数据
+const product = await getProduct(slug, lang);
+// 如果产品不存在，返回404
+if (!product) {
+  return Astro.redirect('/404');
+}
+
+// 加载国际化翻译
+const t = getDictionary(lang);
+
+// 获取所有产品数据用于相关产品计算
+const allProducts = await getProducts(lang);
+
+// 获取相关产品（同类别的其他产品，最多显示3个）
+const relatedProducts = allProducts
+  .filter((p: any) => p.category === product.category && p.id !== product.id)
+  .slice(0, 3);
+
+// 过滤有效的相关产品图片
+const validRelatedProducts = relatedProducts.filter(relatedProduct => {
+  if (!relatedProduct.image) return false;
+  if (typeof relatedProduct.image === 'string') {
+    return relatedProduct.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
+
+// 获取相关新闻（最新的4篇）
+const allNews = await getNews(lang);
+const relatedNews = allNews.slice(0, 4);
+
+// 获取当前产品在列表中的位置，用于上一个/下一个导航
+const currentIndex = allProducts.findIndex((p: any) => p.id === product.id);
+const previousProduct = currentIndex > 0 ? allProducts[currentIndex - 1] : null;
+const nextProduct = currentIndex < allProducts.length - 1 ? allProducts[currentIndex + 1] : null;
+
+// 推荐产品（不同类别的产品）
+const recommendedProducts = allProducts
+  .filter((p: any) => p.category !== product.category)
+  .slice(0, 2);
+
+// 过滤有效的推荐产品图片
+const validRecommendedProducts = recommendedProducts.filter(recommended => {
+  if (!recommended.image) return false;
+  if (typeof recommended.image === 'string') {
+    return recommended.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
+  }
+  return true; // 如果是导入的图片对象，认为是有效的
+});
+
+// 面包屑导航
+const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.category);
+
+// 加载图片映射
+const imageMapping = await loadImageMapping();
+
+const images: string[] = processImagesFromLib(product.image, imageMapping);
+---
+
+<Layout title={`${product.name} - 产品详情`} lang={lang}>
+  <main class="bg-gray-50 min-h-screen">
+    <!-- 面包屑导航 -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 py-4">
+        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
+      </div>
+    </div>
+
+    <!-- 第一行：产品主要信息 -->
+    <section class="bg-white py-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:items-start">
+          <!-- 左侧：产品图片展示区 -->
+          <div class="lg:col-span-2 flex flex-col h-full">
+            <!-- 主图片区域 -->
+            <div class="flex-1 relative">
+              <!-- 主图片滑动容器 -->
+              <div class="bg-gray-100 rounded-lg overflow-hidden relative" id="imageContainer" style="width: 100%; height: 400px;">
+                <div 
+                  id="imageSlider" 
+                  class="flex transition-transform duration-500 ease-in-out h-full"
+                  style={`width: ${images.length * 100}%;`}
+                >
+                  {/* 所有图片 */}
+                  {images.map((img, index) => (
+                    <img 
+                      src={img} 
+                      alt={`${product.name} ${index + 1}`}
+                      class="object-contain cursor-crosshair select-none flex-shrink-0"
+                      style="width: 100%; height: 100%; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
+                      draggable="false"
+                      data-index={index}
+                    />
+                  ))}
+                </div>
+                <!-- 透明放大镜选择框 -->
+                <div id="magnifierLens" class="absolute border-2 border-gray-400 pointer-events-none opacity-0 transition-opacity duration-200 z-10" style="width: 100px; height: 100px; background: rgba(255,255,255,0.1);"></div>
+              </div>
+              
+              <!-- 放大显示区域 - 直接放在主图右侧 -->
+              <div id="magnifierZoom" class="absolute top-0 bg-white border border-gray-300 rounded-lg shadow-lg pointer-events-none opacity-0 transition-opacity duration-200 z-50 overflow-hidden" style="left: calc(100% + 20px); width: 400px; height: 100%; background-repeat: no-repeat;"></div>
+            </div>
+            
+            <!-- 缩略图区域 -->
+            <div class="relative mt-4 flex items-center">
+              <!-- 左切换按钮 -->
+              <button 
+                id="thumbnailPrev"
+                class="flex-shrink-0 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-sm shadow-md flex items-center justify-center mr-2 transition-colors z-20 h-20"
+                style="display: flex !important; visibility: visible !important; width: 15px;"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <!-- 缩略图容器 -->
+              <div 
+                id="thumbnailContainer"
+                class="flex space-x-2 overflow-x-hidden flex-1 scroll-smooth"
+                style="scroll-behavior: smooth;"
+              >
+                {images.map((img, index) => (
+                  <img 
+                    src={img} 
+                    alt={`${product.name} ${index + 1}`}
+                    class={`w-20 h-20 object-cover rounded cursor-pointer flex-shrink-0 thumbnail-img select-none ${index === 0 ? 'border-2 border-red-600' : 'border border-gray-200 hover:border-red-600'}`}
+                    data-index={index}
+                    data-src={img}
+                    draggable="false"
+                    style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
+                  />
+                ))}
+              </div>
+
+              <!-- 右切换按钮 -->
+              <button 
+                id="thumbnailNext"
+                class="flex-shrink-0 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-sm shadow-md flex items-center justify-center ml-2 transition-colors z-20 h-20"
+                style="display: flex !important; visibility: visible !important; width: 15px;"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 右侧：产品信息区 -->
+          <div class="lg:col-span-3 flex flex-col space-y-6">
+            <!-- 产品名称 -->
+            <h1 class="text-3xl font-bold text-gray-900">{product.name}</h1>
+
+            <!-- 产品描述 -->
+            <div class="bg-gray-50 rounded-lg p-6">
+              <div class="space-y-4">
+                <p class="text-gray-700 leading-relaxed">
+                  {product.excerpt}
+                </p>
+                <div class="pt-4 border-t border-gray-200">
+              <h4 class="font-medium text-gray-900 mb-2">{t.product.advantages}</h4>
+                  <ul class="text-sm text-gray-600 space-y-1">
+                 {t.product.advantages_list.map((advantage: any) => (
+                      <li>• {advantage}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 价格和购物车区域 -->
+            {themeConfig.layout.productDetail.pricing.showPricing && 
+             !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hidePricing && (
+              <div class="bg-gray-50 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">产品价格</h3>
+                
+                {/* 多币种价格展示 */}
+                {themeConfig.layout.productDetail.pricing.showMultiplePrices && (
+                  <div class="grid grid-cols-5 gap-2 mb-4">
+                    {Object.entries(themeConfig.layout.productDetail.pricing.priceConfig.currencies).map(([currency, config]) => (
+                      <div class="p-2 bg-white rounded border text-center">
+                        <div class="text-xs text-gray-600 mb-1">{currency}</div>
+                        <span class="text-lg font-bold text-red-600">{config.symbol}1,299</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+
+                
+                <!-- 加入购物车按钮 -->
+                {themeConfig.layout.productDetail.pricing.showAddToCart && 
+                 !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hideAddToCart && (
+                  <div class="flex justify-start">
+                    <button 
+                      class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 flex items-center gap-2"
+                      onclick="addToCart()"
+                    >
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                      </svg>
+                      加入购物车
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <!-- 联系方式按钮 -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">{t.product.contact_us}</h3>
+              <ContactButtons 
+                t={t.product.button}
+                showContactNow={themeConfig.layout.contactButtons.showContactNow}
+                showDownloadPdf={themeConfig.layout.contactButtons.showDownloadPdf}
+                showEmail={themeConfig.layout.contactButtons.showEmail}
+                showTelephone={themeConfig.layout.contactButtons.showTelephone}
+                showWhatsapp={themeConfig.layout.contactButtons.showWhatsapp}
+              />
+            </div>
+            
+            <!-- 分享功能 -->
+            <div class="flex items-center space-x-4 pt-4 border-t">
+              <span class="text-sm text-gray-500">{t.product.share_to}</span>
+              <div class="flex space-x-2">
+                <button class="w-8 h-8 bg-blue-600 text-white rounded flex items-center justify-center hover:bg-blue-700">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                </button>
+                <button class="w-8 h-8 bg-green-600 text-white rounded flex items-center justify-center hover:bg-green-700">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                </button>
+                <button class="w-8 h-8 bg-gray-600 text-white rounded flex items-center justify-center hover:bg-gray-700">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第二行：详细内容 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class={`grid grid-cols-1 gap-8 ${themeConfig.layout.productDetail.sidebar.showSidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-1'}`}>
+          <!-- 左侧：详细内容 -->
+          <div class={`space-y-8 ${themeConfig.layout.productDetail.sidebar.showSidebar ? 'lg:col-span-3' : 'lg:col-span-1'}`}>
+            <!-- 产品详情 -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">{t.product.details}</h2>
+              <!-- 富文本内容 -->
+              {product.info && product.info.length > 0 && (
+                <div class="mb-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.description}</h3>
+                  <RichTextRenderer content={product.info} />
+                </div>
+              )}
+              
+              <!-- 完整技术参数 -->
+              <!-- {product.specs && product.specs.length > 0 && (
+                <div class="mb-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.specifications}</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.specs.map(spec => (
+                      <div class="flex justify-between py-2 border-b border-gray-100">
+                        <span class="text-gray-600">{spec.key}</span>
+                        <span class="font-medium text-gray-900">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )} -->
+              
+              <!-- 产品特点 -->
+              <!-- {product.features && product.features.length > 0 && (
+                <div class="mb-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.features}</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.features.map(feature => (
+                      <div class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )} -->
+
+              <!-- 产品应用场景 -->
+              <!-- <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.applications}</h3>
+                <p class="text-gray-600 leading-relaxed">
+                  {t.product.applications_text}
+                </p>
+              </div> -->
+            </div>
+
+            <!-- Previous / Next 导航 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="flex justify-between items-center">
+                <div class="flex-1">
+                                      {previousProduct && (
+                      <a href={`/${lang}/products/${previousProduct.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                        <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                          <div class="text-sm">{t.navigation.previous_product}</div>
+                          <div class="font-medium">{previousProduct.name}</div>
+                        </div>
+                      </a>
+                    )}
+                </div>
+                <div class="flex-1 text-right">
+                  {nextProduct && (
+                    <a href={`/${lang}/products/${nextProduct.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
+                      <div class="text-right">
+                        <div class="text-sm">{t.navigation.next_product}</div>
+                        <div class="font-medium">{nextProduct.name}</div>
+                      </div>
+                      <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <!-- Leave your messages 表单 -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                {t.form.title}
+              </h2>
+              
+              <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- 姓名 -->
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">{t.form.name}</label>
+                    <input 
+                      type="text" 
+                      id="name" 
+                      name="name"
+                      placeholder={t.form.name_placeholder}
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      required
+                    >
+                  </div>
+                  
+                  <!-- 电话 -->
+                  <div>
+                    <label for="telephone" class="block text-sm font-medium text-gray-700 mb-2">{t.form.telephone}</label>
+                    <input 
+                      type="tel" 
+                      id="telephone" 
+                      name="telephone"
+                      placeholder={t.form.telephone_placeholder}
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    >
+                  </div>
+                </div>
+
+                <!-- 邮箱 -->
+                <div>
+                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                    {t.form.email}<span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    placeholder={t.form.email_placeholder}
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    required
+                  >
+                </div>
+
+                <!-- 咨询内容 -->
+                <div>
+                  <label for="message" class="block text-sm font-medium text-gray-700 mb-2">{t.form.message}</label>
+                  <textarea 
+                    id="message" 
+                    name="message"
+                    rows="5"
+                    placeholder={t.form.message_placeholder}
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  ></textarea>
+                </div>
+
+                <!-- 验证码 -->
+                <div>
+                  <label for="captcha" class="block text-sm font-medium text-gray-700 mb-2">{t.form.captcha}</label>
+                  <div class="flex items-center space-x-4">
+                    <input 
+                      type="text" 
+                      id="captcha" 
+                      name="captcha"
+                      class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      required
+                    >
+                    <div class="w-24 h-12 bg-green-100 rounded flex items-center justify-center text-lg font-mono tracking-widest text-gray-700">
+                      zqWp
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 提交按钮 -->
+                <button 
+                  type="submit"
+                  class="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                >
+                  {t.form.send}
+                </button>
+              </form>
+            </div>
+
+            <!-- Related Products -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                {t.related.products}
+              </h2>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {validRelatedProducts.map(relatedProduct => (
+                  <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
+                    <a href={`/${lang}/products/${relatedProduct.slug}`} class="block h-full">
+                      <div class="aspect-[3/2] overflow-hidden">
+                        <img 
+                          src={relatedProduct.image} 
+                          alt={relatedProduct.name}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                      
+                      <div class="p-4 relative">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+                          {relatedProduct.name}
+                        </h3>
+                        
+                        <p class="text-gray-600 text-sm mb-2 line-clamp-2">
+                          {relatedProduct.excerpt}
+                        </p>
+                        
+                        <!-- 费用占位区域 -->
+                        <div class="mb-3">
+                          <div class="flex items-center justify-between">
+                            <span class="text-red-600 font-bold text-sm" style="visibility: hidden;">面议</span>
+                            <span class="text-gray-500 text-xs" style="visibility: hidden;">起</span>
+                          </div>
+                        </div>
+                        
+                        <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
+                        <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
+                          <div>
+                            <h4 class="font-bold text-base leading-tight">{relatedProduct.name}</h4>
+                            <p class="text-xs opacity-90">{t.product.related.get_quote}</p>
+                          </div>
+                          <div class="flex items-center space-x-1">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <span class="font-medium text-sm">{t.product.button.contactNow}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <!-- Related News -->
+            <div class="bg-white rounded-lg p-8 shadow-sm">
+              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <div class="w-1 h-6 bg-red-600 mr-3"></div>
+                {t.related.news}
+              </h2>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedNews.map(newsItem => (
+                  <div class="flex items-start space-x-4">
+                    <div class="flex-1">
+                      <a href={`/${lang}/news/${newsItem.slug}`} class="block">
+                        <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
+                          {newsItem.title}
+                        </h3>
+                      </a>
+                      <div class="text-sm text-gray-500">
+                        {newsItem.date}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+
+          </div>
+
+          {/* 右侧：推荐产品 */}
+          {themeConfig.layout.productDetail.sidebar.showSidebar && (
+            <div class="space-y-6" id="recommendedProductsSidebar">
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <div class="w-1 h-5 bg-red-600 mr-2"></div>
+                {t.product.related.recommended}
+              </h3>
+              
+              <div class="space-y-4">
+                {validRecommendedProducts.slice(0, 2).map(recommended => (
+                  <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
+                    <a href={`/${lang}/products/${recommended.slug}`} class="block">
+                      <div class="aspect-[3/2] overflow-hidden">
+                        <img 
+                          src={recommended.image} 
+                          alt={recommended.name}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                      
+                      <div class="p-4 relative">
+                        <h4 class="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-lg">
+                          {recommended.name}
+                        </h4>
+                        
+                        <p class="text-gray-600 text-sm mb-2 line-clamp-2">
+                          {recommended.excerpt}
+                        </p>
+                        
+                        <!-- 费用占位区域 -->
+                        <div class="mb-3">
+                          <div class="flex items-center justify-between">
+                            <span class="text-red-600 font-bold text-sm" style="visibility: hidden;">面议</span>
+                            <span class="text-gray-500 text-xs" style="visibility: hidden;">起</span>
+                          </div>
+                        </div>
+                        
+                        <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
+                        <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
+                          <div>
+                            <h5 class="font-bold text-base leading-tight">{recommended.name}</h5>
+                            <p class="text-xs opacity-90">{t.product.get_quote}</p>
+                          </div>
+                          <div class="flex items-center space-x-1">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <span class="font-medium text-sm">{t.product.contactNow}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </article>
+                ))}
+              </div>
+              
+              <!-- 查看更多推荐产品 -->
+              <div class="mt-4 text-center">
+                <a href={`/${lang}/products`} class="text-sm text-red-600 hover:text-red-700 font-medium">
+                  {t.related.view_more} →
+                </a>
+              </div>
+            </div>
+          </div>
+          )}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 缩略图点击切换已在initImageNavigation中处理
+
+    // 图片放大镜效果
+    function initMagnifier() {
+      const imageContainer = document.getElementById('imageContainer');
+      const imageSlider = document.getElementById('imageSlider');
+      const magnifierLens = document.getElementById('magnifierLens');
+      const magnifierZoom = document.getElementById('magnifierZoom');
+      
+      if (!imageContainer || !imageSlider || !magnifierLens || !magnifierZoom) return;
+      
+      // 获取当前显示的图片
+      function getCurrentImage() {
+        const slider = document.getElementById('imageSlider');
+        if (!slider) return null;
+        const allImages = slider.querySelectorAll('img');
+        return allImages[currentImageIndex] as HTMLImageElement || null;
+      }
+      
+      // 初始化放大镜背景图
+      function initZoomBackground() {
+        const container = document.getElementById('imageContainer');
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const img = getCurrentImage();
+        if (!img) return;
+        
+        const imgNaturalWidth = img.naturalWidth || img.width;
+        const imgNaturalHeight = img.naturalHeight || img.height;
+        
+        // 计算图片在容器中的实际显示区域
+        const containerWidth = rect.width;
+        const containerHeight = rect.height;
+        const imgAspectRatio = imgNaturalWidth / imgNaturalHeight;
+        const containerAspectRatio = containerWidth / containerHeight;
+        
+        let imgDisplayWidth, imgDisplayHeight;
+        
+        if (imgAspectRatio > containerAspectRatio) {
+          // 图片较宽，以容器宽度为准
+          imgDisplayWidth = containerWidth;
+          imgDisplayHeight = containerWidth / imgAspectRatio;
+        } else {
+          // 图片较高，以容器高度为准
+          imgDisplayWidth = containerHeight * imgAspectRatio;
+          imgDisplayHeight = containerHeight;
+        }
+        
+        if (!magnifierZoom) return;
+        magnifierZoom.style.backgroundImage = `url('${img.src}')`;
+        // 设置背景图大小为实际显示图片的4倍放大
+        const zoomFactor = 4;
+        magnifierZoom.style.backgroundSize = `${imgDisplayWidth * zoomFactor}px ${imgDisplayHeight * zoomFactor}px`;
+      }
+      
+      initZoomBackground();
+      
+      // 鼠标移入显示放大镜
+      imageContainer.addEventListener('mouseenter', function() {
+        initZoomBackground(); // 确保背景图正确
+        magnifierLens.style.opacity = '1';
+        magnifierZoom.style.opacity = '1';
+      });
+      
+      // 鼠标移出隐藏放大镜
+      imageContainer.addEventListener('mouseleave', function() {
+        magnifierLens.style.opacity = '0';
+        magnifierZoom.style.opacity = '0';
+      });
+
+      // 鼠标移动更新放大镜选择框和放大内容
+      imageContainer.addEventListener('mousemove', function(e) {
+        const container = document.getElementById('imageContainer');
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // 获取实际图片在容器中的尺寸和位置
+        const img = getCurrentImage();
+        if (!img) return;
+        
+        const imgNaturalWidth = img.naturalWidth || img.width;
+        const imgNaturalHeight = img.naturalHeight || img.height;
+        const containerWidth = rect.width;
+        const containerHeight = rect.height;
+        
+        // 计算图片在容器中的实际显示区域
+        const imgAspectRatio = imgNaturalWidth / imgNaturalHeight;
+        const containerAspectRatio = containerWidth / containerHeight;
+        
+        let imgDisplayWidth, imgDisplayHeight, imgOffsetX, imgOffsetY;
+        
+        if (imgAspectRatio > containerAspectRatio) {
+          // 图片较宽，以容器宽度为准
+          imgDisplayWidth = containerWidth;
+          imgDisplayHeight = containerWidth / imgAspectRatio;
+          imgOffsetX = 0;
+          imgOffsetY = (containerHeight - imgDisplayHeight) / 2;
+        } else {
+          // 图片较高，以容器高度为准
+          imgDisplayWidth = containerHeight * imgAspectRatio;
+          imgDisplayHeight = containerHeight;
+          imgOffsetX = (containerWidth - imgDisplayWidth) / 2;
+          imgOffsetY = 0;
+        }
+        
+        // 选择框尺寸
+        const lensSize = 100;
+        const lensRadius = lensSize / 2;
+        
+        // 计算选择框位置（限制在图片实际显示区域内）
+        let lensX = x - lensRadius;
+        let lensY = y - lensRadius;
+        
+        // 边界检查 - 限制在图片实际显示区域内
+        if (lensX < imgOffsetX) lensX = imgOffsetX;
+        if (lensY < imgOffsetY) lensY = imgOffsetY;
+        if (lensX + lensSize > imgOffsetX + imgDisplayWidth) lensX = imgOffsetX + imgDisplayWidth - lensSize;
+        if (lensY + lensSize > imgOffsetY + imgDisplayHeight) lensY = imgOffsetY + imgDisplayHeight - lensSize;
+        
+        // 设置选择框位置
+        if (magnifierLens) {
+          magnifierLens.style.left = lensX + 'px';
+          magnifierLens.style.top = lensY + 'px';
+        }
+        
+        // 计算放大区域的背景图位置（基于实际图片区域）
+        const zoomX = (lensX + lensRadius - imgOffsetX) / imgDisplayWidth;
+        const zoomY = (lensY + lensRadius - imgOffsetY) / imgDisplayHeight;
+        
+        // 计算背景图位置，确保只显示选中区域的放大版本
+        const zoomFactor = 4;
+        const magnifierWidth = 400;
+        const magnifierHeight = rect.height;
+        
+        const backgroundX = -zoomX * (imgDisplayWidth * zoomFactor) + (magnifierWidth / 2);
+        const backgroundY = -zoomY * (imgDisplayHeight * zoomFactor) + (magnifierHeight / 2);
+        
+        if (magnifierZoom) {
+          magnifierZoom.style.backgroundPosition = `${backgroundX}px ${backgroundY}px`;
+        }
+      });
+    }
+    
+    // 页面加载完成后初始化放大镜
+    document.addEventListener('DOMContentLoaded', function() {
+      initMagnifier();
+      initAffix();
+      initThumbnailSlider();
+      const imageNav = initImageNavigation();
+      if (imageNav) {
+        globalUpdateImage = imageNav.updateImage;
+      }
+      initImageSwipe();
+    });
+
+    // Affix 功能 - 推荐产品固定定位
+    function initAffix() {
+      const sidebar = document.getElementById('recommendedProductsSidebar');
+      if (!sidebar) return;
+      
+      const affixOffset = 80; // 距离顶部70px
+      const originalParent = sidebar.parentNode;
+      const originalNextSibling = sidebar.nextSibling;
+      let isAffixed = false;
+      let originalTop = 0;
+      let sidebarWidth = 0;
+      let originalLeft = 0;
+      
+      function updateAffix() {
+        const sidebar = document.getElementById('recommendedProductsSidebar');
+        if (!sidebar) return;
+        const rect = sidebar.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        
+        if (!isAffixed) {
+          originalTop = scrollTop + rect.top;
+          sidebarWidth = rect.width;
+          originalLeft = rect.left;
+        }
+        
+        // 判断推荐产品是否需要固定以保持在可视窗口内
+        const sidebarHeight = rect.height;
+        const sidebarTop = isAffixed ? scrollTop : rect.top + scrollTop;
+        const sidebarBottom = sidebarTop + sidebarHeight;
+        
+        // 检测footer位置
+        const footer = document.querySelector('footer');
+        let footerTop = Infinity;
+        
+        if (footer) {
+          const footerRect = footer.getBoundingClientRect();
+          footerTop = scrollTop + footerRect.top;
+        }
+        
+        // 计算合适的固定位置
+        let shouldFix = false;
+        let fixedTop = affixOffset;
+        
+        // 如果推荐产品顶部滚出屏幕，则固定在顶部
+        if (rect.top < affixOffset) {
+          shouldFix = true;
+          fixedTop = affixOffset;
+          
+          // 检查是否会超出屏幕底部
+          if (fixedTop + sidebarHeight > windowHeight) {
+            fixedTop = windowHeight - sidebarHeight - 20; // 留20px边距
+          }
+          
+          // 检查是否会与footer重叠
+          if (scrollTop + fixedTop + sidebarHeight > footerTop) {
+            fixedTop = footerTop - scrollTop - sidebarHeight - 20;
+          }
+          
+          // 确保不会出现负值
+          if (fixedTop < 20) {
+            shouldFix = false; // 如果空间不足，取消固定
+          }
+        }
+        
+        if (shouldFix && !isAffixed) {
+          // 创建占位元素
+          const placeholder = document.createElement('div');
+          placeholder.style.width = sidebarWidth + 'px';
+          placeholder.style.height = rect.height + 'px';
+          placeholder.id = 'sidebar-placeholder';
+          
+          // 插入占位元素
+          if (originalParent) {
+            originalParent.insertBefore(placeholder, sidebar);
+          }
+          
+          // 设置固定定位
+          if (sidebar) {
+            sidebar.style.position = 'fixed';
+            sidebar.style.top = fixedTop + 'px';
+            sidebar.style.left = originalLeft + 'px';
+            sidebar.style.width = sidebarWidth + 'px';
+            sidebar.style.zIndex = '1000';
+            sidebar.classList.add('affixed');
+          }
+          
+          isAffixed = true;
+        } else if (isAffixed && shouldFix) {
+          // 更新已固定元素的位置
+          if (sidebar) {
+            sidebar.style.top = fixedTop + 'px';
+          }
+        } else if (!shouldFix && isAffixed) {
+          // 移除占位元素
+          const placeholder = document.getElementById('sidebar-placeholder');
+          if (placeholder) {
+            placeholder.remove();
+          }
+          
+          // 恢复原始定位
+          if (sidebar) {
+            sidebar.style.position = '';
+            sidebar.style.top = '';
+            sidebar.style.left = '';
+            sidebar.style.width = '';
+            sidebar.style.zIndex = '';
+            sidebar.classList.remove('affixed');
+          }
+          
+          // 恢复到原始位置
+          if (originalNextSibling) {
+            if (originalParent && sidebar) originalParent.insertBefore(sidebar, originalNextSibling);
+          } else {
+            if (originalParent && sidebar) originalParent.appendChild(sidebar);
+          }
+          
+          isAffixed = false;
+        }
+      }
+      
+      // 监听滚动事件
+      window.addEventListener('scroll', updateAffix, { passive: true });
+      window.addEventListener('resize', updateAffix, { passive: true });
+      
+      // 初始检查
+      setTimeout(updateAffix, 100);
+    }
+    
+    // 图片加载完成后重新初始化放大镜
+    const imageSlider = document.getElementById('imageSlider');
+    if (imageSlider) {
+      const allImages = imageSlider.querySelectorAll('img');
+      allImages.forEach(img => {
+        img.addEventListener('load', function() {
+          initMagnifier();
+        });
+      });
+    }
+
+    // 缩略图切换功能
+    function initThumbnailSlider() {
+      const container = document.getElementById('thumbnailContainer');
+      const prevBtn = document.getElementById('thumbnailPrev');
+      const nextBtn = document.getElementById('thumbnailNext');
+      
+      if (!container || !prevBtn || !nextBtn) return;
+      
+      const itemWidth = 88; // 80px + 8px margin
+      let currentOffset = 0;
+      
+      // 检查是否需要显示切换按钮
+      function checkButtons() {
+        if (!container || !prevBtn || !nextBtn) return;
+        
+        const containerWidth = container.clientWidth;
+        const totalWidth = container.scrollWidth;
+        const maxOffset = totalWidth - containerWidth;
+        
+        // 始终显示按钮进行测试
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+        
+        // 根据当前位置调整按钮透明度
+        if (totalWidth > containerWidth) {
+          prevBtn.style.opacity = currentOffset > 0 ? '1' : '0.5';
+          nextBtn.style.opacity = currentOffset < maxOffset ? '1' : '0.5';
+        } else {
+          // 即使不需要滑动也显示，但降低透明度
+          prevBtn.style.opacity = '0.3';
+          nextBtn.style.opacity = '0.3';
+        }
+      }
+      
+      // 向左滑动
+      prevBtn.addEventListener('click', function() {
+        if (!container) return;
+        
+        currentOffset = Math.max(0, currentOffset - itemWidth * 3);
+        container.scrollTo({
+          left: currentOffset,
+          behavior: 'smooth'
+        });
+        setTimeout(checkButtons, 300);
+        
+        // 同时切换主图到上一张
+        switchToPreviousImage();
+      });
+      
+      // 向右滑动
+      nextBtn.addEventListener('click', function() {
+        if (!container) return;
+        
+        const containerWidth = container.clientWidth;
+        const maxOffset = container.scrollWidth - containerWidth;
+        currentOffset = Math.min(maxOffset, currentOffset + itemWidth * 3);
+        container.scrollTo({
+          left: currentOffset,
+          behavior: 'smooth'
+        });
+        setTimeout(checkButtons, 300);
+        
+        // 同时切换主图到下一张
+        switchToNextImage();
+      });
+      
+      // 监听容器滚动事件，更新当前偏移量
+      container.addEventListener('scroll', function() {
+        currentOffset = container.scrollLeft;
+      });
+      
+      // 窗口大小改变时重新检查按钮状态
+      window.addEventListener('resize', checkButtons);
+      
+      // 初始检查 - 增加延迟确保图片加载完成
+      setTimeout(checkButtons, 500);
+      
+      // 当所有图片加载完成后再次检查
+      const images = container.querySelectorAll('img');
+      let loadedCount = 0;
+      images.forEach(img => {
+        if (img.complete) {
+          loadedCount++;
+        } else {
+          img.addEventListener('load', () => {
+            loadedCount++;
+            if (loadedCount === images.length) {
+              setTimeout(checkButtons, 100);
+            }
+          });
+        }
+      });
+      
+      if (loadedCount === images.length) {
+        setTimeout(checkButtons, 100);
+      }
+    }
+
+    // 主图导航功能 - 无缝滑动切换
+    let currentImageIndex = 0;
+    
+    function initImageNavigation() {
+      const imageSlider = document.getElementById('imageSlider');
+      const allImages = imageSlider?.querySelectorAll('img');
+      const thumbnails = document.querySelectorAll('.thumbnail-img');
+      
+      if (!imageSlider || !allImages) return;
+      
+      const totalImages = allImages.length;
+      
+      // 设置slider宽度为图片数量的总宽度
+      imageSlider.style.width = `${totalImages * 100}%`;
+      
+      // 设置每张图片的宽度为slider宽度的1/n
+      const imageWidth = `${100 / totalImages}%`;
+      allImages.forEach(img => {
+        img.style.width = imageWidth;
+      });
+      
+      // 更新放大镜背景图
+      function updateMagnifierImage(imageSrc: string) {
+        const magnifierZoom = document.getElementById('magnifierZoom');
+        if (magnifierZoom) {
+          magnifierZoom.style.backgroundImage = `url('${imageSrc}')`;
+        }
+      }
+      
+      // 更新主图滑动位置和缩略图选中状态
+      function updateImage(index: number) {
+        if (index < 0 || index >= totalImages) return;
+        
+        currentImageIndex = index;
+        
+        // 使用transform实现无缝滑动动画
+        const translateX = -(index * (100 / totalImages));
+        const slider = document.getElementById('imageSlider');
+        if (slider) {
+          slider.style.transform = `translateX(${translateX}%)`;
+        }
+        
+        // 更新放大镜背景图
+        const currentImg = (allImages?.[index] as HTMLImageElement) || null;
+        if (currentImg) updateMagnifierImage(currentImg.src);
+        
+        // 更新缩略图选中状态
+        thumbnails.forEach((thumb, i) => {
+          thumb.classList.remove('border-red-600', 'border-2');
+          thumb.classList.add('border-gray-200');
+          
+          if (i === index) {
+            thumb.classList.remove('border-gray-200');
+            thumb.classList.add('border-red-600', 'border-2');
+          }
+        });
+      }
+      
+      // 缩略图点击事件
+      thumbnails.forEach((thumb, index) => {
+        thumb.addEventListener('click', function() {
+          updateImage(index);
+        });
+      });
+      
+      // 键盘导航支持
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' && currentImageIndex > 0) {
+          updateImage(currentImageIndex - 1);
+        } else if (e.key === 'ArrowRight' && currentImageIndex < totalImages - 1) {
+          updateImage(currentImageIndex + 1);
+        }
+      });
+      
+      // 初始化时更新放大镜
+      if (allImages.length > 0) {
+        const firstImg = allImages[0] as HTMLImageElement;
+        updateMagnifierImage(firstImg.src);
+      }
+      
+      return { updateImage, imageCount: totalImages };
+    }
+    
+    // 定义全局更新图片函数
+    let globalUpdateImage: ((index: number) => void) | null = null;
+    
+    // 切换到上一张图片
+    function switchToPreviousImage() {
+      if (globalUpdateImage && currentImageIndex > 0) {
+        globalUpdateImage(currentImageIndex - 1);
+      }
+    }
+    
+    // 切换到下一张图片
+    function switchToNextImage() {
+      const imageSlider = document.getElementById('imageSlider');
+      const totalImages = imageSlider?.querySelectorAll('img').length || 0;
+      
+      if (globalUpdateImage && currentImageIndex < totalImages - 1) {
+        globalUpdateImage(currentImageIndex + 1);
+      }
+    }
+
+    // 主图滑动切换功能
+    function initImageSwipe() {
+      const imageContainer = document.getElementById('imageContainer');
+      if (!imageContainer) return;
+
+      let startX = 0;
+      let startY = 0;
+      let isSwipping = false;
+      let startTime = 0;
+
+      // 触摸开始
+      function handleStart(clientX: number, clientY: number) {
+        startX = clientX;
+        startY = clientY;
+        isSwipping = true;
+        startTime = Date.now();
+      }
+
+      // 触摸结束，判断滑动方向
+      function handleEnd(clientX: number, clientY: number) {
+        if (!isSwipping) return;
+        
+        const endTime = Date.now();
+        const timeDiff = endTime - startTime;
+        const deltaX = clientX - startX;
+        const deltaY = clientY - startY;
+        
+        // 只有在快速滑动（小于500ms）且水平位移大于50px时才触发
+        if (timeDiff < 500 && Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX > 0) {
+            // 向右滑动 - 上一张图片
+            switchToPreviousImage();
+          } else {
+            // 向左滑动 - 下一张图片
+            switchToNextImage();
+          }
+        }
+        
+        isSwipping = false;
+      }
+
+      // 触摸事件（移动端）
+      imageContainer.addEventListener('touchstart', function(e) {
+        const touch = e.touches[0];
+        handleStart(touch.clientX, touch.clientY);
+      }, { passive: true });
+
+      imageContainer.addEventListener('touchend', function(e) {
+        if (e.changedTouches.length > 0) {
+          const touch = e.changedTouches[0];
+          handleEnd(touch.clientX, touch.clientY);
+        }
+      }, { passive: true });
+
+      // 鼠标事件（桌面端）
+      let isMouseDown = false;
+      
+      imageContainer.addEventListener('mousedown', function(e) {
+        isMouseDown = true;
+        handleStart(e.clientX, e.clientY);
+        e.preventDefault(); // 防止选中文本
+      });
+
+      imageContainer.addEventListener('mousemove', function(e) {
+        if (isMouseDown) {
+          e.preventDefault(); // 防止默认拖拽行为
+        }
+      });
+
+      imageContainer.addEventListener('mouseup', function(e) {
+        if (isMouseDown) {
+          handleEnd(e.clientX, e.clientY);
+          isMouseDown = false;
+        }
+      });
+
+      imageContainer.addEventListener('mouseleave', function() {
+        isMouseDown = false;
+        isSwipping = false;
+      });
+    }
+
+    // 表单提交处理
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // 使用更优雅的反馈方式
+        const submitButton = this.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalText = submitButton.textContent;
+        submitButton.textContent = '发送中...';
+        submitButton.disabled = true;
+        
+        // 模拟发送过程
+        setTimeout(() => {
+          submitButton.textContent = '发送成功！';
+          submitButton.style.backgroundColor = '#10b981';
+          
+          setTimeout(() => {
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+            submitButton.style.backgroundColor = '';
+            this.reset();
+          }, 2000);
+        }, 1000);
+      });
+    }
+
+    // 分享功能
+    document.querySelectorAll('button[class*="bg-blue-600"], button[class*="bg-green-600"], button[class*="bg-gray-600"]').forEach(function(btn) {
+      btn.addEventListener('click', function(this: HTMLButtonElement) {
+        // 使用更优雅的反馈方式
+        const originalText = this.textContent;
+        this.textContent = '功能开发中...';
+        this.disabled = true;
+        
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.disabled = false;
+        }, 1500);
+      });
+    });
+
+    // 购物车功能
+    // 加入购物车函数
+    (window as any).addToCart = function() {
+      // 显示成功提示
+      const button = event?.target as HTMLButtonElement;
+      if (button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
+        button.style.backgroundColor = '#10b981';
+        
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.style.backgroundColor = '';
+        }, 2000);
+      }
+      
+      // 这里可以添加实际的购物车逻辑
+      
+    };
+
+
+  </script>
+
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    /* 右侧推荐产品sticky定位样式 */
+    .sticky {
+      position: -webkit-sticky;
+      position: sticky;
+    }
+    
+    /* Affix 固定状态样式 */
+    .affixed {
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+    }
+    
+    /* 移动端推荐产品处理 */
+    @media (max-width: 1024px) {
+      .sticky {
+        position: static !important;
+      }
+      
+      /* 移动端禁用affix */
+      .affixed {
+        position: static !important;
+        box-shadow: none;
+        background: white;
+        backdrop-filter: none;
+      }
+    }
+    
+    /* 确保推荐产品在较小屏幕上正常显示 */
+    @media (max-width: 768px) {
+      .lg\\:grid-cols-4 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+    }
+  </style>
+</Layout> 

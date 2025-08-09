@@ -237,10 +237,15 @@ export async function getProducts(locale = 'en') {
 /**
  * 获取单个产品详情 (SSG模式，构建时调用)
  */
-export async function getProduct(slug, locale = 'en') {
+export async function getProduct(slugOrId, locale = 'en') {
   try {
     // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/products?filters[slug][$eq]=${slug}&locale=${locale}&populate=*`, {
+    // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
+    const isNumericId = (typeof slugOrId === 'number');
+    const url = isNumericId
+      ? `${STRAPI_STATIC_URL}/api/products/${slugOrId}?locale=${locale}&populate=*`
+      : `${STRAPI_STATIC_URL}/api/products?filters[slug][$eq]=${slugOrId}&locale=${locale}&populate=*`;
+    const response = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${STRAPI_TOKEN}`,
         'Content-Type': 'application/json'
@@ -253,13 +258,11 @@ export async function getProduct(slug, locale = 'en') {
 
     const data = await response.json();
 
-    // 如果没有找到数据，直接返回 null
-    if (!data.data || data.data.length === 0) {
-  
+    // 适配两种响应：集合查询或单条查询
+    const item = Array.isArray(data?.data) ? data.data[0] : data?.data;
+    if (!item) {
       return null;
     }
-
-    const item = data.data[0];
 
     // 加载图片映射
     const imageMapping = await loadImageMappingWithCreate();

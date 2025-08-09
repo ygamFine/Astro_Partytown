@@ -5,6 +5,8 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
+        { "source": "/images/:path*", "destination": "/images/:path*" },
+        { "source": "/_astro/:path*", "destination": "/_astro/:path*" },
         { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "www.*" }] },
         { "source": "/", "destination": "/en/", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/", "destination": "/ja/", "has": [{ "type": "host", "value": "ja.*" }] },
