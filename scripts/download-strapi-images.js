@@ -382,51 +382,50 @@ async function downloadAllImages() {
   const allImageUrls = new Set();
   let totalDownloaded = 0;
   
-  // 获取所有语言的数据
+  // 获取所有语言的数据（带分页）
   for (const locale of ENABLED_LOCALES) {
     try {
-      // 获取产品数据
-      const productsResponse = await fetch(`${STRAPI_STATIC_URL}/api/products?locale=${locale}&populate=*`, {
-        headers: {
-          'Authorization': `Bearer ${STRAPI_TOKEN}`,
-          'Content-Type': 'application/json'
+      // 简易分页获取函数
+      async function fetchAll(endpoint) {
+        let page = 1;
+        const pageSize = 100;
+        let hasMore = true;
+        const merged = { data: [] };
+        while (hasMore) {
+          const url = `${endpoint}${endpoint.includes('?') ? '&' : '?'}pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+          const res = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${STRAPI_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (!res.ok) break;
+          const json = await res.json();
+          const dataArr = Array.isArray(json?.data) ? json.data : [];
+          merged.data.push(...dataArr);
+          const meta = json?.meta?.pagination;
+          if (meta && meta.page && meta.pageCount) {
+            hasMore = meta.page < meta.pageCount;
+          } else {
+            hasMore = false;
+          }
+          page += 1;
         }
-      });
-      
-      if (productsResponse.ok) {
-        const productsData = await productsResponse.json();
-        const productUrls = extractImageUrls(productsData);
-        productUrls.forEach(url => allImageUrls.add(url));
+        return merged;
       }
-      
-      // 获取新闻数据
-      const newsResponse = await fetch(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=*`, {
-        headers: {
-          'Authorization': `Bearer ${STRAPI_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (newsResponse.ok) {
-        const newsData = await newsResponse.json();
-        const newsUrls = extractImageUrls(newsData);
-        newsUrls.forEach(url => allImageUrls.add(url));
-      }
-      
-      // 获取案例数据
-      const casesResponse = await fetch(`${STRAPI_STATIC_URL}/api/case?locale=${locale}&populate=*`, {
-        headers: {
-          'Authorization': `Bearer ${STRAPI_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (casesResponse.ok) {
-        const casesData = await casesResponse.json();
-        const caseUrls = extractImageUrls(casesData);
-        caseUrls.forEach(url => allImageUrls.add(url));
-      }
-      
+
+      // 产品（全量分页）
+      const productsData = await fetchAll(`${STRAPI_STATIC_URL}/api/products?locale=${encodeURIComponent(locale)}&populate=*`);
+      extractImageUrls(productsData).forEach(url => allImageUrls.add(url));
+
+      // 新闻（全量分页）
+      const newsData = await fetchAll(`${STRAPI_STATIC_URL}/api/news?locale=${encodeURIComponent(locale)}&populate=*`);
+      extractImageUrls(newsData).forEach(url => allImageUrls.add(url));
+
+      // 案例（全量分页）
+      const casesData = await fetchAll(`${STRAPI_STATIC_URL}/api/case?locale=${encodeURIComponent(locale)}&populate=*`);
+      extractImageUrls(casesData).forEach(url => allImageUrls.add(url));
+
     } catch (error) {
       // 静默处理错误
     }

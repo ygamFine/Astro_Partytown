@@ -97,17 +97,30 @@ function processSingleImage(img, imageMapping) {
   if (!img) return null;
   
   if (typeof img === 'string') {
-    // Strapi 相对路径，回退为绝对URL
+    // Strapi 相对路径：优先映射到本地缓存（按 pathname 生成的 hash）
     if (img.startsWith('/uploads/')) {
+      const pathHash = generateImageHash(img);
+      const fileName = img.split('/').pop();
+      const cachedImage = imageMapping.strapiImages?.find(cached => 
+        cached.includes(pathHash) || (fileName ? cached.includes(fileName) : false)
+      );
+      if (cachedImage) return cachedImage;
+      // 无映射则回退为绝对URL
       return STRAPI_STATIC_URL ? `${STRAPI_STATIC_URL}${img}` : img;
     }
-    // 如果是字符串URL，尝试在缓存中找到对应的本地文件
+    // 绝对URL：使用 URL 的 pathname 生成 hash 匹配本地缓存
     if (img.startsWith('http')) {
-      const urlHash = generateImageHash(img);
-      const cachedImage = imageMapping.strapiImages?.find(cached => 
-        cached.includes(urlHash) || cached.includes(img.split('/').pop())
-      );
-      return cachedImage || img;
+      try {
+        const { pathname } = new URL(img);
+        const pathHash = generateImageHash(pathname);
+        const cachedImage = imageMapping.strapiImages?.find(cached => 
+          cached.includes(pathHash) || cached.includes(img.split('/').pop())
+        );
+        return cachedImage || img;
+      } catch {
+        // URL 解析失败，回退为原链接
+        return img;
+      }
     }
     
     // 如果是本地路径且格式正确，返回原路径
@@ -125,6 +138,9 @@ function processSingleImage(img, imageMapping) {
       const cachedImage = imageMapping.strapiImages?.find(cached => {
         // 1. 直接匹配文件名
         if (cached.includes(fileName)) return true;
+        // 1.1 匹配 pathname hash
+        const pathHash = generateImageHash(originalUrl);
+        if (cached.includes(pathHash)) return true;
         
         // 2. 匹配hash
         if (img.hash && cached.includes(img.hash)) return true;
