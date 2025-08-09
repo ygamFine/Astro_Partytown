@@ -55,7 +55,8 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
   if (!imageData) return '/images/placeholder.webp';
   
   // 如果已经是本地缓存路径，直接返回
-  if (typeof imageData === 'string' && imageData.startsWith('/images/strapi/')) {
+  // 命中打包资产（assets/strapi）或旧的 public 映射
+  if (typeof imageData === 'string' && (imageData.startsWith('/assets/strapi/') || imageData.startsWith('/images/strapi/'))) {
     return imageData;
   }
   
@@ -113,7 +114,7 @@ function processSingleImage(img, imageMapping) {
       try {
         const { pathname } = new URL(img);
         const pathHash = generateImageHash(pathname);
-        const cachedImage = imageMapping.strapiImages?.find(cached => 
+      const cachedImage = imageMapping.strapiImages?.find(cached => 
           cached.includes(pathHash) || cached.includes(img.split('/').pop())
         );
         return cachedImage || img;

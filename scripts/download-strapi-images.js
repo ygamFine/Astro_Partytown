@@ -26,7 +26,8 @@ const __dirname = path.dirname(__filename);
 const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
 const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 
-const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'public/images/strapi';
+// 下载到源码资产目录，便于打包进 _astro
+const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'src/assets/strapi';
 
 // 从环境变量获取启用的语言，如果没有设置则从API获取
 let ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
@@ -453,18 +454,39 @@ async function generateImageMapping() {
     const files = await fs.readdir(IMAGE_CACHE_DIR);
     const imageFiles = files.filter(file => /\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file));
     
-    const mapping = {
-      strapiImages: imageFiles.map(file => `/images/strapi/${file}`),
-      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/images/strapi/${file}`),
+    // 1) 生成 JSON 映射（可供其它工具参考）
+    const jsonMapping = {
+      strapiImages: imageFiles.map(file => `/assets/strapi/${file}`),
+      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/assets/strapi/${file}`),
       totalCount: imageFiles.length,
       webpCount: imageFiles.filter(file => file.endsWith('.webp')).length,
       generatedAt: new Date().toISOString()
     };
-    
-    const mappingPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
-    await fs.writeFile(mappingPath, JSON.stringify(mapping, null, 2));
-    
-    console.log(`📊 图片映射生成完成: ${mapping.webpCount}/${mapping.totalCount} 为WebP格式`);
+    const mappingJsonPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
+    await fs.writeFile(mappingJsonPath, JSON.stringify(jsonMapping, null, 2));
+
+    // 2) 生成可被 Vite 处理的 ESM 模块，导出最终 URL（/_astro/...）
+    const lines = [];
+    lines.push('// 自动生成：Strapi 图片 URL 映射 (由构建脚本生成)');
+    lines.push('');
+    // 为每个文件创建导入（?url 以获取最终 URL 字符串）
+    imageFiles.forEach((file, idx) => {
+      lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
+    });
+    lines.push('');
+    lines.push('export const STRAPI_IMAGE_URLS = {');
+    imageFiles.forEach((file, idx) => {
+      const base = path.basename(file);
+      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
+      lines.push(`  '${base}': u${idx},`);
+      lines.push(`  '${hash}': u${idx},`);
+    });
+    lines.push('};');
+
+    const modulePath = path.join(__dirname, '../src/data/strapi-image-urls.js');
+    await fs.writeFile(modulePath, lines.join('\n'));
+
+    console.log(`📊 图片映射生成完成: ${jsonMapping.webpCount}/${jsonMapping.totalCount} 为WebP格式，并已生成 URL 模块`);
   } catch (error) {
     console.log('⚠️  生成图片映射失败:', error.message);
   }
