@@ -66,14 +66,13 @@ export async function loadImageMapping() {
 export function processImageForDisplay(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return '/images/placeholder.webp';
   
-  // 如果已经是本地缓存路径，直接返回
-  // 命中 public 映射(images/strapi) 或源码资产(assets/strapi)，尝试解析发射后的URL
+  // Strapi 本地化图片统一返回发射后的 _astro 资源；未命中直接占位图
   if (typeof imageData === 'string' && (imageData.startsWith('/images/strapi/') || imageData.startsWith('/assets/strapi/'))) {
     const file = imageData.split('/').pop();
     if (file) {
-      return resolveEmittedUrlSync(file, imageData);
+      return resolveEmittedUrlSync(file, '/images/placeholder.webp');
     }
-    return imageData;
+    return '/images/placeholder.webp';
   }
   
   if (Array.isArray(imageData)) {
@@ -92,11 +91,11 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
 export function processImage(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return '/images/placeholder.webp';
   
-  // 如果已经是本地缓存路径，直接返回
+  // Strapi 本地化图片统一返回发射后的 _astro 资源；未命中直接占位图
   if (typeof imageData === 'string' && (imageData.startsWith('/images/strapi/') || imageData.startsWith('/assets/strapi/'))) {
     const file = imageData.split('/').pop();
-    if (file) return resolveEmittedUrlSync(file, imageData);
-    return imageData;
+    if (file) return resolveEmittedUrlSync(file, '/images/placeholder.webp');
+    return '/images/placeholder.webp';
   }
   
   if (Array.isArray(imageData)) {
@@ -116,36 +115,36 @@ function processSingleImage(img, imageMapping) {
   if (!img) return null;
   
   if (typeof img === 'string') {
-    // Strapi 相对路径：优先映射到本地缓存（按 pathname 生成的 hash）
+    // 兼容逗号分隔的多图字符串，取第一个可用图
+    if (img.includes(',')) {
+      const candidates = img.split(',').map(s => s.trim()).filter(Boolean);
+      for (const candidate of candidates) {
+        const resolved = processSingleImage(candidate, imageMapping);
+        if (resolved && resolved !== '/images/placeholder.webp') return resolved;
+      }
+      return '/images/placeholder.webp';
+    }
+    // Strapi 相对路径：直接尝试发射后的 _astro URL，未命中返回占位图
     if (img.startsWith('/uploads/')) {
       const pathHash = generateImageHash(img);
       const fileName = img.split('/').pop();
-      const cachedImage = imageMapping.strapiImages?.find(cached => 
-        cached.includes(pathHash) || (fileName ? cached.includes(fileName) : false)
-      );
-      if (cachedImage) {
-        // 优先返回发射后的URL
-        return resolveEmittedUrlSync(fileName || pathHash, cachedImage);
-      }
-      // 无映射则回退为绝对URL
-      return STRAPI_STATIC_URL ? `${STRAPI_STATIC_URL}${img}` : img;
+      const byFile = fileName ? resolveEmittedUrlSync(fileName, null) : null;
+      if (byFile) return byFile;
+      const byHash = resolveEmittedUrlSync(pathHash, null);
+      return byHash || '/images/placeholder.webp';
     }
-    // 绝对URL：使用 URL 的 pathname 生成 hash 匹配本地缓存
+    // 绝对URL（Strapi 完整地址）：同样只尝试发射后的 _astro URL，未命中返回占位图
     if (img.startsWith('http')) {
       try {
         const { pathname } = new URL(img);
         const pathHash = generateImageHash(pathname);
         const fileName = img.split('/').pop();
-        const cachedImage = imageMapping.strapiImages?.find(cached => 
-          cached.includes(pathHash) || (fileName ? cached.includes(fileName) : false)
-        );
-        if (cachedImage) {
-          return resolveEmittedUrlSync(fileName || pathHash, cachedImage);
-        }
-        return img;
+        const byFile = fileName ? resolveEmittedUrlSync(fileName, null) : null;
+        if (byFile) return byFile;
+        const byHash = resolveEmittedUrlSync(pathHash, null);
+        return byHash || '/images/placeholder.webp';
       } catch {
-        // URL 解析失败，回退为原链接
-        return img;
+        return '/images/placeholder.webp';
       }
     }
     
@@ -154,47 +153,17 @@ function processSingleImage(img, imageMapping) {
       return img;
     }
   } else if (img && typeof img === 'object' && img.url) {
-    // 如果是图片对象，提取URL并映射到本地缓存
+    // 图片对象：同样只返回 _astro 发射资源
     const originalUrl = img.url;
     if (originalUrl.startsWith('/uploads/')) {
-      // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
       const fileName = originalUrl.split('/').pop();
-      
-      // 尝试多种匹配方式
-      const cachedImage = imageMapping.strapiImages?.find(cached => {
-        // 1. 直接匹配文件名
-        if (cached.includes(fileName)) return true;
-        // 1.1 匹配 pathname hash
-        const pathHash = generateImageHash(originalUrl);
-        if (cached.includes(pathHash)) return true;
-        
-        // 2. 匹配hash
-        if (img.hash && cached.includes(img.hash)) return true;
-        
-        // 3. Base64编码匹配
-        try {
-          const encodedName = Buffer.from(fileName).toString('base64');
-          if (cached.includes(encodedName)) return true;
-          // 处理Base64填充字符
-          const encodedNameNoPadding = encodedName.replace(/=+$/, '');
-          if (cached.includes(encodedNameNoPadding)) return true;
-        } catch (e) {}
-        
-        // 4. Base64解码匹配
-        try {
-          const decodedName = Buffer.from(fileName, 'base64').toString();
-          if (cached.includes(decodedName)) return true;
-        } catch (e) {}
-        
-        return false;
-      });
-      if (cachedImage) {
-        const hash = generateImageHash(originalUrl);
-        return resolveEmittedUrlSync(fileName || hash, cachedImage);
-      }
-      // 未命中映射时，回退为绝对URL，避免生成 /uploads/... 导致生产环境404
-      return STRAPI_STATIC_URL ? `${STRAPI_STATIC_URL}${originalUrl}` : originalUrl;
+      const byFile = fileName ? resolveEmittedUrlSync(fileName, null) : null;
+      if (byFile) return byFile;
+      const hash = generateImageHash(originalUrl);
+      const byHash = resolveEmittedUrlSync(fileName || hash, null);
+      return byHash || '/images/placeholder.webp';
     }
+    // 若不是 Strapi 的 uploads 资源，保留原链接（站内非 Strapi 静态图）
     return originalUrl;
   }
   

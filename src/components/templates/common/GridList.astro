@@ -20,6 +20,7 @@ interface Props {
 
 // 导入主题配置
 import { themeConfig } from '../../../config/theme.js';
+import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 // 根据侧边栏显示状态动态调整列数
 const sidebarVisible = themeConfig.layout.sidebar.visible;
@@ -39,6 +40,13 @@ const validItems = displayItems.filter(item => {
   return true; // 如果是导入的图片对象，认为是有效的
 });
 
+// 统一加载一次映射，并为每个条目生成可展示的本地发射 URL
+const imageMapping = await loadImageMapping();
+const itemsWithDisplay = validItems.map((item) => ({
+  ...item,
+  image: processImageForDisplay(item.image, imageMapping)
+}));
+
 // 获取翻译文本
 const t = translations.common || {};
 
@@ -48,7 +56,7 @@ const cardConfig = themeConfig.layout.productCard;
 
 <div class="grid-list">
   <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
-    {validItems.map((item) => (
+    {itemsWithDisplay.map((item) => (
       <article class={`grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative ${cardConfig.style.hoverEffect === 'lift' ? 'hover:-translate-y-1' : cardConfig.style.hoverEffect === 'scale' ? 'hover:scale-105' : ''}`}>
         <a href={item.href} class="block h-full">
           <div class="aspect-video overflow-hidden">

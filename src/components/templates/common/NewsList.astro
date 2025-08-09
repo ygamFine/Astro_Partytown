@@ -14,6 +14,7 @@ interface Props {
 }
 
 const { items, lang = 'en', t } = Astro.props;
+import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 // 过滤有效的图片
 const validItems = items.filter(item => {
@@ -25,6 +26,13 @@ const validItems = items.filter(item => {
   return true; // 如果是导入的图片对象，认为是有效的
 });
 
+// 统一加载映射并转换为 _astro 发射 URL
+const imageMapping = await loadImageMapping();
+const itemsWithDisplay = validItems.map((item) => ({
+  ...item,
+  image: processImageForDisplay(item.image, imageMapping)
+}));
+
 // 格式化日期
 const formatDate = (dateString: string | undefined) => {
   if (!dateString) return '';
@@ -35,7 +43,7 @@ const formatDate = (dateString: string | undefined) => {
 ---
 
 <div class="space-y-8">
-  {validItems.map((item) => (
+  {itemsWithDisplay.map((item) => (
     <article class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
       <div class="flex flex-col md:flex-row">
         <!-- 左侧图片 -->
