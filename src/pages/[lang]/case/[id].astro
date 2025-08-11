@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 export const revalidate = 3600; // 1小时
+import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
 import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
@@ -214,9 +215,11 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, caseItem.title
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/case/${relatedCase.id}`} class="block">
                       <div class="aspect-[5/3] overflow-hidden">
-                        <img 
+                        <Image 
                           src={relatedCase.image} 
                           alt={relatedCase.title}
+                          width={400}
+                          height={240}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"
                           decoding="async"

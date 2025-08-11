@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 export const revalidate = 3600; // 1小时
+import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
 import GridList from '../../../components/templates/common/GridList.astro';
@@ -130,7 +131,7 @@ const validNewsImage = hasNews ? processImageForDisplay(news.image, imageMapping
         <!-- Article Image -->
                         {validNewsImage && (
         <div class="mb-8">
-                <img 
+                <Image 
             src={validNewsImage} 
             alt={news.title || ''} 
             width="800"

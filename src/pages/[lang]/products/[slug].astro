@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
 import ContactButtons from '../../../components/common/contact/ContactButtons.astro';
@@ -115,9 +116,11 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                 >
                   {/* 所有图片 */}
                   {images.map((img, index) => (
-                    <img 
+                    <Image 
                       src={img} 
                       alt={`${product.name} ${index + 1}`}
+                      width={800}
+                      height={400}
                       class="object-contain cursor-crosshair select-none flex-shrink-0"
                       style="width: 100%; height: 100%; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
                       draggable="false"
@@ -153,9 +156,11 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                 style="scroll-behavior: smooth;"
               >
                 {images.map((img, index) => (
-                  <img 
+                  <Image 
                     src={img} 
                     alt={`${product.name} ${index + 1}`}
+                    width={80}
+                    height={80}
                     class={`w-20 h-20 object-cover rounded cursor-pointer flex-shrink-0 thumbnail-img select-none ${index === 0 ? 'border-2 border-red-600' : 'border border-gray-200 hover:border-red-600'}`}
                     data-index={index}
                     data-src={img}
@@ -462,9 +467,11 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                   <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${relatedProduct.slug}`} class="block h-full">
                       <div class="aspect-[3/2] overflow-hidden">
-                        <img 
+                        <Image 
                           src={relatedProduct.displayImage} 
                           alt={relatedProduct.name}
+                          width={400}
+                          height={300}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"
                           decoding="async"
@@ -551,9 +558,11 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${recommended.slug}`} class="block">
                       <div class="aspect-[3/2] overflow-hidden">
-                        <img 
+                        <Image 
                           src={recommended.displayImage} 
                           alt={recommended.name}
+                          width={400}
+                          height={300}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"
                           decoding="async"
