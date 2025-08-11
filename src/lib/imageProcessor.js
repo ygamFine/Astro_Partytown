@@ -1,6 +1,6 @@
 /**
  * 通用图片处理工具
- * 用于处理Strapi图片映射和本地缓存
+ * 用于处理Strapi图片映射和本地缓存，支持 Astro Image 组件
  */
 
 import { generateImageHash } from '../utils/hashUtils.js';
@@ -10,6 +10,41 @@ let EMITTED_URLS = {};
 try {
   EMITTED_URLS = (await import('../data/strapi-image-urls.js')).STRAPI_IMAGE_URLS || {};
 } catch {}
+
+/**
+ * 为 Astro Image 组件创建配置对象
+ * @param {string} imageData - 图片数据
+ * @param {Object} options - 配置选项
+ * @returns {Object} Astro Image 配置对象
+ */
+export function createAstroImageConfig(imageData, options = {}) {
+  const {
+    alt = '',
+    width = 800,
+    height = 600,
+    loading = 'lazy',
+    decoding = 'async',
+    fetchpriority = 'auto',
+    class: className = '',
+    style = '',
+    ...rest
+  } = options;
+
+  const src = processImageForDisplay(imageData);
+  
+  return {
+    src,
+    alt,
+    width,
+    height,
+    loading,
+    decoding,
+    fetchpriority,
+    class: className,
+    style,
+    ...rest
+  };
+}
 
 function resolveEmittedUrlSync(fileNameOrHash, fallback) {
   const table = EMITTED_URLS;

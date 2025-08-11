@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 // 使用public目录中的图片
 const skid1Image = '/images/skid1-400.webp';
 const backhoeImage = '/images/backhoe-400.webp';
@@ -14,7 +16,7 @@ const telescopicImage = '/images/telescopic-400.webp';
       <!-- 产品1 -->
       <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <div class="product-image-container">
-          <img 
+          <Image 
             src={skid1Image}
             alt="滑移装载机" 
             width={400}
@@ -61,7 +63,7 @@ const telescopicImage = '/images/telescopic-400.webp';
       <!-- 产品2 -->
       <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <div class="product-image-container">
-          <img 
+          <Image 
             src={backhoeImage}
             alt="挖掘装载机" 
             width={400}
@@ -107,7 +109,7 @@ const telescopicImage = '/images/telescopic-400.webp';
       <!-- 产品3 -->
       <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative">
         <div class="product-image-container">
-          <img 
+          <Image 
             src={telescopicImage}
             alt="伸缩臂叉车" 
             width={400}

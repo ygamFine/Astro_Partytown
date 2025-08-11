@@ -97,7 +97,10 @@ async function findImageFiles(dir, extensions = ['.jpg', '.jpeg', '.png']) {
         const fullPath = path.join(currentDir, entry.name);
         
         if (entry.isDirectory()) {
-          await scanDirectory(fullPath);
+          // 跳过 node_modules 和 .git 目录
+          if (!entry.name.startsWith('.') && entry.name !== 'node_modules') {
+            await scanDirectory(fullPath);
+          }
         } else if (entry.isFile()) {
           const ext = path.extname(entry.name).toLowerCase();
           if (extensions.includes(ext)) {
@@ -173,10 +176,11 @@ async function main() {
     return !inOptimizedDir && !alreadyMobileNamed;
   });
   
-  // 过滤出大图（banner等）
+  // 过滤出大图（banner等），只处理真正需要移动端版本的图片
   const largeImages = filteredCandidates.filter(file => {
     const name = path.basename(file).toLowerCase();
-    return (name.includes('banner') || name.includes('hero') || name.includes('strapi')) && !name.includes('-mobile');
+    // 只处理 banner 和 hero 图片，跳过 strapi 图片（通常不需要移动端版本）
+    return (name.includes('banner') || name.includes('hero')) && !name.includes('-mobile');
   });
   
   console.log(`找到 ${largeImages.length} 个大图需要生成移动端版本`);
@@ -209,7 +213,7 @@ async function main() {
   // 检查关键图片
   const criticalImages = [
     'public/images/logo.png.webp',
-    'public/main-product.svg'
+    'public/images/main-product.svg'
   ];
   
   let missingCount = 0;

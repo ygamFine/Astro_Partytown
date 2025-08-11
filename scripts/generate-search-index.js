@@ -32,27 +32,17 @@ async function generateSearchIndexFile() {
 
     
     // 验证数据质量
-    let validProducts = 0;
-    let validNews = 0;
-    let validCases = 0;
+    const validProducts = searchData.products.filter(product => 
+      product.title && product.title !== `产品 ${product.id}`
+    ).length;
     
-    searchData.products.forEach(product => {
-      if (product.title && product.title !== `产品 ${product.id}`) {
-        validProducts++;
-      }
-    });
+    const validNews = searchData.news.filter(news => 
+      news.title && news.title !== `新闻 ${news.id}`
+    ).length;
     
-    searchData.news.forEach(news => {
-      if (news.title && news.title !== `新闻 ${news.id}`) {
-        validNews++;
-      }
-    });
-    
-    searchData.cases.forEach(caseItem => {
-      if (caseItem.title && caseItem.title !== `案例 ${caseItem.id}`) {
-        validCases++;
-      }
-    });
+    const validCases = searchData.cases.filter(caseItem => 
+      caseItem.title && caseItem.title !== `案例 ${caseItem.id}`
+    ).length;
     
 
     

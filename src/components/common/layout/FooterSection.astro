@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import SocialIcons from '../social/SocialIcons.astro';
 import { themeConfig } from '../../../config/theme.js';
 // 使用public目录中的图片
@@ -17,7 +18,7 @@ const logoImage = '/images/logo.png.webp';
         
         <!-- Company Logo -->
         <div class="mt-8">
-          <img 
+          <Image 
             src={logoImage}
             alt="TEVIS Logo" 
             width={120}

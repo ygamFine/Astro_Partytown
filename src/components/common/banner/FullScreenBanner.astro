@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 // 使用public目录中的图片
 const banner3Image = '/images/banner3.webp';
 const banner222Image = '/images/banner222.webp';
@@ -15,7 +17,7 @@ const bannerImage = '/images/banner.webp';
   <div class="banner-carousel">
     <!-- Banner 1 - 默认显示 -->
     <div class="banner-slide active">
-      <img 
+      <Image 
         src={banner3Image}
         alt="专业滑移装载机制造商"
         width={1440}
@@ -30,7 +32,7 @@ const bannerImage = '/images/banner.webp';
     
     <!-- Banner 2 -->
     <div class="banner-slide">
-      <img 
+      <Image 
         src={banner222Image}
         alt="高品质工程机械设备"
         width={1440}
@@ -44,7 +46,7 @@ const bannerImage = '/images/banner.webp';
     
     <!-- Banner 3 -->
     <div class="banner-slide">
-      <img 
+      <Image 
         src={bannerImage}
         alt="值得信赖的合作伙伴"
         width={1440}

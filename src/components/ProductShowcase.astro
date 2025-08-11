@@ -1,9 +1,12 @@
 ---
+import { Image } from 'astro:assets';
+
 // 使用public目录中的图片
-const backhoeImage = '/backhoe.webp';
-const skid1Image = '/skid1.webp';
-const telescopicImage = '/telescopic.webp';
+const backhoeImage = '/images/backhoe.webp';
+const skid1Image = '/images/skid1.webp';
+const telescopicImage = '/images/telescopic.webp';
 const logoImage = '/images/logo.png.webp';
+---
 ---
 
 <section class="product-showcase">
@@ -31,7 +34,7 @@ const logoImage = '/images/logo.png.webp';
         <div class="product-thumbnails">
         <div class="product-item active animate-fade-left animate-delay-400" data-index="0">
           <div class="overflow-hidden">
-            <img 
+            <Image 
               src={backhoeImage}
               alt="Backhoe Loader" 
               width={200}
@@ -46,7 +49,7 @@ const logoImage = '/images/logo.png.webp';
         </div>
         <div class="product-item animate-fade-left animate-delay-500" data-index="1">
           <div class="overflow-hidden">
-            <img 
+            <Image 
               src={skid1Image}
               alt="Skid Steer Loader" 
               width={200}
@@ -61,7 +64,7 @@ const logoImage = '/images/logo.png.webp';
         </div>
         <div class="product-item animate-fade-left animate-delay-600" data-index="2">
           <div class="overflow-hidden">
-            <img 
+            <Image 
               src={telescopicImage}
               alt="Telescopic Forklift" 
               width={200}
@@ -81,7 +84,7 @@ const logoImage = '/images/logo.png.webp';
       <div class="product-main-display animate-fade-right animate-delay-400">
         <div class="main-image-container overflow-hidden">
           <div class="tevis-watermark">TEVIS</div>
-          <img 
+          <Image 
             id="mainProductImage" 
             src={backhoeImage}
             alt="Main Product" 
@@ -355,15 +358,15 @@ h2 {
     // 产品数据
     const products = [
       {
-        image: '/backhoe.webp',
+        image: '/images/backhoe.webp',
         alt: 'Backhoe Loader'
       },
       {
-        image: '/skid1.webp', 
+        image: '/images/skid1.webp', 
         alt: 'Skid Steer Loader'
       },
       {
-        image: '/telescopic.webp',
+        image: '/images/telescopic.webp',
         alt: 'Telescopic Forklift'
       }
     ];

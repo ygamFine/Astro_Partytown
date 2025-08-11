@@ -55,7 +55,7 @@ Allow: /ko/
 # 允许访问静态资源
 Allow: /images/
 Allow: /_astro/
-Allow: /favicon.svg
+Allow: /images/favicon.svg
 
 # 禁止访问管理后台和API
 Disallow: /admin/

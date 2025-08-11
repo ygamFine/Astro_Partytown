@@ -1,12 +1,14 @@
 ---
+import { Image } from 'astro:assets';
+
 // 使用public目录中的图片
-const factoryImage = '/factory.webp';
+const factoryImage = '/images/factory.webp';
 ---
 
 <section class="relative min-h-screen flex items-center overflow-hidden animate-fade-up">
   <!-- 背景图片 -->
   <div class="absolute inset-0">
-    <img 
+    <Image 
       src={factoryImage}
       alt="Factory Workshop" 
       width={1920}

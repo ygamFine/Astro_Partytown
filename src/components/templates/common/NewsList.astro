@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 
 interface Props {
   items: Array<{
@@ -49,7 +50,7 @@ const formatDate = (dateString: string | undefined) => {
         <!-- 左侧图片 -->
         <div class="md:w-96 md:flex-shrink-0 overflow-hidden">
           <a href={item.href} class="block aspect-[4/3] group">
-            <img 
+            <Image 
               src={item.image} 
               alt={item.title || ''}
               width="400"

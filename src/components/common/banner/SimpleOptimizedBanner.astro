@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+---
+
+<!-- 简单的优化图片示例 -->
+<section class="simple-banner">
+  <div class="banner-content">
+    <Image 
+      src="/images/banner.webp"
+      alt="专业滑移装载机制造商"
+      width={1440}
+      height={600}
+      loading="eager"
+      fetchpriority="high"
+      decoding="sync"
+      class="banner-image"
+      style="width: 100%; height: 400px; object-fit: cover; object-position: center;"
+    />
+    
+    <div class="banner-overlay">
+      <h1 class="banner-title">专业滑移装载机制造商</h1>
+      <p class="banner-subtitle">值得信赖的合作伙伴</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .simple-banner {
+    @apply relative overflow-hidden;
+  }
+  
+  .banner-content {
+    @apply relative;
+  }
+  
+  .banner-image {
+    @apply transition-transform duration-300 ease-in-out;
+  }
+  
+  .banner-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white;
+  }
+  
+  .banner-title {
+    @apply text-4xl md:text-6xl font-bold mb-4 text-center;
+  }
+  
+  .banner-subtitle {
+    @apply text-xl md:text-2xl text-center;
+  }
+</style>

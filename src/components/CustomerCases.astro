@@ -1,8 +1,10 @@
 ---
+import { Image } from 'astro:assets';
+
 // 使用public目录中的图片
-const case1Image = '/case1.webp';
-const case2Image = '/case2.webp';
-const case3Image = '/case3.webp';
+const case1Image = '/images/case1.webp';
+const case2Image = '/images/case2.webp';
+const case3Image = '/images/case3.webp';
 // Customer cases data could be imported from a separate file
 ---
 
@@ -42,7 +44,7 @@ const case3Image = '/case3.webp';
           <div class="flex-none w-full md:w-1/3 px-3">
             <div class="bg-white rounded-lg overflow-hidden shadow-lg card-hover-animate animate-fade-up animate-delay-400">
               <div class="h-80 bg-gray-200 overflow-hidden">
-                <img 
+                <Image 
                   src={case1Image}
                   alt="Shiphold Sand Cleaning" 
                   width={400}
@@ -64,7 +66,7 @@ const case3Image = '/case3.webp';
           <div class="flex-none w-full md:w-1/3 px-3">
             <div class="bg-white rounded-lg overflow-hidden shadow-lg card-hover-animate animate-fade-up animate-delay-500">
               <div class="h-80 bg-gray-200 overflow-hidden">
-                <img 
+                <Image 
                   src={case2Image}
                   alt="Saudi Delegation Visits" 
                   width={400}
@@ -86,7 +88,7 @@ const case3Image = '/case3.webp';
           <div class="flex-none w-full md:w-1/3 px-3">
             <div class="bg-white rounded-lg overflow-hidden shadow-lg card-hover-animate animate-fade-up animate-delay-600">
               <div class="h-80 bg-gray-200 overflow-hidden">
-                <img 
+                <Image 
                   src={case3Image}
                   alt="Dutch Farms Operation" 
                   width={400}
@@ -108,7 +110,7 @@ const case3Image = '/case3.webp';
           <div class="flex-none w-full md:w-1/3 px-3">
             <div class="bg-white rounded-lg overflow-hidden shadow-lg card-hover-animate">
               <div class="h-80 bg-gray-200 overflow-hidden">
-                <img 
+                <Image 
                   src={case1Image}
                   alt="Another Case" 
                   width={400}
