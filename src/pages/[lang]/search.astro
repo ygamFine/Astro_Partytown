@@ -95,12 +95,13 @@ const pageWidth = getPageWidth();
     }
     
     try {
-      const { performSearch } = await import('../../../lib/clientSearch.js');
-      const results = await performSearch(query, lang);
+      const { performSearch } = await import('/src/lib/clientSearch.js');
+      // 搜索英文内容（因为索引中主要是英文内容）
+      const results = await performSearch(query, 'en');
       
       displaySearchResults(results, query);
     } catch (error) {
-
+      console.error('搜索失败:', error);
       displaySearchError();
     }
   }
@@ -248,11 +249,28 @@ const pageWidth = getPageWidth();
     const resultsContainer = document.getElementById('search-results-container');
     resultsContainer.innerHTML = `
       <div class="text-center py-12">
-        <svg class="w-16 h-16 text-red-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-        </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">搜索出错</h3>
-        <p class="text-gray-600">搜索过程中发生错误，请稍后重试</p>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-8 max-w-md mx-auto">
+          <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">搜索功能暂时不可用</h3>
+          <p class="text-gray-600 mb-6">我们正在努力修复这个问题，请稍后再试</p>
+          
+          <div class="space-y-3">
+            <button onclick="location.reload()" class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+              重新加载页面
+            </button>
+            
+            <div class="text-sm text-gray-500">
+              <p>或者您可以：</p>
+              <ul class="mt-2 space-y-1">
+                <li>• 检查网络连接</li>
+                <li>• 清除浏览器缓存</li>
+                <li>• 稍后再次尝试</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }

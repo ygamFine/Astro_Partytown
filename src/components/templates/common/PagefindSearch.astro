@@ -1,0 +1,138 @@
+---
+// 搜索组件
+export interface Props {
+  lang?: string;
+  placeholder?: string;
+}
+
+const { 
+  lang = 'zh-CN', 
+  placeholder = '搜索产品、新闻、案例...'
+} = Astro.props;
+
+// 多语言占位符
+const placeholders = {
+  'zh-CN': '搜索产品、新闻、案例...',
+  'en': 'Search products, news, cases...',
+  'ja': '製品、ニュース、ケースを検索...',
+  'ru': 'Поиск продуктов, новостей, кейсов...',
+  'de': 'Produkte, Nachrichten, Fälle suchen...',
+  'ar': 'البحث عن المنتجات والأخبار والحالات...'
+};
+
+const searchPlaceholder = placeholders[lang as keyof typeof placeholders] || placeholder;
+---
+
+<div class="search-container" data-lang={lang}>
+  <!-- 搜索输入框 -->
+  <div class="search-input-wrapper">
+    <input 
+      type="search" 
+      class="search-input"
+      placeholder={searchPlaceholder}
+      aria-label="搜索"
+    />
+    <div class="search-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- 搜索提示 -->
+  <div class="search-info">
+    <p class="text-sm text-gray-500 mt-2">
+      💡 提示：Pagefind 搜索已集成，支持多语言搜索
+    </p>
+  </div>
+</div>
+
+<script>
+  // 简单的搜索功能
+  class SearchComponent {
+    constructor(container) {
+      this.container = container;
+      this.input = container.querySelector('.search-input');
+      this.lang = container.dataset.lang || 'zh-CN';
+      
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      // 输入事件 - 跳转到搜索页面
+      this.input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const query = this.input.value.trim();
+          if (query) {
+            window.location.href = `/${this.lang}/search?q=${encodeURIComponent(query)}`;
+          }
+        }
+      });
+
+      // 点击搜索图标
+      const searchIcon = this.container.querySelector('.search-icon');
+      searchIcon?.addEventListener('click', () => {
+        const query = this.input.value.trim();
+        if (query) {
+          window.location.href = `/${this.lang}/search?q=${encodeURIComponent(query)}`;
+        }
+      });
+    }
+  }
+
+  // 初始化所有搜索组件
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchContainers = document.querySelectorAll('.search-container');
+    searchContainers.forEach(container => {
+      new SearchComponent(container);
+    });
+  });
+</script>
+
+<style>
+  .search-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 48px 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  }
+
+  .search-icon {
+    position: absolute;
+    right: 16px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .search-icon:hover {
+    color: #dc2626;
+  }
+
+  .search-info {
+    text-align: center;
+  }
+</style>

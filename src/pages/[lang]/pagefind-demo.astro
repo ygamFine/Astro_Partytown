@@ -1,0 +1,100 @@
+---
+export const prerender = true;
+import { generateStaticPaths } from '../../lib/i18n-routes.js';
+import Layout from '../../layouts/Layout.astro';
+import PagefindSearch from '../../components/templates/common/PagefindSearch.astro';
+import getDictionary from '../../i18n/dictionaries.js';
+
+// 使用 Astro 内置的 i18n 路由
+export async function getStaticPaths() {
+  return generateStaticPaths();
+}
+
+const { lang } = Astro.params;
+const t = getDictionary(lang);
+---
+
+<Layout title="Pagefind 搜索演示" description="Pagefind 静态搜索功能演示" lang={lang}>
+  <div class="min-h-screen bg-gray-50">
+    <!-- 页面头部 -->
+    <div class="bg-white shadow-sm">
+      <div class="container mx-auto px-4 py-16">
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            Pagefind 搜索演示
+          </h1>
+          <p class="text-xl text-gray-600 mb-8">
+            体验强大的静态网站搜索功能
+          </p>
+          
+          <!-- Pagefind 搜索组件 -->
+          <div class="max-w-2xl mx-auto">
+            <PagefindSearch lang={lang} />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 功能特性 -->
+    <div class="container mx-auto px-4 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">闪电般快速</h3>
+          <p class="text-gray-600">客户端搜索，毫秒级响应，无需网络请求</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">多语言支持</h3>
+          <p class="text-gray-600">支持中文、英文、日文、俄文、德文、阿拉伯文</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">零配置</h3>
+          <p class="text-gray-600">开箱即用，自动索引，无需复杂设置</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 搜索统计 -->
+    <div class="bg-white border-t">
+      <div class="container mx-auto px-4 py-12">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold text-gray-900 mb-8">搜索统计</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <div class="text-3xl font-bold text-red-600 mb-2">82</div>
+              <div class="text-gray-600">索引页面</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-blue-600 mb-2">6</div>
+              <div class="text-gray-600">支持语言</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-green-600 mb-2">2,908</div>
+              <div class="text-gray-600">索引词汇</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-purple-600 mb-2">0.7s</div>
+              <div class="text-gray-600">索引时间</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
