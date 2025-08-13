@@ -7,6 +7,7 @@ import enNews from './locales/en/news.json';
 import enContact from './locales/en/contact.json';
 import enProduct from './locales/en/product.json';
 import enForm from './locales/en/form.json';
+import enSearch from './locales/en/search.json';
 import zhCNCommon from './locales/zh-CN/common.json';
 import zhCNBreadcrumb from './locales/zh-CN/breadcrumb.json';
 import zhCNAbout from './locales/zh-CN/about.json';
@@ -15,6 +16,7 @@ import zhCNNews from './locales/zh-CN/news.json';
 import zhCNContact from './locales/zh-CN/contact.json';
 import zhCNProduct from './locales/zh-CN/product.json';
 import zhCNForm from './locales/zh-CN/form.json';
+import zhCNSearch from './locales/zh-CN/search.json';
 
 // 翻译数据映射
 const translationData: Record<string, Record<string, any>> = {
@@ -26,7 +28,8 @@ const translationData: Record<string, Record<string, any>> = {
     'news': enNews,
     'contact': enContact,
     'product': enProduct,
-    'form': enForm
+    'form': enForm,
+    'search': enSearch
   },
   'zh-CN': {
     'common': zhCNCommon,
@@ -36,7 +39,8 @@ const translationData: Record<string, Record<string, any>> = {
     'news': zhCNNews,
     'contact': zhCNContact,
     'product': zhCNProduct,
-    'form': zhCNForm
+    'form': zhCNForm,
+    'search': zhCNSearch
   }
 };
 
@@ -93,6 +97,25 @@ export default function getDictionary(lang: string): any {
         title: getTranslation(lang, 'contact', 'form.title'),
         description: getTranslation(lang, 'contact', 'form.description'),
       },
+    },
+    
+    // 搜索页面
+    search: {
+      title: getTranslation(lang, 'search', 'title'),
+      description: getTranslation(lang, 'search', 'description'),
+      placeholder: getTranslation(lang, 'search', 'placeholder'),
+      noResults: getTranslation(lang, 'search', 'noResults'),
+      noResultsDescription: getTranslation(lang, 'search', 'noResultsDescription'),
+      searchError: getTranslation(lang, 'search', 'searchError'),
+      searchErrorDescription: getTranslation(lang, 'search', 'searchErrorDescription'),
+      retry: getTranslation(lang, 'search', 'retry'),
+      clearSearch: getTranslation(lang, 'search', 'clearSearch'),
+      loadMore: getTranslation(lang, 'search', 'loadMore'),
+      results: getTranslation(lang, 'search', 'results'),
+      resultsFor: getTranslation(lang, 'search', 'resultsFor'),
+      showingResults: getTranslation(lang, 'search', 'showingResults'),
+      filters: getTranslation(lang, 'search', 'filters'),
+      filterBy: getTranslation(lang, 'search', 'filterBy')
     },
     
     // 产品页面

@@ -1,0 +1,17 @@
+{
+  "title": "البحث في الموقع",
+  "description": "البحث في المنتجات والأخبار والحالات الدراسية ومحتوى الموقع الآخر",
+  "placeholder": "أدخل كلمات البحث...",
+  "noResults": "لم يتم العثور على نتائج",
+  "noResultsDescription": "جرب كلمات مفتاحية مختلفة أو تحقق من التهجئة",
+  "searchError": "حدث خطأ في البحث",
+  "searchErrorDescription": "يرجى المحاولة مرة أخرى لاحقاً",
+  "retry": "إعادة المحاولة",
+  "clearSearch": "مسح البحث",
+  "loadMore": "تحميل المزيد من النتائج",
+  "results": "نتائج البحث",
+  "resultsFor": "نتائج البحث لـ \"{{query}}\"",
+  "showingResults": "عرض النتائج {{from}} إلى {{to}} من {{total}}",
+  "filters": "المرشحات",
+  "filterBy": "تصفية حسب {{filter}}"
+}

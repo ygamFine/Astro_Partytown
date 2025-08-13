@@ -1,0 +1,17 @@
+{
+  "title": "Site Search",
+  "description": "Search products, news, cases and other site content",
+  "placeholder": "Enter search keywords...",
+  "noResults": "No results found",
+  "noResultsDescription": "Please try different keywords or check spelling",
+  "searchError": "Search error occurred",
+  "searchErrorDescription": "Please try again later",
+  "retry": "Retry",
+  "clearSearch": "Clear search",
+  "loadMore": "Load more results",
+  "results": "Search results",
+  "resultsFor": "Search results for \"{{query}}\"",
+  "showingResults": "Showing results {{from}} to {{to}} of {{total}}",
+  "filters": "Filters",
+  "filterBy": "Filter by {{filter}}"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "サイト検索",
+  "description": "製品、ニュース、事例などのサイトコンテンツを検索",
+  "placeholder": "検索キーワードを入力...",
+  "noResults": "結果が見つかりません",
+  "noResultsDescription": "別のキーワードを試すか、スペルを確認してください",
+  "searchError": "検索エラーが発生しました",
+  "searchErrorDescription": "後でもう一度お試しください",
+  "retry": "再試行",
+  "clearSearch": "検索をクリア",
+  "loadMore": "さらに結果を読み込む",
+  "results": "検索結果",
+  "resultsFor": "\"{{query}}\" の検索結果",
+  "showingResults": "{{total}}件中 {{from}}〜{{to}}件を表示",
+  "filters": "フィルター",
+  "filterBy": "{{filter}}でフィルター"
+}

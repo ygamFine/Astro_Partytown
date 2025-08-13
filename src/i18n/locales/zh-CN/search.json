@@ -1,0 +1,17 @@
+{
+  "title": "全站搜索",
+  "description": "搜索产品、新闻、案例等全站内容",
+  "placeholder": "输入搜索关键词...",
+  "noResults": "未找到相关结果",
+  "noResultsDescription": "请尝试使用不同的关键词或检查拼写",
+  "searchError": "搜索时发生错误",
+  "searchErrorDescription": "请稍后重试",
+  "retry": "重试",
+  "clearSearch": "清除搜索",
+  "loadMore": "加载更多结果",
+  "results": "搜索结果",
+  "resultsFor": "搜索 \"{{query}}\" 的结果",
+  "showingResults": "显示第 {{from}} 到 {{to}} 个结果，共 {{total}} 个",
+  "filters": "筛选器",
+  "filterBy": "按 {{filter}} 筛选"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Website-Suche",
+  "description": "Durchsuchen Sie Produkte, Nachrichten, Fallstudien und andere Website-Inhalte",
+  "placeholder": "Suchbegriffe eingeben...",
+  "noResults": "Keine Ergebnisse gefunden",
+  "noResultsDescription": "Versuchen Sie andere Schlüsselwörter oder überprüfen Sie die Schreibweise",
+  "searchError": "Suchfehler aufgetreten",
+  "searchErrorDescription": "Versuchen Sie es später erneut",
+  "retry": "Wiederholen",
+  "clearSearch": "Suche löschen",
+  "loadMore": "Weitere Ergebnisse laden",
+  "results": "Suchergebnisse",
+  "resultsFor": "Suchergebnisse für \"{{query}}\"",
+  "showingResults": "Zeige Ergebnisse {{from}} bis {{to}} von {{total}}",
+  "filters": "Filter",
+  "filterBy": "Filtern nach {{filter}}"
+}
