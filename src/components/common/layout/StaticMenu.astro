@@ -132,7 +132,7 @@ try {
 
   <!-- 右侧功能区 -->
   <div class="flex items-center space-x-4">
-    <!-- 搜索框 -->
+    <!-- Pagefind 搜索框 -->
     <div class="relative" id="header-search-container">
       <input 
         type="text" 
@@ -152,14 +152,14 @@ try {
         </svg>
       </button>
       
-      <!-- 搜索结果下拉框 -->
+      <!-- Pagefind 搜索结果下拉框 -->
       <div 
         id="header-search-results" 
         class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
         style="width: 30rem;"
       >
         <div id="header-search-results-content" class="p-2">
-          <!-- 搜索结果将在这里显示 -->
+          <!-- Pagefind 搜索结果将在这里显示 -->
         </div>
       </div>
     </div>
@@ -553,140 +553,34 @@ try {
     initHeaderSearch();
   }
   
-  // 头部搜索功能
+  // 简单的头部搜索功能
   function initHeaderSearch() {
     const searchInput = document.getElementById('header-search-input') as HTMLInputElement;
     const searchButton = document.getElementById('header-search-button');
-    const searchResults = document.getElementById('header-search-results');
-    const searchResultsContent = document.getElementById('header-search-results-content');
     
-    if (!searchInput || !searchButton || !searchResults || !searchResultsContent) {
+    if (!searchInput || !searchButton) {
       return;
     }
-    
-    let debounceTimer: NodeJS.Timeout | null = null;
     
     // 获取当前语言
     const currentLang = window.location.pathname.split('/')[1] || 'en';
     
-    // 执行搜索
-    async function performSearch(query: string) {
-      if (!query || query.trim() === '') {
-        hideResults();
-        return;
-      }
-      
-      try {
-        const { performSearch: searchFunction } = await import('../../../lib/clientSearch.js');
-        const results = await searchFunction(query, currentLang);
-        displayResults(results, query);
-      } catch (error) {
-        console.error('Search error:', error);
-        hideResults();
-      }
-    }
-    
-    // 显示搜索结果
-    function displayResults(results: any[], query: string) {
-      if (!searchResultsContent) return;
-      
-      if (results.length === 0) {
-        searchResultsContent.innerHTML = `
-          <div class="p-4 text-center text-gray-500">
-            <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
-            </svg>
-            <p>No results found for "${query}"</p>
-          </div>
-        `;
-      } else {
-        searchResultsContent.innerHTML = results.slice(0, 5).map(item => `
-          <a href="${item.url}" class="block p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
-            <div class="flex items-start space-x-3">
-              <div class="flex-shrink-0">
-                <img src="${item.image}" alt="${item.title || ''}" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-medium text-gray-900 truncate">${highlightText(item.title, query)}</h4>
-                <p class="text-xs text-gray-500 mt-1 line-clamp-2">${highlightText(item.excerpt, query)}</p>
-                <div class="flex items-center mt-2 space-x-2">
-                  <span class="inline-block text-xs px-2 py-1 rounded ${getCategoryColor(item.type)}">${getCategoryLabel(item.type)}</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        `).join('');
-      }
-      
-      showResults();
-    }
-    
-    // 高亮文本
-    function highlightText(text: string, query: string) {
-      if (!query || !text) return text;
-      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-      return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
-    }
-    
-    // 获取分类颜色
-    function getCategoryColor(type: string) {
-      // 使用默认颜色，避免硬编码
-      return 'bg-gray-100 text-gray-600';
-    }
-    
-    // 获取分类标签
-    function getCategoryLabel(type: string) {
-      // 使用默认标签，避免硬编码
-      return type || '其他';
-    }
-    
-    function showResults() {
-      if (searchResults) {
-        searchResults.classList.remove('hidden');
-      }
-    }
-    
-    function hideResults() {
-      if (searchResults) {
-        searchResults.classList.add('hidden');
-      }
-    }
-    
-    // 绑定事件
-    searchInput.addEventListener('input', (e) => {
-      clearTimeout(debounceTimer!);
-      debounceTimer = setTimeout(() => {
-        performSearch((e.target as HTMLInputElement).value.trim());
-      }, 300);
-    });
-    
-    searchButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      const query = searchInput.value.trim();
-      if (query) {
-        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
-      }
-    });
-    
-    // 点击外部关闭搜索结果
-    document.addEventListener('click', (e) => {
-      const container = document.getElementById('header-search-container');
-      if (container && !container.contains(e.target as Node)) {
-        hideResults();
-      }
-    });
-    
-    // 键盘导航
-    searchInput.addEventListener('keydown', (e) => {
+    // 回车键搜索
+    searchInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         const query = searchInput.value.trim();
         if (query) {
           window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
         }
-      } else if (e.key === 'Escape') {
-        hideResults();
-        searchInput.blur();
+      }
+    });
+    
+    // 点击搜索按钮
+    searchButton.addEventListener('click', function() {
+      const query = searchInput.value.trim();
+      if (query) {
+        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
       }
     });
   }

@@ -131,16 +131,28 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, caseItem.title
             <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
               <!-- 案例头部信息 -->
               <header class="mb-8">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{caseItem.title}</h1>
-                <time datetime={caseItem.date} class="text-sm text-gray-500 mb-6 block">{formatDate(caseItem.date)}</time>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight" data-pagefind-title>{caseItem.title}</h1>
+                <time datetime={caseItem.date} class="text-sm text-gray-500 mb-6 block" data-pagefind-date>{formatDate(caseItem.date)}</time>
               </header>
 
               <!-- 案例详细内容 -->
               {caseItem.content && (
-                <div class="mb-8">
+                <div class="mb-8" data-pagefind-content>
                   <RichTextRenderer content={caseItem.content} />
                 </div>
               )}
+              
+              <!-- 案例搜索关键词 -->
+              <div class="mb-4 text-sm text-gray-500" data-pagefind-content>
+                <span>案例类型：{caseItem.industry || '工程机械'} | 项目案例 | 客户案例 | 新的案例 | 最新案例</span>
+              </div>
+              
+              <!-- 案例元数据 -->
+              <div class="hidden" data-pagefind-category="case">
+                <span data-pagefind-tags="案例,客户案例,项目案例,工程案例,新的,最新,新型,新产品,新技术">{caseItem.industry || '工程机械'}</span>
+                <span data-pagefind-tags="案例,客户案例,项目案例,工程案例,新的,最新,新型,新产品,新技术">{caseItem.title}</span>
+                <span data-pagefind-tags="案例,客户案例,项目案例,工程案例,新的,最新,新型,新产品,新技术">{caseItem.excerpt || ''}</span>
+              </div>
             </div>
 
             <!-- Previous/Next 导航 -->

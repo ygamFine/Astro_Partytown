@@ -48,6 +48,12 @@ export default defineConfig({
     assets: '_astro',
   },
   
+  // 静态资源配置
+  publicDir: 'public',
+  
+  // 输出配置
+  output: 'static',
+  
   vite: {
     build: {
       rollupOptions: {

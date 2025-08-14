@@ -501,6 +501,23 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       });
     </script>
 
+    <!-- Pagefind 搜索初始化 -->
+    <script>
+      // 全局 Pagefind 搜索功能
+      window.addEventListener('load', async function() {
+        // 延迟加载 Pagefind，避免阻塞页面渲染
+        setTimeout(async () => {
+          try {
+            // 预加载 Pagefind 脚本
+            await import('@pagefind/default-ui');
+            console.log('Pagefind 预加载完成');
+          } catch (error) {
+            console.warn('Pagefind 预加载失败:', error);
+          }
+        }, 2000); // 2秒后预加载
+      });
+    </script>
+
     <!-- 简单动画系统 -->
     <script is:inline>
       // 简单的动画系统

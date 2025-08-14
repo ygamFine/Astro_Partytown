@@ -1,97 +1,213 @@
 ---
-// 搜索组件
 export interface Props {
   lang?: string;
   placeholder?: string;
+  showInfo?: boolean;
+  initialQuery?: string;
+  showResults?: boolean;
 }
 
 const { 
   lang = 'zh-CN', 
-  placeholder = '搜索产品、新闻、案例...'
+  placeholder = '搜索产品、新闻、案例...',
+  showInfo = true,
+  initialQuery = '',
+  showResults = true
 } = Astro.props;
 
 // 多语言占位符
-const placeholders = {
+const searchPlaceholder = {
   'zh-CN': '搜索产品、新闻、案例...',
   'en': 'Search products, news, cases...',
   'ja': '製品、ニュース、ケースを検索...',
   'ru': 'Поиск продуктов, новостей, кейсов...',
   'de': 'Produkte, Nachrichten, Fälle suchen...',
   'ar': 'البحث عن المنتجات والأخبار والحالات...'
-};
+}[lang] || placeholder;
 
-const searchPlaceholder = placeholders[lang as keyof typeof placeholders] || placeholder;
+// 多语言提示信息
+const searchInfo = {
+  'zh-CN': '💡 提示：输入关键词后按回车键搜索',
+  'en': '💡 Tip: Enter keywords and press Enter to search',
+  'ja': '💡 ヒント：キーワードを入力してEnterキーを押して検索',
+  'ru': '💡 Подсказка: Введите ключевые слова и нажмите Enter для поиска',
+  'de': '💡 Tipp: Geben Sie Schlüsselwörter ein und drücken Sie Enter zum Suchen',
+  'ar': '💡 نصيحة: أدخل الكلمات المفتاحية واضغط Enter للبحث'
+}[lang] || '💡 提示：输入关键词后按回车键搜索';
 ---
 
-<div class="search-container" data-lang={lang}>
-  <!-- 搜索输入框 -->
+<div class="pagefind-search-container" data-lang={lang}>
+  <!-- Pagefind 搜索输入框 -->
   <div class="search-input-wrapper">
     <input 
       type="search" 
       class="search-input"
       placeholder={searchPlaceholder}
       aria-label="搜索"
+      id="pagefind-search-input"
+      value={initialQuery || ''}
     />
-    <div class="search-icon">
+    <div class="search-icon" id="pagefind-search-icon">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
     </div>
   </div>
 
+
   <!-- 搜索提示 -->
-  <div class="search-info">
-    <p class="text-sm text-gray-500 mt-2">
-      💡 提示：Pagefind 搜索已集成，支持多语言搜索
-    </p>
-  </div>
+  {showInfo && (
+    <div class="search-info">
+      <p class="text-sm text-gray-500 mt-2">
+        {searchInfo}
+      </p>
+    </div>
+  )}
 </div>
 
 <script>
-  // 简单的搜索功能
-  class SearchComponent {
-    constructor(container) {
-      this.container = container;
-      this.input = container.querySelector('.search-input');
-      this.lang = container.dataset.lang || 'zh-CN';
-      
-      this.bindEvents();
+  // Pagefind 搜索功能
+  document.addEventListener('DOMContentLoaded', async function() {
+    const searchInput = document.getElementById('pagefind-search-input') as HTMLInputElement;
+    const searchIcon = document.getElementById('pagefind-search-icon');
+    const resultsContainer = document.getElementById('pagefind-results');
+    const langContainer = document.querySelector('.pagefind-search-container') as HTMLElement;
+    const lang = langContainer?.dataset.lang || 'zh-CN';
+    
+    if (!searchInput) return;
+    
+    // 从URL参数设置搜索值
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q') || '';
+    if (query) {
+      searchInput.value = query;
     }
-
-    bindEvents() {
-      // 输入事件 - 跳转到搜索页面
-      this.input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const query = this.input.value.trim();
-          if (query) {
-            window.location.href = `/${this.lang}/search?q=${encodeURIComponent(query)}`;
+    
+    // 尝试加载 Pagefind
+    let pagefind: any = null;
+    try {
+      // 动态导入 Pagefind
+      const { PagefindUI } = await import('@pagefind/default-ui');
+      
+      if (resultsContainer) {
+        // 初始化 Pagefind UI
+        pagefind = new PagefindUI({
+          element: resultsContainer,
+          showImages: true,
+          translations: {
+            placeholder: "搜索产品、新闻、案例...",
+            clear_search: "清除搜索",
+            load_more: "加载更多结果",
+            search_result: "搜索结果",
+            search_results: "搜索结果",
+            search_results_for: "搜索 \"{query}\" 的结果",
+            show_more: "显示更多",
+            show_less: "显示更少",
+            clear_filters: "清除筛选",
+            no_results: "没有找到结果",
+            no_results_for: "没有找到 \"{query}\" 的结果"
+          },
+          processResult: (result: any) => {
+            // 自定义结果处理
+            return {
+              ...result,
+              meta: {
+                ...result.meta,
+                // 添加语言信息
+                lang: lang
+              }
+            };
+          }
+        });
+        
+        // 设置初始搜索查询
+        if (query) {
+          pagefind.triggerSearch(query);
+        }
+      }
+    } catch (error) {
+      console.warn('Pagefind 加载失败，使用备用搜索:', error);
+      // 备用搜索功能
+      initFallbackSearch();
+    }
+    
+    // 搜索输入处理
+    let searchTimeout: NodeJS.Timeout | null = null;
+    searchInput.addEventListener('input', function(e) {
+      const target = e.target as HTMLInputElement;
+      const query = target.value.trim();
+      
+      // 清除之前的超时
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+      
+      // 延迟搜索，避免频繁请求
+      searchTimeout = setTimeout(() => {
+        if (pagefind && query) {
+          pagefind.triggerSearch(query);
+        } else if (pagefind) {
+          pagefind.triggerSearch('');
+        }
+      }, 300);
+    });
+    
+    // 回车键搜索
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query) {
+          if (pagefind) {
+            pagefind.triggerSearch(query);
+          } else {
+            // 备用搜索：跳转到搜索页面
+            window.location.href = `/${lang}/search?q=${encodeURIComponent(query)}`;
+          }
+        }
+      }
+    });
+    
+    // 点击搜索图标
+    if (searchIcon) {
+      searchIcon.addEventListener('click', function() {
+        const query = searchInput.value.trim();
+        if (query) {
+          if (pagefind) {
+            pagefind.triggerSearch(query);
+          } else {
+            // 备用搜索：跳转到搜索页面
+            window.location.href = `/${lang}/search?q=${encodeURIComponent(query)}`;
           }
         }
       });
-
-      // 点击搜索图标
-      const searchIcon = this.container.querySelector('.search-icon');
-      searchIcon?.addEventListener('click', () => {
-        const query = this.input.value.trim();
-        if (query) {
-          window.location.href = `/${this.lang}/search?q=${encodeURIComponent(query)}`;
+    }
+    
+    // 备用搜索功能
+    function initFallbackSearch() {
+      if (!resultsContainer || !searchInput) return;
+      
+      searchInput.addEventListener('input', function(e) {
+        const target = e.target as HTMLInputElement;
+        const query = target.value.trim();
+        if (query.length > 0) {
+          // 显示搜索提示
+          resultsContainer.innerHTML = `
+            <div class="p-4 text-center">
+              <p class="text-gray-600">正在搜索 "${query}"...</p>
+              <p class="text-sm text-gray-500 mt-2">按回车键查看完整搜索结果</p>
+            </div>
+          `;
+        } else {
+          resultsContainer.innerHTML = '';
         }
       });
     }
-  }
-
-  // 初始化所有搜索组件
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchContainers = document.querySelectorAll('.search-container');
-    searchContainers.forEach(container => {
-      new SearchComponent(container);
-    });
   });
 </script>
 
 <style>
-  .search-container {
+  .pagefind-search-container {
     position: relative;
     width: 100%;
     max-width: 600px;
@@ -134,5 +250,84 @@ const searchPlaceholder = placeholders[lang as keyof typeof placeholders] || pla
 
   .search-info {
     text-align: center;
+  }
+
+  .search-results-container {
+    margin-top: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Pagefind UI 样式覆盖 */
+  :global(.pagefind-ui) {
+    --pagefind-ui-primary: #dc2626;
+    --pagefind-ui-text: #374151;
+    --pagefind-ui-background: #ffffff;
+    --pagefind-ui-border: #e5e7eb;
+    --pagefind-ui-tag: #f3f4f6;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 8px;
+    --pagefind-ui-font: system-ui, -apple-system, sans-serif;
+    --pagefind-ui-font-size: 14px;
+    --pagefind-ui-line-height: 1.4;
+  }
+
+  :global(.pagefind-ui__search-input) {
+    display: none; /* 隐藏 Pagefind 自带的搜索框 */
+  }
+
+  :global(.pagefind-ui__results-area) {
+    border: none;
+    background: transparent;
+  }
+
+  :global(.pagefind-ui__result) {
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1rem;
+    transition: background-color 0.2s ease;
+  }
+
+  :global(.pagefind-ui__result:hover) {
+    background-color: #f9fafb;
+  }
+
+  :global(.pagefind-ui__result-link) {
+    color: #1f2937;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  :global(.pagefind-ui__result-link:hover) {
+    color: #dc2626;
+  }
+
+  :global(.pagefind-ui__result-excerpt) {
+    color: #6b7280;
+    margin-top: 0.5rem;
+  }
+
+  :global(.pagefind-ui__result-meta) {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .pagefind-search-container {
+      @apply w-full;
+    }
+    
+    .search-input {
+      @apply text-sm;
+    }
+    
+    .search-results-container {
+      max-height: 300px;
+    }
   }
 </style>
