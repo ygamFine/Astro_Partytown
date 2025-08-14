@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port 3000",
-    "build": "npm run download:strapi-images && npm run optimize:images:node && astro build",
+    "build": "npm run download:strapi-images && npm run optimize:images:node && astro build && npm run generate:pagefind",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images:node": "node scripts/optimize-images-node.js",
