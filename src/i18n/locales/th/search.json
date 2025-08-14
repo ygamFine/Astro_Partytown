@@ -1,0 +1,40 @@
+{
+  "title": "ค้นหาเว็บไซต์",
+  "description": "ค้นหาผลิตภัณฑ์ ข่าว กรณีศึกษา และเนื้อหาอื่น ๆ บนเว็บไซต์",
+  "placeholder": "กรอกคำค้นหา...",
+  "noResults": "ไม่พบผลลัพธ์",
+  "noResultsDescription": "ลองใช้คำค้นหาอื่นหรือ ตรวจสอบการสะกดคำ",
+  "searchError": "เกิดข้อผิดพลาดในการค้นหา",
+  "searchErrorDescription": "โปรดลองใหม่ภายหลัง",
+  "retry": "ลองอีกครั้ง",
+  "clearSearch": "ล้างการค้นหา",
+  "loadMore": "โหลดผลลัพธ์เพิ่มเติม",
+  "results": "ผลการค้นหา",
+  "resultsFor": "ผลการค้นหาสำหรับ \"{{query}}\"",
+  "showingResults": "แสดงผลลัพธ์ {{from}} ถึง {{to}} จากทั้งหมด {{total}}",
+  "filters": "ตัวกรอง",
+  "filterBy": "กรองตาม {{filter}}",
+  "tip": "เคล็ดลับ: กรอกคำค้นหาแล้วกด Enter เพื่อค้นหา",
+  "categoriesTitle": "หมวดหมู่การค้นหา",
+  "categories": {
+    "all": "ทั้งหมด",
+    "product": "สินค้า",
+    "news": "ข่าว",
+    "case": "กรณีศึกษา",
+    "other": "อื่น ๆ"
+  },
+  "ui": {
+    "placeholder": "ค้นหาผลิตภัณฑ์ ข่าว กรณีศึกษา...",
+    "clear_search": "ล้างการค้นหา",
+    "load_more": "โหลดผลลัพธ์เพิ่มเติม",
+    "search_result": "ผลการค้นหา",
+    "search_results": "ผลการค้นหา",
+    "search_results_for": "ผลการค้นหาสำหรับ \"{query}\"",
+    "show_more": "แสดงเพิ่มเติม",
+    "show_less": "แสดงน้อยลง",
+    "clear_filters": "ล้างตัวกรอง",
+    "no_results": "ไม่พบผลลัพธ์",
+    "no_results_for": "ไม่พบผลลัพธ์สำหรับ \"{query}\""
+  }
+}
+

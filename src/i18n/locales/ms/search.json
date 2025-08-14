@@ -1,0 +1,40 @@
+{
+  "title": "Carian Laman",
+  "description": "Cari produk, berita, kes dan kandungan laman lain",
+  "placeholder": "Masukkan kata kunci carian...",
+  "noResults": "Tiada hasil ditemui",
+  "noResultsDescription": "Sila cuba kata kunci lain atau semak ejaan",
+  "searchError": "Ralat carian berlaku",
+  "searchErrorDescription": "Sila cuba lagi kemudian",
+  "retry": "Cuba lagi",
+  "clearSearch": "Kosongkan carian",
+  "loadMore": "Muat lebih banyak hasil",
+  "results": "Keputusan carian",
+  "resultsFor": "Keputusan carian untuk \"{{query}}\"",
+  "showingResults": "Menunjukkan hasil {{from}} hingga {{to}} daripada {{total}}",
+  "filters": "Penapis",
+  "filterBy": "Tapis mengikut {{filter}}",
+  "tip": "Petua: Masukkan kata kunci dan tekan Enter untuk mencari",
+  "categoriesTitle": "Kategori Carian",
+  "categories": {
+    "all": "Semua",
+    "product": "Produk",
+    "news": "Berita",
+    "case": "Kes",
+    "other": "Lain-lain"
+  },
+  "ui": {
+    "placeholder": "Cari produk, berita, kes...",
+    "clear_search": "Kosongkan carian",
+    "load_more": "Muat lebih banyak hasil",
+    "search_result": "Keputusan carian",
+    "search_results": "Keputusan carian",
+    "search_results_for": "Keputusan carian untuk \"{query}\"",
+    "show_more": "Tunjukkan lagi",
+    "show_less": "Tunjukkan kurang",
+    "clear_filters": "Kosongkan penapis",
+    "no_results": "Tiada hasil ditemui",
+    "no_results_for": "Tiada hasil untuk \"{query}\""
+  }
+}
+

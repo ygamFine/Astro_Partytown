@@ -1,0 +1,40 @@
+{
+  "title": "全站搜尋",
+  "description": "搜尋產品、新聞、案例等全站內容",
+  "placeholder": "輸入搜尋關鍵字...",
+  "noResults": "未找到相關結果",
+  "noResultsDescription": "請嘗試使用不同的關鍵字或檢查拼寫",
+  "searchError": "搜尋時發生錯誤",
+  "searchErrorDescription": "請稍後重試",
+  "retry": "重試",
+  "clearSearch": "清除搜尋",
+  "loadMore": "載入更多結果",
+  "results": "搜尋結果",
+  "resultsFor": "搜尋 \"{{query}}\" 的結果",
+  "showingResults": "顯示第 {{from}} 到 {{to}} 個結果，共 {{total}} 個",
+  "filters": "篩選器",
+  "filterBy": "按 {{filter}} 篩選",
+  "tip": "提示：輸入關鍵字後按 Enter 鍵搜尋",
+  "categoriesTitle": "搜尋分類",
+  "categories": {
+    "all": "全部內容",
+    "product": "產品",
+    "news": "新聞",
+    "case": "案例",
+    "other": "其他"
+  },
+  "ui": {
+    "placeholder": "搜尋產品、新聞、案例...",
+    "clear_search": "清除搜尋",
+    "load_more": "載入更多結果",
+    "search_result": "搜尋結果",
+    "search_results": "搜尋結果",
+    "search_results_for": "搜尋 \"{query}\" 的結果",
+    "show_more": "顯示更多",
+    "show_less": "顯示更少",
+    "clear_filters": "清除篩選",
+    "no_results": "沒有找到結果",
+    "no_results_for": "沒有找到 \"{query}\" 的結果"
+  }
+}
+

@@ -13,5 +13,27 @@
   "resultsFor": "Результаты поиска для \"{{query}}\"",
   "showingResults": "Показано результатов {{from}}-{{to}} из {{total}}",
   "filters": "Фильтры",
-  "filterBy": "Фильтр по {{filter}}"
+  "filterBy": "Фильтр по {{filter}}",
+  "tip": "Подсказка: введите ключевые слова и нажмите Enter для поиска",
+  "categoriesTitle": "Категории поиска",
+  "categories": {
+    "all": "Все",
+    "product": "Продукты",
+    "news": "Новости",
+    "case": "Кейсы",
+    "other": "Другое"
+  },
+  "ui": {
+    "placeholder": "Поиск продуктов, новостей, кейсов...",
+    "clear_search": "Очистить поиск",
+    "load_more": "Загрузить ещё",
+    "search_result": "Результат поиска",
+    "search_results": "Результаты поиска",
+    "search_results_for": "Результаты для \"{query}\"",
+    "show_more": "Показать больше",
+    "show_less": "Показать меньше",
+    "clear_filters": "Очистить фильтры",
+    "no_results": "Ничего не найдено",
+    "no_results_for": "Нет результатов для \"{query}\""
+  }
 }

@@ -13,5 +13,27 @@
   "resultsFor": "Suchergebnisse für \"{{query}}\"",
   "showingResults": "Zeige Ergebnisse {{from}} bis {{to}} von {{total}}",
   "filters": "Filter",
-  "filterBy": "Filtern nach {{filter}}"
+  "filterBy": "Filtern nach {{filter}}",
+  "tip": "Tipp: Geben Sie Schlüsselwörter ein und drücken Sie Enter, um zu suchen",
+  "categoriesTitle": "Suchkategorien",
+  "categories": {
+    "all": "Alle",
+    "product": "Produkte",
+    "news": "Nachrichten",
+    "case": "Fälle",
+    "other": "Andere"
+  },
+  "ui": {
+    "placeholder": "Produkte, Nachrichten, Fälle suchen...",
+    "clear_search": "Suche löschen",
+    "load_more": "Weitere Ergebnisse laden",
+    "search_result": "Suchergebnis",
+    "search_results": "Suchergebnisse",
+    "search_results_for": "Ergebnisse für \"{query}\"",
+    "show_more": "Mehr anzeigen",
+    "show_less": "Weniger anzeigen",
+    "clear_filters": "Filter löschen",
+    "no_results": "Keine Ergebnisse gefunden",
+    "no_results_for": "Keine Ergebnisse für \"{query}\""
+  }
 }

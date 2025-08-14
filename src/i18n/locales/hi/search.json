@@ -1,0 +1,40 @@
+{
+  "title": "साइट खोज",
+  "description": "उत्पाद, समाचार, केस और अन्य साइट सामग्री खोजें",
+  "placeholder": "खोज कीवर्ड दर्ज करें...",
+  "noResults": "कोई परिणाम नहीं मिला",
+  "noResultsDescription": "कृपया अलग कीवर्ड आज़माएं या वर्तनी जांचें",
+  "searchError": "खोज के दौरान त्रुटि हुई",
+  "searchErrorDescription": "कृपया बाद में पुनः प्रयास करें",
+  "retry": "पुनः प्रयास करें",
+  "clearSearch": "खोज साफ़ करें",
+  "loadMore": "और परिणाम लोड करें",
+  "results": "खोज परिणाम",
+  "resultsFor": "\"{{query}}\" के लिए खोज परिणाम",
+  "showingResults": "कुल {{total}} में से {{from}} से {{to}} तक दिखा रहे हैं",
+  "filters": "फ़िल्टर",
+  "filterBy": "{{filter}} द्वारा फ़िल्टर करें",
+  "tip": "सुझाव: खोजने के लिए कीवर्ड दर्ज करें और Enter दबाएँ",
+  "categoriesTitle": "खोज श्रेणियाँ",
+  "categories": {
+    "all": "सभी",
+    "product": "उत्पाद",
+    "news": "समाचार",
+    "case": "केस",
+    "other": "अन्य"
+  },
+  "ui": {
+    "placeholder": "उत्पाद, समाचार, केस खोजें...",
+    "clear_search": "खोज साफ़ करें",
+    "load_more": "और परिणाम लोड करें",
+    "search_result": "खोज परिणाम",
+    "search_results": "खोज परिणाम",
+    "search_results_for": "\"{query}\" के लिए परिणाम",
+    "show_more": "और देखें",
+    "show_less": "कम देखें",
+    "clear_filters": "फ़िल्टर साफ़ करें",
+    "no_results": "कोई परिणाम नहीं मिला",
+    "no_results_for": "\"{query}\" के लिए कोई परिणाम नहीं"
+  }
+}
+

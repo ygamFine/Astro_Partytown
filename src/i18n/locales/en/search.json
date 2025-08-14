@@ -13,5 +13,27 @@
   "resultsFor": "Search results for \"{{query}}\"",
   "showingResults": "Showing results {{from}} to {{to}} of {{total}}",
   "filters": "Filters",
-  "filterBy": "Filter by {{filter}}"
+  "filterBy": "Filter by {{filter}}",
+  "tip": "Tip: Enter keywords and press Enter to search",
+  "categoriesTitle": "Search Categories",
+  "categories": {
+    "all": "All",
+    "product": "Products",
+    "news": "News",
+    "case": "Cases",
+    "other": "Other"
+  },
+  "ui": {
+    "placeholder": "Search products, news, cases...",
+    "clear_search": "Clear search",
+    "load_more": "Load more results",
+    "search_result": "Search result",
+    "search_results": "Search results",
+    "search_results_for": "Search results for \"{query}\"",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "clear_filters": "Clear filters",
+    "no_results": "No results found",
+    "no_results_for": "No results for \"{query}\""
+  }
 }

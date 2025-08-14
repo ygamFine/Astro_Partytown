@@ -18,6 +18,7 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const searchQuery = '';
 const t = getDictionary(lang);
+const uiJson = encodeURIComponent(JSON.stringify(t.search?.ui || {}));
 
 // 面包屑导航
 const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
@@ -30,7 +31,7 @@ const getPageWidth = () => {
 const pageWidth = getPageWidth();
 ---
 
-<Layout title="搜索" description="全站搜索功能" lang={lang} pageType="search">
+<Layout title={t.search?.title || '搜索'} description={t.search?.description || '全站搜索功能'} lang={lang} pageType="search">
   <div class="min-h-screen bg-gray-50">
     <!-- 面包屑导航 -->
     <div class="bg-white border-b">
@@ -44,10 +45,10 @@ const pageWidth = getPageWidth();
       <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8" style={`max-width: ${pageWidth}`}>
         <div class="text-center">
           <h1 class="text-3xl font-bold text-gray-900 mb-4">
-            全站搜索
+            {t.search?.title || '全站搜索'}
           </h1>
           <p class="text-lg text-gray-600 mb-8">
-            搜索产品、新闻、案例等全站内容
+            {t.search?.description || '搜索产品、新闻、案例等全站内容'}
           </p>
           
           <!-- Pagefind 搜索框 -->
@@ -64,7 +65,7 @@ const pageWidth = getPageWidth();
         <!-- 左侧分类导航 -->
         <div class="lg:col-span-1">
           <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">搜索分类</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.search?.categoriesTitle || '搜索分类'}</h3>
             
             <!-- 分类列表 -->
             <div class="space-y-3">
@@ -77,7 +78,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">全部内容</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.all || '全部内容'}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="total-count">0</span>
                 </button>
@@ -91,7 +92,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">产品</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.product || '产品'}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="product-count">0</span>
                 </button>
@@ -106,7 +107,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">新闻</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.news || '新闻'}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="news-count">0</span>
                 </button>
@@ -121,7 +122,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">案例</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.case || '案例'}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="case-count">0</span>
                 </button>
@@ -143,7 +144,7 @@ const pageWidth = getPageWidth();
 <script>
   // Pagefind 搜索页面初始化
   document.addEventListener('DOMContentLoaded', async function() {
-    const resultsContainer = document.getElementById('pagefind-search-results');
+    const resultsContainer = document.getElementById('pagefind-search-results') as HTMLElement | null;
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q') || '';
     
@@ -155,7 +156,7 @@ const pageWidth = getPageWidth();
     const categoryButtons = document.querySelectorAll('.search-category-item button');
     
     // 辅助函数：从URL获取分类
-    function getCategoryFromUrl(url) {
+    function getCategoryFromUrl(url: string) {
       if (url.includes('/products/')) return 'product';
       if (url.includes('/news/')) return 'news';
       if (url.includes('/case/')) return 'case';
@@ -163,14 +164,14 @@ const pageWidth = getPageWidth();
     }
     
     // 辅助函数：获取分类标签
-    function getCategoryLabel(category) {
-      const labels = {
-        product: '产品',
-        news: '新闻',
-        case: '案例',
-        other: '其他'
-      };
-      return labels[category] || '其他';
+    function getCategoryLabel(category: 'product' | 'news' | 'case' | 'other') {
+      try {
+        const labels = JSON.parse(decodeURIComponent("{categoriesJson}")) as Record<'product' | 'news' | 'case' | 'other', string>;
+        return labels[category] || labels.other || '其他';
+      } catch {
+        const fallback: Record<'product' | 'news' | 'case' | 'other', string> = { product: '产品', news: '新闻', case: '案例', other: '其他' };
+        return fallback[category];
+      }
     }
     
     // 筛选并显示结果
@@ -184,16 +185,16 @@ const pageWidth = getPageWidth();
           });
       
       // 清空当前显示
-      resultsContainer.innerHTML = '';
+      (resultsContainer as HTMLElement).innerHTML = '';
       
       if (filteredResults.length === 0) {
-        resultsContainer.innerHTML = `
+        (resultsContainer as HTMLElement).innerHTML = `
           <div class="text-center py-12">
             <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
             </svg>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">没有找到结果</h3>
-            <p class="text-gray-600">当前分类下没有匹配的搜索结果</p>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">${JSON.parse(decodeURIComponent("{noResultsJson}")).noResultsText}</h3>
+            <p class="text-gray-600">${JSON.parse(decodeURIComponent("{noResultsJson}")).noResultsDescText}</p>
           </div>
         `;
         return;
@@ -235,18 +236,18 @@ const pageWidth = getPageWidth();
         resultsArea.appendChild(resultElement);
       });
       
-      resultsContainer.appendChild(resultsArea);
+      (resultsContainer as HTMLElement).appendChild(resultsArea);
     }
     
     // 更新统计显示
     function updateStatistics() {
-      const resultCounts = { product: 0, news: 0, case: 0 };
+      const resultCounts: Record<'product' | 'news' | 'case', number> = { product: 0, news: 0, case: 0 };
       
       // 统计所有搜索结果
       allSearchResults.forEach(result => {
         const url = result.url || '';
         const category = getCategoryFromUrl(url);
-        if (category in resultCounts) {
+        if (category === 'product' || category === 'news' || category === 'case') {
           resultCounts[category]++;
         }
       });
@@ -262,9 +263,10 @@ const pageWidth = getPageWidth();
       if (totalCountEl) totalCountEl.textContent = (resultCounts.product + resultCounts.news + resultCounts.case).toString();
     }
     
-    categoryButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const category = this.closest('.search-category-item').dataset.category;
+    categoryButtons.forEach((button) => {
+      button.addEventListener('click', function(this: HTMLElement) {
+        const parent = this.closest('.search-category-item') as HTMLElement | null;
+        const category = parent?.dataset.category as ('all' | 'product' | 'news' | 'case') | undefined;
         
         // 更新按钮状态
         categoryButtons.forEach(btn => {
@@ -286,7 +288,7 @@ const pageWidth = getPageWidth();
           this.classList.add('border-purple-500', 'bg-purple-50');
         }
         
-        currentCategory = category;
+        currentCategory = category || 'all';
         
         // 重新筛选并显示结果
         filterAndDisplayResults();
@@ -299,23 +301,11 @@ const pageWidth = getPageWidth();
     try {
       const { PagefindUI } = await import('@pagefind/default-ui');
       
-      // 初始化 Pagefind UI
+        // 初始化 Pagefind UI
       const pagefind = new PagefindUI({
         element: resultsContainer,
         showImages: true,
-        translations: {
-          placeholder: "搜索产品、新闻、案例...",
-          clear_search: "清除搜索",
-          load_more: "加载更多结果",
-          search_result: "搜索结果",
-          search_results: "搜索结果",
-          search_results_for: "搜索 \"{query}\" 的结果",
-          show_more: "显示更多",
-          show_less: "显示更少",
-          clear_filters: "清除筛选",
-          no_results: "没有找到结果",
-          no_results_for: "没有找到 \"{query}\" 的结果"
-        },
+          translations: JSON.parse(decodeURIComponent("{uiJson}")),
         processResult: (result) => {
           // 添加分类标签
           const url = result.url || '';
@@ -361,7 +351,7 @@ const pageWidth = getPageWidth();
       console.warn('Pagefind 加载失败:', error);
       
       // 显示错误信息
-      resultsContainer.innerHTML = `
+      (resultsContainer as HTMLElement).innerHTML = `
         <div class="text-center py-12">
           <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />

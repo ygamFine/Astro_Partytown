@@ -1,0 +1,40 @@
+{
+  "title": "사이트 검색",
+  "description": "제품, 뉴스, 사례 등 사이트의 모든 콘텐츠를 검색",
+  "placeholder": "검색어를 입력하세요...",
+  "noResults": "결과가 없습니다",
+  "noResultsDescription": "다른 키워드를 사용하거나 철자를 확인하세요",
+  "searchError": "검색 중 오류가 발생했습니다",
+  "searchErrorDescription": "나중에 다시 시도하세요",
+  "retry": "다시 시도",
+  "clearSearch": "검색 지우기",
+  "loadMore": "결과 더 보기",
+  "results": "검색 결과",
+  "resultsFor": "\"{{query}}\"에 대한 검색 결과",
+  "showingResults": "총 {{total}}개 중 {{from}}–{{to}}개 표시",
+  "filters": "필터",
+  "filterBy": "{{filter}} 기준으로 필터링",
+  "tip": "팁: 키워드를 입력하고 Enter를 눌러 검색하세요",
+  "categoriesTitle": "검색 카테고리",
+  "categories": {
+    "all": "전체",
+    "product": "제품",
+    "news": "뉴스",
+    "case": "사례",
+    "other": "기타"
+  },
+  "ui": {
+    "placeholder": "제품, 뉴스, 사례 검색...",
+    "clear_search": "검색 지우기",
+    "load_more": "결과 더 보기",
+    "search_result": "검색 결과",
+    "search_results": "검색 결과",
+    "search_results_for": "\"{query}\"에 대한 결과",
+    "show_more": "더 보기",
+    "show_less": "간단히",
+    "clear_filters": "필터 지우기",
+    "no_results": "결과가 없습니다",
+    "no_results_for": "\"{query}\"에 대한 결과가 없습니다"
+  }
+}
+

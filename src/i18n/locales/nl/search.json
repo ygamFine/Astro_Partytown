@@ -1,0 +1,40 @@
+{
+  "title": "Zoeken op de site",
+  "description": "Zoek naar producten, nieuws, cases en andere site-inhoud",
+  "placeholder": "Voer zoekwoorden in...",
+  "noResults": "Geen resultaten gevonden",
+  "noResultsDescription": "Probeer andere zoekwoorden of controleer de spelling",
+  "searchError": "Er is een zoekfout opgetreden",
+  "searchErrorDescription": "Probeer het later opnieuw",
+  "retry": "Opnieuw proberen",
+  "clearSearch": "Zoekopdracht wissen",
+  "loadMore": "Meer resultaten laden",
+  "results": "Zoekresultaten",
+  "resultsFor": "Zoekresultaten voor \"{{query}}\"",
+  "showingResults": "Resultaten {{from}}–{{to}} van {{total}} weergegeven",
+  "filters": "Filters",
+  "filterBy": "Filteren op {{filter}}",
+  "tip": "Tip: voer zoekwoorden in en druk op Enter om te zoeken",
+  "categoriesTitle": "Zoekcategorieën",
+  "categories": {
+    "all": "Alle",
+    "product": "Producten",
+    "news": "Nieuws",
+    "case": "Cases",
+    "other": "Overig"
+  },
+  "ui": {
+    "placeholder": "Zoek naar producten, nieuws, cases...",
+    "clear_search": "Zoekopdracht wissen",
+    "load_more": "Meer resultaten laden",
+    "search_result": "Zoekresultaat",
+    "search_results": "Zoekresultaten",
+    "search_results_for": "Resultaten voor \"{query}\"",
+    "show_more": "Meer weergeven",
+    "show_less": "Minder weergeven",
+    "clear_filters": "Filters wissen",
+    "no_results": "Geen resultaten gevonden",
+    "no_results_for": "Geen resultaten voor \"{query}\""
+  }
+}
+

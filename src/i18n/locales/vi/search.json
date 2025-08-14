@@ -1,0 +1,40 @@
+{
+  "title": "Tìm kiếm Trang",
+  "description": "Tìm sản phẩm, tin tức, trường hợp và nội dung khác",
+  "placeholder": "Nhập từ khóa tìm kiếm...",
+  "noResults": "Không tìm thấy kết quả",
+  "noResultsDescription": "Hãy thử từ khóa khác hoặc kiểm tra chính tả",
+  "searchError": "Đã xảy ra lỗi tìm kiếm",
+  "searchErrorDescription": "Vui lòng thử lại sau",
+  "retry": "Thử lại",
+  "clearSearch": "Xóa tìm kiếm",
+  "loadMore": "Tải thêm kết quả",
+  "results": "Kết quả tìm kiếm",
+  "resultsFor": "Kết quả tìm kiếm cho \"{{query}}\"",
+  "showingResults": "Hiển thị từ {{from}} đến {{to}} trong tổng số {{total}}",
+  "filters": "Bộ lọc",
+  "filterBy": "Lọc theo {{filter}}",
+  "tip": "Mẹo: Nhập từ khóa và nhấn Enter để tìm kiếm",
+  "categoriesTitle": "Danh mục Tìm kiếm",
+  "categories": {
+    "all": "Tất cả",
+    "product": "Sản phẩm",
+    "news": "Tin tức",
+    "case": "Trường hợp",
+    "other": "Khác"
+  },
+  "ui": {
+    "placeholder": "Tìm sản phẩm, tin tức, trường hợp...",
+    "clear_search": "Xóa tìm kiếm",
+    "load_more": "Tải thêm kết quả",
+    "search_result": "Kết quả tìm kiếm",
+    "search_results": "Kết quả tìm kiếm",
+    "search_results_for": "Kết quả cho \"{query}\"",
+    "show_more": "Xem thêm",
+    "show_less": "Thu gọn",
+    "clear_filters": "Xóa bộ lọc",
+    "no_results": "Không tìm thấy kết quả",
+    "no_results_for": "Không có kết quả cho \"{query}\""
+  }
+}
+

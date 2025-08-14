@@ -13,5 +13,27 @@
   "resultsFor": "\"{{query}}\" の検索結果",
   "showingResults": "{{total}}件中 {{from}}〜{{to}}件を表示",
   "filters": "フィルター",
-  "filterBy": "{{filter}}でフィルター"
+  "filterBy": "{{filter}}でフィルター",
+  "tip": "ヒント: キーワードを入力してEnterキーで検索",
+  "categoriesTitle": "検索カテゴリ",
+  "categories": {
+    "all": "すべて",
+    "product": "製品",
+    "news": "ニュース",
+    "case": "事例",
+    "other": "その他"
+  },
+  "ui": {
+    "placeholder": "製品・ニュース・事例を検索...",
+    "clear_search": "検索をクリア",
+    "load_more": "さらに読み込む",
+    "search_result": "検索結果",
+    "search_results": "検索結果",
+    "search_results_for": "「{query}」の結果",
+    "show_more": "もっと見る",
+    "show_less": "折りたたむ",
+    "clear_filters": "フィルターをクリア",
+    "no_results": "結果が見つかりません",
+    "no_results_for": "「{query}」の結果が見つかりません"
+  }
 }

@@ -1,0 +1,40 @@
+{
+  "title": "Ricerca nel sito",
+  "description": "Cerca prodotti, notizie, casi e altri contenuti del sito",
+  "placeholder": "Inserisci parole chiave...",
+  "noResults": "Nessun risultato trovato",
+  "noResultsDescription": "Prova con altre parole chiave o verifica l'ortografia",
+  "searchError": "Si è verificato un errore di ricerca",
+  "searchErrorDescription": "Riprova più tardi",
+  "retry": "Riprova",
+  "clearSearch": "Cancella ricerca",
+  "loadMore": "Carica altri risultati",
+  "results": "Risultati di ricerca",
+  "resultsFor": "Risultati di ricerca per \"{{query}}\"",
+  "showingResults": "Visualizzazione risultati da {{from}} a {{to}} di {{total}}",
+  "filters": "Filtri",
+  "filterBy": "Filtra per {{filter}}",
+  "tip": "Suggerimento: inserisci parole chiave e premi Invio per cercare",
+  "categoriesTitle": "Categorie di ricerca",
+  "categories": {
+    "all": "Tutti",
+    "product": "Prodotti",
+    "news": "Notizie",
+    "case": "Casi",
+    "other": "Altro"
+  },
+  "ui": {
+    "placeholder": "Cerca prodotti, notizie, casi...",
+    "clear_search": "Cancella ricerca",
+    "load_more": "Carica altri risultati",
+    "search_result": "Risultato di ricerca",
+    "search_results": "Risultati di ricerca",
+    "search_results_for": "Risultati per \"{query}\"",
+    "show_more": "Mostra di più",
+    "show_less": "Mostra meno",
+    "clear_filters": "Cancella filtri",
+    "no_results": "Nessun risultato trovato",
+    "no_results_for": "Nessun risultato per \"{query}\""
+  }
+}
+

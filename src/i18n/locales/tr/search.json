@@ -1,0 +1,40 @@
+{
+  "title": "Sitede Arama",
+  "description": "Ürünler, haberler, vakalar ve diğer site içeriğini arayın",
+  "placeholder": "Arama anahtar kelimelerini girin...",
+  "noResults": "Sonuç bulunamadı",
+  "noResultsDescription": "Lütfen farklı anahtar kelimeler deneyin veya yazımı kontrol edin",
+  "searchError": "Arama hatası oluştu",
+  "searchErrorDescription": "Lütfen daha sonra tekrar deneyin",
+  "retry": "Yeniden dene",
+  "clearSearch": "Aramayı temizle",
+  "loadMore": "Daha fazla sonuç yükle",
+  "results": "Arama sonuçları",
+  "resultsFor": "\"{{query}}\" için arama sonuçları",
+  "showingResults": "Toplam {{total}} sonuçtan {{from}}–{{to}} gösteriliyor",
+  "filters": "Filtreler",
+  "filterBy": "{{filter}} ile filtrele",
+  "tip": "İpucu: Anahtar kelimeleri girip Enter'a basın",
+  "categoriesTitle": "Arama Kategorileri",
+  "categories": {
+    "all": "Tümü",
+    "product": "Ürünler",
+    "news": "Haberler",
+    "case": "Vaka Çalışmaları",
+    "other": "Diğer"
+  },
+  "ui": {
+    "placeholder": "Ürünler, haberler, vakalar ara...",
+    "clear_search": "Aramayı temizle",
+    "load_more": "Daha fazla sonuç yükle",
+    "search_result": "Arama sonucu",
+    "search_results": "Arama sonuçları",
+    "search_results_for": "\"{query}\" için sonuçlar",
+    "show_more": "Daha fazla göster",
+    "show_less": "Daha az göster",
+    "clear_filters": "Filtreleri temizle",
+    "no_results": "Sonuç bulunamadı",
+    "no_results_for": "\"{query}\" için sonuç yok"
+  }
+}
+

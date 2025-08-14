@@ -1,0 +1,40 @@
+{
+  "title": "Recherche sur le site",
+  "description": "Recherchez des produits, des actualités, des cas et d'autres contenus",
+  "placeholder": "Saisissez des mots-clés...",
+  "noResults": "Aucun résultat trouvé",
+  "noResultsDescription": "Essayez d'autres mots-clés ou vérifiez l'orthographe",
+  "searchError": "Une erreur de recherche s'est produite",
+  "searchErrorDescription": "Veuillez réessayer plus tard",
+  "retry": "Réessayer",
+  "clearSearch": "Effacer la recherche",
+  "loadMore": "Charger plus de résultats",
+  "results": "Résultats de recherche",
+  "resultsFor": "Résultats de recherche pour \"{{query}}\"",
+  "showingResults": "Affichage des résultats {{from}}–{{to}} sur {{total}}",
+  "filters": "Filtres",
+  "filterBy": "Filtrer par {{filter}}",
+  "tip": "Astuce : saisissez des mots-clés et appuyez sur Entrée pour rechercher",
+  "categoriesTitle": "Catégories de recherche",
+  "categories": {
+    "all": "Tous",
+    "product": "Produits",
+    "news": "Actualités",
+    "case": "Cas",
+    "other": "Autres"
+  },
+  "ui": {
+    "placeholder": "Rechercher des produits, actualités, cas...",
+    "clear_search": "Effacer la recherche",
+    "load_more": "Charger plus de résultats",
+    "search_result": "Résultat de recherche",
+    "search_results": "Résultats de recherche",
+    "search_results_for": "Résultats pour \"{query}\"",
+    "show_more": "Afficher plus",
+    "show_less": "Afficher moins",
+    "clear_filters": "Effacer les filtres",
+    "no_results": "Aucun résultat trouvé",
+    "no_results_for": "Aucun résultat pour \"{query}\""
+  }
+}
+

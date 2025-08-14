@@ -18,25 +18,12 @@ const {
 import { buildUrl } from '../../../lib/envConfig.js';
 const searchPageUrl = buildUrl(lang, '/search');
 
-// 多语言占位符
-const searchPlaceholder = {
-  'zh-CN': '搜索产品、新闻、案例...',
-  'en': 'Search products, news, cases...',
-  'ja': '製品、ニュース、ケースを検索...',
-  'ru': 'Поиск продуктов, новостей, кейсов...',
-  'de': 'Produkte, Nachrichten, Fälle suchen...',
-  'ar': 'البحث عن المنتجات والأخبار والحالات...'
-}[lang] || placeholder;
-
-// 多语言提示信息
-const searchInfo = {
-  'zh-CN': '💡 提示：输入关键词后按回车键搜索',
-  'en': '💡 Tip: Enter keywords and press Enter to search',
-  'ja': '💡 ヒント：キーワードを入力してEnterキーを押して検索',
-  'ru': '💡 Подсказка: Введите ключевые слова и нажмите Enter для поиска',
-  'de': '💡 Tipp: Geben Sie Schlüsselwörter ein und drücken Sie Enter zum Suchen',
-  'ar': '💡 نصيحة: أدخل الكلمات المفتاحية واضغط Enter للبحث'
-}[lang] || '💡 提示：输入关键词后按回车键搜索';
+// 从字典获取多语言
+import getDictionary from '../../../i18n/dictionaries.js';
+const t = getDictionary(lang);
+const searchPlaceholder = t.search?.placeholder || placeholder;
+const searchInfo = `💡 ${t.search?.tip || ''}`.trim();
+const uiJson = encodeURIComponent(JSON.stringify(t.search?.ui || {}));
 ---
 
 <div class="pagefind-search-container" data-lang={lang} data-search-url={searchPageUrl}>
@@ -77,6 +64,7 @@ const searchInfo = {
     const langContainer = document.querySelector('.pagefind-search-container') as HTMLElement;
     const lang = langContainer?.dataset.lang || 'zh-CN';
     const searchPageUrl = (langContainer?.dataset.searchUrl || '/search');
+    const pagefindTranslations = JSON.parse(decodeURIComponent("{uiJson}"));
     
     if (!searchInput) return;
     
@@ -95,22 +83,10 @@ const searchInfo = {
       
       if (resultsContainer) {
         // 初始化 Pagefind UI
-        pagefind = new PagefindUI({
+          pagefind = new PagefindUI({
           element: resultsContainer,
           showImages: true,
-          translations: {
-            placeholder: "搜索产品、新闻、案例...",
-            clear_search: "清除搜索",
-            load_more: "加载更多结果",
-            search_result: "搜索结果",
-            search_results: "搜索结果",
-            search_results_for: "搜索 \"{query}\" 的结果",
-            show_more: "显示更多",
-            show_less: "显示更少",
-            clear_filters: "清除筛选",
-            no_results: "没有找到结果",
-            no_results_for: "没有找到 \"{query}\" 的结果"
-          },
+          translations: pagefindTranslations,
           processResult: (result: any) => {
             // 自定义结果处理
             return {

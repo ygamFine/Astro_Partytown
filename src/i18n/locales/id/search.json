@@ -1,0 +1,40 @@
+{
+  "title": "Pencarian Situs",
+  "description": "Cari produk, berita, kasus, dan konten situs lainnya",
+  "placeholder": "Masukkan kata kunci pencarian...",
+  "noResults": "Tidak ada hasil",
+  "noResultsDescription": "Coba kata kunci lain atau periksa ejaan",
+  "searchError": "Terjadi kesalahan pencarian",
+  "searchErrorDescription": "Silakan coba lagi nanti",
+  "retry": "Coba lagi",
+  "clearSearch": "Hapus pencarian",
+  "loadMore": "Muat lebih banyak hasil",
+  "results": "Hasil pencarian",
+  "resultsFor": "Hasil pencarian untuk \"{{query}}\"",
+  "showingResults": "Menampilkan hasil {{from}} hingga {{to}} dari {{total}}",
+  "filters": "Filter",
+  "filterBy": "Saring berdasarkan {{filter}}",
+  "tip": "Tip: Masukkan kata kunci dan tekan Enter untuk mencari",
+  "categoriesTitle": "Kategori Pencarian",
+  "categories": {
+    "all": "Semua",
+    "product": "Produk",
+    "news": "Berita",
+    "case": "Kasus",
+    "other": "Lainnya"
+  },
+  "ui": {
+    "placeholder": "Cari produk, berita, kasus...",
+    "clear_search": "Hapus pencarian",
+    "load_more": "Muat lebih banyak hasil",
+    "search_result": "Hasil pencarian",
+    "search_results": "Hasil pencarian",
+    "search_results_for": "Hasil pencarian untuk \"{query}\"",
+    "show_more": "Tampilkan lagi",
+    "show_less": "Tampilkan lebih sedikit",
+    "clear_filters": "Hapus filter",
+    "no_results": "Tidak ada hasil",
+    "no_results_for": "Tidak ada hasil untuk \"{query}\""
+  }
+}
+

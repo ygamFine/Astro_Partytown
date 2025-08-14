@@ -13,5 +13,27 @@
   "resultsFor": "نتائج البحث لـ \"{{query}}\"",
   "showingResults": "عرض النتائج {{from}} إلى {{to}} من {{total}}",
   "filters": "المرشحات",
-  "filterBy": "تصفية حسب {{filter}}"
+  "filterBy": "تصفية حسب {{filter}}",
+  "tip": "نصيحة: أدخل الكلمات المفتاحية واضغط Enter للبحث",
+  "categoriesTitle": "فئات البحث",
+  "categories": {
+    "all": "الكل",
+    "product": "المنتجات",
+    "news": "الأخبار",
+    "case": "الحالات",
+    "other": "أخرى"
+  },
+  "ui": {
+    "placeholder": "ابحث عن المنتجات والأخبار والحالات...",
+    "clear_search": "مسح البحث",
+    "load_more": "تحميل المزيد من النتائج",
+    "search_result": "نتيجة البحث",
+    "search_results": "نتائج البحث",
+    "search_results_for": "نتائج لـ \"{query}\"",
+    "show_more": "عرض المزيد",
+    "show_less": "عرض أقل",
+    "clear_filters": "مسح المرشحات",
+    "no_results": "لم يتم العثور على نتائج",
+    "no_results_for": "لا توجد نتائج لـ \"{query}\""
+  }
 }
