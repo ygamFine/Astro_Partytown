@@ -562,8 +562,19 @@ try {
       return;
     }
     
-    // 获取当前语言
-    const currentLang = window.location.pathname.split('/')[1] || 'en';
+    // 解析当前语言与构建搜索页URL（支持子域名与路径前缀）
+    const hostname = window.location.hostname;
+    const pathLang = (window.location.pathname.split('/')[1] || '');
+    const subdomainToLang: Record<string, string> = {
+      'zh': 'zh-CN', 'zh-hant': 'zh-Hant', 'de': 'de', 'ja': 'ja', 'fr': 'fr', 'ar': 'ar', 'es': 'es', 'it': 'it', 'pt': 'pt-pt', 'nl': 'nl', 'pl': 'pl', 'ru': 'ru', 'th': 'th', 'id': 'id', 'vi': 'vi', 'ms': 'ms', 'ml': 'ml', 'my': 'my', 'hi': 'hi', 'ko': 'ko', 'tr': 'tr'
+    };
+    let currentLang = pathLang || 'en';
+    const firstLabel = hostname.split('.')[0];
+    if (!pathLang && subdomainToLang[firstLabel]) {
+      currentLang = subdomainToLang[firstLabel];
+    }
+    const isDev = hostname === 'localhost' || hostname === '127.0.0.1';
+    const searchBase = isDev ? `/${currentLang}/search` : `/search`;
     
     // 回车键搜索
     searchInput.addEventListener('keydown', function(e) {
@@ -571,7 +582,7 @@ try {
         e.preventDefault();
         const query = searchInput.value.trim();
         if (query) {
-          window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+          window.location.href = `${searchBase}?q=${encodeURIComponent(query)}`;
         }
       }
     });
@@ -580,7 +591,7 @@ try {
     searchButton.addEventListener('click', function() {
       const query = searchInput.value.trim();
       if (query) {
-        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+        window.location.href = `${searchBase}?q=${encodeURIComponent(query)}`;
       }
     });
   }

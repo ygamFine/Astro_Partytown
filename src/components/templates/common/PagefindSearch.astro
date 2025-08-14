@@ -15,6 +15,9 @@ const {
   showResults = true
 } = Astro.props;
 
+import { buildUrl } from '../../../lib/envConfig.js';
+const searchPageUrl = buildUrl(lang, '/search');
+
 // 多语言占位符
 const searchPlaceholder = {
   'zh-CN': '搜索产品、新闻、案例...',
@@ -36,7 +39,7 @@ const searchInfo = {
 }[lang] || '💡 提示：输入关键词后按回车键搜索';
 ---
 
-<div class="pagefind-search-container" data-lang={lang}>
+<div class="pagefind-search-container" data-lang={lang} data-search-url={searchPageUrl}>
   <!-- Pagefind 搜索输入框 -->
   <div class="search-input-wrapper">
     <input 
@@ -73,6 +76,7 @@ const searchInfo = {
     const resultsContainer = document.getElementById('pagefind-results');
     const langContainer = document.querySelector('.pagefind-search-container') as HTMLElement;
     const lang = langContainer?.dataset.lang || 'zh-CN';
+    const searchPageUrl = (langContainer?.dataset.searchUrl || '/search');
     
     if (!searchInput) return;
     
@@ -162,7 +166,7 @@ const searchInfo = {
             pagefind.triggerSearch(query);
           } else {
             // 备用搜索：跳转到搜索页面
-            window.location.href = `/${lang}/search?q=${encodeURIComponent(query)}`;
+            window.location.href = `${searchPageUrl}?q=${encodeURIComponent(query)}`;
           }
         }
       }
@@ -177,7 +181,7 @@ const searchInfo = {
             pagefind.triggerSearch(query);
           } else {
             // 备用搜索：跳转到搜索页面
-            window.location.href = `/${lang}/search?q=${encodeURIComponent(query)}`;
+            window.location.href = `${searchPageUrl}?q=${encodeURIComponent(query)}`;
           }
         }
       });
