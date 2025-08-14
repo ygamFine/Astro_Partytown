@@ -211,18 +211,26 @@ const pageWidth = getPageWidth();
         // 获取结果数据
         const title = result.meta?.title || result.title || '无标题';
         const excerpt = result.excerpt || result.meta?.excerpt || '';
-        const image = result.meta?.image || result.image || '';
+        let image = result.meta?.image || result.image || '';
         const url = result.url || '';
         
+        // 过滤掉 base64 编码的图片，只使用正常的图片路径
+        if (image && image.startsWith('data:')) {
+          image = '';
+        }
+        
+        // 使用官方 Pagefind UI 的结果格式
         resultElement.innerHTML = `
-          ${image ? `<img src="${image}" alt="${title}" class="pagefind-ui__result-image" loading="lazy">` : ''}
-          <div class="pagefind-ui__result-content">
-            <a href="${url}" class="pagefind-ui__result-link">${title}</a>
-            <div class="pagefind-ui__result-excerpt">${excerpt}</div>
-            <div class="pagefind-ui__result-meta">
-              <span class="pagefind-ui__result-category">${getCategoryLabel(getCategoryFromUrl(url))}</span>
+          <a href="${url}" class="pagefind-ui__result-link">
+            ${image ? `<img src="${image}" alt="${title}" class="pagefind-ui__result-image" loading="lazy">` : ''}
+            <div class="pagefind-ui__result-content">
+              <div class="pagefind-ui__result-title">${title}</div>
+              <div class="pagefind-ui__result-excerpt">${excerpt}</div>
+              <div class="pagefind-ui__result-meta">
+                <span class="pagefind-ui__result-category">${getCategoryLabel(getCategoryFromUrl(url))}</span>
+              </div>
             </div>
-          </div>
+          </a>
         `;
         resultsArea.appendChild(resultElement);
       });
@@ -234,6 +242,7 @@ const pageWidth = getPageWidth();
     function updateStatistics() {
       const resultCounts = { product: 0, news: 0, case: 0 };
       
+      // 统计所有搜索结果
       allSearchResults.forEach(result => {
         const url = result.url || '';
         const category = getCategoryFromUrl(url);
@@ -281,6 +290,8 @@ const pageWidth = getPageWidth();
         
         // 重新筛选并显示结果
         filterAndDisplayResults();
+        // 更新统计
+        updateStatistics();
       });
     });
     
@@ -328,7 +339,6 @@ const pageWidth = getPageWidth();
       (window as any).pagefindInstance = pagefind;
       
       // 监听搜索事件，清空结果数组
-      // Pagefind 可能不支持 on 方法，我们使用其他方式
       allSearchResults = [];
       
       // 监听搜索结果变化
@@ -398,17 +408,14 @@ const pageWidth = getPageWidth();
     background: transparent;
   }
 
-  /* 搜索结果布局优化 - 图片与文字一行显示 */
+  /* 搜索结果样式 - 使用官方 Pagefind UI */
   :global(.pagefind-ui__result) {
+    background: white;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
-    background: white;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
   }
 
   :global(.pagefind-ui__result:hover) {
@@ -416,44 +423,52 @@ const pageWidth = getPageWidth();
     box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
   }
 
-  /* 图片容器 */
+  :global(.pagefind-ui__result-link) {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
   :global(.pagefind-ui__result-image) {
     flex-shrink: 0;
     width: 80px;
     height: 60px;
     border-radius: 6px;
     object-fit: cover;
-    margin: 0 !important;
   }
 
-  /* 内容容器 */
   :global(.pagefind-ui__result-content) {
     flex: 1;
     min-width: 0;
   }
 
-  :global(.pagefind-ui__result-link) {
+  :global(.pagefind-ui__result-title) {
     color: #1f2937;
-    text-decoration: none;
     font-weight: 600;
-    font-size: 1.125rem;
-    display: block;
+    font-size: 1rem;
     margin-bottom: 0.5rem;
-  }
-
-  :global(.pagefind-ui__result-link:hover) {
-    color: #dc2626;
   }
 
   :global(.pagefind-ui__result-excerpt) {
     color: #6b7280;
-    line-height: 1.6;
+    font-size: 0.875rem;
+    line-height: 1.5;
     margin-bottom: 0.5rem;
   }
 
   :global(.pagefind-ui__result-meta) {
     color: #9ca3af;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+  }
+
+  :global(.pagefind-ui__result-category) {
+    background: #dc2626;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
   }
 
   :global(.pagefind-ui__message) {
@@ -496,7 +511,7 @@ const pageWidth = getPageWidth();
     }
     
     /* 移动端优化 */
-    :global(.pagefind-ui__result) {
+    :global(.pagefind-ui__result-link) {
       flex-direction: column;
       gap: 0.75rem;
     }

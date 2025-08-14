@@ -37,6 +37,7 @@ pnpm-debug.log*
 .i18n-config-cache
 
 
+public/pagefind/
 public/images/strapi/
 public/images/optimized/
 public/search-index.json

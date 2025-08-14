@@ -9,7 +9,7 @@
     "astro": "astro",
     "optimize:images:node": "node scripts/optimize-images-node.js",
     "download:strapi-images": "node scripts/download-strapi-images.js",
-    "generate:pagefind": "pagefind --site dist --output-path public/pagefind"
+    "generate:pagefind": "pagefind --site dist --output-path public/pagefind --glob \"**/{products,news,case}/**/*.html\""
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",

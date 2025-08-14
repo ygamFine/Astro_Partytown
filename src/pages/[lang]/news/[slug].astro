@@ -105,6 +105,10 @@ const validNewsImage = hasNews ? processImageForDisplay(news.image, imageMapping
 ---
 
 <Layout title={hasNews ? news.title : '新闻详情'} description={hasNews ? news.excerpt : ''} lang={lang}>
+  <!-- Pagefind 图片元数据 -->
+  {hasNews && validNewsImage && (
+    <div data-pagefind-meta="image" data-pagefind-meta-image={validNewsImage} style="display: none;"></div>
+  )}
   <main class="bg-gray-50 min-h-screen">
     {hasNews ? (
       <>

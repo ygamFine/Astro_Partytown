@@ -474,7 +474,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <title>{title}</title>
   </head>
-  <body>
+  <body data-pagefind-body>
 
     <Header />
     
@@ -483,10 +483,10 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     </main>
 
     <!-- 全局右侧侧边栏 -->
-    <RightSidebar lang={lang} />
+    <RightSidebar lang={lang} data-pagefind-ignore />
 
     <!-- 联系表单模态 -->
-    <ContactModal translations={{ common: {} }} />
+    <ContactModal translations={{ common: {} }} data-pagefind-ignore />
 
 
     <!-- 大幅延迟客服脚本加载 -->
