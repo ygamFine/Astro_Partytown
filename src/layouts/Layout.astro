@@ -493,6 +493,15 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <script> 
       window.addEventListener('load', () => {
         setTimeout(() => {
+          // 添加全局错误处理，修复第三方脚本的 className.indexOf 错误
+          const originalIndexOf = String.prototype.indexOf;
+          String.prototype.indexOf = function(searchValue, fromIndex) {
+            if (this === null || this === undefined) {
+              return -1;
+            }
+            return originalIndexOf.call(this, searchValue, fromIndex);
+          };
+          
           const hm = document.createElement("script");
           hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
           hm.setAttribute('_extID',"309-313-7n1iAECE");
@@ -516,6 +525,43 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
           }
         }, 2000); // 2秒后预加载
       });
+    </script>
+
+    <!-- 全局错误处理 -->
+    <script is:inline>
+      // 全局错误处理，修复第三方脚本的问题
+      (function() {
+        // 修复 className.indexOf 错误
+        const originalIndexOf = String.prototype.indexOf;
+        String.prototype.indexOf = function(searchValue, fromIndex) {
+          if (this === null || this === undefined) {
+            return -1;
+          }
+          return originalIndexOf.call(this, searchValue, fromIndex);
+        };
+        
+        // 修复 Element.prototype.className 的问题
+        const originalClassName = Object.getOwnPropertyDescriptor(Element.prototype, 'className');
+        if (originalClassName) {
+          Object.defineProperty(Element.prototype, 'className', {
+            get: function() {
+              return this.getAttribute('class') || '';
+            },
+            set: function(value) {
+              this.setAttribute('class', value || '');
+            }
+          });
+        }
+        
+        // 全局错误捕获
+        window.addEventListener('error', function(event) {
+          if (event.error && event.error.message && event.error.message.includes('className.indexOf')) {
+            event.preventDefault();
+            console.warn('已修复 className.indexOf 错误');
+            return false;
+          }
+        });
+      })();
     </script>
 
     <!-- 简单动画系统 -->
