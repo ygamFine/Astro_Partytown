@@ -153,6 +153,14 @@ const pageWidth = getPageWidth();
 </Layout>
 
 <script>
+  // 全局错误处理器
+  window.addEventListener('error', function(event) {
+    if (event.error && event.error.message && event.error.message.includes('className.indexOf')) {
+      console.warn('捕获到 className.indexOf 错误，这可能是 Pagefind UI 库的内部问题:', event.error);
+      event.preventDefault();
+    }
+  });
+
   // Pagefind 搜索页面初始化
   document.addEventListener('DOMContentLoaded', async function() {
     const resultsContainer = document.getElementById('pagefind-search-results') as HTMLElement | null;
@@ -313,21 +321,26 @@ const pageWidth = getPageWidth();
         showImages: true,
         translations: {},
         processResult: (result) => {
-          // 添加分类标签
-          const url = result.url || '';
-          const category = getCategoryFromUrl(url);
-          const categoryLabel = getCategoryLabel(category);
-          
-          // 将结果添加到全局数组用于分类筛选
-          allSearchResults.push(result);
-          
-          return {
-            ...result,
-            meta: {
-              ...result.meta,
-              category: categoryLabel
-            }
-          };
+          try {
+            // 添加分类标签
+            const url = result.url || '';
+            const category = getCategoryFromUrl(url);
+            const categoryLabel = getCategoryLabel(category);
+            
+            // 将结果添加到全局数组用于分类筛选
+            allSearchResults.push(result);
+            
+            return {
+              ...result,
+              meta: {
+                ...result.meta,
+                category: categoryLabel
+              }
+            };
+          } catch (error) {
+            console.warn('处理搜索结果时出错:', error);
+            return result;
+          }
         }
       });
       
