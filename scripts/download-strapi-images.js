@@ -487,13 +487,18 @@ async function generateImageMapping() {
     const lines = [];
     lines.push('// 自动生成：Strapi 图片 URL 映射 (由构建脚本生成)');
     lines.push('');
+    
+    // 检查 assets 目录是否存在
+    const assetsDir = path.join(__dirname, '../src/assets/strapi');
+    const assetsExists = await fs.access(assetsDir).then(() => true).catch(() => false);
+    
     // 为每个文件创建导入（?url 以获取最终 URL 字符串）——从源码资产导入，发射到/_astro
     imageFiles.forEach((file, idx) => {
       // 若 src/assets/strapi 不存在，改从 public 侧导入，确保构建可用
-      const preferSrcAssets = true;
-      if (preferSrcAssets) {
+      if (assetsExists) {
         lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
       } else {
+        // 从 public 目录导入，使用相对路径
         lines.push(`import u${idx} from '../../public/images/strapi/${file}?url';`);
       }
     });
