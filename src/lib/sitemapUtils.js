@@ -15,7 +15,7 @@ config();
 
 // 获取站点URL - 使用子域名
 const getSiteUrl = (lang = 'en') => {
-  const baseDomain = 'astro-partytown.vercel.app';
+  const baseDomain = 'aihuazhi.cn';
   
   // 语言到子域名的映射
   const langToSubdomain = {
