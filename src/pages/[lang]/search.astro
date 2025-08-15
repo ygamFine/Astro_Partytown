@@ -18,7 +18,18 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const searchQuery = '';
 const t = getDictionary(lang);
-const uiJson = encodeURIComponent(JSON.stringify(t.search?.ui || {}));
+// 准备客户端使用的数据
+const uiData = t.search?.ui || {};
+const categoriesData = {
+  product: t.search?.categories?.product || '产品',
+  news: t.search?.categories?.news || '新闻',
+  case: t.search?.categories?.case || '案例',
+  other: t.search?.categories?.other || '其他'
+};
+const noResultsData = {
+  noResultsText: t.search?.noResults || '没有找到结果',
+  noResultsDescText: t.search?.noResultsDescription || '请尝试其他关键词'
+};
 
 // 面包屑导航
 const breadcrumbs = generateSearchBreadcrumbs(lang, searchQuery);
@@ -165,13 +176,8 @@ const pageWidth = getPageWidth();
     
     // 辅助函数：获取分类标签
     function getCategoryLabel(category: 'product' | 'news' | 'case' | 'other') {
-      try {
-        const labels = JSON.parse(decodeURIComponent("{categoriesJson}")) as Record<'product' | 'news' | 'case' | 'other', string>;
-        return labels[category] || labels.other || '其他';
-      } catch {
-        const fallback: Record<'product' | 'news' | 'case' | 'other', string> = { product: '产品', news: '新闻', case: '案例', other: '其他' };
-        return fallback[category];
-      }
+      const labels = { product: '产品', news: '新闻', case: '案例', other: '其他' };
+      return labels[category] || labels.other || '其他';
     }
     
     // 筛选并显示结果
@@ -193,8 +199,8 @@ const pageWidth = getPageWidth();
             <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
             </svg>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">${JSON.parse(decodeURIComponent("{noResultsJson}")).noResultsText}</h3>
-            <p class="text-gray-600">${JSON.parse(decodeURIComponent("{noResultsJson}")).noResultsDescText}</p>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">没有找到结果</h3>
+            <p class="text-gray-600">请尝试其他关键词</p>
           </div>
         `;
         return;
@@ -300,12 +306,12 @@ const pageWidth = getPageWidth();
     // 尝试加载 Pagefind
     try {
       const { PagefindUI } = await import('@pagefind/default-ui');
-      
-        // 初始化 Pagefind UI
+
+      // 初始化 Pagefind UI
       const pagefind = new PagefindUI({
         element: resultsContainer,
         showImages: true,
-          translations: JSON.parse(decodeURIComponent("{uiJson}")),
+        translations: {},
         processResult: (result) => {
           // 添加分类标签
           const url = result.url || '';
@@ -325,8 +331,9 @@ const pageWidth = getPageWidth();
         }
       });
       
-      // 保存实例到全局变量
+      // 保存实例到全局变量并广播 ready 事件，供其他组件复用
       (window as any).pagefindInstance = pagefind;
+      window.dispatchEvent(new Event('pagefind:ready'));
       
       // 监听搜索事件，清空结果数组
       allSearchResults = [];

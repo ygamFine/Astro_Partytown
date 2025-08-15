@@ -23,7 +23,8 @@ import getDictionary from '../../../i18n/dictionaries.js';
 const t = getDictionary(lang);
 const searchPlaceholder = t.search?.placeholder || placeholder;
 const searchInfo = `💡 ${t.search?.tip || ''}`.trim();
-const uiJson = encodeURIComponent(JSON.stringify(t.search?.ui || {}));
+// 准备客户端使用的翻译数据
+const uiData = t.search?.ui || {};
 ---
 
 <div class="pagefind-search-container" data-lang={lang} data-search-url={searchPageUrl}>
@@ -60,11 +61,12 @@ const uiJson = encodeURIComponent(JSON.stringify(t.search?.ui || {}));
   document.addEventListener('DOMContentLoaded', async function() {
     const searchInput = document.getElementById('pagefind-search-input') as HTMLInputElement;
     const searchIcon = document.getElementById('pagefind-search-icon');
-    const resultsContainer = document.getElementById('pagefind-results');
+    // 兼容两种结果容器ID：组件内使用的 #pagefind-results 与搜索页使用的 #pagefind-search-results
+    const resultsContainer = document.getElementById('pagefind-search-results') || document.getElementById('pagefind-results');
     const langContainer = document.querySelector('.pagefind-search-container') as HTMLElement;
     const lang = langContainer?.dataset.lang || 'zh-CN';
     const searchPageUrl = (langContainer?.dataset.searchUrl || '/search');
-    const pagefindTranslations = JSON.parse(decodeURIComponent("{uiJson}"));
+    const pagefindTranslations = {};
     
     if (!searchInput) return;
     
@@ -75,13 +77,17 @@ const uiJson = encodeURIComponent(JSON.stringify(t.search?.ui || {}));
       searchInput.value = query;
     }
     
-    // 尝试加载 Pagefind
-    let pagefind: any = null;
+    // 尝试加载/复用 Pagefind
+    let pagefind: any = (window as any).pagefindInstance || null;
+
+    // 监听页面派发的 pagefind:ready 事件，以便在实例稍后创建时复用
+    window.addEventListener('pagefind:ready', () => {
+      pagefind = (window as any).pagefindInstance || pagefind;
+    });
     try {
-      // 动态导入 Pagefind
-      const { PagefindUI } = await import('@pagefind/default-ui');
-      
-      if (resultsContainer) {
+      // 如无全局实例，则本组件自行初始化（仅当存在结果容器时）
+      if (!pagefind && resultsContainer) {
+        const { PagefindUI } = await import('@pagefind/default-ui');
         // 初始化 Pagefind UI
           pagefind = new PagefindUI({
           element: resultsContainer,
