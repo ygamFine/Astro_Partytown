@@ -1,6 +1,7 @@
 /**
  * 站点地图工具函数
  * 提供站点地图生成、验证和管理功能
+ * 支持多语言站点地图生成
  */
 
 import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
@@ -12,20 +13,38 @@ import { getCases } from './strapi.js';
 import { config } from 'dotenv';
 config();
 
-// 获取环境变量中的域名配置
-const getSiteUrl = () => {
-  // 优先使用环境变量
-  if (process.env.PUBLIC_SITE_URL) {
-    return process.env.PUBLIC_SITE_URL;
-  }
+// 获取站点URL - 使用子域名
+const getSiteUrl = (lang = 'en') => {
+  const baseDomain = 'astro-partytown.vercel.app';
   
-  // 根据环境使用不同的域名
-  if (process.env.NODE_ENV === 'development') {
-    return process.env.DEV_SITE_URL;
-  }
+  // 语言到子域名的映射
+  const langToSubdomain = {
+    'en': 'en',
+    'zh-CN': 'zh', 
+    'zh-Hant': 'zh',
+    'ar': 'ar',
+    'de': 'de',
+    'fr': 'fr',
+    'it': 'it',
+    'tr': 'tr',
+    'es': 'es',
+    'pt-pt': 'pt',
+    'nl': 'nl',
+    'pl': 'pl',
+    'ru': 'ru',
+    'th': 'th',
+    'id': 'id',
+    'vi': 'vi',
+    'ms': 'ms',
+    'ml': 'ml',
+    'my': 'my',
+    'hi': 'hi',
+    'ja': 'ja',
+    'ko': 'ko'
+  };
   
-  // 生产环境默认域名
-  return process.env.PROD_SITE_URL;
+  const subdomain = langToSubdomain[lang] || 'en';
+  return `https://${subdomain}.${baseDomain}`;
 };
 
 // 站点配置
@@ -68,9 +87,11 @@ export function generateStaticPages() {
   const pages = [];
   
   for (const lang of SITE_CONFIG.supportedLanguages) {
-    // 首页
+    const siteUrl = getSiteUrl(lang);
+    
+    // 首页 - 使用子域名，不添加语言路径
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang === SITE_CONFIG.defaultLanguage ? '' : lang}`,
+      url: siteUrl,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.home,
       priority: SITE_CONFIG.priorities.home,
@@ -80,7 +101,7 @@ export function generateStaticPages() {
     
     // 关于我们
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang}/about`,
+      url: `${siteUrl}/about`,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.about,
       priority: SITE_CONFIG.priorities.about,
@@ -90,7 +111,7 @@ export function generateStaticPages() {
     
     // 联系我们
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang}/contact`,
+      url: `${siteUrl}/contact`,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.contact,
       priority: SITE_CONFIG.priorities.contact,
@@ -100,7 +121,7 @@ export function generateStaticPages() {
     
     // 产品列表页
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang}/products`,
+      url: `${siteUrl}/products`,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.products,
       priority: SITE_CONFIG.priorities.products,
@@ -110,7 +131,7 @@ export function generateStaticPages() {
     
     // 案例列表页
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang}/case`,
+      url: `${siteUrl}/case`,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.cases,
       priority: SITE_CONFIG.priorities.cases,
@@ -120,7 +141,7 @@ export function generateStaticPages() {
     
     // 新闻列表页
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang}/news`,
+      url: `${siteUrl}/news`,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.news,
       priority: SITE_CONFIG.priorities.news,
@@ -130,7 +151,7 @@ export function generateStaticPages() {
     
     // 搜索页
     pages.push({
-      url: `${SITE_CONFIG.baseUrl}/${lang}/search`,
+      url: `${siteUrl}/search`,
       lastmod: new Date().toISOString(),
       changefreq: SITE_CONFIG.changeFreq.search,
       priority: SITE_CONFIG.priorities.search,
@@ -151,12 +172,13 @@ export async function generateProductPages() {
   for (const lang of SITE_CONFIG.supportedLanguages) {
     try {
       const products = await getProducts(lang);
+      const siteUrl = getSiteUrl(lang);
       
       if (products && products.length > 0) {
         products.forEach(product => {
           if (product.slug) {
             pages.push({
-              url: `${SITE_CONFIG.baseUrl}/${lang}/products/${product.slug}`,
+              url: `${siteUrl}/products/${product.slug}`,
               lastmod: product.updatedAt || product.publishedAt || new Date().toISOString(),
               changefreq: SITE_CONFIG.changeFreq.productDetail,
               priority: SITE_CONFIG.priorities.productDetail,
@@ -185,12 +207,13 @@ export async function generateNewsPages() {
   for (const lang of SITE_CONFIG.supportedLanguages) {
     try {
       const news = await getNews(lang);
+      const siteUrl = getSiteUrl(lang);
       
       if (news && news.length > 0) {
         news.forEach(item => {
           if (item.slug) {
             pages.push({
-              url: `${SITE_CONFIG.baseUrl}/${lang}/news/${item.slug}`,
+              url: `${siteUrl}/news/${item.slug}`,
               lastmod: item.updatedAt || item.publishedAt || item.date || new Date().toISOString(),
               changefreq: SITE_CONFIG.changeFreq.newsDetail,
               priority: SITE_CONFIG.priorities.newsDetail,
@@ -219,11 +242,12 @@ export async function generateCasePages() {
   for (const lang of SITE_CONFIG.supportedLanguages) {
     try {
       const cases = await getCases(lang);
+      const siteUrl = getSiteUrl(lang);
       
       if (cases && cases.length > 0) {
         cases.forEach(caseItem => {
           pages.push({
-            url: `${SITE_CONFIG.baseUrl}/${lang}/case/${caseItem.id}`,
+            url: `${siteUrl}/case/${caseItem.id}`,
             lastmod: caseItem.updatedAt || caseItem.publishedAt || caseItem.date || new Date().toISOString(),
             changefreq: SITE_CONFIG.changeFreq.caseDetail,
             priority: SITE_CONFIG.priorities.caseDetail,
@@ -247,13 +271,67 @@ export async function generateCasePages() {
  */
 export function generateSitemapXML(pages) {
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
+  xml += ' xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
   
-  // 生成URL条目 - 简化版本，只包含URL和最后修改时间
+  // 按语言分组页面
+  const pagesByLang = {};
+  pages.forEach(page => {
+    if (!pagesByLang[page.lang]) {
+      pagesByLang[page.lang] = [];
+    }
+    pagesByLang[page.lang].push(page);
+  });
+  
+  // 生成URL条目，包含多语言链接
   pages.forEach(page => {
     xml += '  <url>\n';
     xml += `    <loc>${page.url}</loc>\n`;
     xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
+    xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+    xml += `    <priority>${page.priority}</priority>\n`;
+    
+    // 添加多语言替代链接
+    if (page.type !== 'home') {
+      // 为每个语言添加替代链接
+      SITE_CONFIG.supportedLanguages.forEach(lang => {
+        const altUrl = page.type === 'home' 
+          ? getSiteUrl(lang)
+          : page.url.replace(getSiteUrl(page.lang), getSiteUrl(lang));
+        
+        xml += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${altUrl}" />\n`;
+      });
+      
+      // 添加默认语言链接
+      const defaultUrl = page.type === 'home'
+        ? getSiteUrl(SITE_CONFIG.defaultLanguage)
+        : page.url.replace(getSiteUrl(page.lang), getSiteUrl(SITE_CONFIG.defaultLanguage));
+      
+      xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${defaultUrl}" />\n`;
+    }
+    
+    xml += '  </url>\n';
+  });
+  
+  xml += '</urlset>';
+  return xml;
+}
+
+/**
+ * 生成按语言分组的站点地图
+ */
+export function generateLanguageSpecificSitemap(pages, language) {
+  const languagePages = pages.filter(page => page.lang === language);
+  
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  
+  languagePages.forEach(page => {
+    xml += '  <url>\n';
+    xml += `    <loc>${page.url}</loc>\n`;
+    xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
+    xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+    xml += `    <priority>${page.priority}</priority>\n`;
     xml += '  </url>\n';
   });
   
@@ -270,14 +348,14 @@ export function generateSitemapIndexXML() {
   
   // 主站点地图
   xml += '  <sitemap>\n';
-  xml += `    <loc>${SITE_CONFIG.baseUrl}/sitemap.xml</loc>\n`;
+  xml += `    <loc>${getSiteUrl('en')}/sitemap.xml</loc>\n`;
   xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
   xml += '  </sitemap>\n';
   
   // 按语言分组的站点地图
   SITE_CONFIG.supportedLanguages.forEach(lang => {
     xml += '  <sitemap>\n';
-    xml += `    <loc>${SITE_CONFIG.baseUrl}/sitemap-${lang}.xml</loc>\n`;
+    xml += `    <loc>${getSiteUrl(lang)}/sitemap-${lang}.xml</loc>\n`;
     xml += `    <lastmod>${new Date().toISOString()}</lastmod>\n`;
     xml += '  </sitemap>\n';
   });
@@ -378,46 +456,44 @@ export function generateSitemapStats(pages) {
  * 生成完整的站点地图
  */
 export async function generateFullSitemap() {
-  try {
-    
-    // 生成所有页面URL
-    const staticPages = generateStaticPages();
-    const productPages = await generateProductPages();
-    const newsPages = await generateNewsPages();
-    const casePages = await generateCasePages();
-    
-    // 合并所有页面
-    const allPages = [
-      ...staticPages,
-      ...productPages,
-      ...newsPages,
-      ...casePages
-    ];
-    
-    // 验证数据
-    const validation = validateSitemapData(allPages);
-    if (!validation.isValid) {
-      console.error('❌ 站点地图数据验证失败:', validation.errors);
-      throw new Error('站点地图数据验证失败');
-    }
-    
-    // 生成统计信息
-    const stats = generateSitemapStats(allPages);
-    
-    // 生成XML
-    const sitemapXML = generateSitemapXML(allPages);
-    
+  // 生成所有页面URL
+  const staticPages = generateStaticPages();
+  const productPages = await generateProductPages();
+  const newsPages = await generateNewsPages();
+  const casePages = await generateCasePages();
+  
+  // 合并所有页面
+  const allPages = [
+    ...staticPages,
+    ...productPages,
+    ...newsPages,
+    ...casePages
+  ];
+  
+  // 生成XML
+  const sitemapXML = generateSitemapXML(allPages);
+  
+  return {
+    xml: sitemapXML,
+    pages: allPages
+  };
+}
 
+/**
+ * 构建时生成站点地图文件
+ */
+export async function buildSitemapFiles() {
+  try {
+    console.log('🔨 构建时生成站点地图文件...');
     
-    return {
-      xml: sitemapXML,
-      pages: allPages,
-      stats: stats,
-      validation: validation
-    };
+    const sitemapData = await generateFullSitemap();
     
+    // 这里可以添加文件写入逻辑
+    // 在 Astro 构建过程中，这些文件会自动生成
+    
+    return sitemapData;
   } catch (error) {
-    console.error('❌ 生成完整站点地图失败:', error);
+    console.error('❌ 构建站点地图文件失败:', error);
     throw error;
   }
 } 

@@ -75,6 +75,7 @@ Disallow: /*&*
 
 # 站点地图
 Sitemap: ${siteUrl}/sitemap.xml
+Sitemap: ${siteUrl}/sitemap-index.xml
 
 # 爬取延迟（秒）
 Crawl-delay: ${import.meta.env.CRAWL_DELAY}
