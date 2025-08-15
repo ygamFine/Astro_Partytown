@@ -77,44 +77,23 @@ const uiData = t.search?.ui || {};
       searchInput.value = query;
     }
     
-    // 尝试加载/复用 Pagefind
+    // 尝试复用已存在的 Pagefind 实例
     let pagefind: any = (window as any).pagefindInstance || null;
 
     // 监听页面派发的 pagefind:ready 事件，以便在实例稍后创建时复用
     window.addEventListener('pagefind:ready', () => {
       pagefind = (window as any).pagefindInstance || pagefind;
     });
-    try {
-      // 如无全局实例，则本组件自行初始化（仅当存在结果容器时）
-      if (!pagefind && resultsContainer) {
-        const { PagefindUI } = await import('@pagefind/default-ui');
-        // 初始化 Pagefind UI
-          pagefind = new PagefindUI({
-          element: resultsContainer,
-          showImages: true,
-          translations: pagefindTranslations,
-          processResult: (result: any) => {
-            // 自定义结果处理
-            return {
-              ...result,
-              meta: {
-                ...result.meta,
-                // 添加语言信息
-                lang: lang
-              }
-            };
-          }
-        });
-        
-        // 设置初始搜索查询
-        if (query) {
+    
+    // 在搜索页面中，不重复初始化Pagefind，只复用现有实例
+    if (!pagefind && resultsContainer) {
+      // 等待一小段时间，让搜索页面有机会初始化Pagefind
+      setTimeout(() => {
+        pagefind = (window as any).pagefindInstance;
+        if (pagefind && query) {
           pagefind.triggerSearch(query);
         }
-      }
-    } catch (error) {
-      console.warn('Pagefind 加载失败，使用备用搜索:', error);
-      // 备用搜索功能
-      initFallbackSearch();
+      }, 100);
     }
     
     // 搜索输入处理
@@ -169,26 +148,7 @@ const uiData = t.search?.ui || {};
       });
     }
     
-    // 备用搜索功能
-    function initFallbackSearch() {
-      if (!resultsContainer || !searchInput) return;
-      
-      searchInput.addEventListener('input', function(e) {
-        const target = e.target as HTMLInputElement;
-        const query = target.value.trim();
-        if (query.length > 0) {
-          // 显示搜索提示
-          resultsContainer.innerHTML = `
-            <div class="p-4 text-center">
-              <p class="text-gray-600">正在搜索 "${query}"...</p>
-              <p class="text-sm text-gray-500 mt-2">按回车键查看完整搜索结果</p>
-            </div>
-          `;
-        } else {
-          resultsContainer.innerHTML = '';
-        }
-      });
-    }
+
   });
 </script>
 
