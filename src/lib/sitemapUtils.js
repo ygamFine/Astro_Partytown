@@ -77,7 +77,14 @@ const getSiteUrl = (lang = 'en') => {
   };
   
   const subdomain = langToSubdomain[lang] || 'en';
-  return `https://${subdomain}.${currentDomain}`;
+  
+  // 确保域名正确
+  if (currentDomain === 'localhost') {
+    return `https://${subdomain}.${currentDomain}`;
+  } else {
+    // 生产环境使用正确的域名
+    return `https://${subdomain}.aihuazhi.cn`;
+  }
 };
 
 // 站点配置
