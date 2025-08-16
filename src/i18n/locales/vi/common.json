@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "Trước",
+    "next": "Tiếp",
+    "first": "Đầu",
+    "last": "Cuối",
+    "page": "Trang",
+    "of": "của",
+    "showing": "Hiển thị",
+    "to": "đến",
+    "entries": "mục",
+    "per_page": "mỗi trang",
+    "pages": "trang",
+    "ofTotal": "của"
   },
   "search": {
     "placeholder": "Enter keywords",

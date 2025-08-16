@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "ယခင်က",
+    "next": "နောက်",
+    "first": "ပထမ",
+    "last": "နောက်ဆုံး",
+    "page": "စာမျက်နှာ",
+    "of": "၏",
+    "showing": "ြသခြင်း",
+    "to": "သို့",
+    "entries": "အမျိုးအစားများ",
+    "per_page": "စာမျက်နှာတစ်ခုလျှင်",
+    "pages": "စာမျက်နှာများ",
+    "ofTotal": "၏"
   },
   "search": {
     "placeholder": "Enter keywords",

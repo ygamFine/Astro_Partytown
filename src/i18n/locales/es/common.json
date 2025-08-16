@@ -149,7 +149,9 @@
     "showing": "Mostrando",
     "to": "a",
     "entries": "entradas",
-    "per_page": "por página"
+    "per_page": "por página",
+    "pages": "páginas",
+    "ofTotal": "de"
   },
   "search": {
     "placeholder": "Ingrese palabras clave",

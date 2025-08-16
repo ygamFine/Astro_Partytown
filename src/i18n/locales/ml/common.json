@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "മുമ്പത്തെ",
+    "next": "അടുത്തത്",
+    "first": "ആദ്യം",
+    "last": "അവസാനം",
+    "page": "പേജ്",
+    "of": "ഓഫ്",
+    "showing": "കാണിക്കുന്നു",
+    "to": "വരെ",
+    "entries": "എൻ‌ട്രികൾ",
+    "per_page": "പേജിലേക്ക്",
+    "pages": "പേജുകൾ",
+    "ofTotal": "ഓഫ്"
   },
   "search": {
     "placeholder": "Enter keywords",

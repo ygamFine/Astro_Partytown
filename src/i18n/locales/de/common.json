@@ -149,7 +149,9 @@
     "showing": "Anzeige",
     "to": "bis",
     "entries": "Einträge",
-    "per_page": "pro Seite"
+    "per_page": "pro Seite",
+    "pages": "Seiten",
+    "ofTotal": "von"
   },
   "search": {
     "placeholder": "Geben Sie Schlüsselwörter ein",

@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "first": "İlk",
+    "last": "Son",
+    "page": "Sayfa",
+    "of": "/",
+    "showing": "Gösteriliyor",
+    "to": "kadar",
+    "entries": "giriş",
+    "per_page": "sayfa başına",
+    "pages": "sayfa",
+    "ofTotal": "/"
   },
   "search": {
     "placeholder": "Enter keywords",

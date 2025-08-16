@@ -149,7 +149,9 @@
     "showing": "Mostrando",
     "to": "a",
     "entries": "voci",
-    "per_page": "per pagina"
+    "per_page": "per pagina",
+    "pages": "pagine",
+    "ofTotal": "di"
   },
   "search": {
     "placeholder": "Inserisci parole chiave",

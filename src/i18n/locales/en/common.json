@@ -149,7 +149,9 @@
     "showing": "Showing",
     "to": "to",
     "entries": "entries",
-    "per_page": "per page"
+    "per_page": "per page",
+    "pages": "pages",
+    "ofTotal": "of"
   },
   "search": {
     "placeholder": "Enter keywords",

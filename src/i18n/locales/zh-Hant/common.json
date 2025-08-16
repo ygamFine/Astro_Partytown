@@ -149,7 +149,9 @@
     "showing": "顯示",
     "to": "到",
     "entries": "條記錄",
-    "per_page": "每頁顯示"
+    "per_page": "每頁顯示",
+    "pages": "頁",
+    "ofTotal": "共"
   },
   "search": {
     "placeholder": "請輸入關鍵詞",

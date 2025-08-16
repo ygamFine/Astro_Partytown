@@ -149,7 +149,9 @@
     "showing": "Affichage",
     "to": "à",
     "entries": "entrées",
-    "per_page": "par page"
+    "per_page": "par page",
+    "pages": "pages",
+    "ofTotal": "sur"
   },
   "search": {
     "placeholder": "Entrez des mots-clés",

@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "Sebelumnya",
+    "next": "Seterusnya",
+    "first": "Pertama",
+    "last": "Terakhir",
+    "page": "Halaman",
+    "of": "daripada",
+    "showing": "Menunjukkan",
+    "to": "kepada",
+    "entries": "entri",
+    "per_page": "setiap halaman",
+    "pages": "halaman",
+    "ofTotal": "daripada"
   },
   "search": {
     "placeholder": "Enter keywords",

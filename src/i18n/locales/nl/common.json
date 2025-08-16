@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "Vorige",
+    "next": "Volgende",
+    "first": "Eerste",
+    "last": "Laatste",
+    "page": "Pagina",
+    "of": "van",
+    "showing": "Toont",
+    "to": "tot",
+    "entries": "items",
+    "per_page": "per pagina",
+    "pages": "pagina's",
+    "ofTotal": "van"
   },
   "search": {
     "placeholder": "Enter keywords",

@@ -59,6 +59,20 @@ const shouldShowPagination = totalPages > 1;
         </a>
       )}
 
+      <!-- 上一页 -->
+      {currentPage > 1 && (
+        <a 
+          href={getPageUrl(currentPage - 1)}
+          class="pagination-button pagination-nav"
+          aria-label={i18n.pagination.previous}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span class="hidden sm:inline">{i18n.pagination.previous}</span>
+        </a>
+      )}
+
       <!-- 第一页 -->
       {visiblePages[0] > 1 && (
         <>
@@ -116,7 +130,7 @@ const shouldShowPagination = totalPages > 1;
           </svg>
         </a>
       )}
-      
+
       <!-- 尾页 -->
       {currentPage < totalPages && (
         <a 
@@ -211,18 +225,5 @@ const shouldShowPagination = totalPages > 1;
   .pagination-button:focus {
     @apply outline-none ring-2 ring-red-500 ring-offset-2;
   }
-</style>       
-      <!-- 上一页 -->
-      {currentPage > 1 && (
-        <a 
-          href={getPageUrl(currentPage - 1)}
-          class="pagination-button pagination-nav"
-          aria-label={i18n.pagination.previous}
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span class="hidden sm:inline">{i18n.pagination.previous}</span>
-        </a>
-      )}
+</style>
       

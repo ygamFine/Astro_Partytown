@@ -149,7 +149,9 @@
     "showing": "表示",
     "to": "から",
     "entries": "件",
-    "per_page": "ページあたり"
+    "per_page": "ページあたり",
+    "pages": "ページ",
+    "ofTotal": "の"
   },
   "search": {
     "placeholder": "キーワードを入力してください",

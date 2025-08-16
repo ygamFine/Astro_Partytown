@@ -149,7 +149,9 @@
     "showing": "표시",
     "to": "에서",
     "entries": "개 항목",
-    "per_page": "페이지당"
+    "per_page": "페이지당",
+    "pages": "페이지",
+    "ofTotal": "의"
   },
   "search": {
     "placeholder": "키워드를 입력하세요",

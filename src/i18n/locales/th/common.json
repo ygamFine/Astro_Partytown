@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "ก่อนหน้า",
+    "next": "ถัดไป",
+    "first": "แรก",
+    "last": "สุดท้าย",
+    "page": "หน้า",
+    "of": "จาก",
+    "showing": "แสดง",
+    "to": "ถึง",
+    "entries": "รายการ",
+    "per_page": "ต่อหน้า",
+    "pages": "หน้า",
+    "ofTotal": "จาก"
   },
   "search": {
     "placeholder": "Enter keywords",

@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "السابق",
+    "next": "التالي",
+    "first": "الأول",
+    "last": "الأخير",
+    "page": "الصفحة",
+    "of": "من",
+    "showing": "عرض",
+    "to": "إلى",
+    "entries": "إدخالات",
+    "per_page": "في الصفحة",
+    "pages": "صفحات",
+    "ofTotal": "من"
   },
   "search": {
     "placeholder": "Enter keywords",

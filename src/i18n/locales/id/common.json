@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "first": "Pertama",
+    "last": "Terakhir",
+    "page": "Halaman",
+    "of": "dari",
+    "showing": "Menampilkan",
+    "to": "ke",
+    "entries": "entri",
+    "per_page": "per halaman",
+    "pages": "halaman",
+    "ofTotal": "dari"
   },
   "search": {
     "placeholder": "Enter keywords",

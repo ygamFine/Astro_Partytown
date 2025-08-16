@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "पिछला",
+    "next": "अगला",
+    "first": "पहला",
+    "last": "आखिरी",
+    "page": "पृष्ठ",
+    "of": "का",
+    "showing": "दिखा रहा है",
+    "to": "तक",
+    "entries": "प्रविष्टियां",
+    "per_page": "प्रति पृष्ठ",
+    "pages": "पृष्ठ",
+    "ofTotal": "का"
   },
   "search": {
     "placeholder": "Enter keywords",

@@ -140,16 +140,18 @@
     "years": "years"
   },
   "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "first": "First",
-    "last": "Last",
-    "page": "Page",
-    "of": "of",
-    "showing": "Showing",
-    "to": "to",
-    "entries": "entries",
-    "per_page": "per page"
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "first": "Pierwsza",
+    "last": "Ostatnia",
+    "page": "Strona",
+    "of": "z",
+    "showing": "Pokazuje",
+    "to": "do",
+    "entries": "wpisów",
+    "per_page": "na stronę",
+    "pages": "stron",
+    "ofTotal": "z"
   },
   "search": {
     "placeholder": "Enter keywords",
