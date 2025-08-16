@@ -13,8 +13,6 @@ import sharp from 'sharp';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('🚀 开始全站图片优化 (Node.js版本)...');
-
 /**
  * 检查sharp是否可用
  */
@@ -22,15 +20,12 @@ async function checkSharp() {
   try {
     // 简单检查sharp是否已加载
     if (typeof sharp === 'function') {
-      console.log('✅ sharp 可用');
       return true;
     } else {
-      console.log('❌ sharp 不可用');
       return false;
     }
   } catch (error) {
-    console.log('❌ sharp 不可用，请安装: npm install sharp');
-    console.log('错误信息:', error.message);
+    console.error('sharp 不可用，请安装: npm install sharp');
     return false;
   }
 }
@@ -55,8 +50,7 @@ async function convertToWebP(inputPath, outputPath) {
     
     return true;
   } catch (error) {
-    console.log(`❌ 转换失败: ${inputPath} -> ${outputPath}`);
-    console.log(`错误: ${error.message}`);
+    console.error(`❌ 转换失败: ${inputPath} -> ${outputPath}`);
     return false;
   }
 }
@@ -74,11 +68,9 @@ async function generateMobileImage(inputPath, outputPath) {
       .webp({ quality: 80 })
       .toFile(outputPath);
     
-    console.log(`📱 生成移动端版本: ${path.basename(outputPath)}`);
     return true;
   } catch (error) {
-    console.log(`❌ 移动端图片生成失败: ${inputPath}`);
-    console.log(`错误: ${error.message}`);
+    console.error(`❌ 移动端图片生成失败: ${inputPath}`);
     return false;
   }
 }
@@ -127,11 +119,8 @@ async function main() {
     process.exit(1);
   }
   
-  console.log('📸 转换 JPG/PNG 图片为 WebP 格式...');
-  
   // 查找所有图片文件
   const imageFiles = await findImageFiles('public');
-  console.log(`找到 ${imageFiles.length} 个图片文件`);
   
   // 转换为WebP
   let convertedCount = 0;
@@ -141,13 +130,11 @@ async function main() {
     // 跳过已存在的WebP文件
     try {
       await fs.access(webpFile);
-      console.log(`⏭️  跳过已存在: ${path.basename(webpFile)}`);
       continue;
     } catch {
       // 文件不存在，需要转换
     }
     
-    console.log(`🔄 转换: ${path.basename(file)} -> ${path.basename(webpFile)}`);
     const success = await convertToWebP(file, webpFile);
     if (success) {
       convertedCount++;
@@ -155,8 +142,6 @@ async function main() {
   }
   
   console.log(`✅ WebP转换完成: ${convertedCount} 个文件`);
-  
-  console.log('📱 生成移动端响应式图片...');
   
   // 确保优化目录存在
   await fs.mkdir('public/images/optimized', { recursive: true });
@@ -183,8 +168,6 @@ async function main() {
     return (name.includes('banner') || name.includes('hero')) && !name.includes('-mobile');
   });
   
-  console.log(`找到 ${largeImages.length} 个大图需要生成移动端版本`);
-  
   // 生成移动端图片
   let mobileCount = 0;
   for (const file of largeImages) {
@@ -194,7 +177,6 @@ async function main() {
     // 跳过已存在的移动端图片
     try {
       await fs.access(mobileFile);
-      console.log(`⏭️  跳过已存在: ${path.basename(mobileFile)}`);
       continue;
     } catch {
       // 文件不存在，需要生成
@@ -208,8 +190,6 @@ async function main() {
   
   console.log(`✅ 移动端图片生成完成: ${mobileCount} 个文件`);
   
-  console.log('🗂️  检查关键图片文件...');
-  
   // 检查关键图片
   const criticalImages = [
     'public/images/logo.png.webp',
@@ -220,7 +200,6 @@ async function main() {
   for (const img of criticalImages) {
     try {
       await fs.access(img);
-      console.log(`✅ 关键图片存在: ${img}`);
     } catch {
       console.log(`⚠️  缺失关键图片: ${img}`);
       missingCount++;
@@ -249,8 +228,6 @@ async function main() {
     console.log('✅ 所有关键图片检查完成');
   }
   
-  console.log('📊 生成图片统计报告...');
-  
   // 统计报告
   const allWebpFiles = await findImageFiles('public', ['.webp']);
   const allJpgFiles = await findImageFiles('public', ['.jpg', '.jpeg']);
@@ -266,10 +243,6 @@ async function main() {
   
   console.log('');
   console.log('🎉 图片优化完成！');
-  console.log('✨ 所有图片已转换为 WebP 格式');
-  console.log('📱 响应式图片已生成');
-  console.log('🚀 网站性能已优化');
-  console.log('📥 Strapi 图片已本地化');
 }
 
 // 执行主函数

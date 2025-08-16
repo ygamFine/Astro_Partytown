@@ -68,17 +68,14 @@ async function getSupportedLanguages() {
  * 专门处理GIF文件的转换
  */
 async function handleGifConversion(inputPath, outputPath, fileName) {
-  console.log(`🔄 处理GIF文件: ${fileName}`);
-  
   // 方法1: 使用sharp库处理GIF（推荐方法）
   try {
     await sharp(inputPath, { animated: true })
       .webp({ quality: 80, effort: 6 })
       .toFile(outputPath);
-    console.log(`✅ Sharp GIF转换成功: ${fileName}`);
     return true;
   } catch (error) {
-    console.log(`⚠️  Sharp动画GIF转换失败，尝试静态处理: ${fileName}`);
+    // 静默处理错误，继续尝试其他方法
   }
   
   // 方法2: 使用sharp处理静态GIF（只取第一帧）
@@ -86,29 +83,25 @@ async function handleGifConversion(inputPath, outputPath, fileName) {
     await sharp(inputPath, { pages: 1 })
       .webp({ quality: 80, effort: 6 })
       .toFile(outputPath);
-    console.log(`✅ Sharp静态GIF转换成功: ${fileName}`);
     return true;
   } catch (error) {
-    console.log(`⚠️  Sharp静态GIF转换失败，尝试cwebp: ${fileName}`);
+    // 静默处理错误，继续尝试其他方法
   }
   
   // 方法3: 使用cwebp转换（备用方法）
   try {
     await execAsync(`cwebp -q 80 -m 6 "${inputPath}" -o "${outputPath}"`);
-    console.log(`✅ cwebp GIF转换成功: ${fileName}`);
     return true;
   } catch (error) {
-    console.log(`⚠️  cwebp转换失败: ${fileName}`);
+    // 静默处理错误，继续尝试其他方法
   }
   
   // 方法4: 保存原GIF文件作为回退
   try {
     const fallbackPath = outputPath.replace('.webp', '.gif');
     await fs.copyFile(inputPath, fallbackPath);
-    console.log(`📋 已保存原GIF文件作为回退: ${fileName}`);
     return false;
   } catch (error) {
-    console.log(`❌ 所有转换方法都失败: ${fileName}`);
     return false;
   }
 }
@@ -190,7 +183,6 @@ async function safeConvertToWebP(inputPath, outputPath, fileName) {
     // 首先验证输入文件
     const isValid = await validateImageFile(inputPath);
     if (!isValid) {
-      console.log(`⚠️  跳过无效文件: ${fileName}`);
       return false;
     }
     
@@ -206,35 +198,25 @@ async function safeConvertToWebP(inputPath, outputPath, fileName) {
         await sharp(inputPath)
           .webp({ quality: 80, effort: 6 })
           .toFile(outputPath);
-        console.log(`✅ Sharp转换成功: ${fileName}`);
         return true;
       } catch (sharpError) {
-        console.log(`⚠️  Sharp转换失败，尝试cwebp: ${fileName}`);
-        
         // 回退到cwebp
         try {
           await execAsync(`cwebp -q 80 -m 6 "${inputPath}" -o "${outputPath}"`);
-          console.log(`✅ cwebp转换成功: ${fileName}`);
           return true;
         } catch (cwebpError) {
-          console.log(`❌ cwebp转换也失败: ${fileName}`);
           throw cwebpError;
         }
       }
     }
   } catch (error) {
-    console.log(`❌ WebP转换失败: ${fileName}`);
-    console.log(`错误信息: ${error.message}`);
-    
     // 尝试保存原文件作为回退
     try {
       const ext = path.extname(inputPath);
       const fallbackPath = outputPath.replace('.webp', ext);
       await fs.copyFile(inputPath, fallbackPath);
-      console.log(`📋 已保存原文件作为回退: ${fileName}`);
       return false;
     } catch (fallbackError) {
-      console.log(`❌ 回退保存失败: ${fileName}`);
       return false;
     }
   }
@@ -375,9 +357,7 @@ async function downloadAllImages() {
   
   // 如果没有设置语言列表，从API获取
   if (ENABLED_LOCALES.length === 0) {
-    console.log('🔄 从Strapi API获取支持的语言列表...');
     ENABLED_LOCALES = await getSupportedLanguages();
-    console.log(`📋 获取到 ${ENABLED_LOCALES.length} 种语言:`, ENABLED_LOCALES);
   }
   
   const allImageUrls = new Set();
@@ -515,9 +495,8 @@ async function generateImageMapping() {
     const modulePath = path.join(__dirname, '../src/data/strapi-image-urls.js');
     await fs.writeFile(modulePath, lines.join('\n'));
 
-    console.log(`📊 图片映射生成完成: ${jsonMapping.webpCount}/${jsonMapping.totalCount} 为WebP格式，并已生成 URL 模块`);
   } catch (error) {
-    console.log('⚠️  生成图片映射失败:', error.message);
+    console.warn('生成图片映射失败:', error.message);
   }
 }
 

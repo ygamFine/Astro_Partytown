@@ -311,16 +311,12 @@ try {
           const selectedLang = option.getAttribute('data-lang');
           const selectedName = option.getAttribute('data-name');
           
-          console.log('语言选择器点击:', { selectedLang, selectedName });
-          
           if (selectedLang && selectedName) {
             // 获取当前页面路径
             const currentPath = window.location.pathname;
-            console.log('当前路径:', currentPath);
             
             // 根据环境构建语言切换URL
             const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            console.log('是否开发环境:', isDev);
             
             // 替换语言前缀
             const pathWithoutLang: string = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
@@ -328,7 +324,6 @@ try {
             if (isDev) {
               // 本地开发：总是跳转到首页
               const newPath = `/${selectedLang}/`;
-              console.log('开发环境跳转路径:', newPath);
               // 在新标签页中打开
               window.open(newPath, '_blank');
             } else {
@@ -337,7 +332,6 @@ try {
               const currentDomain = window.location.hostname;
               const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
               const newUrl = `https://${subdomain}.${baseDomain}`;
-              console.log('生产环境跳转URL:', newUrl);
               // 在新标签页中打开
               window.open(newUrl, '_blank');
             }

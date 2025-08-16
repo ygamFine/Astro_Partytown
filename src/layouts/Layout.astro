@@ -519,7 +519,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
           try {
             // 预加载 Pagefind 脚本
             await import('@pagefind/default-ui');
-            console.log('Pagefind 预加载完成');
           } catch (error) {
             console.warn('Pagefind 预加载失败:', error);
           }

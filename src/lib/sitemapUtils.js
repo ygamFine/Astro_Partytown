@@ -522,8 +522,6 @@ export async function generateFullSitemap() {
  */
 export async function buildSitemapFiles() {
   try {
-    console.log('🔨 构建时生成站点地图文件...');
-    
     const sitemapData = await generateFullSitemap();
     
     // 这里可以添加文件写入逻辑
