@@ -4,9 +4,18 @@ import { generateSitemapIndexXML } from '../lib/sitemapUtils.js';
  * 生成站点地图索引 XML
  * 路由: /sitemap-index.xml
  */
-export async function GET() {
+export async function GET({ request }) {
   try {
-    console.log('📋 生成站点地图索引...');
+    // 从请求中获取域名
+    const url = new URL(request.url);
+    const hostname = url.hostname;
+    
+    // 设置环境变量以便站点地图工具使用
+    if (typeof process !== 'undefined' && process.env) {
+      process.env.CURRENT_HOSTNAME = hostname;
+    }
+    
+    console.log(`📋 生成站点地图索引 (域名: ${hostname})...`);
     
     // 生成站点地图索引
     const sitemapIndexXML = generateSitemapIndexXML();

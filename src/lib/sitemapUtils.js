@@ -13,9 +13,35 @@ import { getCases } from './strapi.js';
 import { config } from 'dotenv';
 config();
 
-// 获取站点URL - 使用子域名
+// 动态获取当前域名
+const getCurrentDomain = () => {
+  // 在服务器端运行时，尝试从环境变量获取域名
+  if (typeof process !== 'undefined' && process.env) {
+    // 优先使用当前请求的域名
+    if (process.env.CURRENT_HOSTNAME) {
+      return process.env.CURRENT_HOSTNAME;
+    }
+    // 使用环境变量中的域名
+    if (process.env.PUBLIC_SITE_URL) {
+      return new URL(process.env.PUBLIC_SITE_URL).hostname;
+    }
+    if (process.env.VERCEL_URL) {
+      return process.env.VERCEL_URL;
+    }
+  }
+  
+  // 在客户端运行时，使用当前域名
+  if (typeof window !== 'undefined') {
+    return window.location.hostname;
+  }
+  
+  // 默认域名
+  return 'aihuazhi.cn';
+};
+
+// 获取站点URL - 动态使用当前域名
 const getSiteUrl = (lang = 'en') => {
-  const baseDomain = 'aihuazhi.cn';
+  const currentDomain = getCurrentDomain();
   
   // 语言到子域名的映射
   const langToSubdomain = {
@@ -44,7 +70,7 @@ const getSiteUrl = (lang = 'en') => {
   };
   
   const subdomain = langToSubdomain[lang] || 'en';
-  return `https://${subdomain}.${baseDomain}`;
+  return `https://${subdomain}.${currentDomain}`;
 };
 
 // 站点配置

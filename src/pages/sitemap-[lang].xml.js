@@ -5,7 +5,7 @@ import { SUPPORTED_LANGUAGES } from '../lib/i18n-routes.js';
  * 生成按语言分组的站点地图 XML
  * 路由: /sitemap-[lang].xml
  */
-export async function GET({ params }) {
+export async function GET({ params, request }) {
   try {
     const { lang } = params;
     
@@ -14,7 +14,16 @@ export async function GET({ params }) {
       return new Response('Language not supported', { status: 404 });
     }
     
-    console.log(`🗺️ 生成 ${lang} 语言站点地图...`);
+    // 从请求中获取域名
+    const url = new URL(request.url);
+    const hostname = url.hostname;
+    
+    // 设置环境变量以便站点地图工具使用
+    if (typeof process !== 'undefined' && process.env) {
+      process.env.CURRENT_HOSTNAME = hostname;
+    }
+    
+    console.log(`🗺️ 生成 ${lang} 语言站点地图 (域名: ${hostname})...`);
     
     // 获取所有页面数据
     const sitemapData = await generateFullSitemap();
