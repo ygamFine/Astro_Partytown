@@ -37,7 +37,16 @@ async function generateSitemap() {
       console.log(`📋 生成 ${lang} 语言站点地图...`);
       
       const langSitemap = generateLanguageSpecificSitemap(sitemapData.pages, lang);
-      const langSitemapPath = path.join(distDir, `sitemap-${lang}.xml`);
+      
+      // 根据语言确定子域名
+      const subdomain = lang === 'zh-CN' ? 'zh' : lang;
+      const langSitemapPath = path.join(distDir, `${subdomain}`, 'sitemap.xml');
+      
+      // 确保子目录存在
+      const subdomainDir = path.dirname(langSitemapPath);
+      if (!fs.existsSync(subdomainDir)) {
+        fs.mkdirSync(subdomainDir, { recursive: true });
+      }
       
       fs.writeFileSync(langSitemapPath, langSitemap);
       console.log(`✅ ${lang} 站点地图已生成: ${langSitemapPath}`);
@@ -52,27 +61,23 @@ async function generateSitemap() {
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap-en.xml</loc>
+    <loc>https://zh.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap-zh-CN.xml</loc>
+    <loc>https://ar.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap-ar.xml</loc>
+    <loc>https://de.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap-de.xml</loc>
+    <loc>https://ja.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap-ja.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap-ru.xml</loc>
+    <loc>https://ru.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
 </sitemapindex>`;
@@ -96,12 +101,12 @@ async function generateSitemap() {
     console.log('\n🎉 站点地图生成完成！');
     console.log('📁 生成的文件:');
     console.log('   - dist/sitemap.xml (主站点地图)');
-    console.log('   - dist/sitemap-en.xml (英语站点地图)');
-    console.log('   - dist/sitemap-zh-CN.xml (中文站点地图)');
-    console.log('   - dist/sitemap-ar.xml (阿拉伯语站点地图)');
-    console.log('   - dist/sitemap-de.xml (德语站点地图)');
-    console.log('   - dist/sitemap-ja.xml (日语站点地图)');
-    console.log('   - dist/sitemap-ru.xml (俄语站点地图)');
+    console.log('   - dist/en/sitemap.xml (英语站点地图)');
+    console.log('   - dist/zh/sitemap.xml (中文站点地图)');
+    console.log('   - dist/ar/sitemap.xml (阿拉伯语站点地图)');
+    console.log('   - dist/de/sitemap.xml (德语站点地图)');
+    console.log('   - dist/ja/sitemap.xml (日语站点地图)');
+    console.log('   - dist/ru/sitemap.xml (俄语站点地图)');
     console.log('   - dist/sitemap-index.xml (站点地图索引)');
     
   } catch (error) {
