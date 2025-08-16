@@ -19,7 +19,12 @@ const getCurrentDomain = () => {
   if (typeof process !== 'undefined' && process.env) {
     // 优先使用当前请求的域名
     if (process.env.CURRENT_HOSTNAME) {
-      return process.env.CURRENT_HOSTNAME;
+      const hostname = process.env.CURRENT_HOSTNAME;
+      // 如果是生产环境域名，提取主域名
+      if (hostname.includes('aihuazhi.cn')) {
+        return 'aihuazhi.cn';
+      }
+      return hostname;
     }
     // 使用环境变量中的域名
     if (process.env.PUBLIC_SITE_URL) {
@@ -78,12 +83,16 @@ const getSiteUrl = (lang = 'en') => {
   
   const subdomain = langToSubdomain[lang] || 'en';
   
-  // 确保域名正确
+  // 处理域名逻辑
   if (currentDomain === 'localhost') {
+    // 开发环境
     return `https://${subdomain}.${currentDomain}`;
-  } else {
-    // 生产环境使用正确的域名
+  } else if (currentDomain.includes('aihuazhi.cn')) {
+    // 生产环境 - 使用当前请求的完整域名
     return `https://${subdomain}.aihuazhi.cn`;
+  } else {
+    // 其他环境 - 使用当前域名
+    return `https://${subdomain}.${currentDomain}`;
   }
 };
 
