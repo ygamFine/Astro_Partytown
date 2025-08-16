@@ -35,8 +35,15 @@ const getCurrentDomain = () => {
     return window.location.hostname;
   }
   
-  // 默认域名
-  return 'aihuazhi.cn';
+  // 构建时和生产环境默认域名
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.NODE_ENV === 'production') {
+      return 'aihuazhi.cn';
+    }
+  }
+  
+  // 开发环境默认域名
+  return 'localhost';
 };
 
 // 获取站点URL - 动态使用当前域名
@@ -300,15 +307,6 @@ export function generateSitemapXML(pages) {
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
   xml += ' xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
   
-  // 按语言分组页面
-  const pagesByLang = {};
-  pages.forEach(page => {
-    if (!pagesByLang[page.lang]) {
-      pagesByLang[page.lang] = [];
-    }
-    pagesByLang[page.lang].push(page);
-  });
-  
   // 生成URL条目，包含多语言链接
   pages.forEach(page => {
     xml += '  <url>\n';
@@ -317,22 +315,16 @@ export function generateSitemapXML(pages) {
     xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
     xml += `    <priority>${page.priority}</priority>\n`;
     
-    // 添加多语言替代链接
+    // 添加多语言替代链接（仅对非首页）
     if (page.type !== 'home') {
       // 为每个语言添加替代链接
       SITE_CONFIG.supportedLanguages.forEach(lang => {
-        const altUrl = page.type === 'home' 
-          ? getSiteUrl(lang)
-          : page.url.replace(getSiteUrl(page.lang), getSiteUrl(lang));
-        
+        const altUrl = page.url.replace(getSiteUrl(page.lang), getSiteUrl(lang));
         xml += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${altUrl}" />\n`;
       });
       
       // 添加默认语言链接
-      const defaultUrl = page.type === 'home'
-        ? getSiteUrl(SITE_CONFIG.defaultLanguage)
-        : page.url.replace(getSiteUrl(page.lang), getSiteUrl(SITE_CONFIG.defaultLanguage));
-      
+      const defaultUrl = page.url.replace(getSiteUrl(page.lang), getSiteUrl(SITE_CONFIG.defaultLanguage));
       xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${defaultUrl}" />\n`;
     }
     
