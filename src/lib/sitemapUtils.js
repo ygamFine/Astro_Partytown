@@ -83,6 +83,11 @@ const getSiteUrl = (lang = 'en') => {
   
   const subdomain = langToSubdomain[lang] || 'en';
   
+  // 强制使用生产环境域名
+  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production') {
+    return `https://${subdomain}.aihuazhi.cn`;
+  }
+  
   // 处理域名逻辑
   if (currentDomain === 'localhost') {
     // 开发环境
