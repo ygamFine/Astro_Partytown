@@ -182,7 +182,11 @@ export default function getDictionary(lang: string): any {
 // 翻译函数
 function getTranslation(lang: string, namespace: string, key: string): string {
   try {
-    const translations = translationData[lang]?.[namespace] || translationData['en']?.[namespace];
+    const translations = translationData[lang]?.[namespace];
+    if (!translations) {
+      return key; // 如果没有该语言的翻译，直接返回key
+    }
+    
     const keys = key.split('.');
     let result = translations;
     
@@ -190,20 +194,7 @@ function getTranslation(lang: string, namespace: string, key: string): string {
       if (result && typeof result === 'object' && k in result) {
         result = result[k];
       } else {
-        // 如果找不到翻译，回退到英文
-        if (lang !== 'en') {
-          const enTranslations = translationData['en']?.[namespace];
-          let enResult = enTranslations;
-          for (const enKey of keys) {
-            if (enResult && typeof enResult === 'object' && enKey in enResult) {
-              enResult = enResult[enKey];
-            } else {
-              return key;
-            }
-          }
-          return enResult || key;
-        }
-        return key;
+        return key; // 如果找不到翻译，返回key
       }
     }
     

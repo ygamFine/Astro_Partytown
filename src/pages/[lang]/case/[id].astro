@@ -5,6 +5,7 @@ import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
 import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
+import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getCases, getCase } from '../../../lib/strapi.js';
 import { getNews } from '../../../lib/strapi.js';
 import { generateCaseDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
@@ -90,26 +91,17 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, caseItem.title
   <Layout title="暂无内容" lang={lang}>
     <main class="bg-gray-50 min-h-screen">
       <div class="container mx-auto px-4 py-8">
-        <div class="empty-state">
-          <div class="empty-state-content">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <h3 class="empty-state-title">暂无案例内容</h3>
-            <p class="empty-state-description">当前语言暂无案例信息，请稍后再试或切换其他语言。</p>
-            <div class="empty-state-actions">
-              <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}/case'`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9,22 9,12 15,12 15,22"/>
-                </svg>
-                返回案例列表
-              </button>
-            </div>
-          </div>
-        </div>
+        <EmptyState 
+          title="暂无案例内容"
+          description="当前语言暂无案例信息，请稍后再试或切换其他语言。"
+          icon="case"
+          lang={lang}
+          actions={[{
+            label: '返回案例列表',
+            href: `/${lang}/case`,
+            variant: 'secondary'
+          }]}
+        />
       </div>
     </main>
   </Layout>

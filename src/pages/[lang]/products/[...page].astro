@@ -4,6 +4,7 @@ export const prerender = true;
 import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
 import GridList from '../../../components/templates/common/GridList.astro';
 import Pagination from '../../../components/templates/common/Pagination.astro';
+import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getProducts } from '../../../lib/strapi.js';
 import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
 import getDictionary from '../../../i18n/dictionaries.js';
@@ -118,29 +119,11 @@ const baseUrl = buildUrl(lang, '/products');
       />
     </>
   ) : (
-    <!-- 空状态 -->
-    <div class="empty-state">
-      <div class="empty-state-content">
-        <div class="empty-state-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 12l8-4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 12v10" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 12L4 8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 class="empty-state-title">暂无产品数据</h3>
-        <p class="empty-state-description">当前语言暂无产品信息，请稍后再试或切换其他语言。</p>
-        <div class="empty-state-actions">
-          <button class="empty-state-button secondary" onclick={`window.location.href='/${lang}'`}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9,22 9,12 15,12 15,22"/>
-            </svg>
-            返回首页
-          </button>
-        </div>
-      </div>
-    </div>
+    <EmptyState 
+      title="暂无产品数据"
+      description="当前语言暂无产品信息，请稍后再试或切换其他语言。"
+      icon="product"
+      lang={lang}
+    />
   )}
 </SecondaryPageLayout> 
