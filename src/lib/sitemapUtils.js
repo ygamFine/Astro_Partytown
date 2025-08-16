@@ -98,7 +98,6 @@ const getSiteUrl = (lang = 'en') => {
 
 // 站点配置
 export const SITE_CONFIG = {
-  baseUrl: getSiteUrl(),
   defaultLanguage: 'en',
   supportedLanguages: SUPPORTED_LANGUAGES,
   // 页面优先级配置
