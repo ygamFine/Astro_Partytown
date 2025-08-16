@@ -21,13 +21,28 @@ async function generateSitemap() {
     }
 
     const sitemapData = await generateFullSitemap();
-    const languages = ['en', 'zh-CN', 'ar', 'de', 'ja', 'ru'];
+    const languages = [
+      'en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
+      'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'
+    ];
     
     for (const lang of languages) {
       console.log(`📋 生成 ${lang} 语言站点地图...`);
       const langSitemap = generateLanguageSpecificSitemap(sitemapData.pages, lang);
-      const subdomain = lang === 'zh-CN' ? 'zh' : lang; // Determine subdomain
-      const langSitemapPath = path.join(distDir, `${subdomain}`, 'sitemap.xml'); // New path structure
+      
+      // 根据语言确定子域名
+      let subdomain;
+      if (lang === 'zh-CN') {
+        subdomain = 'zh';
+      } else if (lang === 'zh-Hant') {
+        subdomain = 'zh-hant';
+      } else if (lang === 'pt-pt') {
+        subdomain = 'pt';
+      } else {
+        subdomain = lang;
+      }
+      
+      const langSitemapPath = path.join(distDir, `${subdomain}`, 'sitemap.xml');
       const subdomainDir = path.dirname(langSitemapPath);
       if (!fs.existsSync(subdomainDir)) {
         fs.mkdirSync(subdomainDir, { recursive: true });
@@ -49,7 +64,11 @@ async function generateSitemap() {
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://ar.aihuazhi.cn/sitemap.xml</loc>
+    <loc>https://zh-hant.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fr.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
@@ -57,11 +76,71 @@ async function generateSitemap() {
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://ja.aihuazhi.cn/sitemap.xml</loc>
+    <loc>https://it.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://tr.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://es.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://pt.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://nl.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://pl.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://ar.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://ru.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://th.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://id.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://vi.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://ms.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://ml.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://my.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://hi.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://ja.aihuazhi.cn/sitemap.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://ko.aihuazhi.cn/sitemap.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
 </sitemapindex>`;
@@ -79,7 +158,17 @@ async function generateSitemap() {
 
       // 复制语言特定的站点地图
       for (const lang of languages) {
-        const subdomain = lang === 'zh-CN' ? 'zh' : lang;
+        let subdomain;
+        if (lang === 'zh-CN') {
+          subdomain = 'zh';
+        } else if (lang === 'zh-Hant') {
+          subdomain = 'zh-hant';
+        } else if (lang === 'pt-pt') {
+          subdomain = 'pt';
+        } else {
+          subdomain = lang;
+        }
+        
         const sourcePath = path.join(distDir, `${subdomain}`, 'sitemap.xml');
         const targetDir = path.join(vercelOutputDir, `${subdomain}`);
         const targetPath = path.join(targetDir, 'sitemap.xml');
@@ -110,20 +199,52 @@ async function generateSitemap() {
     console.log('\n🎉 站点地图生成完成！');
     console.log('📁 生成的文件:');
     console.log('   - dist/en/sitemap.xml (英语站点地图)');
-    console.log('   - dist/zh/sitemap.xml (中文站点地图)');
-    console.log('   - dist/ar/sitemap.xml (阿拉伯语站点地图)');
+    console.log('   - dist/zh/sitemap.xml (简体中文站点地图)');
+    console.log('   - dist/zh-hant/sitemap.xml (繁体中文站点地图)');
+    console.log('   - dist/fr/sitemap.xml (法语站点地图)');
     console.log('   - dist/de/sitemap.xml (德语站点地图)');
-    console.log('   - dist/ja/sitemap.xml (日语站点地图)');
+    console.log('   - dist/it/sitemap.xml (意大利语站点地图)');
+    console.log('   - dist/tr/sitemap.xml (土耳其语站点地图)');
+    console.log('   - dist/es/sitemap.xml (西班牙语站点地图)');
+    console.log('   - dist/pt/sitemap.xml (葡萄牙语站点地图)');
+    console.log('   - dist/nl/sitemap.xml (荷兰语站点地图)');
+    console.log('   - dist/pl/sitemap.xml (波兰语站点地图)');
+    console.log('   - dist/ar/sitemap.xml (阿拉伯语站点地图)');
     console.log('   - dist/ru/sitemap.xml (俄语站点地图)');
+    console.log('   - dist/th/sitemap.xml (泰语站点地图)');
+    console.log('   - dist/id/sitemap.xml (印尼语站点地图)');
+    console.log('   - dist/vi/sitemap.xml (越南语站点地图)');
+    console.log('   - dist/ms/sitemap.xml (马来语站点地图)');
+    console.log('   - dist/ml/sitemap.xml (马拉雅拉姆语站点地图)');
+    console.log('   - dist/my/sitemap.xml (缅甸语站点地图)');
+    console.log('   - dist/hi/sitemap.xml (印地语站点地图)');
+    console.log('   - dist/ja/sitemap.xml (日语站点地图)');
+    console.log('   - dist/ko/sitemap.xml (韩语站点地图)');
     console.log('   - dist/sitemap-index.xml (站点地图索引)');
     console.log('📁 复制到Vercel输出目录的文件:');
     console.log('   - .vercel/output/static/sitemap-index.xml');
     console.log('   - .vercel/output/static/en/sitemap.xml');
     console.log('   - .vercel/output/static/zh/sitemap.xml');
-    console.log('   - .vercel/output/static/ar/sitemap.xml');
+    console.log('   - .vercel/output/static/zh-hant/sitemap.xml');
+    console.log('   - .vercel/output/static/fr/sitemap.xml');
     console.log('   - .vercel/output/static/de/sitemap.xml');
-    console.log('   - .vercel/output/static/ja/sitemap.xml');
+    console.log('   - .vercel/output/static/it/sitemap.xml');
+    console.log('   - .vercel/output/static/tr/sitemap.xml');
+    console.log('   - .vercel/output/static/es/sitemap.xml');
+    console.log('   - .vercel/output/static/pt/sitemap.xml');
+    console.log('   - .vercel/output/static/nl/sitemap.xml');
+    console.log('   - .vercel/output/static/pl/sitemap.xml');
+    console.log('   - .vercel/output/static/ar/sitemap.xml');
     console.log('   - .vercel/output/static/ru/sitemap.xml');
+    console.log('   - .vercel/output/static/th/sitemap.xml');
+    console.log('   - .vercel/output/static/id/sitemap.xml');
+    console.log('   - .vercel/output/static/vi/sitemap.xml');
+    console.log('   - .vercel/output/static/ms/sitemap.xml');
+    console.log('   - .vercel/output/static/ml/sitemap.xml');
+    console.log('   - .vercel/output/static/my/sitemap.xml');
+    console.log('   - .vercel/output/static/hi/sitemap.xml');
+    console.log('   - .vercel/output/static/ja/sitemap.xml');
+    console.log('   - .vercel/output/static/ko/sitemap.xml');
   } catch (error) {
     console.error('❌ 生成站点地图失败:', error);
     process.exit(1);
