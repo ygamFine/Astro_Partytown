@@ -5,6 +5,13 @@
     "installCommand": "npm install",
     "framework": "astro",
     "rewrites": [
+        { "source": "/sitemap.xml", "destination": "/en/sitemap.xml", "has": [{ "type": "host", "value": "en.*" }] },
+        { "source": "/sitemap.xml", "destination": "/zh/sitemap.xml", "has": [{ "type": "host", "value": "zh.*" }] },
+        { "source": "/sitemap.xml", "destination": "/ar/sitemap.xml", "has": [{ "type": "host", "value": "ar.*" }] },
+        { "source": "/sitemap.xml", "destination": "/de/sitemap.xml", "has": [{ "type": "host", "value": "de.*" }] },
+        { "source": "/sitemap.xml", "destination": "/ja/sitemap.xml", "has": [{ "type": "host", "value": "ja.*" }] },
+        { "source": "/sitemap.xml", "destination": "/ru/sitemap.xml", "has": [{ "type": "host", "value": "ru.*" }] },
+        { "source": "/sitemap-index.xml", "destination": "/sitemap-index.xml" },
         { "source": "/pagefind/:path*", "destination": "/pagefind/:path*" },
         { "source": "/images/:path*", "destination": "/images/:path*" },
         { "source": "/_astro/:path*", "destination": "/_astro/:path*" },

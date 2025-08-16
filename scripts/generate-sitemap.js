@@ -20,13 +20,9 @@ async function generateSitemap() {
       fs.mkdirSync(distDir, { recursive: true });
     }
 
-    console.log('📋 生成主站点地图...');
     const sitemapData = await generateFullSitemap();
-    const mainSitemapPath = path.join(distDir, 'sitemap.xml');
-    fs.writeFileSync(mainSitemapPath, sitemapData.xml);
-    console.log(`✅ 主站点地图已生成: ${mainSitemapPath}`);
-
     const languages = ['en', 'zh-CN', 'ar', 'de', 'ja', 'ru'];
+    
     for (const lang of languages) {
       console.log(`📋 生成 ${lang} 语言站点地图...`);
       const langSitemap = generateLanguageSpecificSitemap(sitemapData.pages, lang);
@@ -76,11 +72,6 @@ async function generateSitemap() {
     // 复制站点地图文件到Vercel输出目录
     console.log('📋 复制站点地图文件到Vercel输出目录...');
     if (fs.existsSync(vercelOutputDir)) {
-      // 复制主站点地图
-      const vercelMainSitemapPath = path.join(vercelOutputDir, 'sitemap.xml');
-      fs.copyFileSync(mainSitemapPath, vercelMainSitemapPath);
-      console.log(`✅ 主站点地图已复制到: ${vercelMainSitemapPath}`);
-
       // 复制站点地图索引
       const vercelSitemapIndexPath = path.join(vercelOutputDir, 'sitemap-index.xml');
       fs.copyFileSync(sitemapIndexPath, vercelSitemapIndexPath);
@@ -118,7 +109,6 @@ async function generateSitemap() {
 
     console.log('\n🎉 站点地图生成完成！');
     console.log('📁 生成的文件:');
-    console.log('   - dist/sitemap.xml (主站点地图)');
     console.log('   - dist/en/sitemap.xml (英语站点地图)');
     console.log('   - dist/zh/sitemap.xml (中文站点地图)');
     console.log('   - dist/ar/sitemap.xml (阿拉伯语站点地图)');
@@ -127,7 +117,6 @@ async function generateSitemap() {
     console.log('   - dist/ru/sitemap.xml (俄语站点地图)');
     console.log('   - dist/sitemap-index.xml (站点地图索引)');
     console.log('📁 复制到Vercel输出目录的文件:');
-    console.log('   - .vercel/output/static/sitemap.xml');
     console.log('   - .vercel/output/static/sitemap-index.xml');
     console.log('   - .vercel/output/static/en/sitemap.xml');
     console.log('   - .vercel/output/static/zh/sitemap.xml');
