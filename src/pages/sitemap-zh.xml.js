@@ -1,8 +1,8 @@
-import { generateFullSitemap } from '../lib/sitemapUtils.js';
+import { generateLanguageSpecificSitemap, generateFullSitemap } from '../lib/sitemapUtils.js';
 
 /**
- * 生成主站点地图 XML
- * 路由: /sitemap.xml
+ * 生成中文站点地图 XML
+ * 路由: /sitemap-zh.xml
  */
 export async function GET({ request }) {
   try {
@@ -10,21 +10,22 @@ export async function GET({ request }) {
     const url = new URL(request.url);
     const hostname = url.hostname;
     
-    console.log(`🗺️ 生成主站点地图 (域名: ${hostname})...`);
+    console.log(`🗺️ 生成中文站点地图 (域名: ${hostname})...`);
     
     // 设置环境变量以便站点地图工具使用
     if (typeof process !== 'undefined' && process.env) {
       process.env.CURRENT_HOSTNAME = hostname;
     }
     
+    // 获取所有页面数据
     const sitemapData = await generateFullSitemap();
     
-    console.log(`✅ 主站点地图生成完成，包含 ${sitemapData.pages.length} 个页面`);
+    // 生成中文站点地图
+    const zhSitemap = generateLanguageSpecificSitemap(sitemapData.pages, 'zh-CN');
     
-    // 确保返回正确的XML格式
-    const xml = sitemapData.xml;
+    console.log(`✅ 中文站点地图生成完成，包含 ${sitemapData.pages.filter(p => p.lang === 'zh-CN').length} 个页面`);
     
-    return new Response(xml, {
+    return new Response(zhSitemap, {
       status: 200,
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
@@ -33,9 +34,8 @@ export async function GET({ request }) {
     });
     
   } catch (error) {
-    console.error('❌ 生成主站点地图失败:', error);
+    console.error('❌ 生成中文站点地图失败:', error);
     
-    // 返回错误响应
     return new Response('Error generating sitemap', {
       status: 500,
       headers: {
@@ -43,4 +43,4 @@ export async function GET({ request }) {
       }
     });
   }
-} 
+}
