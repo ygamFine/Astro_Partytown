@@ -431,17 +431,17 @@ async function downloadAllImages() {
  */
 async function generateImageMapping() {
   try {
-    // 检查 assets 目录是否存在
-    const assetsDir = path.join(__dirname, '../src/assets/strapi');
-    const assetsExists = await fs.access(assetsDir).then(() => true).catch(() => false);
+    // 检查 public/images/strapi 目录是否存在
+    const publicImagesDir = path.join(__dirname, '../public/images/strapi');
+    const publicImagesExists = await fs.access(publicImagesDir).then(() => true).catch(() => false);
     
-    if (!assetsExists) {
-      console.warn('Assets 目录不存在，跳过图片映射生成');
+    if (!publicImagesExists) {
+      console.warn('Public images 目录不存在，跳过图片映射生成');
       return;
     }
 
     // 获取实际存在的文件
-    const files = await fs.readdir(assetsDir);
+    const files = await fs.readdir(publicImagesDir);
     const imageFiles = files.filter(file => /\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file));
     
     console.log(`找到 ${imageFiles.length} 个图片文件用于映射`);
@@ -458,22 +458,16 @@ async function generateImageMapping() {
     const mappingJsonPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
     await fs.writeFile(mappingJsonPath, JSON.stringify(jsonMapping, null, 2));
 
-    // 2) 生成可被 Vite 处理的 ESM 模块，导出最终 URL（/_astro/...）
+    // 2) 生成简单的 URL 映射模块
     const lines = [];
     lines.push('// 自动生成：Strapi 图片 URL 映射 (由构建脚本生成)');
     lines.push('');
-    
-    // 为每个实际存在的文件创建导入（?url 以获取最终 URL 字符串）——从源码资产导入，发射到/_astro
-    imageFiles.forEach((file, idx) => {
-      lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
-    });
-    lines.push('');
     lines.push('export const STRAPI_IMAGE_URLS = {');
-    imageFiles.forEach((file, idx) => {
+    imageFiles.forEach((file) => {
       const base = path.basename(file);
       const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
-      lines.push(`  '${base}': u${idx},`);
-      lines.push(`  '${hash}': u${idx},`);
+      lines.push(`  '${base}': '/images/strapi/${file}',`);
+      lines.push(`  '${hash}': '/images/strapi/${file}',`);
     });
     lines.push('};');
 
