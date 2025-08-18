@@ -197,7 +197,9 @@
     "share": "Share",
     "bookmark": "Bookmark",
     "like": "Like",
-    "dislike": "Dislike"
+    "dislike": "Dislike",
+    "grid_view": "Grid View",
+    "list_view": "List View"
   },
   "messages": {
     "confirm_delete": "Are you sure you want to delete?",

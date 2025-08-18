@@ -4,6 +4,8 @@ export const revalidate = 3600; // 1小时
 
 import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
 import GridList from '../../../components/templates/common/GridList.astro';
+import EnhancedGridList from '../../../components/templates/common/EnhancedGridList.astro';
+import ViewToggle from '../../../components/templates/common/ViewToggle.astro';
 import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getNews } from '../../../lib/strapi.js';
@@ -52,31 +54,42 @@ const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actual
 >
   {gridItems.length > 0 ? (
     <>
-  <!-- 新闻网格 -->
-  <GridList 
-    items={gridItems}
-    itemsPerRow={3}
-    maxRows={2}
-    translations={t}
-    lang={lang}
-  />
-  
-  {/* 列表描述内容 - 分页上方模式 */}
-  {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
-    <div class="mt-8 mb-6">
-      <p class="text-lg text-gray-600 leading-relaxed">
-        了解我们最新的公司动态、产品资讯、行业趋势和技术创新。及时获取行业前沿信息，掌握市场动态。
-      </p>
-    </div>
-  )}
-  
-  <!-- 分页 -->
-         <Pagination 
-         currentPage={actualCurrentPage}
-         totalPages={totalPages}
-         baseUrl={buildUrl(lang, '/news')}
-         i18n={t}
-       />
+      <!-- 视图切换控件 -->
+      <ViewToggle 
+        currentView="grid"
+        translations={t.common}
+        lang={lang}
+        totalItems={gridItems.length}
+        showTotal={true}
+      />
+      
+      <!-- 新闻列表 -->
+      <EnhancedGridList 
+        items={gridItems}
+        itemsPerRow={3}
+        maxRows={2}
+        mode="news"
+        translations={t.common}
+        lang={lang}
+        viewMode="grid"
+      />
+      
+      {/* 列表描述内容 - 分页上方模式 */}
+      {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+        <div class="mt-8 mb-6">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            了解我们最新的公司动态、产品资讯、行业趋势和技术创新。及时获取行业前沿信息，掌握市场动态。
+          </p>
+        </div>
+      )}
+      
+      <!-- 分页 -->
+      <Pagination 
+        currentPage={actualCurrentPage}
+        totalPages={totalPages}
+        baseUrl={buildUrl(lang, '/news')}
+        i18n={t.common}
+      />
     </>
   ) : (
     <EmptyState 

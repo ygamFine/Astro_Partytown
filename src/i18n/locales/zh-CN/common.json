@@ -197,7 +197,9 @@
     "share": "分享",
     "bookmark": "收藏",
     "like": "点赞",
-    "dislike": "点踩"
+    "dislike": "点踩",
+    "grid_view": "卡片视图",
+    "list_view": "列表视图"
   },
   "messages": {
     "confirm_delete": "确定要删除吗？",

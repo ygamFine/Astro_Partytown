@@ -4,6 +4,8 @@ export const revalidate = 3600; // 1小时
 
 import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
 import GridList from '../../../components/templates/common/GridList.astro';
+import EnhancedGridList from '../../../components/templates/common/EnhancedGridList.astro';
+import ViewToggle from '../../../components/templates/common/ViewToggle.astro';
 import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getCases } from '../../../lib/strapi.js';
@@ -54,32 +56,42 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actual
 >
   {gridItems.length > 0 ? (
     <>
-  <!-- 案例网格 -->
-  <GridList 
-    items={gridItems}
-    itemsPerRow={3}
-    maxRows={2}
-    mode="case"
-        translations={t}
+      <!-- 视图切换控件 -->
+      <ViewToggle 
+        currentView="grid"
+        translations={t.common}
         lang={lang}
-  />
-  
-  {/* 列表描述内容 - 分页上方模式 */}
-  {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
-    <div class="mt-8 mb-6">
-      <p class="text-lg text-gray-600 leading-relaxed">
-        展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。每个案例都体现了我们产品的卓越性能和可靠品质。
-      </p>
-    </div>
-  )}
-  
-  <!-- 分页 -->
-         <Pagination 
-         currentPage={actualCurrentPage}
-         totalPages={totalPages}
-         baseUrl={buildUrl(lang, '/case')}
-         i18n={t}
-       />
+        totalItems={gridItems.length}
+        showTotal={true}
+      />
+      
+      <!-- 案例列表 -->
+      <EnhancedGridList 
+        items={gridItems}
+        itemsPerRow={3}
+        maxRows={2}
+        mode="case"
+        translations={t.common}
+        lang={lang}
+        viewMode="grid"
+      />
+      
+      {/* 列表描述内容 - 分页上方模式 */}
+      {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+        <div class="mt-8 mb-6">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。每个案例都体现了我们产品的卓越性能和可靠品质。
+          </p>
+        </div>
+      )}
+      
+      <!-- 分页 -->
+      <Pagination 
+        currentPage={actualCurrentPage}
+        totalPages={totalPages}
+        baseUrl={buildUrl(lang, '/case')}
+        i18n={t.common}
+      />
     </>
   ) : (
     <EmptyState 

@@ -3,6 +3,8 @@ export const prerender = true;
 
 import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
 import GridList from '../../../components/templates/common/GridList.astro';
+import EnhancedGridList from '../../../components/templates/common/EnhancedGridList.astro';
+import ViewToggle from '../../../components/templates/common/ViewToggle.astro';
 import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getProducts } from '../../../lib/strapi.js';
@@ -101,13 +103,24 @@ const baseUrl = buildUrl(lang, '/products');
 >
   {hasProducts ? (
     <>
-      <!-- 产品网格 -->
-      <GridList 
+      <!-- 视图切换控件 -->
+      <ViewToggle 
+        currentView="grid"
+        translations={t.common}
+        lang={lang}
+        totalItems={displayProducts.length}
+        showTotal={true}
+      />
+      
+      <!-- 产品列表 -->
+      <EnhancedGridList 
         items={gridItems}
         itemsPerRow={3}
         maxRows={3}
-        translations={t}
+        mode="product"
+        translations={t.common}
         lang={lang}
+        viewMode="grid"
       />
       
       <!-- 分页 -->
@@ -115,7 +128,7 @@ const baseUrl = buildUrl(lang, '/products');
         currentPage={currentPage}
         totalPages={totalPages}
         baseUrl={baseUrl}
-        i18n={t}
+        i18n={t.common}
       />
     </>
   ) : (

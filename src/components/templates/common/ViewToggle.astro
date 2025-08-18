@@ -1,0 +1,200 @@
+---
+interface Props {
+  currentView: 'grid' | 'list';
+  translations?: any;
+  lang?: string;
+  totalItems?: number;
+  showTotal?: boolean;
+}
+
+const { currentView = 'grid', translations = {}, lang = 'en', totalItems, showTotal = true } = Astro.props;
+
+// 获取翻译文本
+const t = translations || {};
+---
+
+<div class="view-toggle-container flex items-center justify-between mb-6" data-astro-reload>
+  <!-- 左侧：总数显示 -->
+  <!-- {showTotal && totalItems !== undefined && ( -->
+    <div class="text-gray-600 text-sm">
+      {/* {t.pagination?.showing || '显示'} {totalItems} {t.units?.piece || '件'} */}
+    </div>
+  <!-- )} -->
+  
+  <!-- 右侧：视图切换按钮 -->
+  <div class="flex items-center space-x-2">
+    <!-- <span class="text-sm text-gray-600 mr-2">
+      {t.actions?.view || '视图'}:
+    </span> -->
+    
+    <!-- 卡片视图按钮 -->
+    <button
+      type="button"
+      class={`view-toggle-btn p-2 rounded-md transition-all duration-200 ${
+        currentView === 'grid' 
+          ? 'bg-gray-800 text-white shadow-md' 
+          : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800'
+      }`}
+      data-view="grid"
+      title={t.actions?.grid_view || '卡片视图'}
+    >
+      <!-- 3x3 网格图标 -->
+      <svg class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+        <!-- 第一行 -->
+        <rect x="2" y="2" width="4" height="4" rx="0.5"/>
+        <rect x="8" y="2" width="4" height="4" rx="0.5"/>
+        <rect x="14" y="2" width="4" height="4" rx="0.5"/>
+        <!-- 第二行 -->
+        <rect x="2" y="8" width="4" height="4" rx="0.5"/>
+        <rect x="8" y="8" width="4" height="4" rx="0.5"/>
+        <rect x="14" y="8" width="4" height="4" rx="0.5"/>
+        <!-- 第三行 -->
+        <rect x="2" y="14" width="4" height="4" rx="0.5"/>
+        <rect x="8" y="14" width="4" height="4" rx="0.5"/>
+        <rect x="14" y="14" width="4" height="4" rx="0.5"/>
+      </svg>
+    </button>
+    
+    <!-- 列表视图按钮 -->
+    <button
+      type="button"
+      class={`view-toggle-btn p-2 rounded-md transition-all duration-200 ${
+        currentView === 'list' 
+          ? 'bg-gray-800 text-white shadow-md' 
+          : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800'
+      }`}
+      data-view="list"
+      title={t.actions?.list_view || '列表视图'}
+    >
+      <!-- 带圆点的三条线图标 -->
+      <svg class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+        <!-- 第一条线 -->
+        <circle cx="3" cy="4" r="1.5"/>
+        <rect x="6" y="3" width="11" height="2" rx="1"/>
+        <!-- 第二条线 -->
+        <circle cx="3" cy="10" r="1.5"/>
+        <rect x="6" y="9" width="11" height="2" rx="1"/>
+        <!-- 第三条线 -->
+        <circle cx="3" cy="16" r="1.5"/>
+        <rect x="6" y="15" width="11" height="2" rx="1"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+// 视图切换功能
+function toggleView(viewType) {
+  console.log('toggleView called with:', viewType);
+  
+  // 获取当前页面的视图容器
+  const gridContainer = document.querySelector('.enhanced-grid-list');
+  if (!gridContainer) {
+    console.log('Grid container not found');
+    return;
+  }
+
+  // 获取视图容器
+  const gridViewContainer = document.querySelector('.grid-view-container');
+  const listViewContainer = document.querySelector('.list-view-container');
+  
+  if (!gridViewContainer || !listViewContainer) {
+    console.log('View containers not found');
+    return;
+  }
+
+  // 更新视图模式
+  if (viewType === 'list') {
+    // 显示列表视图，隐藏卡片视图
+    gridViewContainer.classList.add('hidden');
+    listViewContainer.classList.remove('hidden');
+    gridContainer.setAttribute('data-view-mode', 'list');
+    console.log('Switched to list view');
+  } else {
+    // 显示卡片视图，隐藏列表视图
+    listViewContainer.classList.add('hidden');
+    gridViewContainer.classList.remove('hidden');
+    gridContainer.setAttribute('data-view-mode', 'grid');
+    console.log('Switched to grid view');
+  }
+
+  // 更新按钮状态 - 使用黑灰色调
+  const gridBtn = document.querySelector('[data-view="grid"]');
+  const listBtn = document.querySelector('[data-view="list"]');
+  
+  if (gridBtn && listBtn) {
+    if (viewType === 'grid') {
+      // 激活网格按钮
+      gridBtn.classList.add('bg-gray-800', 'text-white', 'shadow-md');
+      gridBtn.classList.remove('bg-gray-100', 'text-gray-600');
+      // 取消激活列表按钮
+      listBtn.classList.remove('bg-gray-800', 'text-white', 'shadow-md');
+      listBtn.classList.add('bg-gray-100', 'text-gray-600');
+    } else {
+      // 激活列表按钮
+      listBtn.classList.add('bg-gray-800', 'text-white', 'shadow-md');
+      listBtn.classList.remove('bg-gray-100', 'text-gray-600');
+      // 取消激活网格按钮
+      gridBtn.classList.remove('bg-gray-800', 'text-white', 'shadow-md');
+      gridBtn.classList.add('bg-gray-100', 'text-gray-600');
+    }
+  }
+
+  // 保存用户偏好到localStorage
+  try {
+    localStorage.setItem('preferredViewMode', viewType);
+  } catch (e) {
+    console.warn('无法保存视图偏好设置:', e);
+  }
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('ViewToggle script loaded');
+  
+  // 为按钮添加点击事件
+  document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const viewType = this.getAttribute('data-view');
+      if (viewType) {
+        toggleView(viewType);
+      }
+    });
+  });
+  
+  // 恢复用户偏好的视图模式
+  try {
+    const savedViewMode = localStorage.getItem('preferredViewMode');
+    if (savedViewMode && (savedViewMode === 'grid' || savedViewMode === 'list')) {
+      // 延迟执行，确保DOM已加载
+      setTimeout(() => {
+        toggleView(savedViewMode);
+      }, 100);
+    }
+  } catch (e) {
+    console.warn('无法恢复视图偏好设置:', e);
+  }
+});
+
+// 导出函数供全局使用
+window.toggleView = toggleView;
+</script>
+
+<style>
+  .view-toggle-container {
+    @apply border-b border-gray-200 pb-4;
+  }
+  
+  .view-toggle-btn {
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+  
+  .view-toggle-btn:active {
+    @apply transform scale-95;
+  }
+  
+  /* 黑灰色调悬停效果 */
+  .view-toggle-btn:hover:not(.bg-gray-800) {
+    @apply bg-gray-200 text-gray-800;
+  }
+</style>

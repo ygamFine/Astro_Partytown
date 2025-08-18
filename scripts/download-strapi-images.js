@@ -279,7 +279,7 @@ async function downloadImage(imageUrl) {
       }
       
       return fileName;
-    } catch (error) {
+        } catch (error) {
       return null;
     }
   }
@@ -431,25 +431,20 @@ async function downloadAllImages() {
  */
 async function generateImageMapping() {
   try {
-    // 若 assets 目录为空，则尝试从 public 缓存同步一次，保证有可发射的源文件
-    try {
-      const assetFiles = await fs.readdir(IMAGE_CACHE_DIR);
-      if (!assetFiles || assetFiles.length === 0) {
-        const publicDir = path.join(process.cwd(), 'public/images/strapi');
-        try {
-          const publicFiles = await fs.readdir(publicDir);
-          await fs.mkdir(IMAGE_CACHE_DIR, { recursive: true });
-          await Promise.all((publicFiles || []).map(async (f) => {
-            const src = path.join(publicDir, f);
-            const dest = path.join(IMAGE_CACHE_DIR, f);
-            try { await fs.copyFile(src, dest); } catch {}
-          }));
-        } catch {}
-      }
-    } catch {}
+    // 检查 assets 目录是否存在
+    const assetsDir = path.join(__dirname, '../src/assets/strapi');
+    const assetsExists = await fs.access(assetsDir).then(() => true).catch(() => false);
+    
+    if (!assetsExists) {
+      console.warn('Assets 目录不存在，跳过图片映射生成');
+      return;
+    }
 
-    const files = await fs.readdir(IMAGE_CACHE_DIR);
+    // 获取实际存在的文件
+    const files = await fs.readdir(assetsDir);
     const imageFiles = files.filter(file => /\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file));
+    
+    console.log(`找到 ${imageFiles.length} 个图片文件用于映射`);
     
     // 1) 生成 JSON 映射（可供其它工具参考）
     const jsonMapping = {
@@ -468,19 +463,9 @@ async function generateImageMapping() {
     lines.push('// 自动生成：Strapi 图片 URL 映射 (由构建脚本生成)');
     lines.push('');
     
-    // 检查 assets 目录是否存在
-    const assetsDir = path.join(__dirname, '../src/assets/strapi');
-    const assetsExists = await fs.access(assetsDir).then(() => true).catch(() => false);
-    
-    // 为每个文件创建导入（?url 以获取最终 URL 字符串）——从源码资产导入，发射到/_astro
+    // 为每个实际存在的文件创建导入（?url 以获取最终 URL 字符串）——从源码资产导入，发射到/_astro
     imageFiles.forEach((file, idx) => {
-      // 若 src/assets/strapi 不存在，改从 public 侧导入，确保构建可用
-      if (assetsExists) {
-        lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
-      } else {
-        // 从 public 目录导入，使用相对路径
-        lines.push(`import u${idx} from '../../public/images/strapi/${file}?url';`);
-      }
+      lines.push(`import u${idx} from '../assets/strapi/${file}?url';`);
     });
     lines.push('');
     lines.push('export const STRAPI_IMAGE_URLS = {');
@@ -494,6 +479,8 @@ async function generateImageMapping() {
 
     const modulePath = path.join(__dirname, '../src/data/strapi-image-urls.js');
     await fs.writeFile(modulePath, lines.join('\n'));
+    
+    console.log(`✅ 图片映射文件生成完成，包含 ${imageFiles.length} 个文件`);
 
   } catch (error) {
     console.warn('生成图片映射失败:', error.message);
