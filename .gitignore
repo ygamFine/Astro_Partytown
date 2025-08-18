@@ -38,7 +38,7 @@ pnpm-debug.log*
 
 
 src/strapi/
-src/data/
+src/data/strapi-image-urls.js
 public/pagefind/
 public/images/strapi/
 public/images/optimized/
