@@ -37,6 +37,8 @@ pnpm-debug.log*
 .i18n-config-cache
 
 
+src/strapi/
+src/data/
 public/pagefind/
 public/images/strapi/
 public/images/optimized/
