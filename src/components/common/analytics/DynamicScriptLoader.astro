@@ -9,14 +9,38 @@ export interface Props {
   pageType?: string;
   route?: string;
   loadCondition?: boolean;
+  lang?: string;
 }
 
 const {
   position,
   pageType = 'default',
   route = '',
-  loadCondition = true
+  loadCondition = true,
+  lang = 'en'
 } = Astro.props;
+
+// 🚀 极简优化策略 - 基于位置和页面类型
+const getOptimizationStrategy = () => {
+  // Header 位置 - 关键脚本，使用模块化
+  if (position === 'header') {
+    return { useModule: true, useDefineVars: true };
+  }
+  
+  // Body Top 位置 - 页面初始化
+  if (position === 'body-top') {
+    return { useModule: true, useDefineVars: true };
+  }
+  
+  // Body Bottom 位置 - 非关键脚本，使用 Partytown
+  if (position === 'body-bottom') {
+    return { usePartytown: true, useDefineVars: true };
+  }
+  
+  return { useModule: true, useDefineVars: true };
+};
+
+const optimization = getOptimizationStrategy();
 
 // Strapi API 配置
 const STRAPI_API_URL = 'http://182.92.233.160:1137/api/insert-code';
@@ -84,6 +108,8 @@ const getScriptsByPosition = (scripts: any, pos: string) => {
 // 获取当前位置的脚本
 const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, position) : null;
 
+// 不处理脚本内容，直接使用原始数据
+
 // 开发环境调试信息
 if (isDev && currentScripts) {
   console.log(`🎯 动态脚本加载器 [${position}] - 已加载脚本:`, {
@@ -91,7 +117,8 @@ if (isDev && currentScripts) {
     route,
     hasScripts: !!currentScripts.scripts,
     hasStyles: !!currentScripts.css,
-    hasMeta: !!currentScripts.meta
+    hasMeta: !!currentScripts.meta,
+    optimization
   });
 }
 ---
@@ -109,11 +136,25 @@ if (isDev && currentScripts) {
       <Fragment set:html={currentScripts.css} />
     )}
 
-    <!-- 📜 JavaScript 脚本 -->
+    <!-- 📜 JavaScript 脚本 - 直接输出原始内容 -->
     {currentScripts.scripts && (
       <Fragment set:html={currentScripts.scripts} />
     )}
   </>
+)}
+
+<!-- 🚀 Astro 脚本优化 - 使用 define:vars 注入变量 -->
+{optimization.useDefineVars && (
+  <script define:vars={{ 
+    isProd, 
+    isDev, 
+    pageType, 
+    route, 
+    position,
+    currentPath: Astro.url.pathname
+  }}>
+    // 极简变量注入 - 零运行时开销
+  </script>
 )}
 
 <!-- 开发环境错误提示 -->
