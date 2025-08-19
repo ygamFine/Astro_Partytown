@@ -1,0 +1,368 @@
+---
+// 🎬 动画系统组件 - Astro 极致优化版本
+export interface Props {
+  enableAnimations?: boolean;
+  enableCounters?: boolean;
+  enableDebug?: boolean;
+  animationStrategy?: 'immediate' | 'idle' | 'interaction' | 'smart';
+}
+
+const {
+  enableAnimations = true,
+  enableCounters = true,
+  enableDebug = import.meta.env.DEV,
+  animationStrategy = 'smart'
+} = Astro.props;
+
+// 构建时环境检测
+const isProd = import.meta.env.PROD;
+const isDev = import.meta.env.DEV;
+
+// 动画配置
+const getAnimationConfig = () => {
+  return {
+    enableAnimations,
+    enableCounters,
+    strategy: animationStrategy,
+    debug: enableDebug,
+    isProd,
+    isDev
+  };
+};
+
+const config = getAnimationConfig();
+
+// 开发环境调试信息
+if (isDev && enableDebug) {
+  console.log('🎬 动画系统配置:', {
+    enableAnimations,
+    enableCounters,
+    animationStrategy,
+    timestamp: new Date().toISOString()
+  });
+}
+---
+
+<!-- 🎬 动画系统 - Astro 极致优化版本 -->
+<script define:vars={{ 
+  isProd, 
+  isDev, 
+  enableAnimations, 
+  enableCounters,
+  config,
+  enableDebug
+}}>
+  // 🎬 Astro 极致优化版本 - 利用所有 Astro 特性
+  
+  // 构建时变量注入
+  const ENABLE_ANIMATIONS = enableAnimations;
+  const ENABLE_COUNTERS = enableCounters;
+  const IS_PROD = isProd;
+  const IS_DEV = isDev;
+  const CONFIG = config;
+  const ENABLE_DEBUG = enableDebug;
+  
+  // 性能优化：避免重复初始化
+  if (window.animationSystemInitialized) {
+    if (ENABLE_DEBUG) {
+      console.log('✅ 动画系统已初始化，跳过重复初始化');
+    }
+    return;
+  }
+  
+  // 🎯 智能动画系统类
+  class AnimationSystem {
+    constructor() {
+      this.isInitialized = false;
+      this.observers = new Map();
+      this.startTime = Date.now();
+      this.animationElements = new Set();
+      this.counterElements = new Set();
+    }
+    
+    // 🎯 策略1: 立即初始化
+    async initImmediate() {
+      if (this.isInitialized) return;
+      
+      if (ENABLE_DEBUG) {
+        console.log('🎬 动画系统 - 立即初始化');
+      }
+      
+      await this.initializeSystem();
+    }
+    
+    // 🎯 策略2: 智能初始化策略
+    async initWithStrategy() {
+      if (this.isInitialized) return;
+      
+      switch (CONFIG.strategy) {
+        case 'immediate':
+          await this.initImmediate();
+          break;
+        case 'idle':
+          this.initOnIdle();
+          break;
+        case 'interaction':
+          this.initOnInteraction();
+          break;
+        case 'smart':
+        default:
+          this.initSmart();
+          break;
+      }
+    }
+    
+    // 🎯 空闲时初始化
+    initOnIdle() {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => this.initializeSystem(), { timeout: 2000 });
+      } else {
+        setTimeout(() => this.initializeSystem(), 1000);
+      }
+    }
+    
+    // 🎯 交互时初始化
+    initOnInteraction() {
+      let hasInteraction = false;
+      
+      const interactionHandler = () => {
+        if (!hasInteraction) {
+          hasInteraction = true;
+          setTimeout(() => this.initializeSystem(), 500);
+          this.cleanupObservers();
+        }
+      };
+      
+      ['scroll', 'mousemove', 'click', 'touchstart'].forEach(event => {
+        window.addEventListener(event, interactionHandler, { passive: true, once: true });
+        this.observers.set(event, () => window.removeEventListener(event, interactionHandler));
+      });
+      
+      // 备用方案
+      setTimeout(() => {
+        if (!hasInteraction && !this.isInitialized) {
+          this.initializeSystem();
+        }
+      }, 3000);
+    }
+    
+    // 🎯 智能初始化策略
+    initSmart() {
+      // 组合多种策略
+      this.initOnIdle();
+      this.initOnInteraction();
+    }
+    
+    // 🎯 核心初始化逻辑
+    async initializeSystem() {
+      if (this.isInitialized) return;
+      
+      try {
+        const initStartTime = Date.now();
+        
+        // 初始化动画系统
+        if (ENABLE_ANIMATIONS) {
+          this.initAnimationSystem();
+        }
+        
+        // 初始化计数器系统
+        if (ENABLE_COUNTERS) {
+          this.initCounterSystem();
+        }
+        
+        const initEndTime = Date.now();
+        const initDuration = initEndTime - initStartTime;
+        
+        // 标记为已初始化
+        this.isInitialized = true;
+        window.animationSystemInitialized = true;
+        
+        if (ENABLE_DEBUG) {
+          console.log('✅ 动画系统初始化成功', {
+            enableAnimations: ENABLE_ANIMATIONS,
+            enableCounters: ENABLE_COUNTERS,
+            strategy: CONFIG.strategy,
+            initDuration: `${initDuration}ms`,
+            totalTime: `${Date.now() - this.startTime}ms`
+          });
+        }
+        
+        // 触发初始化完成事件
+        window.dispatchEvent(new CustomEvent('animation:ready', {
+          detail: {
+            enableAnimations: ENABLE_ANIMATIONS,
+            enableCounters: ENABLE_COUNTERS,
+            strategy: CONFIG.strategy,
+            timestamp: Date.now(),
+            initDuration
+          }
+        }));
+        
+        // 清理观察器
+        this.cleanupObservers();
+        
+      } catch (error) {
+        console.warn('⚠️ 动画系统初始化失败:', error);
+        
+        // 开发环境显示详细错误
+        if (IS_DEV) {
+          console.error('动画系统初始化错误详情:', {
+            error: error.message,
+            stack: error.stack,
+            config: CONFIG
+          });
+        }
+      }
+    }
+    
+    // 🎯 初始化动画系统
+    initAnimationSystem() {
+      // 检查浏览器支持
+      if (!window.IntersectionObserver) {
+        // 不支持的话直接显示所有元素
+        document.querySelectorAll('.animate-fade-up, .animate-fade-left, .animate-fade-right, .animate-scale-up').forEach(el => {
+          el.classList.add('animate-in');
+          this.animationElements.add(el);
+        });
+        return;
+      }
+
+      // 创建观察器
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            observer.unobserve(entry.target);
+            this.animationElements.add(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+      });
+
+      // 观察动画元素
+      document.querySelectorAll('.animate-fade-up, .animate-fade-left, .animate-fade-right, .animate-scale-up').forEach(el => {
+        observer.observe(el);
+      });
+      
+      this.observers.set('animation', observer);
+    }
+    
+    // 🎯 初始化计数器系统
+    initCounterSystem() {
+      // 数字计数动画
+      const animateCounter = (element, target, duration = 2000) => {
+        let start = 0;
+        const increment = target / (duration / 16);
+        
+        function update() {
+          start += increment;
+          if (start < target) {
+            element.textContent = Math.floor(start).toLocaleString();
+            requestAnimationFrame(update);
+          } else {
+            element.textContent = target.toLocaleString();
+          }
+        }
+        
+        update();
+      };
+
+      // 检查浏览器支持
+      if (!window.IntersectionObserver) {
+        // 不支持的话直接执行所有计数器
+        document.querySelectorAll('.counter-number[data-count]').forEach(el => {
+          const target = el.dataset.count;
+          if (target) {
+            animateCounter(el, parseInt(target));
+            this.counterElements.add(el);
+          }
+        });
+        return;
+      }
+
+      // 统计数字观察器
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = entry.target.dataset.count;
+            if (target) {
+              animateCounter(entry.target, parseInt(target));
+              counterObserver.unobserve(entry.target);
+              this.counterElements.add(entry.target);
+            }
+          }
+        });
+      }, { threshold: 0.5 });
+
+      // 观察计数器
+      document.querySelectorAll('.counter-number[data-count]').forEach(el => {
+        counterObserver.observe(el);
+      });
+      
+      this.observers.set('counter', counterObserver);
+    }
+    
+    // 🧹 清理观察器
+    cleanupObservers() {
+      this.observers.forEach((cleanup, key) => {
+        if (typeof cleanup === 'function') {
+          cleanup();
+        } else if (cleanup && typeof cleanup.disconnect === 'function') {
+          cleanup.disconnect();
+        }
+      });
+      this.observers.clear();
+    }
+    
+    // 🚀 启动动画系统
+    async start() {
+      await this.initWithStrategy();
+    }
+    
+    // 📊 获取统计信息
+    getStats() {
+      return {
+        isInitialized: this.isInitialized,
+        animationElements: this.animationElements.size,
+        counterElements: this.counterElements.size,
+        observers: this.observers.size,
+        startTime: this.startTime
+      };
+    }
+  }
+  
+  // 🎯 初始化动画系统
+  const animationSystem = new AnimationSystem();
+  
+  // 🚀 启动动画系统
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => animationSystem.start());
+  } else {
+    animationSystem.start();
+  }
+  
+  // 🔍 开发环境调试工具
+  if (IS_DEV && ENABLE_DEBUG) {
+    window.animationDebug = {
+      animationSystem,
+      config: CONFIG,
+      getStats: () => animationSystem.getStats(),
+      forceInit: () => animationSystem.initImmediate(),
+      reset: () => {
+        window.animationSystemInitialized = false;
+        animationSystem.isInitialized = false;
+        animationSystem.animationElements.clear();
+        animationSystem.counterElements.clear();
+        animationSystem.cleanupObservers();
+      },
+      changeStrategy: (newStrategy) => {
+        CONFIG.strategy = newStrategy;
+        if (ENABLE_DEBUG) {
+          console.log('🔄 动画策略已更改为:', newStrategy);
+        }
+      }
+    };
+  }
+</script>

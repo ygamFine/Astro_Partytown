@@ -4,9 +4,9 @@ import FooterSection from "../components/common/layout/FooterSection.astro";
 import GTMLoader from "../components/common/analytics/GTMLoader.astro";
 import DynamicScriptLoader from "../components/common/analytics/DynamicScriptLoader.astro";
 import PagefindPreloader from "../components/common/analytics/PagefindPreloader.astro";
+import AnimationSystem from "../components/common/AnimationSystem.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
-import { themeConfig } from "../config/theme.js";
 
 export interface Props {
   title: string;
@@ -18,16 +18,12 @@ export interface Props {
 const {
   title,
   description = "山东永安建设机械集团有限公司 - 专业工程机械制造商",
-  lang = "zh-CN",
+  lang = "en",
   pageType = "home",
 } = Astro.props;
 
-// 获取页面宽度配置
-const getPageWidth = () => {
-  return themeConfig.layout.dynamicWidth.getPageWidth(pageType);
-};
-
-const pageWidth = getPageWidth();
+// 页面宽度配置 - 由各页面组件自行管理
+// 每个页面组件应在其自己的文件中定义 pageWidth
 
 // RTL 语言列表
 const RTL_LANGUAGES = ['ar'];
@@ -496,26 +492,8 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <ContactModal translations={{ common: {} }} data-pagefind-ignore />
 
 
-    <!-- 大幅延迟客服脚本加载 -->
-    <!-- <script> 
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          // 添加全局错误处理，修复第三方脚本的 className.indexOf 错误
-          const originalIndexOf = String.prototype.indexOf;
-          String.prototype.indexOf = function(searchValue, fromIndex) {
-            if (this === null || this === undefined) {
-              return -1;
-            }
-            return originalIndexOf.call(this, searchValue, fromIndex);
-          };
-          
-          const hm = document.createElement("script");
-          hm.src = "https://cdn.huazhi.cloud/hzchat/dist/livechat.js?time="+new Date().getTime();
-          hm.setAttribute('_extID',"309-313-7n1iAECE");
-          document.head.appendChild(hm);
-        }, 10000); // 10秒后再加载客服
-      });
-    </script> -->
+    <!-- 🚀 第三方脚本预留位置 -->
+    <!-- 如需添加第三方脚本（如客服系统），请在此处添加 -->
 
     <!-- 🚀 Pagefind 预加载器 - 使用专用组件 -->
     <PagefindPreloader 
@@ -526,121 +504,64 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       enableDebug={import.meta.env.DEV}
     />
 
-    <!-- 全局错误处理 -->
-    <script is:inline>
-      // 全局错误处理，修复第三方脚本的问题
+    <!-- 🛡️ 全局错误处理 - 按需加载版本 -->
+    <!-- <script is:inline>
+      // 全局错误处理系统 - 仅在需要时启用
       (function() {
-        // 修复 className.indexOf 错误
-        const originalIndexOf = String.prototype.indexOf;
-        String.prototype.indexOf = function(searchValue, fromIndex) {
-          if (this === null || this === undefined) {
-            return -1;
-          }
-          return originalIndexOf.call(this, searchValue, fromIndex);
+        // 检查是否需要错误处理
+        const needsErrorHandling = () => {
+          // 检查是否有第三方脚本需要修复
+          const hasThirdPartyScripts = document.querySelectorAll('script[src*="huazhi.cloud"], script[src*="livechat"]').length > 0;
+          return hasThirdPartyScripts;
         };
-        
-        // 修复 Element.prototype.className 的问题
-        const originalClassName = Object.getOwnPropertyDescriptor(Element.prototype, 'className');
-        if (originalClassName) {
-          Object.defineProperty(Element.prototype, 'className', {
-            get: function() {
-              return this.getAttribute('class') || '';
-            },
-            set: function(value) {
-              this.setAttribute('class', value || '');
+
+        // 仅在需要时启用错误处理
+        if (needsErrorHandling()) {
+          // 修复 className.indexOf 错误
+          const originalIndexOf = String.prototype.indexOf;
+          String.prototype.indexOf = function(searchValue, fromIndex) {
+            if (this === null || this === undefined) {
+              return -1;
             }
-          });
-        }
-        
-        // 全局错误捕获
-        window.addEventListener('error', function(event) {
-          if (event.error && event.error.message && event.error.message.includes('className.indexOf')) {
-            event.preventDefault();
-            console.warn('已修复 className.indexOf 错误');
-            return false;
-          }
-        });
-      })();
-    </script>
-
-    <!-- 简单动画系统 -->
-    <script is:inline>
-      // 简单的动画系统
-      (function() {
-        // 检查浏览器支持
-        if (!window.IntersectionObserver) {
-          // 不支持的话直接显示所有元素
-          document.querySelectorAll('.animate-fade-up, .animate-fade-left, .animate-fade-right, .animate-scale-up').forEach(el => {
-            el.classList.add('animate-in');
-          });
-          return;
-        }
-
-        // 创建观察器
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('animate-in');
-              observer.unobserve(entry.target);
-            }
-          });
-        }, {
-          threshold: 0.1,
-          rootMargin: '50px'
-        });
-
-        // 数字计数动画
-        function animateCounter(element, target, duration = 2000) {
-          let start = 0;
-          const increment = target / (duration / 16);
+            return originalIndexOf.call(this, searchValue, fromIndex);
+          };
           
-          function update() {
-            start += increment;
-            if (start < target) {
-              element.textContent = Math.floor(start).toLocaleString();
-              requestAnimationFrame(update);
-            } else {
-              element.textContent = target.toLocaleString();
-            }
-          }
-          
-          update();
-        }
-
-        // 统计数字观察器
-        const counterObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const target = entry.target.dataset.count;
-              if (target) {
-                animateCounter(entry.target, parseInt(target));
-                counterObserver.unobserve(entry.target);
+          // 修复 Element.prototype.className 的问题
+          const originalClassName = Object.getOwnPropertyDescriptor(Element.prototype, 'className');
+          if (originalClassName) {
+            Object.defineProperty(Element.prototype, 'className', {
+              get: function() {
+                return this.getAttribute('class') || '';
+              },
+              set: function(value) {
+                this.setAttribute('class', value || '');
               }
+            });
+          }
+          
+          // 全局错误捕获
+          window.addEventListener('error', function(event) {
+            if (event.error && event.error.message && event.error.message.includes('className.indexOf')) {
+              event.preventDefault();
+              console.warn('已修复 className.indexOf 错误');
+              return false;
             }
           });
-        }, { threshold: 0.5 });
 
-        // 初始化
-        function init() {
-          // 观察动画元素
-          document.querySelectorAll('.animate-fade-up, .animate-fade-left, .animate-fade-right, .animate-scale-up').forEach(el => {
-            observer.observe(el);
-          });
-
-          // 观察计数器
-          document.querySelectorAll('.counter-number[data-count]').forEach(el => {
-            counterObserver.observe(el);
-          });
-        }
-
-        // 页面加载后初始化
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', init);
-        } else {
-          init();
+          if (import.meta.env.DEV) {
+            console.log('🛡️ 全局错误处理已启用');
+          }
         }
       })();
-    </script>
+    </script> -->
+
+    <!-- 🎬 动画系统 - 使用专用组件 -->
+    <AnimationSystem 
+      enableAnimations={true}
+      enableCounters={true}
+      animationStrategy="smart"
+      enableDebug={import.meta.env.DEV}
+    />
 
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>

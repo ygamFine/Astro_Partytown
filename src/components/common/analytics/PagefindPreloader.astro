@@ -16,32 +16,29 @@ const {
   enableDebug = import.meta.env.DEV
 } = Astro.props;
 
-// 构建时环境检测
 const isProd = import.meta.env.PROD;
 const isDev = import.meta.env.DEV;
 
-// 智能预加载策略配置
 const getPreloadConfig = () => {
-  const isSearchPage = currentPath.includes('/search');
-  
   return {
-    isSearchPage,
-    shouldPreload: !isSearchPage || preloadStrategy === 'immediate',
-    strategy: isSearchPage ? 'immediate' : preloadStrategy,
-    timeout: isSearchPage ? 0 : 2000,
-    debug: enableDebug
+    pageType,
+    lang,
+    currentPath,
+    strategy: preloadStrategy,
+    debug: enableDebug,
+    isProd,
+    isDev
   };
 };
 
 const config = getPreloadConfig();
 
-// 开发环境调试信息
-if (isDev) {
-  console.log('🎯 Pagefind 预加载器配置:', {
+if (isDev && enableDebug) {
+  console.log('🚀 Pagefind 预加载器配置:', {
     pageType,
     lang,
     currentPath,
-    config,
+    preloadStrategy,
     timestamp: new Date().toISOString()
   });
 }
@@ -68,66 +65,67 @@ if (isDev) {
   const CONFIG = config;
   const ENABLE_DEBUG = enableDebug;
   
-  // 性能优化：避免重复加载
-  if (window.pagefindPreloaded) {
+  // 性能优化：避免重复初始化
+  if (window.pagefindPreloaderInitialized) {
     if (ENABLE_DEBUG) {
-      console.log('✅ Pagefind 已预加载，跳过重复加载');
+      console.log('✅ Pagefind 预加载器已初始化，跳过重复初始化');
     }
     return;
   }
   
-  // 🎯 智能预加载策略类
+  // 🎯 智能预加载器类
   class PagefindPreloader {
     constructor() {
-      this.isSearchPage = CONFIG.isSearchPage;
       this.isPreloaded = false;
       this.preloadPromise = null;
-      this.observers = new Set();
+      this.observers = [];
       this.startTime = Date.now();
+      this.isSearchPage = CURRENT_PATH.includes('/search');
     }
     
-    // 🎯 策略1: 搜索页面立即加载
-    async loadForSearchPage() {
-      if (this.isSearchPage && !this.isPreloaded) {
-        if (ENABLE_DEBUG) {
-          console.log('🔍 搜索页面 - 立即加载 Pagefind');
-        }
-        return this.preloadPagefind();
+    // 🎯 策略1: 立即预加载
+    async preloadImmediate() {
+      if (this.isPreloaded) return;
+      
+      if (ENABLE_DEBUG) {
+        console.log('🚀 Pagefind 预加载器 - 立即预加载');
       }
+      
+      await this.preloadPagefind();
     }
     
     // 🎯 策略2: 智能预加载策略
-    async loadWithStrategy() {
-      if (this.isSearchPage || this.isPreloaded) return;
+    async preloadWithStrategy() {
+      if (this.isPreloaded) return;
       
       switch (CONFIG.strategy) {
         case 'immediate':
-          await this.preloadPagefind();
+          await this.preloadImmediate();
           break;
         case 'idle':
-          this.loadOnIdle();
+          this.preloadOnIdle();
           break;
         case 'interaction':
-          this.loadOnInteraction();
+          this.preloadOnInteraction();
           break;
         case 'smart':
         default:
-          this.loadSmart();
+          this.preloadSmart();
           break;
       }
     }
     
-    // 🎯 空闲时加载
-    loadOnIdle() {
+    // 🎯 空闲时预加载
+    preloadOnIdle() {
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => this.preloadPagefind(), { timeout: CONFIG.timeout });
+        requestIdleCallback(() => this.preloadPagefind(), { timeout: 2000 });
       } else {
-        setTimeout(() => this.preloadPagefind(), CONFIG.timeout);
+        setTimeout(() => this.preloadPagefind(), 1000);
       }
     }
     
-    // 🎯 交互时加载
-    loadOnInteraction() {
+    // 🎯 交互时预加载
+    preloadOnInteraction() {
       let hasInteraction = false;
       
       const interactionHandler = () => {
@@ -140,7 +138,7 @@ if (isDev) {
       
       ['scroll', 'mousemove', 'click', 'touchstart'].forEach(event => {
         window.addEventListener(event, interactionHandler, { passive: true, once: true });
-        this.observers.add(() => window.removeEventListener(event, interactionHandler));
+        this.observers.push(() => window.removeEventListener(event, interactionHandler));
       });
       
       // 备用方案
@@ -148,19 +146,30 @@ if (isDev) {
         if (!hasInteraction && !this.isPreloaded) {
           this.preloadPagefind();
         }
-      }, 5000);
+      }, 3000);
     }
     
-    // 🎯 智能加载策略
-    loadSmart() {
+    // 🎯 智能预加载策略
+    preloadSmart() {
       // 组合多种策略
-      this.loadOnIdle();
-      this.loadOnInteraction();
+      this.preloadOnIdle();
+      this.preloadOnInteraction();
+    }
+    
+    // 🎯 搜索页面专用预加载
+    async loadForSearchPage() {
+      if (this.isPreloaded) return;
+      
+      if (ENABLE_DEBUG) {
+        console.log('🔍 搜索页面 - 立即预加载 Pagefind');
+      }
+      
+      await this.preloadPagefind();
     }
     
     // 🎯 核心预加载逻辑
     async preloadPagefind() {
-      if (this.isPreloaded || this.preloadPromise) {
+      if (this.isPreloaded && this.preloadPromise) {
         return this.preloadPromise;
       }
       
@@ -168,8 +177,8 @@ if (isDev) {
         try {
           const loadStartTime = Date.now();
           
-          // 使用动态导入，支持代码分割和缓存
-          const { PagefindUI } = await import('@pagefind/default-ui');
+          // 🎯 预加载 Pagefind CSS 和 JS 文件
+          await this.preloadPagefindAssets();
           
           const loadEndTime = Date.now();
           const loadDuration = loadEndTime - loadStartTime;
@@ -177,7 +186,6 @@ if (isDev) {
           // 标记为已预加载
           this.isPreloaded = true;
           window.pagefindPreloaded = true;
-          window.PagefindUI = PagefindUI;
           
           if (ENABLE_DEBUG) {
             console.log('✅ Pagefind 预加载成功', {
@@ -224,10 +232,45 @@ if (isDev) {
       return this.preloadPromise;
     }
     
+    // 🎯 预加载 Pagefind 资源文件
+    async preloadPagefindAssets() {
+      const assets = [
+        // Pagefind CSS 文件
+        '/pagefind/pagefind-ui.css',
+        // Pagefind JS 文件
+        '/pagefind/pagefind-ui.js'
+      ];
+      
+      const preloadPromises = assets.map(asset => {
+        return new Promise((resolve, reject) => {
+          if (asset.endsWith('.css')) {
+            // 预加载 CSS
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = asset;
+            link.as = 'style';
+            link.onload = () => resolve();
+            link.onerror = () => reject(new Error(`Failed to preload CSS: ${asset}`));
+            document.head.appendChild(link);
+          } else if (asset.endsWith('.js')) {
+            // 预加载 JS
+            const script = document.createElement('script');
+            script.src = asset;
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error(`Failed to preload JS: ${asset}`));
+            document.head.appendChild(script);
+          }
+        });
+      });
+      
+      await Promise.all(preloadPromises);
+    }
+    
     // 🧹 清理观察器
     cleanupObservers() {
       this.observers.forEach(cleanup => cleanup());
-      this.observers.clear();
+      this.observers = [];
     }
     
     // 🚀 启动预加载
@@ -235,7 +278,7 @@ if (isDev) {
       if (this.isSearchPage) {
         await this.loadForSearchPage();
       } else {
-        await this.loadWithStrategy();
+        await this.preloadWithStrategy();
       }
     }
   }
@@ -278,4 +321,7 @@ if (isDev) {
       }
     };
   }
+  
+  // 标记为已初始化
+  window.pagefindPreloaderInitialized = true;
 </script>
