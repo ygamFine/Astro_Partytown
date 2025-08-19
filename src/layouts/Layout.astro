@@ -2,6 +2,8 @@
 import Header from "../components/common/layout/Header.astro";
 import FooterSection from "../components/common/layout/FooterSection.astro";
 import GTMLoader from "../components/common/analytics/GTMLoader.astro";
+import DynamicScriptLoader from "../components/common/analytics/DynamicScriptLoader.astro";
+import PagefindPreloader from "../components/common/analytics/PagefindPreloader.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
 import { themeConfig } from "../config/theme.js";
@@ -89,7 +91,10 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <meta property="og:type" content="website" />
 
     <!-- 🎯 优化的 GTM 加载器 - 支持开发/生产环境 -->
-    <GTMLoader />
+    <!-- <GTMLoader /> -->
+
+    <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
+    <DynamicScriptLoader position="header" />
 
     <!-- 全局样式 -->
     <link rel="stylesheet" href="/src/styles/global.css" />
@@ -475,6 +480,8 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <title>{title}</title>
   </head>
   <body data-pagefind-body>
+    <!-- 🎯 Body Top 位置动态脚本加载器 - 插入到 <body> 标签开始处 -->
+    <DynamicScriptLoader position="body-top" />
 
     <Header />
     
@@ -490,7 +497,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
 
     <!-- 大幅延迟客服脚本加载 -->
-    <script> 
+    <!-- <script> 
       window.addEventListener('load', () => {
         setTimeout(() => {
           // 添加全局错误处理，修复第三方脚本的 className.indexOf 错误
@@ -508,23 +515,16 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
           document.head.appendChild(hm);
         }, 10000); // 10秒后再加载客服
       });
-    </script>
+    </script> -->
 
-    <!-- Pagefind 搜索初始化 -->
-    <script>
-      // 全局 Pagefind 搜索功能
-      window.addEventListener('load', async function() {
-        // 延迟加载 Pagefind，避免阻塞页面渲染
-        setTimeout(async () => {
-          try {
-            // 预加载 Pagefind 脚本
-            await import('@pagefind/default-ui');
-          } catch (error) {
-            console.warn('Pagefind 预加载失败:', error);
-          }
-        }, 2000); // 2秒后预加载
-      });
-    </script>
+    <!-- 🚀 Pagefind 预加载器 - 使用专用组件 -->
+    <PagefindPreloader 
+      pageType={pageType}
+      lang={lang}
+      currentPath={Astro.url.pathname}
+      preloadStrategy="smart"
+      enableDebug={import.meta.env.DEV}
+    />
 
     <!-- 全局错误处理 -->
     <script is:inline>
@@ -646,5 +646,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
 
     <FooterSection />
+    <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
+    <DynamicScriptLoader position="body-bottom" />
   </body>
 </html>

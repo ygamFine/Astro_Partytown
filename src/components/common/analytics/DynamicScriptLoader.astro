@@ -1,0 +1,124 @@
+---
+// 环境检测
+const isProd = import.meta.env.PROD;
+const isDev = import.meta.env.DEV;
+
+// 组件属性
+export interface Props {
+  position: 'header' | 'body-top' | 'body-bottom';
+  pageType?: string;
+  route?: string;
+  loadCondition?: boolean;
+}
+
+const {
+  position,
+  pageType = 'default',
+  route = '',
+  loadCondition = true
+} = Astro.props;
+
+// Strapi API 配置
+const STRAPI_API_URL = 'http://182.92.233.160:1137/api/insert-code';
+
+// 获取动态脚本数据 - 在构建时执行
+let dynamicScripts = null;
+let error = null;
+
+// 按需加载条件检查
+const shouldLoadScripts = loadCondition && (
+  pageType !== 'none' && 
+  route !== 'excluded'
+);
+
+if (shouldLoadScripts) {
+  try {
+    const response = await fetch(STRAPI_API_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 生产环境使用缓存，开发环境实时获取
+      cache: isProd ? 'force-cache' : 'no-store'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      dynamicScripts = data.data;
+    } else {
+      error = `API 请求失败: ${response.status}`;
+      console.error('动态脚本加载器错误:', error);
+    }
+  } catch (err: any) {
+    error = `获取动态脚本失败: ${err.message}`;
+    console.error('动态脚本加载器错误:', error);
+  }
+}
+
+// 根据位置过滤脚本内容
+const getScriptsByPosition = (scripts: any, pos: string) => {
+  if (!scripts) return null;
+  
+  switch (pos) {
+    case 'header':
+      return {
+        meta: scripts.header_label_meta,
+        css: scripts.header_label_css,
+        scripts: scripts.header_label_scripts
+      };
+    case 'body-top':
+      return {
+        css: scripts.body_label_top_css,
+        scripts: scripts.body_label_top_css_scripts
+      };
+    case 'body-bottom':
+      return {
+        css: scripts.body_label_bottom_css,
+        scripts: scripts.body_label_bottom_scripts
+      };
+    default:
+      return null;
+  }
+};
+
+// 获取当前位置的脚本
+const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, position) : null;
+
+// 开发环境调试信息
+if (isDev && currentScripts) {
+  console.log(`🎯 动态脚本加载器 [${position}] - 已加载脚本:`, {
+    pageType,
+    route,
+    hasScripts: !!currentScripts.scripts,
+    hasStyles: !!currentScripts.css,
+    hasMeta: !!currentScripts.meta
+  });
+}
+---
+
+<!-- 🎯 动态脚本加载器 - 位置: {position} -->
+{currentScripts && (
+  <>
+    <!-- 📝 Meta 标签 (仅 header 位置) -->
+    {position === 'header' && currentScripts.meta && (
+      <Fragment set:html={currentScripts.meta} />
+    )}
+
+    <!-- 🎨 CSS 样式 -->
+    {currentScripts.css && (
+      <Fragment set:html={currentScripts.css} />
+    )}
+
+    <!-- 📜 JavaScript 脚本 -->
+    {currentScripts.scripts && (
+      <Fragment set:html={currentScripts.scripts} />
+    )}
+  </>
+)}
+
+<!-- 开发环境错误提示 -->
+{isDev && error && (
+  <script define:vars={{ error, position, pageType, route }}>
+    console.warn(`🎯 动态脚本加载器 [${position}] 警告:`, error, { pageType, route });
+  </script>
+)}

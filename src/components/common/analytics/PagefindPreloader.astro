@@ -1,0 +1,281 @@
+---
+// 🚀 Pagefind 预加载器组件 - Astro 极致优化版本
+export interface Props {
+  pageType?: string;
+  lang?: string;
+  currentPath?: string;
+  preloadStrategy?: 'immediate' | 'idle' | 'interaction' | 'smart';
+  enableDebug?: boolean;
+}
+
+const {
+  pageType = 'default',
+  lang = 'zh-CN',
+  currentPath = Astro.url.pathname,
+  preloadStrategy = 'smart',
+  enableDebug = import.meta.env.DEV
+} = Astro.props;
+
+// 构建时环境检测
+const isProd = import.meta.env.PROD;
+const isDev = import.meta.env.DEV;
+
+// 智能预加载策略配置
+const getPreloadConfig = () => {
+  const isSearchPage = currentPath.includes('/search');
+  
+  return {
+    isSearchPage,
+    shouldPreload: !isSearchPage || preloadStrategy === 'immediate',
+    strategy: isSearchPage ? 'immediate' : preloadStrategy,
+    timeout: isSearchPage ? 0 : 2000,
+    debug: enableDebug
+  };
+};
+
+const config = getPreloadConfig();
+
+// 开发环境调试信息
+if (isDev) {
+  console.log('🎯 Pagefind 预加载器配置:', {
+    pageType,
+    lang,
+    currentPath,
+    config,
+    timestamp: new Date().toISOString()
+  });
+}
+---
+
+<!-- 🚀 Pagefind 预加载器 - Astro 极致优化版本 -->
+<script define:vars={{ 
+  isProd, 
+  isDev, 
+  pageType, 
+  lang, 
+  currentPath,
+  config,
+  enableDebug
+}}>
+  // 🚀 Astro 极致优化版本 - 利用所有 Astro 特性
+  
+  // 构建时变量注入
+  const PAGE_TYPE = pageType;
+  const CURRENT_LANG = lang;
+  const CURRENT_PATH = currentPath;
+  const IS_PROD = isProd;
+  const IS_DEV = isDev;
+  const CONFIG = config;
+  const ENABLE_DEBUG = enableDebug;
+  
+  // 性能优化：避免重复加载
+  if (window.pagefindPreloaded) {
+    if (ENABLE_DEBUG) {
+      console.log('✅ Pagefind 已预加载，跳过重复加载');
+    }
+    return;
+  }
+  
+  // 🎯 智能预加载策略类
+  class PagefindPreloader {
+    constructor() {
+      this.isSearchPage = CONFIG.isSearchPage;
+      this.isPreloaded = false;
+      this.preloadPromise = null;
+      this.observers = new Set();
+      this.startTime = Date.now();
+    }
+    
+    // 🎯 策略1: 搜索页面立即加载
+    async loadForSearchPage() {
+      if (this.isSearchPage && !this.isPreloaded) {
+        if (ENABLE_DEBUG) {
+          console.log('🔍 搜索页面 - 立即加载 Pagefind');
+        }
+        return this.preloadPagefind();
+      }
+    }
+    
+    // 🎯 策略2: 智能预加载策略
+    async loadWithStrategy() {
+      if (this.isSearchPage || this.isPreloaded) return;
+      
+      switch (CONFIG.strategy) {
+        case 'immediate':
+          await this.preloadPagefind();
+          break;
+        case 'idle':
+          this.loadOnIdle();
+          break;
+        case 'interaction':
+          this.loadOnInteraction();
+          break;
+        case 'smart':
+        default:
+          this.loadSmart();
+          break;
+      }
+    }
+    
+    // 🎯 空闲时加载
+    loadOnIdle() {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => this.preloadPagefind(), { timeout: CONFIG.timeout });
+      } else {
+        setTimeout(() => this.preloadPagefind(), CONFIG.timeout);
+      }
+    }
+    
+    // 🎯 交互时加载
+    loadOnInteraction() {
+      let hasInteraction = false;
+      
+      const interactionHandler = () => {
+        if (!hasInteraction) {
+          hasInteraction = true;
+          setTimeout(() => this.preloadPagefind(), 500);
+          this.cleanupObservers();
+        }
+      };
+      
+      ['scroll', 'mousemove', 'click', 'touchstart'].forEach(event => {
+        window.addEventListener(event, interactionHandler, { passive: true, once: true });
+        this.observers.add(() => window.removeEventListener(event, interactionHandler));
+      });
+      
+      // 备用方案
+      setTimeout(() => {
+        if (!hasInteraction && !this.isPreloaded) {
+          this.preloadPagefind();
+        }
+      }, 5000);
+    }
+    
+    // 🎯 智能加载策略
+    loadSmart() {
+      // 组合多种策略
+      this.loadOnIdle();
+      this.loadOnInteraction();
+    }
+    
+    // 🎯 核心预加载逻辑
+    async preloadPagefind() {
+      if (this.isPreloaded || this.preloadPromise) {
+        return this.preloadPromise;
+      }
+      
+      this.preloadPromise = (async () => {
+        try {
+          const loadStartTime = Date.now();
+          
+          // 使用动态导入，支持代码分割和缓存
+          const { PagefindUI } = await import('@pagefind/default-ui');
+          
+          const loadEndTime = Date.now();
+          const loadDuration = loadEndTime - loadStartTime;
+          
+          // 标记为已预加载
+          this.isPreloaded = true;
+          window.pagefindPreloaded = true;
+          window.PagefindUI = PagefindUI;
+          
+          if (ENABLE_DEBUG) {
+            console.log('✅ Pagefind 预加载成功', {
+              pageType: PAGE_TYPE,
+              lang: CURRENT_LANG,
+              path: CURRENT_PATH,
+              mode: IS_PROD ? 'production' : 'development',
+              loadDuration: `${loadDuration}ms`,
+              totalTime: `${Date.now() - this.startTime}ms`
+            });
+          }
+          
+          // 触发预加载完成事件
+          window.dispatchEvent(new CustomEvent('pagefind:preloaded', {
+            detail: {
+              pageType: PAGE_TYPE,
+              lang: CURRENT_LANG,
+              timestamp: Date.now(),
+              loadDuration,
+              strategy: CONFIG.strategy
+            }
+          }));
+          
+          // 清理观察器
+          this.cleanupObservers();
+          
+        } catch (error) {
+          console.warn('⚠️ Pagefind 预加载失败:', error);
+          
+          // 开发环境显示详细错误
+          if (IS_DEV) {
+            console.error('Pagefind 预加载错误详情:', {
+              error: error.message,
+              stack: error.stack,
+              pageType: PAGE_TYPE,
+              lang: CURRENT_LANG,
+              path: CURRENT_PATH,
+              config: CONFIG
+            });
+          }
+        }
+      })();
+      
+      return this.preloadPromise;
+    }
+    
+    // 🧹 清理观察器
+    cleanupObservers() {
+      this.observers.forEach(cleanup => cleanup());
+      this.observers.clear();
+    }
+    
+    // 🚀 启动预加载
+    async start() {
+      if (this.isSearchPage) {
+        await this.loadForSearchPage();
+      } else {
+        await this.loadWithStrategy();
+      }
+    }
+  }
+  
+  // 🎯 初始化预加载器
+  const preloader = new PagefindPreloader();
+  
+  // 🚀 启动预加载策略
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => preloader.start());
+  } else {
+    preloader.start();
+  }
+  
+  // 🔍 开发环境调试工具
+  if (IS_DEV && ENABLE_DEBUG) {
+    window.pagefindDebug = {
+      preloader,
+      config: CONFIG,
+      getStatus: () => ({
+        isPreloaded: window.pagefindPreloaded,
+        pageType: PAGE_TYPE,
+        lang: CURRENT_LANG,
+        path: CURRENT_PATH,
+        isSearchPage: preloader.isSearchPage,
+        strategy: CONFIG.strategy,
+        startTime: preloader.startTime
+      }),
+      forcePreload: () => preloader.preloadPagefind(),
+      reset: () => {
+        window.pagefindPreloaded = false;
+        preloader.isPreloaded = false;
+        preloader.preloadPromise = null;
+      },
+      changeStrategy: (newStrategy) => {
+        CONFIG.strategy = newStrategy;
+        if (ENABLE_DEBUG) {
+          console.log('🔄 预加载策略已更改为:', newStrategy);
+        }
+      }
+    };
+  }
+</script>
