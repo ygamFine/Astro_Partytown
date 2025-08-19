@@ -96,6 +96,12 @@ export const themeConfig = {
           width: '1200px',
           maxWidth: '100%',
           minWidth: '320px'
+        },
+        // 自定义页面宽度配置
+        dynamic: {
+          width: '1400px',
+          maxWidth: '100%',
+          minWidth: '320px'
         }
       },
       // 动态宽度设置方法
@@ -303,6 +309,12 @@ export const themeConfig = {
         },
         // 搜索页banner配置
         search: {
+          backgroundImage: '/images/banner.webp',
+          height: 'medium',
+          background: 'image'
+        },
+        // 自定义页面banner配置
+        dynamic: {
           backgroundImage: '/images/banner.webp',
           height: 'medium',
           background: 'image'

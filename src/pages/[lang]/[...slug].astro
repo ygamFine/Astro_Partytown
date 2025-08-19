@@ -1,0 +1,174 @@
+---
+export const prerender = true;
+export const revalidate = 3600; // 1小时
+
+import { generateStaticPaths } from '../../lib/i18n-routes.js';
+import { 
+  getDynamicPagesData, 
+  getCategoryListData,
+  generateDynamicPaths, 
+  generateCategoryPaths 
+} from '../../lib/dynamicPages.js';
+import getDictionary from '../../i18n/dictionaries.ts';
+import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';
+import EnhancedGridList from '../../components/templates/common/EnhancedGridList.astro';
+import ViewToggle from '../../components/templates/common/ViewToggle.astro';
+import EmptyState from '../../components/templates/common/EmptyState.astro';
+import { loadImageMapping, processImageForDisplay } from '../../lib/imageProcessor.js';
+
+// 生成静态路径
+export async function getStaticPaths() {
+  const basePaths = generateStaticPaths();
+  const languages = basePaths.map(({ params }) => ({ code: params.lang }));
+  
+  // 获取二级单页数据
+  const pagesData = await getDynamicPagesData();
+  const dynamicPaths = generateDynamicPaths(languages, pagesData);
+  
+  // 获取一级分类列表数据
+  const categoryData = await getCategoryListData();
+  const categoryPaths = generateCategoryPaths(languages, categoryData);
+  
+  // 为所有路径添加 pagesData
+  const allPaths = [...dynamicPaths, ...categoryPaths];
+  
+  // 为每个路径添加 pagesData
+  return allPaths.map(path => ({
+    ...path,
+    props: {
+      ...path.props,
+      pagesData
+    }
+  }));
+}
+
+const { lang, slug } = Astro.params;
+const { pageData, categoryData, pageType, pagesData } = Astro.props;
+const t = getDictionary(lang);
+
+// 加载图片映射
+const imageMapping = await loadImageMapping();
+
+// 判断页面类型
+const isCategoryPage = pageType === 'category';
+const isDetailPage = pageType === 'detail';
+
+// 如果没有找到数据，返回404
+if (!pageData && !categoryData) {
+  return Astro.redirect('/404');
+}
+
+// 根据页面类型设置数据
+const currentData = isCategoryPage ? categoryData : pageData;
+const currentTitle = currentData?.title || t.common.pageTitle;
+
+// 面包屑导航
+const breadcrumbs = isDetailPage && pageData?.custom_category ? [
+  { label: 'home', href: `/${lang}/` },
+  { label: pageData.custom_category.title, href: `/${lang}${pageData.custom_category.url_slug.url_slug}` },
+  { label: currentTitle }
+] : [
+  { label: 'home', href: `/${lang}/` },
+  { label: currentTitle }
+];
+---
+
+<SecondaryPageLayout 
+  title={currentData?.seoSetting?.title || currentTitle}
+  description={currentData?.seoSetting?.describe || currentData?.describe || currentTitle}
+  breadcrumbs={breadcrumbs}
+  currentSection="dynamic"
+  contentType={isCategoryPage ? "grid" : "list"}
+  lang={lang}
+  pageType="dynamic"
+  showContentTitle={true}
+>
+
+  {isCategoryPage ? (
+    // 一级分类列表页内容 - 严格按照产品页面的列表样式
+    <>
+      {/* 分类描述 */}
+      {currentData?.describe && (
+        <div class="mb-8">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            {currentData.describe}
+          </p>
+        </div>
+      )}
+
+      {/* 获取该分类下的所有页面 */}
+      {(() => {
+                  const categoryPages = pagesData?.data?.filter((page: any) => 
+            page.custom_category?.url_slug?.url_slug === currentData.url_slug?.url_slug
+          ) || [];
+        
+        const hasPages = categoryPages.length > 0;
+        
+        // 转换数据格式以适配EnhancedGridList组件
+        const gridItems = hasPages ? categoryPages.map((page: any) => {
+          // 优先使用 picture.media.url 作为图片源
+          let imageUrl = page.picture?.media?.url;
+          
+          // 如果 picture.media.url 不存在，尝试从 details 中提取图片
+          if (!imageUrl && page.details) {
+            const imgMatch = page.details.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
+            if (imgMatch) {
+              imageUrl = imgMatch[1];
+            }
+          }
+          
+          // 使用和产品一样的图片处理方式
+          const validImage = processImageForDisplay(imageUrl, imageMapping);
+          
+          return {
+            id: page.id,
+            title: page.title,
+            image: validImage,
+            excerpt: undefined, // 去除描述显示
+            category: currentData.title,
+            href: `/${lang}${page.custom_category?.url_slug?.url_slug}${page.url_slug?.url_slug}`,
+            date: page.createdAt
+          };
+        }) : [];
+        
+        return hasPages ? (
+          <>
+            <!-- 视图切换控件 -->
+            <ViewToggle 
+              currentView="grid"
+              translations={t.common}
+              lang={lang}
+              totalItems={categoryPages.length}
+              showTotal={true}
+            />
+            
+            <!-- 页面列表 - 使用与产品页面相同的组件 -->
+            <EnhancedGridList 
+              items={gridItems}
+              itemsPerRow={3}
+              maxRows={3}
+              mode="product"
+              translations={t.common}
+              lang={lang}
+              viewMode="grid"
+            />
+          </>
+        ) : (
+          <EmptyState 
+            title="暂无页面"
+            description="该分类下还没有任何页面内容"
+            icon="document"
+            lang={lang}
+          />
+        );
+      })()}
+    </>
+  ) : (
+    // 二级单页内容
+    <>
+      {pageData.details && (
+        <div class="mb-8 rich-text-content min-h-[200px]" set:html={pageData.details} />
+      )}
+    </>
+  )}
+</SecondaryPageLayout>

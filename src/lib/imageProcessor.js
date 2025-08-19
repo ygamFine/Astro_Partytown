@@ -168,7 +168,7 @@ function processSingleImage(img, imageMapping) {
       const byHash = resolveEmittedUrlSync(pathHash, null);
       return byHash || '/images/placeholder.webp';
     }
-    // 绝对URL（Strapi 完整地址）：同样只尝试发射后的 _astro URL，未命中返回占位图
+    // 绝对URL（Strapi 完整地址）：优先尝试发射后的 _astro URL，未命中则返回原URL
     if (img.startsWith('http')) {
       try {
         const { pathname } = new URL(img);
@@ -177,9 +177,9 @@ function processSingleImage(img, imageMapping) {
         const byFile = fileName ? resolveEmittedUrlSync(fileName, null) : null;
         if (byFile) return byFile;
         const byHash = resolveEmittedUrlSync(pathHash, null);
-        return byHash || '/images/placeholder.webp';
+        return byHash || img; // 如果找不到本地映射，返回原URL而不是占位图片
       } catch {
-        return '/images/placeholder.webp';
+        return img; // 如果解析失败，返回原URL而不是占位图片
       }
     }
     
