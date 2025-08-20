@@ -1,0 +1,207 @@
+---
+import { getMobileBottomMenu } from '../../../lib/strapi.js';
+
+export interface Props {
+  lang?: string;
+  currentPath?: string;
+}
+
+const { lang = 'en', currentPath = '/' } = Astro.props;
+
+// 获取移动端底部菜单数据
+const menuItems = await getMobileBottomMenu();
+
+// 判断当前路径是否激活
+function isActive(path: string, currentPath: string): boolean {
+  if (path === '/') {
+    return currentPath === '/';
+  }
+  return currentPath.startsWith(path);
+}
+
+// 获取菜单链接
+function getMenuLink(item: { customLink?: string; type: string }, lang: string): string {
+  // 直接使用API返回的自定义链接，如果没有则使用默认值
+  return item.customLink || '#';
+}
+
+// 获取菜单图标SVG
+function getIconSVG(iconName: string): string {
+  const icons = {
+    home: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>`,
+    package: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.466 7.5C15.643 4.237 13.952 2 12 2S8.357 4.237 7.534 7.5"/><path d="M2 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h20a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M7 12h10"/><path d="M7 16h10"/><path d="M12 12v4"/></svg>`,
+    newspaper: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M18 18h-8"/><path d="M10 6h8v4h-8V6Z"/></svg>`,
+    'message-circle': `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    circle: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`
+  };
+  
+  return icons[iconName as keyof typeof icons] || icons.circle;
+}
+---
+
+<!-- 移动端底部菜单 -->
+<nav 
+  class="mobile-bottom-menu fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg md:hidden"
+  data-pagefind-ignore
+>
+  <div class="flex items-center justify-around px-2 py-2">
+    {menuItems.map((item: { id: number; type: string; content: string; icon: string; customLink?: string }) => {
+      const link = getMenuLink(item, lang);
+      const active = isActive(link, currentPath);
+      
+      return (
+        <a
+          href={link}
+          class={`flex flex-col items-center justify-center w-full py-1 px-2 transition-all duration-200 ${
+            active 
+              ? 'text-blue-600' 
+              : 'text-gray-600 hover:text-blue-500'
+          }`}
+          data-menu-type={item.type}
+          data-menu-id={item.id}
+        >
+          <div class={`w-5 h-5 mb-1 transition-colors duration-200 flex items-center justify-center ${
+            active ? 'text-blue-600' : 'text-gray-500'
+          }`}>
+            <Fragment set:html={getIconSVG(item.icon)} />
+          </div>
+          <span class="text-xs font-medium leading-none text-center block">
+            {item.content}
+          </span>
+        </a>
+      );
+    })}
+  </div>
+</nav>
+
+<!-- 为底部菜单预留空间 -->
+<div class="h-16 md:hidden"></div>
+
+<style>
+  /* 移动端底部菜单样式 */
+  .mobile-bottom-menu {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.95);
+    min-height: 60px;
+  }
+  
+  /* 确保图标和文字有足够间距 */
+  .mobile-bottom-menu a {
+    min-height: 50px;
+    gap: 2px;
+  }
+  
+  .mobile-bottom-menu .w-6 {
+    flex-shrink: 0;
+  }
+  
+  .mobile-bottom-menu span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  
+  /* 激活状态动画 */
+  .mobile-bottom-menu a[data-menu-type] {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .mobile-bottom-menu a[data-menu-type]:active {
+    transform: scale(0.95);
+  }
+  
+  /* 激活状态指示器 */
+  .mobile-bottom-menu a[data-menu-type].text-blue-600::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: #2563eb;
+    border-radius: 50%;
+  }
+  
+  /* 响应式调整 */
+  @media (max-width: 360px) {
+    .mobile-bottom-menu .text-xs {
+      font-size: 10px;
+    }
+    
+    .mobile-bottom-menu .w-5 {
+      width: 18px;
+      height: 18px;
+    }
+  }
+  
+  /* 深色模式支持 */
+  @media (prefers-color-scheme: dark) {
+    .mobile-bottom-menu {
+      background-color: rgba(17, 24, 39, 0.95);
+      border-color: #374151;
+    }
+    
+    .mobile-bottom-menu a {
+      color: #9ca3af;
+    }
+    
+    .mobile-bottom-menu a:hover {
+      color: #60a5fa;
+    }
+    
+    .mobile-bottom-menu a.text-blue-600 {
+      color: #60a5fa;
+    }
+    
+    .mobile-bottom-menu a.text-blue-600 .w-6 {
+      color: #60a5fa;
+    }
+  }
+</style>
+
+<script>
+  // 移动端底部菜单交互逻辑
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.mobile-bottom-menu a[data-menu-type]');
+    
+    menuItems.forEach((item: Element) => {
+      item.addEventListener('click', function(this: HTMLElement, e: Event) {
+        const menuType = this.getAttribute('data-menu-type');
+        const href = this.getAttribute('href');
+        
+        // 处理特殊菜单类型
+        if (menuType === 'inquiry' && href === '#contact-modal') {
+          e.preventDefault();
+          // 触发联系表单模态框
+          const contactModal = document.getElementById('contact-modal');
+          if (contactModal) {
+            contactModal.classList.remove('hidden');
+            contactModal.classList.add('flex');
+          }
+          return;
+        }
+        
+        if (menuType === 'whatsapp' && href === '#whatsapp') {
+          e.preventDefault();
+          // 打开WhatsApp
+          const phoneNumber = '+86-xxx-xxxx-xxxx'; // 替换为实际的电话号码
+          const message = encodeURIComponent('您好，我想了解更多关于您的产品信息。');
+          window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+          return;
+        }
+        
+        // 添加点击反馈
+        (this as HTMLElement).style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          (this as HTMLElement).style.transform = '';
+        }, 150);
+      });
+    });
+    
+    // 移除滚动隐藏菜单功能，保持菜单始终可见
+  });
+</script>

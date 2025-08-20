@@ -154,16 +154,7 @@ const logoImage = '/images/logo.png.webp';
   </div>
 </footer>
 
-<!-- Back to Top Button - Fixed Position -->
-<button 
-  id="back-to-top"
-  class="fixed bottom-12 right-6 z-50 bg-gray-300 hover:bg-gray-400 text-red-600 hover:text-red-500 p-4 rounded-full shadow-lg transition-all duration-300"
-  aria-label="Back to top"
->
-  <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-  </svg>
-</button>
+
 
 <script>
   // Quote form submission
@@ -197,37 +188,13 @@ const logoImage = '/images/logo.png.webp';
     }, 1000);
   });
 
-  // Back to top functionality
-  document.getElementById('back-to-top')?.addEventListener('click', function() {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
 
-  // Show/hide back to top button based on scroll
-  window.addEventListener('scroll', function() {
-    const backToTop = document.getElementById('back-to-top');
-    if (backToTop) {
-      if (window.scrollY > 300) {
-        backToTop.style.opacity = '1';
-        backToTop.style.visibility = 'visible';
-      } else {
-        backToTop.style.opacity = '0';
-        backToTop.style.visibility = 'hidden';
-      }
-    }
-  });
 
 
 </script>
 
 <style>
-  #back-to-top {
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-  }
+
   
   /* Form styling improvements */
   #quote-form input:focus,

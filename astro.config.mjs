@@ -15,6 +15,11 @@ export default defineConfig({
     host: true,
   },
   
+  // 禁用 Astro Dev Toolbar
+  devToolbar: {
+    enabled: false
+  },
+  
   // 🌍 国际化配置
   i18n: {
     locales: [

@@ -1,6 +1,7 @@
 ---
 import Header from "../components/common/layout/Header.astro";
 import FooterSection from "../components/common/layout/FooterSection.astro";
+import MobileBottomMenu from "../components/common/layout/MobileBottomMenu.astro";
 import DynamicScriptLoader from "../components/common/analytics/DynamicScriptLoader.astro";
 import PagefindPreloader from "../components/common/analytics/PagefindPreloader.astro";
 import AnimationSystem from "../components/common/AnimationSystem.astro";
@@ -496,6 +497,9 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <!-- 联系表单模态 -->
     <ContactModal translations={{ common: {} }} data-pagefind-ignore />
+
+    <!-- 移动端底部菜单 -->
+    <MobileBottomMenu lang={lang} currentPath={Astro.url.pathname} />
 
 
     <!-- 🚀 第三方脚本预留位置 -->

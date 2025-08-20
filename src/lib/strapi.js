@@ -818,6 +818,132 @@ export async function getCase(id, locale = 'en') {
 
 
 /**
+ * 获取移动端底部菜单数据 (SSG模式，构建时调用)
+ */
+export async function getMobileBottomMenu() {
+  try {
+    // 直接使用用户提供的API URL
+    const apiUrl = 'http://182.92.233.160:1137/api/shoujiduandibucaidan?populate=*';
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    // 提取菜单项数据
+    const menuItems = data.data?.shoujiduandibucaidan || [];
+    
+    // 转换为标准格式
+    const processedMenuItems = menuItems.map(item => ({
+      id: item.id,
+      content: item.field_neirong,
+      customLink: item.field_zidingyilianjie,
+      // 根据内容判断菜单类型
+      type: getMenuType(item.field_neirong),
+      icon: getMenuIcon(item.field_neirong)
+    }));
+
+    return processedMenuItems;
+
+  } catch (error) {
+    console.error('获取移动端底部菜单失败:', error);
+    // 如果API调用失败，返回默认菜单
+    return getDefaultMobileMenu();
+  }
+}
+
+/**
+ * 根据菜单内容判断菜单类型
+ */
+function getMenuType(content) {
+  const contentLower = content?.toLowerCase() || '';
+  
+  if (contentLower.includes('home') || contentLower.includes('首页')) {
+    return 'home';
+  } else if (contentLower.includes('product') || contentLower.includes('产品')) {
+    return 'product';
+  } else if (contentLower.includes('news') || contentLower.includes('新闻')) {
+    return 'news';
+  } else if (contentLower.includes('inquiry') || contentLower.includes('询价') || contentLower.includes('联系')) {
+    return 'inquiry';
+  } else if (contentLower.includes('whatsapp')) {
+    return 'whatsapp';
+  }
+  
+  return 'custom';
+}
+
+/**
+ * 根据菜单内容获取对应的图标
+ */
+function getMenuIcon(content) {
+  const contentLower = content?.toLowerCase() || '';
+  
+  if (contentLower.includes('home') || contentLower.includes('首页')) {
+    return 'home';
+  } else if (contentLower.includes('product') || contentLower.includes('产品')) {
+    return 'package';
+  } else if (contentLower.includes('news') || contentLower.includes('新闻')) {
+    return 'newspaper';
+  } else if (contentLower.includes('inquiry') || contentLower.includes('询价') || contentLower.includes('联系')) {
+    return 'message-circle';
+  } else if (contentLower.includes('whatsapp')) {
+    return 'message-circle';
+  }
+  
+  return 'circle';
+}
+
+/**
+ * 获取默认的移动端底部菜单（当API调用失败时使用）
+ */
+function getDefaultMobileMenu() {
+  return [
+    {
+      id: 1,
+      content: 'Home',
+      customLink: '/',
+      type: 'home',
+      icon: 'home'
+    },
+    {
+      id: 2,
+      content: 'Product',
+      customLink: '/products',
+      type: 'product',
+      icon: 'package'
+    },
+    {
+      id: 3,
+      content: 'News',
+      customLink: '/news',
+      type: 'news',
+      icon: 'newspaper'
+    },
+    {
+      id: 4,
+      content: 'Inquiry',
+      customLink: null,
+      type: 'inquiry',
+      icon: 'message-circle'
+    },
+    {
+      id: 5,
+      content: 'WhatsApp',
+      customLink: null,
+      type: 'whatsapp',
+      icon: 'message-circle'
+    }
+  ];
+}
+
+/**
  * 从 Strapi API 获取支持的语言列表
  * - 仅请求标准接口 /api/i18n/locales
  * - 不做硬编码回退，失败时返回空数组
