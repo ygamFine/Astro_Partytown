@@ -1,62 +1,61 @@
 ---
 import { Image } from 'astro:assets';
+import { loadImageMapping, processImages } from '../../../lib/imageProcessor.js';
 
-// 使用public目录中的图片
-const banner3Image = '/images/banner3.webp';
-const banner222Image = '/images/banner222.webp';
-const bannerImage = '/images/banner.webp';
+// 定义组件props接口
+export interface Props {
+  bannerData?: Array<{
+    id: number;
+    name: string;
+    description: string;
+    link: string | null;
+    image: string;
+    alt: string;
+  }>;
+}
+
+// 获取props
+const { bannerData = [] } = Astro.props;
+
+// 加载图片映射，与产品页面保持一致的图片处理方式
+const imageMapping = await loadImageMapping();
+
+// 处理Banner数据，确保图片能正确加载
+const banners = bannerData.map(banner => ({
+  ...banner,
+  // 使用与产品页面相同的图片处理方式
+  processedImages: processImages([banner.image], imageMapping)
+}));
+
 // FullScreenBanner.astro - SSG优化版本，防止CLS
 ---
 
 <!-- 预加载关键Banner图片 -->
-<link rel="preload" as="image" href={banner3Image} type="image/webp" fetchpriority="high">
+{banners.length > 0 && banners[0].processedImages.length > 0 && (
+  <link rel="preload" as="image" href={banners[0].processedImages[0]} type="image/webp" fetchpriority="high">
+)}
 
 <!-- PC端Banner容器 -->
 <section class="banner-container desktop-banner" id="desktop-banner">
   <!-- Banner轮播 -->
   <div class="banner-carousel">
-    <!-- Banner 1 - 默认显示 -->
-    <div class="banner-slide active">
-      <Image 
-        src={banner3Image}
-        alt="专业滑移装载机制造商"
-        width={1440}
-        height={600}
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-        class="banner-image"
-        style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-      />
-    </div>
-    
-    <!-- Banner 2 -->
-    <div class="banner-slide">
-      <Image 
-        src={banner222Image}
-        alt="高品质工程机械设备"
-        width={1440}
-        height={600}
-        loading="lazy"
-        decoding="async"
-        class="banner-image"
-        style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-      />
-    </div>
-    
-    <!-- Banner 3 -->
-    <div class="banner-slide">
-      <Image 
-        src={bannerImage}
-        alt="值得信赖的合作伙伴"
-        width={1440}
-        height={600}
-        loading="lazy"
-        decoding="async"
-        class="banner-image"
-        style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-      />
-    </div>
+    {banners.map((banner, index) => (
+      banner.processedImages.length > 0 && (
+        <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
+          <Image 
+            src={banner.processedImages[0]}
+            alt={banner.alt}
+            width={1440}
+            height={600}
+            loading={index === 0 ? "eager" : "lazy"}
+            fetchpriority={index === 0 ? "high" : "auto"}
+            decoding="async"
+            class="banner-image"
+            style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+          />
+        </div>
+      )
+    ))}
   </div>
 
   <!-- Progress Bar Controller - 原始样式 -->

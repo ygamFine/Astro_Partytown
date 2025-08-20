@@ -4,6 +4,7 @@
  */
 
 import { generateImageHash } from '../utils/hashUtils.js';
+import { processImageForDisplay } from './imageProcessor.js';
 
 // 加载图片映射文件的通用函数
 async function loadImageMappingWithCreate() {
@@ -901,6 +902,141 @@ function getMenuIcon(content) {
 }
 
 
+
+/**
+ * 获取Banner数据 (SSG模式，构建时调用)
+ * 从用户提供的API获取Banner轮播图数据
+ */
+export async function getBannerData() {
+  try {
+    const apiUrl = 'http://182.92.233.160:1137/api/banner-setting?populate[field_shouyebanner][populate][field_tupian][populate]=*';
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.data || !data.data.field_shouyebanner) {
+      console.warn('Banner数据为空');
+      return [];
+    }
+
+    // 加载图片映射
+    const imageMapping = await loadImageMappingWithCreate();
+
+    // 处理Banner数据
+    const banners = data.data.field_shouyebanner.map(banner => {
+      // 使用与产品页面相同的图片处理方式
+      let imageData = null;
+      
+      if (banner.field_tupian && banner.field_tupian.media) {
+        imageData = banner.field_tupian.media;
+      }
+      
+      // 使用产品页面相同的图片处理方式
+      const processedImage = processImageForDisplay(imageData, imageMapping);
+      
+      return {
+        id: banner.id,
+        name: banner.field_mingcheng,
+        description: banner.field_miaoshu,
+        link: banner.field_lianjiezhi,
+        image: processedImage,
+        alt: banner.field_tupian?.alt || banner.field_mingcheng
+      };
+    });
+
+    return banners;
+
+  } catch (error) {
+    console.error('获取Banner数据失败:', error);
+    return [];
+  }
+}
+
+/**
+ * 获取首页数据 (SSG模式，构建时调用)
+ * 从用户提供的API获取完整的首页内容数据
+ */
+export async function getHomepageContent() {
+  try {
+    const apiUrl = 'http://182.92.233.160:1137/api/homepage-content?populate=*';
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.data) {
+      console.warn('首页数据为空');
+      return null;
+    }
+
+    // 提取并处理首页数据
+    const homepageData = data.data;
+    
+    return {
+      // 产品展示区域数据
+      productShowcase: {
+        title: homepageData.product_showcase?.title || 'PRODUCT SHOWCASE',
+        description: homepageData.product_showcase?.description || ''
+      },
+      
+      // 公司介绍数据
+      companyIntroduction: {
+        title: homepageData.company_introduction?.title || 'SHANDONG YONGAN CONSTRUCTION MACHINERY GROUP CO., LTD',
+        introduction: homepageData.company_introduction?.introduction || '',
+        stats: {
+          incorporation: homepageData.company_introduction?.incorporation || '2001',
+          floorSpace: homepageData.company_introduction?.floorSpace || '60000',
+          exportingCountry: homepageData.company_introduction?.exportingCountry || '120+'
+        },
+        buttonText: homepageData.company_introduction?.button_text || 'View all'
+      },
+      
+      // 热门推荐产品数据
+      hotRecommendedProducts: {
+        title: homepageData.hot_recommended_products?.title || 'HOT RECOMMENDED PRODUCTS',
+        description: homepageData.hot_recommended_products?.description || ''
+      },
+      
+      // 联系我们/客户需求数据
+      contactUs: {
+        title: homepageData.contact_us?.title || 'MEET THE DIVERSE NEEDS OF DIFFERENT CUSTOMER GROUPS',
+        description: homepageData.contact_us?.description || '',
+        buttonText: homepageData.contact_us?.button_text || 'Contact us',
+        panoramicTitle: homepageData.contact_us?.panoramic_title || '360',
+        panoramicIntroduction: homepageData.contact_us?.panoramic_introduction || 'Click to enter Panoramic display',
+        panoramicUrl: homepageData.contact_us?.panoramic_url || null
+      },
+      
+      // 客户案例数据
+      customerCases: homepageData.customer_cases || null,
+      
+      // 新闻中心数据
+      newsCenter: homepageData.news_center || null,
+      
+      // 首页页脚数据
+      homepageFooter: homepageData.homepage_footer || null
+    };
+
+  } catch (error) {
+    console.error('获取首页数据失败:', error);
+    return null;
+  }
+}
 
 /**
  * 从 Strapi API 获取支持的语言列表

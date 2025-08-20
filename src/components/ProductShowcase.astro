@@ -1,12 +1,23 @@
 ---
 import { Image } from 'astro:assets';
 
+// 定义组件props接口
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+// 获取props，提供默认值
+const { 
+  title,
+  description
+} = Astro.props;
+
 // 使用public目录中的图片
 const backhoeImage = '/images/backhoe.webp';
 const skid1Image = '/images/skid1.webp';
 const telescopicImage = '/images/telescopic.webp';
 const logoImage = '/images/logo.png.webp';
----
 ---
 
 <section class="product-showcase">
@@ -15,10 +26,10 @@ const logoImage = '/images/logo.png.webp';
       <!-- 左侧区域：标题 + 描述文字 + 进度条 + 三张图片 -->
       <div class="product-left-section">
         <!-- 标题居左对齐 -->
-        <h2 class="animate-fade-up">PRODUCT SHOWCASE</h2>
+        <h2 class="animate-fade-up">{title}</h2>
         
         <!-- 描述文字在黑点灰线顶上 -->
-        <p class="description animate-fade-up animate-delay-200">Our product line covers a wide range of skid steer loaders, telescopic forklifts, backhoe loaders, customized attachments, remanufactured construction machinery and equipment, and various types of parts for construction machinery.</p>
+        <p class="description animate-fade-up animate-delay-200">{description}</p>
         
         <!-- 进度条在左侧三张图头顶上 -->
         <div class="progress-container animate-fade-up animate-delay-300">

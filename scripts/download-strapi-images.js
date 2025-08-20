@@ -407,6 +407,23 @@ async function downloadAllImages() {
       const casesData = await fetchAll(`${STRAPI_STATIC_URL}/api/case?locale=${encodeURIComponent(locale)}&populate=*`);
       extractImageUrls(casesData).forEach(url => allImageUrls.add(url));
 
+      // Banner设置（不需要分页）
+      try {
+        const bannerUrl = `http://182.92.233.160:1137/api/banner-setting?populate%5Bfield_shouyebanner%5D%5Bpopulate%5D%5Bfield_tupian%5D%5Bpopulate%5D=*`;
+        const bannerData = await fetch(bannerUrl, {
+          headers: {
+            'Authorization': `Bearer ${STRAPI_TOKEN}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (bannerData.ok) {
+          const bannerJson = await bannerData.json();
+          extractImageUrls(bannerJson).forEach(url => allImageUrls.add(url));
+        }
+      } catch (bannerError) {
+        // 静默处理Banner错误
+      }
+
     } catch (error) {
       // 静默处理错误
     }

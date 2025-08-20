@@ -1,6 +1,18 @@
 ---
 import { Image } from 'astro:assets';
 
+// 定义组件props接口
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+// 获取props，提供默认值
+const { 
+  title,
+  description
+} = Astro.props;
+
 // 使用public目录中的图片
 const skid1Image = '/images/skid1-400.webp';
 const backhoeImage = '/images/backhoe-400.webp';
@@ -12,13 +24,12 @@ const telescopicImage = '/images/telescopic-400.webp';
   <div class="container mx-auto px-4">
     <!-- 标题 -->
     <h2 class="text-3xl font-bold text-center mb-6 text-gray-800 animate-fade-up animate-delay-100">
-      HOT RECOMMENDED PRODUCTS
+      {title}
     </h2>
     
     <!-- 描述文字 -->
     <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto animate-fade-up animate-delay-200">
-      From the procurement of raw materials to the assembly of products, every step of the process
-      strictly follows the international quality management system standards.
+      {description}
     </p>
     
     <!-- 产品展示区域 -->

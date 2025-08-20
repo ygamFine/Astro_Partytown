@@ -1,11 +1,34 @@
 ---
 import { Image } from 'astro:assets';
+import { loadImageMapping, processImages } from '../../../lib/imageProcessor.js';
+
+// 定义组件props接口
+export interface Props {
+  bannerData?: Array<{
+    id: number;
+    name: string;
+    description: string;
+    link: string | null;
+    image: string;
+    alt: string;
+  }>;
+}
+
+// 获取props
+const { bannerData = [] } = Astro.props;
+
+// 加载图片映射，与产品页面保持一致的图片处理方式
+const imageMapping = await loadImageMapping();
+
+// 处理Banner数据，确保图片能正确加载
+const mobileBanners = bannerData.map(banner => ({
+  ...banner,
+  // 使用与产品页面相同的图片处理方式
+  processedImages: processImages([banner.image], imageMapping)
+}));
 
 // 使用public目录中的图片
 const mainProductImage = '/images/main-product.svg';
-const shoujiBannerUltraImage = '/images/shouji-banner1-ultra.webp';
-const banner222MobileImage = '/images/banner222-mobile.webp';
-const bannerMobileImage = '/images/banner-mobile.webp';
 ---
 
 <section class="hero-mobile">
@@ -13,46 +36,24 @@ const bannerMobileImage = '/images/banner-mobile.webp';
   <div class="mobile-banner-container" id="mobile-carousel">
     <!-- 轮播内容 -->
     <div class="mobile-carousel-inner">
-      <div class="mobile-slide active">
-        <Image 
-          src={shoujiBannerUltraImage}
-          alt="专业滑移装载机制造商"
-          width={375}
-          height={200}
-          loading="eager"
-          fetchpriority="high"
-          decoding="sync"
-          class="mobile-banner"
-          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
-        />
-      </div>
-      <div class="mobile-slide">
-        <Image 
-          src={banner222MobileImage}
-          alt="高品质工程机械设备"
-          width={375}
-          height={200}
-          loading="lazy"
-          decoding="async"
-          class="mobile-banner"
-          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
-        />
-      </div>
-      <div class="mobile-slide">
-        <Image 
-          src={bannerMobileImage}
-          alt="值得信赖的合作伙伴"
-          width={375}
-          height={200}
-          loading="lazy"
-          decoding="async"
-          class="mobile-banner"
-          style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
-        />
-      </div>
+      {mobileBanners.map((banner, index) => (
+        banner.processedImages.length > 0 && (
+          <div class={`mobile-slide ${index === 0 ? 'active' : ''}`}>
+            <Image 
+              src={banner.processedImages[0]}
+              alt={banner.alt}
+              width={375}
+              height={200}
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchpriority={index === 0 ? "high" : "auto"}
+              decoding={index === 0 ? "sync" : "async"}
+              class="mobile-banner"
+              style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+            />
+          </div>
+        )
+      ))}
     </div>
-
-
   </div>
 </section>
 
