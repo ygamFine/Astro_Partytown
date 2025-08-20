@@ -853,8 +853,8 @@ export async function getMobileBottomMenu() {
 
   } catch (error) {
     console.error('获取移动端底部菜单失败:', error);
-    // 如果API调用失败，返回默认菜单
-    return getDefaultMobileMenu();
+    // 如果API调用失败，返回空数组，不写死任何数据
+    return [];
   }
 }
 
@@ -900,48 +900,7 @@ function getMenuIcon(content) {
   return 'circle';
 }
 
-/**
- * 获取默认的移动端底部菜单（当API调用失败时使用）
- */
-function getDefaultMobileMenu() {
-  return [
-    {
-      id: 1,
-      content: 'Home',
-      customLink: '/',
-      type: 'home',
-      icon: 'home'
-    },
-    {
-      id: 2,
-      content: 'Product',
-      customLink: '/products',
-      type: 'product',
-      icon: 'package'
-    },
-    {
-      id: 3,
-      content: 'News',
-      customLink: '/news',
-      type: 'news',
-      icon: 'newspaper'
-    },
-    {
-      id: 4,
-      content: 'Inquiry',
-      customLink: null,
-      type: 'inquiry',
-      icon: 'message-circle'
-    },
-    {
-      id: 5,
-      content: 'WhatsApp',
-      customLink: null,
-      type: 'whatsapp',
-      icon: 'message-circle'
-    }
-  ];
-}
+
 
 /**
  * 从 Strapi API 获取支持的语言列表
