@@ -29,6 +29,8 @@ const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
 // 下载到源码资产目录，便于打包进 _astro
 const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'src/assets/strapi';
 
+
+
 // 从环境变量获取启用的语言，如果没有设置则从API获取
 let ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
 
@@ -235,8 +237,8 @@ async function downloadImage(imageUrl) {
     return null;
   }
 
-  // 如果是完整的Strapi URL
-  if (imageUrl.startsWith(STRAPI_STATIC_URL)) {
+  // 如果是完整的Strapi URL（包括 Banner 服务器）
+  if (imageUrl.startsWith(STRAPI_STATIC_URL) || imageUrl.startsWith('http://182.92.233.160:1137')) {
     try {
       const fileName = generateImageFileName(imageUrl);
       const localPath = path.join(IMAGE_CACHE_DIR, fileName);
@@ -286,7 +288,12 @@ async function downloadImage(imageUrl) {
 
   // 如果是相对路径，转换为绝对路径
   if (imageUrl.startsWith('/uploads/')) {
-    const fullUrl = `${STRAPI_STATIC_URL}${imageUrl}`;
+    // TODO: 数据歉意完需要更改为指定的地址
+    // const fullUrl = `${STRAPI_STATIC_URL}${imageUrl}`;
+    // 对于 Banner 图片，使用正确的服务器地址
+    const fullUrl = imageUrl.includes('banner') ? 
+      `http://182.92.233.160:1137${imageUrl}` : 
+      `${STRAPI_STATIC_URL}${imageUrl}`;
     return await downloadImage(fullUrl);
   }
 
@@ -406,30 +413,39 @@ async function downloadAllImages() {
       // 案例（全量分页）
       const casesData = await fetchAll(`${STRAPI_STATIC_URL}/api/case?locale=${encodeURIComponent(locale)}&populate=*`);
       extractImageUrls(casesData).forEach(url => allImageUrls.add(url));
-      // Banner设置（不需要分页）
-      try {
-        const bannerUrl = `http://182.92.233.160:1137/api/banner-setting?populate%5Bfield_shouyebanner%5D%5Bpopulate%5D%5Bfield_tupian%5D%5Bpopulate%5D=*`;
-        const bannerData = await fetch(bannerUrl, {
-          headers: {
-            'Authorization': `Bearer ${STRAPI_TOKEN}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        if (bannerData.ok) {
-          const bannerJson = await bannerData.json();
-          extractImageUrls(bannerJson).forEach(url => allImageUrls.add(url));
-        }
-      } catch (bannerError) {
-        // 静默处理Banner错误
-      }
-
-
     } catch (error) {
       // 静默处理错误
     }
   }
 
+  // Banner设置（不需要分页，全局获取一次）
+  try {
+    const bannerUrl = `http://182.92.233.160:1137/api/banner-setting?populate[field_shouyebanner][populate][field_tupian][populate]=*`;
+    console.log('🔍 获取 Banner 数据:', bannerUrl);
+    
+    const bannerResponse = await fetch(bannerUrl, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (bannerResponse.ok) {
+      const bannerJson = await bannerResponse.json();
+      console.log('📊 Banner 数据获取成功，数据长度:', JSON.stringify(bannerJson).length);
+      
+      const bannerUrls = extractImageUrls(bannerJson);
+      console.log('📊 Banner 中提取到', bannerUrls.length, '个图片 URL');
+      bannerUrls.forEach(url => allImageUrls.add(url));
+    } else {
+      console.warn('⚠️ Banner 接口请求失败:', bannerResponse.status, bannerResponse.statusText);
+    }
+  } catch (bannerError) {
+    console.warn('⚠️ Banner 数据处理错误:', bannerError.message);
+  }
+
   // 下载所有图片
+  console.log('📥 准备下载', allImageUrls.size, '个图片');
+  
   const downloadPromises = Array.from(allImageUrls).map(url => downloadImage(url));
   const results = await Promise.allSettled(downloadPromises);
 
@@ -438,6 +454,8 @@ async function downloadAllImages() {
       totalDownloaded++;
     }
   });
+  
+  console.log('✅ 成功下载', totalDownloaded, '个图片');
 
   // 生成图片映射文件
   await generateImageMapping();

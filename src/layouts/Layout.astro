@@ -507,6 +507,8 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <!-- 🚀 Pagefind 预加载器 - 使用专用组件 -->
     <PagefindPreloader 
+      client:load
+      enableDebug={import.meta.env.DEV}
       pageType={pageType}
       lang={lang}
       currentPath={Astro.url.pathname}
