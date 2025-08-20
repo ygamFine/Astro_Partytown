@@ -45,3 +45,4 @@ public/images/optimized/
 public/search-index.json
 src/data/strapi-image-mapping.json
 .vercel
+src/assets/strapi/

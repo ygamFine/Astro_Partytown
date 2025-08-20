@@ -45,7 +45,7 @@ async function getSupportedLanguages() {
     if (response.ok) {
       const data = await response.json();
       const rawList = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
-      
+
       const languages = rawList
         .map((item) => {
           const code = item?.code || item?.attributes?.code || item?.id || item?.locale || null;
@@ -58,7 +58,7 @@ async function getSupportedLanguages() {
   } catch (error) {
     console.log('⚠️  获取语言列表失败:', error.message);
   }
-  
+
   // 如果API失败，使用默认语言列表
   return ['en', 'zh-CN', 'ja', 'de', 'fr', 'ar', 'es', 'it', 'pt-pt', 'nl', 'pl', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ko', 'tr'];
 }
@@ -77,7 +77,7 @@ async function handleGifConversion(inputPath, outputPath, fileName) {
   } catch (error) {
     // 静默处理错误，继续尝试其他方法
   }
-  
+
   // 方法2: 使用sharp处理静态GIF（只取第一帧）
   try {
     await sharp(inputPath, { pages: 1 })
@@ -87,7 +87,7 @@ async function handleGifConversion(inputPath, outputPath, fileName) {
   } catch (error) {
     // 静默处理错误，继续尝试其他方法
   }
-  
+
   // 方法3: 使用cwebp转换（备用方法）
   try {
     await execAsync(`cwebp -q 80 -m 6 "${inputPath}" -o "${outputPath}"`);
@@ -95,7 +95,7 @@ async function handleGifConversion(inputPath, outputPath, fileName) {
   } catch (error) {
     // 静默处理错误，继续尝试其他方法
   }
-  
+
   // 方法4: 保存原GIF文件作为回退
   try {
     const fallbackPath = outputPath.replace('.webp', '.gif');
@@ -148,11 +148,11 @@ async function validateImageFile(filePath) {
     if (stats.size === 0) {
       return false;
     }
-    
+
     // 读取文件头部来验证格式
     const buffer = await fs.readFile(filePath, { start: 0, end: 12 });
     const header = buffer.toString('hex');
-    
+
     // 检查常见图片格式的魔数
     if (header.startsWith('47494638') || header.startsWith('47494637')) {
       // GIF格式
@@ -167,7 +167,7 @@ async function validateImageFile(filePath) {
       // WebP格式
       return true;
     }
-    
+
     return false;
   } catch (error) {
     console.log(`⚠️  文件验证失败: ${filePath}`);
@@ -185,10 +185,10 @@ async function safeConvertToWebP(inputPath, outputPath, fileName) {
     if (!isValid) {
       return false;
     }
-    
+
     // 获取文件扩展名
     const ext = path.extname(inputPath).toLowerCase();
-    
+
     // 对于GIF文件，使用特殊处理
     if (ext === '.gif') {
       return await handleGifConversion(inputPath, outputPath, fileName);
@@ -258,11 +258,11 @@ async function downloadImage(imageUrl) {
       const buffer = await response.arrayBuffer();
       const tempDir = path.join(process.cwd(), 'temp');
       await fs.mkdir(tempDir, { recursive: true });
-      
+
       const originalExt = path.extname(new URL(imageUrl).pathname) || '.jpg';
       const tempFileName = `${generateImageHash(imageUrl)}${originalExt}`;
       const tempPath = path.join(tempDir, tempFileName);
-      
+
       await fs.writeFile(tempPath, Buffer.from(buffer));
 
       // 直接使用安全的WebP转换（优先使用sharp库）
@@ -277,9 +277,9 @@ async function downloadImage(imageUrl) {
       } catch (error) {
         // 忽略清理错误
       }
-      
+
       return fileName;
-        } catch (error) {
+    } catch (error) {
       return null;
     }
   }
@@ -298,15 +298,15 @@ async function downloadImage(imageUrl) {
  */
 function extractImageUrls(data) {
   const urls = [];
-  
+
   function extractFromObject(obj) {
     if (!obj || typeof obj !== 'object') return;
-    
+
     for (const [key, value] of Object.entries(obj)) {
       // 处理字符串类型的URL
       if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('/uploads/'))) {
         urls.push(value);
-      } 
+      }
       // 处理数组类型
       else if (Array.isArray(value)) {
         value.forEach(item => {
@@ -321,7 +321,7 @@ function extractImageUrls(data) {
             extractFromObject(item);
           }
         });
-      } 
+      }
       // 处理对象类型
       else if (typeof value === 'object' && value) {
         // 如果对象有url字段，直接提取
@@ -334,7 +334,7 @@ function extractImageUrls(data) {
       }
     }
   }
-  
+
   // 处理data字段（Strapi API的标准响应格式）
   if (data && data.data) {
     if (Array.isArray(data.data)) {
@@ -345,7 +345,7 @@ function extractImageUrls(data) {
   } else {
     extractFromObject(data);
   }
-  
+
   return [...new Set(urls)]; // 去重
 }
 
@@ -354,15 +354,15 @@ function extractImageUrls(data) {
  */
 async function downloadAllImages() {
   await ensureCacheDir();
-  
+
   // 如果没有设置语言列表，从API获取
   if (ENABLED_LOCALES.length === 0) {
     ENABLED_LOCALES = await getSupportedLanguages();
   }
-  
+
   const allImageUrls = new Set();
   let totalDownloaded = 0;
-  
+
   // 获取所有语言的数据（带分页）
   for (const locale of ENABLED_LOCALES) {
     try {
@@ -406,7 +406,6 @@ async function downloadAllImages() {
       // 案例（全量分页）
       const casesData = await fetchAll(`${STRAPI_STATIC_URL}/api/case?locale=${encodeURIComponent(locale)}&populate=*`);
       extractImageUrls(casesData).forEach(url => allImageUrls.add(url));
-
       // Banner设置（不需要分页）
       try {
         const bannerUrl = `http://182.92.233.160:1137/api/banner-setting?populate%5Bfield_shouyebanner%5D%5Bpopulate%5D%5Bfield_tupian%5D%5Bpopulate%5D=*`;
@@ -424,21 +423,22 @@ async function downloadAllImages() {
         // 静默处理Banner错误
       }
 
+
     } catch (error) {
       // 静默处理错误
     }
   }
-  
+
   // 下载所有图片
   const downloadPromises = Array.from(allImageUrls).map(url => downloadImage(url));
   const results = await Promise.allSettled(downloadPromises);
-  
+
   results.forEach(result => {
     if (result.status === 'fulfilled' && result.value) {
       totalDownloaded++;
     }
   });
-  
+
   // 生成图片映射文件
   await generateImageMapping();
 }
@@ -448,26 +448,26 @@ async function downloadAllImages() {
  */
 async function generateImageMapping() {
   try {
-    // 检查 public/images/strapi 目录是否存在
-    const publicImagesDir = path.join(__dirname, '../public/images/strapi');
-    const publicImagesExists = await fs.access(publicImagesDir).then(() => true).catch(() => false);
-    
-    if (!publicImagesExists) {
-      console.warn('Public images 目录不存在，跳过图片映射生成');
+    // 检查 src/assets/strapi 目录是否存在
+    const assetsImagesDir = path.join(__dirname, '../src/assets/strapi');
+    const assetsImagesExists = await fs.access(assetsImagesDir).then(() => true).catch(() => false);
+
+    if (!assetsImagesExists) {
+      console.warn('Assets images 目录不存在，跳过图片映射生成');
       return;
     }
 
     // 获取实际存在的文件
-    const files = await fs.readdir(publicImagesDir);
+    const files = await fs.readdir(assetsImagesDir);
     const imageFiles = files.filter(file => /\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file));
-    
+
     console.log(`找到 ${imageFiles.length} 个图片文件用于映射`);
-    
+
     // 1) 生成 JSON 映射（可供其它工具参考）
     const jsonMapping = {
-      // 可直接访问的公开目录路径（不经过打包哈希），用于兜底
-      strapiImages: imageFiles.map(file => `/images/strapi/${file}`),
-      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/images/strapi/${file}`),
+      // 从 assets 目录导入的图片路径（经过 Astro 打包处理）
+      strapiImages: imageFiles.map(file => `/src/assets/strapi/${file}`),
+      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/src/assets/strapi/${file}`),
       totalCount: imageFiles.length,
       webpCount: imageFiles.filter(file => file.endsWith('.webp')).length,
       generatedAt: new Date().toISOString()
@@ -483,14 +483,14 @@ async function generateImageMapping() {
     imageFiles.forEach((file) => {
       const base = path.basename(file);
       const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
-      lines.push(`  '${base}': '/images/strapi/${file}',`);
-      lines.push(`  '${hash}': '/images/strapi/${file}',`);
+      lines.push(`  '${base}': '/src/assets/strapi/${file}',`);
+      lines.push(`  '${hash}': '/src/assets/strapi/${file}',`);
     });
     lines.push('};');
 
     const modulePath = path.join(__dirname, '../src/data/strapi-image-urls.js');
     await fs.writeFile(modulePath, lines.join('\n'));
-    
+
     console.log(`✅ 图片映射文件生成完成，包含 ${imageFiles.length} 个文件`);
 
   } catch (error) {

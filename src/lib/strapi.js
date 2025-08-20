@@ -4,7 +4,6 @@
  */
 
 import { generateImageHash } from '../utils/hashUtils.js';
-import { processImageForDisplay } from './imageProcessor.js';
 
 // 加载图片映射文件的通用函数
 async function loadImageMappingWithCreate() {
@@ -932,23 +931,55 @@ export async function getBannerData() {
 
     // 处理Banner数据
     const banners = data.data.field_shouyebanner.map(banner => {
-      // 使用与产品页面相同的图片处理方式
-      let imageData = null;
+      let imageUrl = '/images/placeholder.webp';
       
       if (banner.field_tupian && banner.field_tupian.media) {
-        imageData = banner.field_tupian.media;
+        const media = banner.field_tupian.media;
+        const originalUrl = media.url;
+        
+        if (originalUrl.startsWith('/uploads/')) {
+          // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
+          const fileName = originalUrl.split('/').pop();
+          
+          // 尝试多种匹配方式
+          const cachedImage = imageMapping.strapiImages?.find(cached => {
+            // 1. 直接匹配文件名
+            if (cached.includes(fileName)) return true;
+            
+            // 2. 匹配hash
+            if (media.hash && cached.includes(media.hash)) return true;
+            
+            // 3. Base64编码匹配
+            try {
+              const encodedName = Buffer.from(fileName).toString('base64');
+              if (cached.includes(encodedName)) return true;
+              // 处理Base64填充字符
+              const encodedNameNoPadding = encodedName.replace(/=+$/, '');
+              if (cached.includes(encodedNameNoPadding)) return true;
+            } catch (e) {}
+            
+            // 4. Base64解码匹配
+            try {
+              const decodedName = Buffer.from(fileName, 'base64').toString();
+              if (cached.includes(decodedName)) return true;
+            } catch (e) {}
+            
+            return false;
+          });
+          
+          imageUrl = cachedImage || originalUrl;
+        } else {
+          imageUrl = originalUrl;
+        }
       }
-      
-      // 使用产品页面相同的图片处理方式
-      const processedImage = processImageForDisplay(imageData, imageMapping);
       
       return {
         id: banner.id,
-        name: banner.field_mingcheng,
-        description: banner.field_miaoshu,
-        link: banner.field_lianjiezhi,
-        image: processedImage,
-        alt: banner.field_tupian?.alt || banner.field_mingcheng
+        name: banner.field_mingcheng || `Banner${banner.id}`,
+        description: banner.field_miaoshu || '',
+        link: banner.field_lianjiezhi || null,
+        image: imageUrl,
+        alt: banner.field_tupian?.alt || banner.field_mingcheng || `Banner${banner.id}`
       };
     });
 
