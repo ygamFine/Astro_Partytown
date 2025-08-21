@@ -515,18 +515,7 @@ async function generateImageMapping() {
       lines.push(`  '${hash}': ${hash},`);
     });
     lines.push('};');
-    
-    // 添加备用映射，用于运行时查找（不包含哈希值）
-    lines.push('');
-    lines.push('// 备用映射，用于运行时查找');
-    lines.push('export const STRAPI_IMAGE_URLS_FALLBACK = {');
-    imageFiles.forEach((file) => {
-      const base = path.basename(file);
-      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
-      lines.push(`  '${base}': '/assets/${file}',`);
-      lines.push(`  '${hash}': '/assets/${file}',`);
-    });
-    lines.push('};');
+    // 不再生成 fallback（不带哈希的 /assets 原文件名），避免线上误用
 
     const modulePath = path.join(__dirname, '../src/data/strapi-image-urls.js');
     await fs.writeFile(modulePath, lines.join('\n'));

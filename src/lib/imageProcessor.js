@@ -120,7 +120,8 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
     typeof imageData === 'string' && (
       imageData.startsWith('/images/strapi/') ||
       imageData.startsWith('/assets/strapi/') ||
-      imageData.startsWith('/src/assets/strapi/')
+      imageData.startsWith('/src/assets/strapi/') ||
+      imageData.startsWith('/assets/')
     )
   ) {
     const file = imageData.split('/').pop();
@@ -151,7 +152,8 @@ export function processImage(imageData, imageMapping = { strapiImages: [] }) {
     typeof imageData === 'string' && (
       imageData.startsWith('/images/strapi/') ||
       imageData.startsWith('/assets/strapi/') ||
-      imageData.startsWith('/src/assets/strapi/')
+      imageData.startsWith('/src/assets/strapi/') ||
+      imageData.startsWith('/assets/')
     )
   ) {
     const file = imageData.split('/').pop();
