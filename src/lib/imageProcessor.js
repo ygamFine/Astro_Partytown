@@ -115,8 +115,14 @@ export async function loadImageMapping() {
 export function processImageForDisplay(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return '/images/placeholder.webp';
   
-  // Strapi 本地化图片统一返回发射后的 _astro 资源；未命中直接占位图
-  if (typeof imageData === 'string' && (imageData.startsWith('/images/strapi/') || imageData.startsWith('/assets/strapi/'))) {
+  // Strapi 本地化图片统一返回发射后的资源；未命中直接占位图
+  if (
+    typeof imageData === 'string' && (
+      imageData.startsWith('/images/strapi/') ||
+      imageData.startsWith('/assets/strapi/') ||
+      imageData.startsWith('/src/assets/strapi/')
+    )
+  ) {
     const file = imageData.split('/').pop();
     if (file) {
       return resolveEmittedUrlSync(file, '/images/placeholder.webp');
@@ -140,8 +146,14 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
 export function processImage(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return '/images/placeholder.webp';
   
-  // Strapi 本地化图片统一返回发射后的 _astro 资源；未命中直接占位图
-  if (typeof imageData === 'string' && (imageData.startsWith('/images/strapi/') || imageData.startsWith('/assets/strapi/'))) {
+  // Strapi 本地化图片统一返回发射后的资源；未命中直接占位图
+  if (
+    typeof imageData === 'string' && (
+      imageData.startsWith('/images/strapi/') ||
+      imageData.startsWith('/assets/strapi/') ||
+      imageData.startsWith('/src/assets/strapi/')
+    )
+  ) {
     const file = imageData.split('/').pop();
     if (file) return resolveEmittedUrlSync(file, '/images/placeholder.webp');
     return '/images/placeholder.webp';

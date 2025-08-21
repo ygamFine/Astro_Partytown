@@ -18,6 +18,7 @@ interface Props {
 }
 
 const { content, className = "rich-text-content" } = Astro.props;
+import { processImage } from "../../../lib/imageProcessor.js";
 // 递归渲染富文本块
 function renderBlock(block: RichTextBlock): string {
   const { type, content: textContent, children, level, format, url, alt, caption, text, bold, italic, underline, strikethrough, ...attrs } = block;
@@ -64,7 +65,9 @@ function renderBlock(block: RichTextBlock): string {
       return `<a href="${url || '#'}" target="_blank" rel="noopener noreferrer" style="color: #e60012; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px;">${content}${children ? children.map(renderBlock).join('') : ''}</a>`;
     
     case 'image':
-      const imgTag = `<img src="${url || ''}" alt="${alt || ''}" style="max-width: 100%; height: auto; margin: 1em 0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />`;
+      // 统一通过图片处理管道解析为构建后 /assets/xxx-hash.webp
+      const resolvedSrc = processImage(url || '');
+      const imgTag = `<img src="${resolvedSrc}" alt="${alt || ''}" style="max-width: 100%; height: auto; margin: 1em 0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />`;
       return caption ? `<figure>${imgTag}<figcaption style="text-align: center; font-style: italic; color: #6b7280; margin-top: 0.5em;">${caption}</figcaption></figure>` : imgTag;
     
     case 'bold':

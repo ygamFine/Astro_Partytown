@@ -483,9 +483,9 @@ async function generateImageMapping() {
 
     // 1) 生成 JSON 映射（可供其它工具参考）
     const jsonMapping = {
-      // 从 assets 目录导入的图片路径（经过 Astro 打包处理）
-      strapiImages: imageFiles.map(file => `/src/assets/strapi/${file}`),
-      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/src/assets/strapi/${file}`),
+      // 构建后实际可访问的资源前缀（Astro 会把导入的图片发射到 /assets）
+      strapiImages: imageFiles.map(file => `/assets/${file}`),
+      webpImages: imageFiles.filter(file => file.endsWith('.webp')).map(file => `/assets/${file}`),
       totalCount: imageFiles.length,
       webpCount: imageFiles.filter(file => file.endsWith('.webp')).length,
       generatedAt: new Date().toISOString()
