@@ -20,10 +20,12 @@ async function generateSitemap() {
     }
 
     const sitemapData = await generateFullSitemap();
-    const languages = [
-      'en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 
-      'nl', 'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'
-    ];
+    // 从站点地图数据中提取语言（来源于后端语言列表接口）
+    const languages = Array.from(new Set((sitemapData.pages || []).map(p => p.lang).filter(Boolean)));
+    if (!languages.length) {
+      console.warn('未从后端获取到语言列表，默认回退到 en');
+      languages.push('en');
+    }
     
     for (const lang of languages) {
       const langSitemap = generateLanguageSpecificSitemap(sitemapData.pages, lang);
@@ -49,97 +51,13 @@ async function generateSitemap() {
     }
 
     // Generate sitemap index
-    const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://en.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://zh.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://zh-hant.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://fr.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://de.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://it.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://tr.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://es.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://pt.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://nl.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://pl.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://ar.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://ru.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://th.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://id.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://vi.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://ms.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://ml.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://my.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://hi.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://ja.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://ko.aihuazhi.cn/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </sitemap>
-</sitemapindex>`;
+    const lastmod = new Date().toISOString();
+    const toSub = (lang) => lang === 'zh-CN' ? 'zh' : (lang === 'zh-Hant' ? 'zh-hant' : (lang === 'pt-pt' ? 'pt' : lang));
+    const sitemapIndexEntries = languages.map((lang) => {
+      const sub = toSub(lang);
+      return `  <sitemap>\n    <loc>https://${sub}.aihuazhi.cn/sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
+    }).join('\n');
+    const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapIndexEntries}\n</sitemapindex>`;
     const sitemapIndexPath = path.join(distDir, 'sitemap-index.xml');
     fs.writeFileSync(sitemapIndexPath, sitemapIndex);
 
@@ -161,11 +79,9 @@ async function generateSitemap() {
         } else {
           subdomain = lang;
         }
-        
         const sourcePath = path.join(distDir, `${subdomain}`, 'sitemap.xml');
         const targetDir = path.join(vercelOutputDir, `${subdomain}`);
         const targetPath = path.join(targetDir, 'sitemap.xml');
-        
         if (fs.existsSync(sourcePath)) {
           if (!fs.existsSync(targetDir)) {
             fs.mkdirSync(targetDir, { recursive: true });

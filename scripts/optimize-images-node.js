@@ -7,11 +7,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import sharp from 'sharp';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /**
  * 检查sharp是否可用
@@ -55,25 +51,7 @@ async function convertToWebP(inputPath, outputPath) {
   }
 }
 
-/**
- * 生成移动端响应式图片
- */
-async function generateMobileImage(inputPath, outputPath) {
-  try {
-    await sharp(inputPath)
-      .resize(768, 400, { 
-        fit: 'cover',
-        position: 'center'
-        })
-      .webp({ quality: 80 })
-      .toFile(outputPath);
-    
-    return true;
-  } catch (error) {
-    console.error(`❌ 移动端图片生成失败: ${inputPath}`);
-    return false;
-  }
-}
+// 移动端图片由 Strapi 提供，不在构建时额外生成
 
 /**
  * 查找所有图片文件
@@ -143,52 +121,7 @@ async function main() {
   
   console.log(`✅ WebP转换完成: ${convertedCount} 个文件`);
   
-  // 确保优化目录存在
-  await fs.mkdir('public/images/optimized', { recursive: true });
-  
-  // 查找需要生成移动端版本的图片
-  const mobileCandidates = [
-    ...await findImageFiles('public/images', ['.jpg', '.jpeg', '.png', '.webp']),
-    ...await findImageFiles('public/images/strapi', ['.jpg', '.jpeg', '.png', '.webp'])
-  ];
-
-  // 排除已生成目录与已为移动端命名的文件，避免二次处理
-  const filteredCandidates = mobileCandidates.filter(file => {
-    const lower = file.toLowerCase();
-    const name = path.basename(file).toLowerCase();
-    const inOptimizedDir = lower.includes(`${path.sep}images${path.sep}optimized${path.sep}`);
-    const alreadyMobileNamed = name.includes('-mobile');
-    return !inOptimizedDir && !alreadyMobileNamed;
-  });
-  
-  // 过滤出大图（banner等），只处理真正需要移动端版本的图片
-  const largeImages = filteredCandidates.filter(file => {
-    const name = path.basename(file).toLowerCase();
-    // 只处理 banner 和 hero 图片，跳过 strapi 图片（通常不需要移动端版本）
-    return (name.includes('banner') || name.includes('hero')) && !name.includes('-mobile');
-  });
-  
-  // 生成移动端图片
-  let mobileCount = 0;
-  for (const file of largeImages) {
-    const baseName = path.basename(file, path.extname(file));
-    const mobileFile = `public/images/optimized/${baseName}-mobile.webp`;
-    
-    // 跳过已存在的移动端图片
-    try {
-      await fs.access(mobileFile);
-      continue;
-    } catch {
-      // 文件不存在，需要生成
-    }
-    
-    const success = await generateMobileImage(file, mobileFile);
-    if (success) {
-      mobileCount++;
-    }
-  }
-  
-  console.log(`✅ 移动端图片生成完成: ${mobileCount} 个文件`);
+  // 不生成移动端图片；移动端资源由 Strapi 提供
   
   // 检查关键图片
   const criticalImages = [
@@ -214,13 +147,7 @@ async function main() {
     console.log('⚠️  Strapi图片目录不存在');
   }
   
-  // 检查优化图片目录
-  try {
-    const optimizedFiles = await findImageFiles('public/images/optimized', ['.webp']);
-    console.log(`✅ 优化图片目录存在，包含 ${optimizedFiles.length} 个WebP文件`);
-  } catch {
-    console.log('⚠️  优化图片目录不存在');
-  }
+  // 不再维护本地优化目录（public/images/optimized）
   
   if (missingCount > 0) {
     console.log(`⚠️  发现 ${missingCount} 个缺失的关键图片`);

@@ -59,7 +59,7 @@ const getSiteUrl = (lang = 'en') => {
   const langToSubdomain = {
     'en': 'en',
     'zh-CN': 'zh', 
-    'zh-Hant': 'zh',
+    'zh-Hant': 'zh-hant',
     'ar': 'ar',
     'de': 'de',
     'fr': 'fr',
