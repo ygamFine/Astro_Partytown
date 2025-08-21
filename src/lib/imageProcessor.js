@@ -66,6 +66,18 @@ function resolveEmittedUrlSync(fileNameOrHash, fallback) {
   return fallback;
 }
 
+// 返回发射映射中的原始模块对象（用于 <Image src={...}> 传入本地导入对象）
+function resolveEmittedModuleSync(fileNameOrHash) {
+  const table = EMITTED_URLS;
+  if (!table) return null;
+  const imageObject = table[fileNameOrHash];
+  if (!imageObject) return null;
+  if (typeof imageObject === 'object' && imageObject.src) return imageObject;
+  // 仅当是远程 URL 字符串时可用于 <Image>，否则返回 null
+  if (typeof imageObject === 'string' && /^https?:\/\//i.test(imageObject)) return imageObject;
+  return null;
+}
+
 // 从环境变量读取 Strapi 基础地址，用于在未命中本地映射时回退为绝对URL
 const STRAPI_STATIC_URL = typeof process !== 'undefined' ? (process.env.STRAPI_STATIC_URL || '') : '';
 
@@ -141,6 +153,59 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
   }
   
   return processSingleImage(imageData, imageMapping);
+}
+
+// 专供 astro:assets 的 <Image> / getImage 使用：优先返回“导入的图片对象”，否则返回远程 URL，找不到返回 null
+export function processImageForAstro(imageData) {
+  if (!imageData) return null;
+
+  if (typeof imageData === 'string') {
+    // 本地映射到发射资源（根据文件名或哈希）
+    if (
+      imageData.startsWith('/images/strapi/') ||
+      imageData.startsWith('/assets/strapi/') ||
+      imageData.startsWith('/src/assets/strapi/') ||
+      imageData.startsWith('/assets/')
+    ) {
+      const file = imageData.split('/').pop();
+      if (file) return resolveEmittedModuleSync(file);
+      return null;
+    }
+    // Strapi 相对路径
+    if (imageData.startsWith('/uploads/')) {
+      const fileName = imageData.split('/').pop();
+      if (fileName) return resolveEmittedModuleSync(fileName);
+      const pathHash = generateImageHash(imageData);
+      return resolveEmittedModuleSync(pathHash);
+    }
+    // 远程 URL 直接返回字符串（<Image> 支持远程 URL）
+    if (/^https?:\/\//i.test(imageData)) return imageData;
+    // 其它本地字符串路径不支持
+    return null;
+  }
+
+  if (Array.isArray(imageData)) {
+    for (const candidate of imageData) {
+      const mod = processImageForAstro(candidate);
+      if (mod) return mod;
+    }
+    return null;
+  }
+
+  if (imageData && typeof imageData === 'object') {
+    // 兼容传入图片对象 { url }
+    const originalUrl = imageData.url;
+    if (typeof originalUrl === 'string') return processImageForAstro(originalUrl);
+  }
+
+  return null;
+}
+
+export function processImagesForAstro(images) {
+  if (!images || !Array.isArray(images)) return [];
+  return images
+    .map(img => processImageForAstro(img))
+    .filter(Boolean);
 }
 
 // 处理单个图片

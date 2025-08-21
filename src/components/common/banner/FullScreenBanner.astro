@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { loadImageMapping, processImages } from '../../../lib/imageProcessor.js';
+import { processImagesForAstro } from '../../../lib/imageProcessor.js';
 
 // 定义组件props接口
 export interface Props {
@@ -17,14 +17,10 @@ export interface Props {
 // 获取props
 const { bannerData = [] } = Astro.props;
 
-// 加载图片映射，与产品页面保持一致的图片处理方式
-const imageMapping = await loadImageMapping();
-
-// 处理Banner数据，确保图片能正确加载
+// 处理Banner数据，确保图片能正确加载到 <Image>（需要模块或远程URL，而不是本地字符串路径）
 const banners = bannerData.map(banner => ({
   ...banner,
-  // 使用与产品页面相同的图片处理方式
-  processedImages: processImages([banner.image], imageMapping)
+  processedImages: processImagesForAstro([banner.image])
 }));
 
 // FullScreenBanner.astro - SSG优化版本，防止CLS

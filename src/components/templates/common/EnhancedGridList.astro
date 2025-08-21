@@ -23,7 +23,7 @@ interface Props {
 
 // 导入主题配置
 import { themeConfig } from '../../../config/theme.js';
-import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
+import { processImageForAstro } from '../../../lib/imageProcessor.js';
 
 // 根据侧边栏显示状态动态调整列数
 const sidebarVisible = themeConfig.layout.sidebar.visible;
@@ -43,12 +43,13 @@ const validItems = displayItems.filter(item => {
   return true; // 如果是导入的图片对象，认为是有效的
 });
 
-// 统一加载一次映射，并为每个条目生成可展示的本地发射 URL
-const imageMapping = await loadImageMapping();
-const itemsWithDisplay = validItems.map((item) => ({
-  ...item,
-  image: processImageForDisplay(item.image, imageMapping)
-}));
+// 转换为可被 <Image> 接受的资源（导入的图片模块或远程 URL）
+const itemsWithDisplay = validItems
+  .map((item) => ({
+    ...item,
+    image: processImageForAstro(item.image)
+  }))
+  .filter(item => !!item.image);
 
 // 获取翻译文本
 const t = translations || {};
