@@ -493,31 +493,36 @@ async function generateImageMapping() {
     const mappingJsonPath = path.join(__dirname, '../src/data/strapi-image-mapping.json');
     await fs.writeFile(mappingJsonPath, JSON.stringify(jsonMapping, null, 2));
 
-    // 2) 生成纯 JavaScript 映射模块（不依赖图片文件导入）
+    // 2) 生成简单的 URL 映射模块
     const lines = [];
     lines.push('// 自动生成：Strapi 图片 URL 映射 (由构建脚本生成)');
     lines.push('// 注意：实际部署时 Astro 会将文件打包到 _astro 目录中');
     lines.push('');
     
-    // 生成映射对象 - 使用 Astro 的动态导入
+    // 生成 import 语句
+    imageFiles.forEach((file) => {
+      const base = path.basename(file);
+      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
+      lines.push(`import ${hash} from '../assets/strapi/${file}';`);
+    });
+    
+    lines.push('');
     lines.push('export const STRAPI_IMAGE_URLS = {');
     imageFiles.forEach((file) => {
       const base = path.basename(file);
       const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
-      // 使用动态导入，让 Astro 自动处理路径和哈希
-      lines.push(`  '${base}': () => import('../assets/strapi/${file}').then(m => m.default),`);
-      lines.push(`  '${hash}': () => import('../assets/strapi/${file}').then(m => m.default),`);
+      lines.push(`  '${base}': ${hash},`);
+      lines.push(`  '${hash}': ${hash},`);
     });
     lines.push('};');
     
-    // 3) 生成备用映射（用于兼容性）
+    // 添加备用映射，用于运行时查找（不包含哈希值）
     lines.push('');
     lines.push('// 备用映射，用于运行时查找');
     lines.push('export const STRAPI_IMAGE_URLS_FALLBACK = {');
     imageFiles.forEach((file) => {
       const base = path.basename(file);
       const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
-      // 使用相对路径，让 Astro 在构建时处理
       lines.push(`  '${base}': '/assets/${file}',`);
       lines.push(`  '${hash}': '/assets/${file}',`);
     });

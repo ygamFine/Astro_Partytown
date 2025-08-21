@@ -7,16 +7,9 @@ import { generateImageHash } from '../utils/hashUtils.js';
 
 // 由构建脚本生成的URL映射（指向最终发射到/_astro/...的绝对URL）
 let EMITTED_URLS = {};
-let FALLBACK_URLS = {};
 try {
-  const imported = await import('../data/strapi-image-urls.js');
-  EMITTED_URLS = imported.STRAPI_IMAGE_URLS || {};
-  FALLBACK_URLS = imported.STRAPI_IMAGE_URLS_FALLBACK || {};
-} catch (error) {
-  console.warn('⚠️ 加载图片映射失败:', error.message);
-  EMITTED_URLS = {};
-  FALLBACK_URLS = {};
-}
+  EMITTED_URLS = (await import('../data/strapi-image-urls.js')).STRAPI_IMAGE_URLS || {};
+} catch {}
 
 /**
  * 为 Astro Image 组件创建配置对象
@@ -53,29 +46,21 @@ export function createAstroImageConfig(imageData, options = {}) {
   };
 }
 
-async function resolveEmittedUrlAsync(fileNameOrHash, fallback) {
-  // 首先尝试使用 Astro 处理过的映射（动态导入）
-  if (EMITTED_URLS && EMITTED_URLS[fileNameOrHash] && typeof EMITTED_URLS[fileNameOrHash] === 'function') {
-    try {
-      const result = await EMITTED_URLS[fileNameOrHash]();
-      return result;
-    } catch (error) {
-      console.warn('⚠️ Astro 映射失败:', fileNameOrHash, error.message);
-    }
-  }
-  
-  // 如果 Astro 映射失败，使用备用映射
-  if (FALLBACK_URLS && FALLBACK_URLS[fileNameOrHash]) {
-    return FALLBACK_URLS[fileNameOrHash];
-  }
-  
-  return fallback;
-}
-
 function resolveEmittedUrlSync(fileNameOrHash, fallback) {
-  // 同步版本，直接使用备用映射
-  if (FALLBACK_URLS && FALLBACK_URLS[fileNameOrHash]) {
-    return FALLBACK_URLS[fileNameOrHash];
+  const table = EMITTED_URLS;
+  if (!table) return fallback;
+  
+  const imageObject = table[fileNameOrHash];
+  if (!imageObject) return fallback;
+  
+  // 如果是 Astro 图片对象，返回 src 属性
+  if (typeof imageObject === 'object' && imageObject.src) {
+    return imageObject.src;
+  }
+  
+  // 如果是字符串，直接返回
+  if (typeof imageObject === 'string') {
+    return imageObject;
   }
   
   return fallback;
