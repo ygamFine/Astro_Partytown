@@ -4,6 +4,8 @@
  */
 
 import { generateImageHash } from '../utils/hashUtils.js';
+// 统一复用轻客户端的 HTTP 能力，避免重复请求代码
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, STRAPI_STATIC_URL_NEW, fetchJson } from './strapiClient.js';
 
 // 加载图片映射文件的通用函数
 async function loadImageMappingWithCreate() {
@@ -47,13 +49,7 @@ async function loadImageMappingWithCreate() {
   }
 }
 
-// 加载环境变量
-import { config } from 'dotenv';
-config();
-
-// 从环境变量获取 Strapi 配置
-const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+// 由轻客户端统一读取 env，这里仅校验
 
 // 验证环境变量
 if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
@@ -135,18 +131,7 @@ function processImageWithMapping(img, imageMapping) {
  */
 export async function getMenus(locale = 'en') {
   try {
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/menus?locale=${locale}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/menus?locale=${locale}&populate=*`);
 
     // 转换为标准格式，支持国际化字段
     const menus = data.data?.map(item => ({
@@ -161,7 +146,6 @@ export async function getMenus(locale = 'en') {
     return menus;
 
   } catch (error) {
-    // 如果API调用失败，返回默认菜单
     return []
   }
 }
@@ -171,19 +155,7 @@ export async function getMenus(locale = 'en') {
  */
 export async function getProducts(locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/products?locale=${locale}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/products?locale=${locale}&populate=*`);
     const products = data.data?.map(item => ({
       id: item.id,
       slug: item.slug,
@@ -245,18 +217,7 @@ export async function getProduct(slugOrId, locale = 'en') {
     const url = isNumericId
       ? `${STRAPI_STATIC_URL}/api/products/${slugOrId}?locale=${locale}&populate=*`
       : `${STRAPI_STATIC_URL}/api/products?filters[slug][$eq]=${slugOrId}&locale=${locale}&populate=*`;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(url);
 
     // 适配两种响应：集合查询或单条查询
     const item = Array.isArray(data?.data) ? data.data[0] : data?.data;
@@ -369,19 +330,7 @@ export async function getProduct(slugOrId, locale = 'en') {
  */
 export async function getNews(locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=*`);
     const news = data.data?.map(item => ({
       id: item.id,
       slug: item.slug,
@@ -478,19 +427,7 @@ export async function getNews(locale = 'en') {
  */
 export async function getNewsById(id, locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/news/${id}?locale=${locale}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/news/${id}?locale=${locale}&populate=*`);
 
     // 如果没有找到数据，直接返回 null
     if (!data.data) {
@@ -586,23 +523,8 @@ export async function getNewsById(id, locale = 'en') {
  */
 export async function getCases(locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/case?locale=${locale}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-    
-        return [];
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/case?locale=${locale}&populate=*`).catch(() => null);
+    if (!data) return [];
     const cases = data.data?.map(item => ({
       id: item.id,
       slug: item.slug,
@@ -704,23 +626,8 @@ export async function getCases(locale = 'en') {
  */
 export async function getCase(id, locale = 'en') {
   try {
-    // 只获取指定语言的数据，不回退到其他语言
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/case/${id}?locale=${locale}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        
-        return null;
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/case/${id}?locale=${locale}&populate=*`).catch(() => null);
+    if (!data) return null;
 
     // 如果没有找到数据，直接返回 null
     if (!data.data) {
@@ -822,19 +729,8 @@ export async function getCase(id, locale = 'en') {
  */
 export async function getMobileBottomMenu() {
   try {
-    // 直接使用用户提供的API URL
-    const apiUrl = 'http://182.92.233.160:1137/api/shoujiduandibucaidan?populate=*';
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/shoujiduandibucaidan?populate=*`;
+    const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
     
     // 提取菜单项数据
     const menuItems = data.data?.shoujiduandibucaidan || [];
@@ -908,18 +804,8 @@ function getMenuIcon(content) {
  */
 export async function getBannerData() {
   try {
-    const apiUrl = 'http://182.92.233.160:1137/api/banner-setting?populate[field_shouyebanner][populate][field_tupian][populate]=*';
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate[field_shouyebanner][populate][field_tupian][populate]=*&populate[field_shouyebanner][populate][field_shouji][populate]=*`;
+    const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
     
     if (!data.data || !data.data.field_shouyebanner) {
       console.warn('Banner数据为空');
@@ -997,18 +883,8 @@ export async function getBannerData() {
  */
 export async function getHomepageContent() {
   try {
-    const apiUrl = 'http://182.92.233.160:1137/api/homepage-content?populate=*';
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/homepage-content?populate=*`;
+    const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
     
     if (!data.data) {
       console.warn('首页数据为空');

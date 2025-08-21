@@ -2,6 +2,8 @@
 // 环境检测
 const isProd = import.meta.env.PROD;
 const isDev = import.meta.env.DEV;
+// 优先读服务端环境变量，其次读公开前缀（用于浏览器端兜底）
+const STRAPI_STATIC_URL_NEW = (typeof process !== 'undefined' ? process.env.STRAPI_STATIC_URL_NEW : '') || import.meta.env.PUBLIC_STRAPI_STATIC_URL_NEW || '';
 
 // 组件属性
 export interface Props {
@@ -42,15 +44,15 @@ const getOptimizationStrategy = () => {
 
 const optimization = getOptimizationStrategy();
 
-// Strapi API 配置
-const STRAPI_API_URL = 'http://182.92.233.160:1137/api/insert-code';
+// Strapi API 配置（缺少基址时直接跳过加载，避免 undefined/... 报错）
+const STRAPI_API_URL = STRAPI_STATIC_URL_NEW ? `${STRAPI_STATIC_URL_NEW}/api/insert-code` : '';
 
 // 获取动态脚本数据 - 在构建时执行
 let dynamicScripts = null;
 let error = null;
 
 // 按需加载条件检查
-const shouldLoadScripts = loadCondition && (
+const shouldLoadScripts = loadCondition && STRAPI_API_URL && (
   pageType !== 'none' && 
   route !== 'excluded'
 );
@@ -61,6 +63,7 @@ if (shouldLoadScripts) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(process.env.STRAPI_API_TOKEN_NEW ? { 'Authorization': `Bearer ${process.env.STRAPI_API_TOKEN_NEW}` } : {})
       },
       // 生产环境使用缓存，开发环境实时获取
       cache: isProd ? 'force-cache' : 'no-store'
