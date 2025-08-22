@@ -47,18 +47,25 @@ const finalHeight = (height ||
 const heightClasses = themeConfig.layout.banner.heightClasses;
 
 // 获取通用banner背景图（如果启用）
-let strapiBackgroundImage = null;
+let strapiBannerImages: Array<{image: any, alt: string, originalImage: string}> = [];
 if (useStrapiBackground) {
   try {
     const commonBanners = await getCommonBannerData();
     if (commonBanners && commonBanners.length > 0) {
-      // 使用第一个通用banner作为背景图，并通过 processImagesForAstro 处理
-      const rawImage = commonBanners[0].image;
-      if (rawImage) {
-        const processedImages = processImagesForAstro([rawImage].filter(Boolean));
-        strapiBackgroundImage = processedImages.length > 0 ? processedImages[0] : rawImage;
-        console.log('[PageBanner] 使用Strapi通用banner背景:', rawImage, '->', strapiBackgroundImage);
-      }
+      // 处理所有通用banner图片，支持轮播
+      strapiBannerImages = commonBanners.map(banner => {
+        if (banner.image) {
+          const processedImages = processImagesForAstro([banner.image].filter(Boolean));
+          return {
+            image: processedImages.length > 0 ? processedImages[0] : banner.image,
+            alt: String(banner.alt || banner.name || title),
+            originalImage: String(banner.image)
+          };
+        }
+        return null;
+      }).filter(Boolean) as Array<{image: any, alt: string, originalImage: string}>;
+      
+      console.log('[PageBanner] 获取到', strapiBannerImages.length, '张Strapi通用banner图片');
     } else {
       console.warn('[PageBanner] 未获取到Strapi通用banner数据，将使用默认配置');
     }
@@ -68,7 +75,7 @@ if (useStrapiBackground) {
       useGlobalHeight: themeConfig.layout.banner.useGlobalHeight,
       globalHeight: themeConfig.layout.banner.globalHeight,
       defaultHeight: themeConfig.layout.banner.defaultHeight,
-      strapiBackgroundAvailable: !!strapiBackgroundImage
+      strapiImagesCount: strapiBannerImages.length
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -80,9 +87,10 @@ if (useStrapiBackground) {
   }
 }
 
-// 使用props中的值，优先使用Strapi背景图
+// 使用props中的值，优先使用Strapi背景图或轮播图
 const finalBackground = background || 'image';
-const finalBackgroundImage = strapiBackgroundImage || backgroundImage;
+const hasStrapiBanners = strapiBannerImages.length > 0;
+const finalBackgroundImage = hasStrapiBanners ? null : backgroundImage; // 有Strapi轮播时不使用单张背景图
 
 // 文本对齐配置
 const textAlignClasses = {
@@ -105,7 +113,8 @@ const getBackgroundStyle = () => {
 const backgroundStyle = getBackgroundStyle();
 
 // 判断是否需要显示图片
-const shouldShowImage = finalBackground === 'image' && finalBackgroundImage;
+const shouldShowImage = finalBackground === 'image' && (hasStrapiBanners || finalBackgroundImage);
+const shouldShowCarousel = hasStrapiBanners && strapiBannerImages.length > 1;
 
 // 从配置文件获取图片尺寸
 const imageSize = themeConfig.layout.banner.imageSize.desktop;
@@ -114,8 +123,54 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
 <div 
   class={`${backgroundStyle} ${showText ? 'text-white' : ''} ${heightClasses[finalHeight]} ${className} ${showOverlay ? 'show-overlay' : ''} banner-container`}
 >
-  {/* 使用合适的组件显示背景图 */}
-  {shouldShowImage && (
+  {/* Strapi轮播图片 */}
+  {hasStrapiBanners ? (
+    <div class="banner-carousel" id="page-banner-carousel">
+      {strapiBannerImages.map((bannerImg, index) => (
+        <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
+          {typeof bannerImg.image === 'string' ? (
+            <img 
+              src={bannerImg.image}
+              alt={bannerImg.alt}
+              width={imageSize.width.toString()}
+              height={imageSize.height.toString()}
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchpriority={index === 0 ? "high" : "auto"}
+              decoding="async"
+              class="banner-bg-image"
+              style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+            />
+          ) : (
+            <Image 
+              src={bannerImg.image}
+              alt={bannerImg.alt}
+              width={imageSize.width}
+              height={imageSize.height}
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchpriority={index === 0 ? "high" : "auto"}
+              decoding="async"
+              class="banner-bg-image"
+              style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+            />
+          )}
+        </div>
+      ))}
+      
+      {/* 轮播指示器（如果有多张图片） */}
+      {shouldShowCarousel && (
+        <div class="banner-indicators">
+          {strapiBannerImages.map((_, index) => (
+            <button 
+              class={`indicator ${index === 0 ? 'active' : ''}`}
+              data-index={index}
+              aria-label={`切换到第${index + 1}张图片`}
+            ></button>
+          ))}
+        </div>
+      )}
+    </div>
+  ) : finalBackgroundImage && (
+    /* 单张背景图 */
     typeof finalBackgroundImage === 'string' ? (
       <img 
         src={finalBackgroundImage}
@@ -172,6 +227,38 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
   .banner-container {
     @apply relative overflow-hidden;
     position: relative;
+    width: 100%;
+    min-height: 200px; /* 确保至少有最小高度 */
+  }
+  
+  /* 轮播容器样式 */
+  .banner-carousel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  /* 轮播项样式 */
+  .banner-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .banner-slide.active {
+    opacity: 1;
   }
   
   /* 背景图片样式 */
@@ -183,7 +270,34 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    z-index: 1;
+    display: block;
+  }
+  
+  /* 轮播指示器样式 */
+  .banner-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 3;
+  }
+  
+  .indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .indicator:hover,
+  .indicator.active {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 1);
   }
   
   /* 遮罩层样式 */
@@ -212,5 +326,100 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
   :global(.page-banner) {
     @apply relative overflow-hidden;
   }
-</style> 
+  
+  /* 移动端指示器优化 */
+  @media (max-width: 768px) {
+    .banner-indicators {
+      bottom: 15px;
+    }
+    
+    .indicator {
+      width: 10px;
+      height: 10px;
+    }
+  }
+</style>
+
+<script>
+  // 简单的PageBanner轮播功能
+  document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.getElementById('page-banner-carousel');
+    if (!carousel) return;
+    
+    const slides = carousel.querySelectorAll('.banner-slide');
+    const indicators = carousel.querySelectorAll('.indicator');
+    const totalSlides = slides.length;
+    
+    if (totalSlides <= 1) return; // 少于2张图片不需要轮播
+    
+    let currentSlide = 0;
+    let autoSlideTimer: ReturnType<typeof setInterval> | null = null;
+    const slideInterval = 5000; // 5秒切换
+    
+    // 切换到指定幻灯片
+    function goToSlide(index: number) {
+      if (index === currentSlide) return;
+      
+      // 隐藏当前幻灯片
+      slides[currentSlide].classList.remove('active');
+      indicators[currentSlide].classList.remove('active');
+      
+      // 显示新幻灯片
+      currentSlide = index;
+      slides[currentSlide].classList.add('active');
+      indicators[currentSlide].classList.add('active');
+    }
+    
+    // 下一张
+    function nextSlide() {
+      const next = (currentSlide + 1) % totalSlides;
+      goToSlide(next);
+    }
+    
+    // 开始自动轮播
+    function startAutoSlide() {
+      autoSlideTimer = setInterval(nextSlide, slideInterval);
+    }
+    
+    // 停止自动轮播
+    function stopAutoSlide() {
+      if (autoSlideTimer) {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = null;
+      }
+    }
+    
+    // 重启自动轮播
+    function restartAutoSlide() {
+      stopAutoSlide();
+      setTimeout(startAutoSlide, 100);
+    }
+    
+    // 绑定指示器点击事件
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        goToSlide(index);
+        restartAutoSlide();
+      });
+    });
+    
+    // 鼠标悬停时暂停轮播
+    carousel.addEventListener('mouseenter', stopAutoSlide);
+    carousel.addEventListener('mouseleave', startAutoSlide);
+    
+    // 页面可见性改变时的处理
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopAutoSlide();
+      } else {
+        startAutoSlide();
+      }
+    });
+    
+    // 启动自动轮播
+    startAutoSlide();
+    
+    console.log('[PageBanner] 轮播初始化完成，共', totalSlides, '张图片');
+  });
+</script>
 
