@@ -18,17 +18,14 @@ export interface Props {
 const { bannerData = [] } = Astro.props;
 
 // 处理Banner数据，确保图片能正确加载到 <Image>（需要模块或远程URL，而不是本地字符串路径）
-console.log('[FullScreenBanner] bannerData size:', bannerData?.length ?? 0);
 const banners = bannerData.map(banner => {
   const processed = processImagesForAstro([banner?.image].filter(Boolean));
-  console.log('[FullScreenBanner] item', { id: banner?.id, image: banner?.image, processedCount: processed?.length ?? 0 });
   return {
     ...banner,
     processedImages: processed
   };
 });
 
-// FullScreenBanner.astro - SSG优化版本，防止CLS
 ---
 
 <!-- 预加载关键Banner图片 -->

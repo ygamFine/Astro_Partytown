@@ -1,5 +1,6 @@
 ---
 import { getMobileBottomMenu } from '../../../lib/strapi.js';
+import { getIconClass } from '../../../lib/iconUtils.js';
 
 export interface Props {
   lang?: string;
@@ -20,23 +21,22 @@ function isActive(path: string, currentPath: string): boolean {
 }
 
 // 获取菜单链接
-function getMenuLink(item: { customLink?: string; type: string }, lang: string): string {
-  // 直接使用API返回的自定义链接，如果没有则使用默认值
-  return item.customLink || '#';
+function getMenuLink(item: { customLink?: string; inlineAddress?: string; externalLink?: string; type: string }, lang: string): string {
+  // 优先级：Inline_address > field_zidingyilianjie > 默认值
+  if (item.inlineAddress) {
+    // 内链地址，添加语言前缀
+    const cleanPath = item.inlineAddress.startsWith('/') ? item.inlineAddress : `/${item.inlineAddress}`;
+    return `/${lang}${cleanPath}`;
+  }
+  if (item.externalLink || item.customLink) {
+    // 外链或自定义链接，直接使用
+    return item.externalLink || item.customLink || '#';
+  }
+  // 默认值
+  return '#';
 }
 
-// 获取菜单图标SVG
-function getIconSVG(iconName: string): string {
-  const icons = {
-    home: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>`,
-    package: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.466 7.5C15.643 4.237 13.952 2 12 2S8.357 4.237 7.534 7.5"/><path d="M2 3a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h20a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M7 12h10"/><path d="M7 16h10"/><path d="M12 12v4"/></svg>`,
-    newspaper: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M18 18h-8"/><path d="M10 6h8v4h-8V6Z"/></svg>`,
-    'message-circle': `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-    circle: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`
-  };
-  
-  return icons[iconName as keyof typeof icons] || icons.circle;
-}
+// 注意：getIconClass 现在从 iconUtils 导入，提供全站统一的图标管理
 ---
 
 <!-- 移动端底部菜单 -->
@@ -45,7 +45,16 @@ function getIconSVG(iconName: string): string {
   data-pagefind-ignore
 >
   <div class="flex items-center justify-around px-2 py-2">
-    {menuItems.map((item: { id: number; type: string; content: string; icon: string; customLink?: string }) => {
+    {menuItems.map((item: { 
+      id: number; 
+      type: string; 
+      content: string; 
+      icon: string; 
+      iconType: string; 
+      customLink?: string;
+      inlineAddress?: string;
+      externalLink?: string;
+    }) => {
       const link = getMenuLink(item, lang);
       const active = isActive(link, currentPath);
       
@@ -63,7 +72,11 @@ function getIconSVG(iconName: string): string {
           <div class={`w-5 h-5 mb-1 transition-colors duration-200 flex items-center justify-center ${
             active ? 'text-blue-600' : 'text-gray-500'
           }`}>
-            <Fragment set:html={getIconSVG(item.icon)} />
+            {item.iconType === 'image' ? (
+              <img src={item.icon} alt="menu icon" class="w-5 h-5 object-contain" />
+            ) : (
+              <i class={`${getIconClass(item.icon)} text-xl`}></i>
+            )}
           </div>
           <span class="text-xs font-medium leading-none text-center block">
             {item.content}
@@ -172,6 +185,18 @@ function getIconSVG(iconName: string): string {
       item.addEventListener('click', function(this: HTMLElement, e: Event) {
         const menuType = this.getAttribute('data-menu-type');
         const href = this.getAttribute('href');
+        
+        // 如果有自定义链接且不是特殊处理的链接，直接跳转
+        if (href && href !== '#' && href !== '#contact-modal' && href !== '#whatsapp') {
+          // 判断是否为外部链接
+          if (href.startsWith('http://') || href.startsWith('https://')) {
+            e.preventDefault();
+            window.open(href, '_blank');
+            return;
+          }
+          // 内部链接正常跳转
+          return;
+        }
         
         // 处理特殊菜单类型
         if (menuType === 'inquiry' && href === '#contact-modal') {

@@ -828,14 +828,35 @@ export async function getMobileBottomMenu(locale = 'en') {
       const menuItems = data.data?.shoujiduandibucaidan || [];
       
       // 转换为标准格式
-      const processedMenuItems = menuItems.map(item => ({
-        id: item.id,
-        content: item.field_neirong,
-        customLink: item.field_zidingyilianjie,
-        // 根据内容判断菜单类型
-        type: getMenuType(item.field_neirong),
-        icon: getMenuIcon(item.field_neirong)
-      }));
+      const processedMenuItems = menuItems.map(item => {
+        const fieldLiebiao = item.field_liebiao || '';
+        const uniqueId = fieldLiebiao.includes('|') ? fieldLiebiao.split('|')[0].toLowerCase().trim() : fieldLiebiao.toLowerCase().trim();
+        
+        // 详细调试信息
+        console.log('=== 菜单项调试 ===');
+        console.log('显示名称 (field_neirong):', item.field_neirong);
+        console.log('原始 field_liebiao:', item.field_liebiao);
+        console.log('提取的 uniqueId:', uniqueId);
+        console.log('API返回的 icon 字段:', item.icon);
+        console.log('映射的图标:', getDefaultMenuIcon(item));
+        console.log('最终使用的图标:', item.icon || getDefaultMenuIcon(item));
+        console.log('---');
+        
+        return {
+          id: item.id,
+          content: item.field_neirong,
+          // 链接优先级：Inline_address > field_zidingyilianjie > 默认值
+          customLink: item.Inline_address || item.field_zidingyilianjie,
+          inlineAddress: item.Inline_address,
+          externalLink: item.field_zidingyilianjie,
+          // 根据数据结构判断菜单类型，而不是依赖多语言的名称
+          type: getMenuType(item),
+          // 图标处理：优先使用icon字段的图片，没有则使用field_liebiao对应的字体图标
+          icon: item.icon || getDefaultMenuIcon(item),
+          // 新增：区分是图片图标还是字体图标
+          iconType: item.icon ? 'image' : 'font'
+        };
+      });
 
       globalThis.__mobileBottomMenuCacheMap.set(locale, processedMenuItems);
       return processedMenuItems;
@@ -855,45 +876,57 @@ export async function getMobileBottomMenu(locale = 'en') {
 }
 
 /**
- * 根据菜单内容判断菜单类型
+ * 根据菜单项数据结构判断菜单类型
+ * @param {Object} item - 菜单项数据
  */
-function getMenuType(content) {
-  const contentLower = content?.toLowerCase() || '';
+function getMenuType(item) {
+  // 优先根据 field_liebiao 字段的唯一标识判断类型
+  const fieldLiebiao = item.field_liebiao || '';
+  const uniqueId = fieldLiebiao.includes('|') ? fieldLiebiao.split('|')[0].toLowerCase().trim() : fieldLiebiao.toLowerCase().trim();
   
-  if (contentLower.includes('home') || contentLower.includes('首页')) {
-    return 'home';
-  } else if (contentLower.includes('product') || contentLower.includes('产品')) {
-    return 'product';
-  } else if (contentLower.includes('news') || contentLower.includes('新闻')) {
-    return 'news';
-  } else if (contentLower.includes('inquiry') || contentLower.includes('询价') || contentLower.includes('联系')) {
-    return 'inquiry';
-  } else if (contentLower.includes('whatsapp')) {
-    return 'whatsapp';
-  }
+  // 根据唯一标识映射菜单类型
+  const typeMapping = {
+    'home': 'home',
+    'product': 'product', 
+    'phone': 'phone',
+    'whatsapp': 'whatsapp',
+    'email': 'email',
+    'news': 'news',
+    'aboutus': 'about',
+    'contactus': 'contact',
+    'vr': 'vr',
+    'videos': 'videos'
+  };
   
-  return 'custom';
+  return typeMapping[uniqueId] || 'custom';
 }
 
 /**
- * 根据菜单内容获取对应的图标
+ * 根据菜单项数据结构获取默认图标
+ * @param {Object} item - 菜单项数据
  */
-function getMenuIcon(content) {
-  const contentLower = content?.toLowerCase() || '';
+function getDefaultMenuIcon(item) {
+  // 根据 field_liebiao 字段的唯一标识判断图标
+  const fieldLiebiao = item.field_liebiao || '';
+  const uniqueId = fieldLiebiao.includes('|') ? fieldLiebiao.split('|')[0].toLowerCase().trim() : fieldLiebiao.toLowerCase().trim();
   
-  if (contentLower.includes('home') || contentLower.includes('首页')) {
-    return 'home';
-  } else if (contentLower.includes('product') || contentLower.includes('产品')) {
-    return 'package';
-  } else if (contentLower.includes('news') || contentLower.includes('新闻')) {
-    return 'newspaper';
-  } else if (contentLower.includes('inquiry') || contentLower.includes('询价') || contentLower.includes('联系')) {
-    return 'message-circle';
-  } else if (contentLower.includes('whatsapp')) {
-    return 'message-circle';
-  }
+  // 根据唯一标识映射图标（确保每个菜单项使用独特图标）
+  const iconMapping = {
+    'home': 'home',                           // icon-home 🏠
+    'product': 'chanpin',                     // icon-chanpin 📦
+    'phone': 'phone',                         // icon-contact_icon_iphone 📞
+    'whatsapp': 'whatsapp',                   // icon-whatsapp 💚 (绿色WhatsApp)
+    'email': 'email',                         // icon-contact_icon_email 📧
+    'news': 'xinwenshoucang',                 // icon-xinwenshoucang 📰
+    'aboutus': 'people',                      // icon-contact_icon_people2 👥
+    'contactus': 'email',                     // icon-contact_icon_email 📧
+    'vr': 'vr-player',                        // icon-vrbofangqi 🥽
+    'videos': 'youtube'                       // icon-youtube 📺
+  };
   
-  return 'circle';
+  console.log('Debug - uniqueId:', uniqueId, 'mapped icon:', iconMapping[uniqueId] || 'circle');
+  
+  return iconMapping[uniqueId] || 'circle';
 }
 
 
@@ -994,19 +1027,6 @@ export async function getBannerData(filterType = undefined) {
     // 根据过滤类型返回结果
     const filteredBanners = filterType ? banners.filter(banner => banner.type === filterType) : banners;
 
-    try {
-      console.log(`[getBannerData] banners: ${banners.length}, filtered(${filterType || 'all'}): ${filteredBanners.length}`);
-      filteredBanners.slice(0, 5).forEach((b) => {
-        console.log('[getBannerData] item', {
-          id: b.id,
-          name: b.name,
-          image: b.image,
-          mobileImage: b.mobileImage,
-          type: b.type
-        });
-      });
-    } catch {}
-
     return filteredBanners;
 
   } catch (error) {
@@ -1024,10 +1044,7 @@ export async function getCommonBannerData() {
     // 直接使用过滤参数获取通用banner
     const commonBanners = await getBannerData('common');
     
-    console.log(`[getCommonBannerData] 通用banners: ${commonBanners.length}`);
-    if (commonBanners.length > 0) {
-      console.log('[getCommonBannerData] 第一个通用banner图片:', commonBanners[0]?.image);
-    }
+    // 调试信息已移除
 
     return commonBanners;
 
