@@ -8,6 +8,8 @@ import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';
+import { langToSubdomain } from './subdomainUtils.js';
+import { resolveBaseDomain } from './domainUtils.js';
 
 // 加载环境变量
 import { config } from 'dotenv';
@@ -20,10 +22,6 @@ const getCurrentDomain = () => {
     // 优先使用当前请求的域名
     if (process.env.CURRENT_HOSTNAME) {
       const hostname = process.env.CURRENT_HOSTNAME;
-      // 如果是生产环境域名，提取主域名
-      if (hostname.includes('aihuazhi.cn')) {
-        return 'aihuazhi.cn';
-      }
       return hostname;
     }
     // 使用环境变量中的域名
@@ -43,7 +41,7 @@ const getCurrentDomain = () => {
   // 构建时和生产环境默认域名
   if (typeof process !== 'undefined' && process.env) {
     if (process.env.NODE_ENV === 'production') {
-      return 'aihuazhi.cn';
+      return resolveBaseDomain();
     }
   }
   
@@ -56,32 +54,7 @@ const getSiteUrl = (lang = 'en') => {
   const currentDomain = getCurrentDomain();
   
   // 语言到子域名的映射
-  const langToSubdomain = {
-    'en': 'en',
-    'zh-CN': 'zh', 
-    'zh-Hant': 'zh-hant',
-    'ar': 'ar',
-    'de': 'de',
-    'fr': 'fr',
-    'it': 'it',
-    'tr': 'tr',
-    'es': 'es',
-    'pt-pt': 'pt',
-    'nl': 'nl',
-    'pl': 'pl',
-    'ru': 'ru',
-    'th': 'th',
-    'id': 'id',
-    'vi': 'vi',
-    'ms': 'ms',
-    'ml': 'ml',
-    'my': 'my',
-    'hi': 'hi',
-    'ja': 'ja',
-    'ko': 'ko'
-  };
-  
-  const subdomain = langToSubdomain[lang] || 'en';
+  const subdomain = langToSubdomain(lang);
   
   // 强制使用生产环境域名
   if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production') {
@@ -92,12 +65,10 @@ const getSiteUrl = (lang = 'en') => {
   if (currentDomain === 'localhost') {
     // 开发环境
     return `https://${subdomain}.${currentDomain}`;
-  } else if (currentDomain.includes('aihuazhi.cn')) {
-    // 生产环境 - 使用当前请求的完整域名
-    return `https://${subdomain}.aihuazhi.cn`;
   } else {
-    // 其他环境 - 使用当前域名
-    return `https://${subdomain}.${currentDomain}`;
+    // 生产/其他环境 - 使用解析到的基础域名
+    const base = resolveBaseDomain();
+    return `https://${subdomain}.${base}`;
   }
 };
 

@@ -4,41 +4,13 @@ import { getMenus, getSupportedLanguages } from '../../../lib/strapi.js';
 import getDictionary from '../../../i18n/dictionaries.js';
 import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
+import { getLangFromHostname } from '../../../lib/subdomainUtils.js';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
 // 优先从路径解析语言；若路径无语言前缀，再尝试从子域名解析
 const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = pathLangMatch ? pathLangMatch[1] : (() => {
-  const hostname = Astro.url.hostname;
-  const subdomainToLang = {
-    'zh': 'zh-CN',
-    'zh-hant': 'zh-Hant',
-    'de': 'de',
-    'ja': 'ja',
-    'fr': 'fr',
-    'ar': 'ar',
-    'es': 'es',
-    'it': 'it',
-    'pt': 'pt-pt',
-    'nl': 'nl',
-    'pl': 'pl',
-    'ru': 'ru',
-    'th': 'th',
-    'id': 'id',
-    'vi': 'vi',
-    'ms': 'ms',
-    'ml': 'ml',
-    'my': 'my',
-    'hi': 'hi',
-    'ko': 'ko',
-    'tr': 'tr'
-  } as Record<string, string>;
-  for (const [sub, lang] of Object.entries(subdomainToLang)) {
-    if (hostname.startsWith(`${sub}.`)) return lang;
-  }
-  return 'en';
-})();
+let currentLang = pathLangMatch ? pathLangMatch[1] : getLangFromHostname(Astro.url.hostname);
 
 // 加载翻译数据
 const t = getDictionary(currentLang);

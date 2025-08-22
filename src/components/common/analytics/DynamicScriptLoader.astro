@@ -4,6 +4,12 @@ const isProd = import.meta.env.PROD;
 const isDev = import.meta.env.DEV;
 // 优先读服务端环境变量，其次读公开前缀（用于浏览器端兜底）
 const STRAPI_STATIC_URL_NEW = (typeof process !== 'undefined' ? process.env.STRAPI_STATIC_URL_NEW : '') || import.meta.env.PUBLIC_STRAPI_STATIC_URL_NEW || '';
+// 生产构建缺省禁用动态脚本获取；如需开启，设置 ENABLE_DYNAMIC_SCRIPTS=true 或 PUBLIC_ENABLE_DYNAMIC_SCRIPTS=true
+const ENABLE_DYNAMIC_SCRIPTS = (
+  (typeof process !== 'undefined' ? process.env.ENABLE_DYNAMIC_SCRIPTS : '') === 'true'
+  || import.meta.env.PUBLIC_ENABLE_DYNAMIC_SCRIPTS === 'true'
+);
+const allowDynamicFetch = isDev || ENABLE_DYNAMIC_SCRIPTS;
 
 // 组件属性
 export interface Props {
@@ -26,20 +32,20 @@ const {
 const getOptimizationStrategy = () => {
   // Header 位置 - 关键脚本，使用模块化
   if (position === 'header') {
-    return { useModule: true, useDefineVars: true };
+    return { useModule: true, useDefineVars: isDev };
   }
   
   // Body Top 位置 - 页面初始化
   if (position === 'body-top') {
-    return { useModule: true, useDefineVars: true };
+    return { useModule: true, useDefineVars: isDev };
   }
   
   // Body Bottom 位置 - 非关键脚本，使用 Partytown
   if (position === 'body-bottom') {
-    return { usePartytown: true, useDefineVars: true };
+    return { usePartytown: true, useDefineVars: isDev };
   }
   
-  return { useModule: true, useDefineVars: true };
+  return { useModule: true, useDefineVars: isDev };
 };
 
 const optimization = getOptimizationStrategy();
@@ -51,8 +57,8 @@ const STRAPI_API_URL = STRAPI_STATIC_URL_NEW ? `${STRAPI_STATIC_URL_NEW}/api/ins
 let dynamicScripts = null;
 let error = null;
 
-// 按需加载条件检查
-const shouldLoadScripts = loadCondition && STRAPI_API_URL && (
+// 按需加载条件检查（仅开发或显式开启时才会在构建期触发远程获取）
+const shouldLoadScripts = allowDynamicFetch && loadCondition && STRAPI_API_URL && (
   pageType !== 'none' && 
   route !== 'excluded'
 );
@@ -74,11 +80,11 @@ if (shouldLoadScripts) {
       dynamicScripts = data.data;
     } else {
       error = `API 请求失败: ${response.status}`;
-      console.error('动态脚本加载器错误:', error);
+      if (isDev) console.error('动态脚本加载器错误:', error);
     }
   } catch (err: any) {
     error = `获取动态脚本失败: ${err.message}`;
-    console.error('动态脚本加载器错误:', error);
+    if (isDev) console.error('动态脚本加载器错误:', error);
   }
 }
 

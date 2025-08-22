@@ -8,8 +8,8 @@ export interface Props {
 
 const { lang = 'en', currentPath = '/' } = Astro.props;
 
-// 获取移动端底部菜单数据
-const menuItems = await getMobileBottomMenu();
+// 获取移动端底部菜单数据（按语言缓存）
+const menuItems = await getMobileBottomMenu(lang);
 
 // 判断当前路径是否激活
 function isActive(path: string, currentPath: string): boolean {

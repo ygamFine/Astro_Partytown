@@ -52,7 +52,8 @@ export const buildUrl = (lang, path) => {
 export const getLanguageSwitchUrl = (currentLang, targetLang, currentPath) => {
   if (useSubdomainMode()) {
     // 子域名模式：构建子域名URL
-    const subdomain = targetLang === 'zh-CN' ? 'zh' : targetLang === 'zh-Hant' ? 'zh-hant' : targetLang;
+    const { langToSubdomain } = require('./subdomainUtils.js');
+    const subdomain = langToSubdomain(targetLang);
     const currentDomain = getCurrentDomain();
     const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
     return `https://${subdomain}.${baseDomain}${currentPath}`;

@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
 import vercel from '@astrojs/vercel';
+import critters from 'astro-critters';
 
 // https://astro.build/config
 export default defineConfig({
@@ -43,6 +44,14 @@ export default defineConfig({
         debug: false,
         // 🚀 Partytown 性能优化
         lib: '/~partytown/',
+      }
+    }),
+    // ⚡ 自动提取并内联首屏关键 CSS
+    critters({
+      Critters: {
+        preload: 'swap',
+        inlineFonts: true,
+        pruneSource: true
       }
     }),
   ],
@@ -114,12 +123,4 @@ export default defineConfig({
       },
     },
   },
-  
-  // 🔍 实验性功能 (已移除过时的配置)
-  // experimental: {
-  //   // 资源预加载
-  //   assets: true,
-  //   // 视图转换
-  //   viewTransitions: true,
-  // },
 });

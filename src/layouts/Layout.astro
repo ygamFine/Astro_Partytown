@@ -17,7 +17,7 @@ export interface Props {
 
 const {
   title,
-  description = "山东永安建设机械集团有限公司 - 专业工程机械制造商",
+  description = '',
   lang = "en",
   pageType = "home",
 } = Astro.props;
@@ -42,13 +42,11 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- 字体预加载和优化 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- 阿拉伯语字体预加载 -->
+    <!-- 阿拉伯语字体预加载（仅阿语时预连接与预加载） -->
     {isRTL && (
       <>
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link 
           rel="preload" 
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" 
@@ -64,30 +62,13 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       </>
     )}
     
-    <!-- 关键图片预加载 - 按优先级排序 -->
-    <link rel="preload" href="/images/logo.png.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/images/banner3.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/images/banner.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/images/shouji-banner1-ultra.webp" as="image" fetchpriority="high" media="(max-width: 768px)" />
-    <link rel="preload" href="/images/skid1-400.webp" as="image" fetchpriority="low" />
-    <link rel="preload" href="/images/backhoe-400.webp" as="image" fetchpriority="low" />
-    
-    <!-- DNS预解析 -->
-    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-    <link rel="dns-prefetch" href="//cdn.huazhi.cloud" />
-    
     <!-- SEO优化 -->
-    <meta
-      name="keywords"
-      content="滑移装载机,工程机械,建筑设备,山东永安,YONAN"
-    />
-    <meta name="author" content="山东永安建设机械集团有限公司" />
+    {description && (
+      <meta name="description" content={description} />
+    )}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-
-    <!-- 🎯 优化的 GTM 加载器 - 支持开发/生产环境 -->
-    <!-- <GTMLoader /> -->
 
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
     <DynamicScriptLoader 
@@ -96,7 +77,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       lang={lang}
     />
 
-    <!-- 全局样式已内联到下方 -->
 
     <!-- 内联关键CSS - 防止渲染阻塞 -->
     <style>
@@ -115,7 +95,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-display: swap;
         line-height: 1.6;
         color: #333;
         background: #fff;
@@ -136,6 +115,8 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
         font-family: "Noto Sans Arabic", "Arial Unicode MS", "Tahoma", Arial, sans-serif;
         direction: rtl;
       }
+
+      /* 其它语言使用系统默认字体，不设置额外首选字体 */
 
       /* RTL 布局调整 */
       [dir="rtl"] .container {
@@ -281,15 +262,14 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
         }
       }
 
-      /* Header固定高度 - 防止CLS */
-      header {
-        height: 80px;
-        contain: layout;
+      /* 为固定头部预留空间：移动端 6rem，桌面端约 15.9rem（主栏 9.9rem + 导航 6rem）*/
+      main {
+        padding-top: 6rem;
       }
 
-      @media (max-width: 768px) {
-        header {
-          height: 60px;
+      @media (min-width: 768px) {
+        main {
+          padding-top: 15.9rem;
         }
       }
 
@@ -388,12 +368,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
         100% { background-position: -200% 0; }
       }
 
-      /* 内联字体样式 - 优化性能 */
-      @font-face {
-        font-family: 'System-UI';
-        src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont');
-        font-display: swap;
-      }
+      /* 移除不必要的内联字体声明，沿用系统字体栈 */
 
       /* 简单的动画系统 */
       .animate-fade-up {
@@ -512,59 +487,8 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       lang={lang}
       currentPath={Astro.url.pathname}
       preloadStrategy="smart"
-      enableDebug={import.meta.env.DEV}
     />
 
-    <!-- 🛡️ 全局错误处理 - 按需加载版本 -->
-    <!-- <script is:inline>
-      // 全局错误处理系统 - 仅在需要时启用
-      (function() {
-        // 检查是否需要错误处理
-        const needsErrorHandling = () => {
-          // 检查是否有第三方脚本需要修复
-          const hasThirdPartyScripts = document.querySelectorAll('script[src*="huazhi.cloud"], script[src*="livechat"]').length > 0;
-          return hasThirdPartyScripts;
-        };
-
-        // 仅在需要时启用错误处理
-        if (needsErrorHandling()) {
-          // 修复 className.indexOf 错误
-          const originalIndexOf = String.prototype.indexOf;
-          String.prototype.indexOf = function(searchValue, fromIndex) {
-            if (this === null || this === undefined) {
-              return -1;
-            }
-            return originalIndexOf.call(this, searchValue, fromIndex);
-          };
-          
-          // 修复 Element.prototype.className 的问题
-          const originalClassName = Object.getOwnPropertyDescriptor(Element.prototype, 'className');
-          if (originalClassName) {
-            Object.defineProperty(Element.prototype, 'className', {
-              get: function() {
-                return this.getAttribute('class') || '';
-              },
-              set: function(value) {
-                this.setAttribute('class', value || '');
-              }
-            });
-          }
-          
-          // 全局错误捕获
-          window.addEventListener('error', function(event) {
-            if (event.error && event.error.message && event.error.message.includes('className.indexOf')) {
-              event.preventDefault();
-              console.warn('已修复 className.indexOf 错误');
-              return false;
-            }
-          });
-
-          if (import.meta.env.DEV) {
-            console.log('🛡️ 全局错误处理已启用');
-          }
-        }
-      })();
-    </script> -->
 
     <!-- 🎬 动画系统 - 使用专用组件 -->
     <AnimationSystem 
@@ -576,6 +500,95 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
+
+    <!-- 全局图片加载失败占位图回退，不创建新文件 -->
+    <script>
+      // @ts-nocheck
+      (function () {
+        var PLACEHOLDER_PATH = "/images/placeholder.webp";
+
+        /**
+         * @param {HTMLImageElement} img
+         */
+        function applyFallback(img) {
+          if (!img || img.dataset.fallbackApplied === "1") return;
+          if ((img.currentSrc || img.src || "").indexOf(PLACEHOLDER_PATH) !== -1) return;
+          img.dataset.fallbackApplied = "1";
+          img.srcset = "";
+          img.sizes = "";
+          img.loading = img.getAttribute("loading") || "lazy";
+          img.decoding = img.getAttribute("decoding") || "async";
+          img.src = PLACEHOLDER_PATH;
+        }
+
+        /**
+         * @param {Event} e
+         */
+        function onError(e) {
+          var target = e && e.target;
+          if (target instanceof HTMLImageElement) {
+            applyFallback(target);
+          }
+        }
+
+        /**
+         * @param {HTMLImageElement} img
+         */
+        function prepare(img) {
+          if (!img) return;
+          img.removeEventListener("error", onError);
+          img.addEventListener("error", onError, { once: true });
+          // 立即检查已经加载完成但尺寸为0或缺少src的情况
+          if ((!img.getAttribute("src") || (img.complete && img.naturalWidth === 0))) {
+            applyFallback(img);
+          }
+        }
+
+        function init() {
+          // 绑定现有图片
+          var imgs = document.querySelectorAll("img");
+          for (var i = 0; i < imgs.length; i++) prepare(imgs[i]);
+
+          // 监听后续动态添加的图片
+          var mo = new MutationObserver(function (mutations) {
+            for (var i = 0; i < mutations.length; i++) {
+              var m = mutations[i];
+              if (m.addedNodes && m.addedNodes.length) {
+                for (var j = 0; j < m.addedNodes.length; j++) {
+                  var node = m.addedNodes[j];
+                  if (!(node instanceof Element)) continue;
+                  if (node instanceof HTMLImageElement) prepare(node);
+                  var nestedImgs = node.querySelectorAll("img");
+                  for (var k = 0; k < nestedImgs.length; k++) prepare(/** @type {HTMLImageElement} */(nestedImgs[k]));
+                }
+              }
+            }
+          });
+          mo.observe(document.documentElement, { childList: true, subtree: true });
+
+          // 捕获捕捉不到的加载后错误（如某些解码失败场景）
+          document.addEventListener(
+            "load",
+            /**
+             * @param {Event} e
+             */
+            function (e) {
+              var t = e && e.target;
+              if (t instanceof HTMLImageElement && t.complete && t.naturalWidth === 0) {
+                applyFallback(t);
+              }
+            },
+            true
+          );
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init);
+        } else {
+          init();
+        }
+      })();
+    </script>
 
     <FooterSection />
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->

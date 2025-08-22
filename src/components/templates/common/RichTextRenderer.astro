@@ -67,7 +67,7 @@ function renderBlock(block: RichTextBlock): string {
     case 'image':
       // 统一通过图片处理管道解析为构建后 /assets/xxx-hash.webp
       const resolvedSrc = processImage(url || '');
-      const imgTag = `<img src="${resolvedSrc}" alt="${alt || ''}" style="max-width: 100%; height: auto; margin: 1em 0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />`;
+      const imgTag = `<img src="${resolvedSrc}" alt="${alt || ''}" loading="lazy" decoding="async" style="max-width: 100%; height: auto; margin: 1em 0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />`;
       return caption ? `<figure>${imgTag}<figcaption style="text-align: center; font-style: italic; color: #6b7280; margin-top: 0.5em;">${caption}</figcaption></figure>` : imgTag;
     
     case 'bold':

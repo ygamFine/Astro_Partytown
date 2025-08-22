@@ -125,8 +125,6 @@ async function main() {
   
   // 检查关键图片
   const criticalImages = [
-    'public/images/logo.png.webp',
-    'public/images/main-product.svg'
   ];
   
   let missingCount = 0;
@@ -147,7 +145,6 @@ async function main() {
     console.log('⚠️  Strapi图片目录不存在');
   }
   
-  // 不再维护本地优化目录（public/images/optimized）
   
   if (missingCount > 0) {
     console.log(`⚠️  发现 ${missingCount} 个缺失的关键图片`);

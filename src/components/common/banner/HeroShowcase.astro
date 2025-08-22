@@ -18,10 +18,16 @@ export interface Props {
 const { bannerData = [] } = Astro.props;
 
 // 处理Banner数据，确保图片能正确加载到 <Image>（需要模块或远程URL，而不是本地字符串路径）
-const mobileBanners = bannerData.map(banner => ({
-  ...banner,
-  processedImages: processImagesForAstro([banner.image])
-}));
+console.log('[HeroShowcase] bannerData size:', bannerData?.length ?? 0);
+const mobileBanners = bannerData.map(banner => {
+  const candidates = [banner?.mobileImage ?? banner?.image].filter(Boolean);
+  const processed = processImagesForAstro(candidates);
+  console.log('[HeroShowcase] item', { id: banner?.id, image: banner?.image, mobileImage: banner?.mobileImage, processedCount: processed?.length ?? 0 });
+  return {
+    ...banner,
+    processedImages: processed
+  };
+});
 
 // 使用public目录中的图片
 const mainProductImage = '/images/main-product.svg';

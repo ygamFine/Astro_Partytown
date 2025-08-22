@@ -252,15 +252,12 @@ export const themeConfig = {
     banner: {
       // 全局banner配置
       useGlobalImage: true, // 是否使用全局共用图片
-      globalBackgroundImage: '/images/banner.webp', // 全局共用的banner图片
       useGlobalHeight: true, // 是否使用全局统一高度
       globalHeight: 'large', // 全局统一的高度 'small' | 'medium' | 'large'
       
-      // 默认背景图片（当不使用全局图片时）
-              defaultBackgroundImage: '/images/banner.webp',
       
       // 默认高度配置（当不使用全局高度时）
-      defaultHeight: 'small', // 'small' | 'medium' | 'large'
+      defaultHeight: 'large', // 'small' | 'medium' | 'large'
       
       // 高度配置映射
       heightClasses: {
@@ -269,54 +266,65 @@ export const themeConfig = {
         large: 'py-64'
       },
       
+      // 通用Banner图片尺寸配置
+      imageSize: {
+        // 桌面端尺寸
+        desktop: {
+          width: 1920,
+          height: 600
+        },
+        // 移动端尺寸
+        mobile: {
+          width: 768,
+          height: 400
+        },
+        // 平板端尺寸
+        tablet: {
+          width: 1024,
+          height: 500
+        }
+      },
+      
       // 页面特定配置
       pages: {
         // 首页banner配置
         home: {
-          backgroundImage: '/images/banner.webp',
           height: 'large',
           background: 'image'
         },
         // 产品页banner配置
         products: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         },
         // 新闻页banner配置
         news: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         },
         // 案例页banner配置
         cases: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         },
         // 关于我们页banner配置
         about: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         },
         // 联系我们页banner配置
         contact: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         },
         // 搜索页banner配置
         search: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         },
         // 自定义页面banner配置
         dynamic: {
-          backgroundImage: '/images/banner.webp',
-          height: 'medium',
+          height: 'large',
           background: 'image'
         }
       },
@@ -327,7 +335,6 @@ export const themeConfig = {
         
         // 获取基础配置
         let baseConfig = {
-          backgroundImage: themeConfig.layout.banner.defaultBackgroundImage,
           height: themeConfig.layout.banner.defaultHeight,
           background: 'image'
         };

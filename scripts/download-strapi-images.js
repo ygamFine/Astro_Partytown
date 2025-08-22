@@ -13,7 +13,10 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import sharp from 'sharp';
 // 复用通用 Strapi 客户端（仅封装 HTTP 层）
-import { getProducts, getNews, getCases, getBannerSetting } from '../src/lib/strapiClient.js';
+import { STRAPI_STATIC_URL, STRAPI_STATIC_URL_NEW } from '../src/lib/strapiClient.js';
+import { getBannerData, getCommonBannerData, getProducts, getNews, getCases } from '../src/lib/strapi.js';
+// 统一复用高层 API 获取语言列表，避免重复实现
+import { getSupportedLanguages as fetchSupportedLanguages } from '../src/lib/strapi.js';
 
 const execAsync = promisify(exec);
 
@@ -24,10 +27,7 @@ config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 从环境变量获取配置
-const STRAPI_STATIC_URL = process.env.STRAPI_STATIC_URL;
-const STRAPI_STATIC_URL_NEW = process.env.STRAPI_STATIC_URL_NEW;
-const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+// 从客户端导出的常量中获取配置（避免与其它模块重复定义）
 
 // 下载到源码资产目录，便于打包进 _astro
 const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'src/assets/strapi';
@@ -37,36 +37,7 @@ const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'src/assets/strapi';
 // 从环境变量获取启用的语言，如果没有设置则从API获取
 let ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
 
-// 如果没有设置环境变量，从Strapi API获取支持的语言
-async function getSupportedLanguages() {
-  try {
-    const response = await fetch(`${STRAPI_STATIC_URL}/api/i18n/locales`, {
-      headers: {
-        'Authorization': `Bearer ${STRAPI_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      const rawList = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
-
-      const languages = rawList
-        .map((item) => {
-          const code = item?.code || item?.attributes?.code || item?.id || item?.locale || null;
-          return code;
-        })
-        .filter(Boolean);
-
-      return languages;
-    }
-  } catch (error) {
-    console.log('⚠️  获取语言列表失败:', error.message);
-  }
-
-  // 如果API失败，使用默认语言列表
-  return ['en', 'zh-CN', 'ja', 'de', 'fr', 'ar', 'es', 'it', 'pt-pt', 'nl', 'pl', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ko', 'tr'];
-}
+// 如果没有设置环境变量，从统一 API 获取支持的语言
 
 
 /**
@@ -367,7 +338,7 @@ async function downloadAllImages() {
 
   // 如果没有设置语言列表，从API获取
   if (ENABLED_LOCALES.length === 0) {
-    ENABLED_LOCALES = await getSupportedLanguages();
+    ENABLED_LOCALES = (await fetchSupportedLanguages()).map(l => l.code);
   }
 
   const allImageUrls = new Set();
@@ -376,16 +347,16 @@ async function downloadAllImages() {
   // 获取所有语言的数据（带分页）
   for (const locale of ENABLED_LOCALES) {
     try {
-      // 产品（全量分页）
-      const productsData = await getProducts(locale);
+      // 产品（统一接口，原始结构 + 全量分页）
+      const productsData = await getProducts({ locale, paginate: 'all', mode: 'raw' });
       extractImageUrls(productsData).forEach(url => allImageUrls.add(url));
 
-      // 新闻（全量分页）
-      const newsData = await getNews(locale);
+      // 新闻（统一接口，原始结构 + 全量分页）
+      const newsData = await getNews({ locale, paginate: 'all', mode: 'raw' });
       extractImageUrls(newsData).forEach(url => allImageUrls.add(url));
 
-      // 案例（全量分页）
-      const casesData = await getCases(locale);
+      // 案例（统一接口，原始结构 + 全量分页）
+      const casesData = await getCases({ locale, paginate: 'all', mode: 'raw' });
       extractImageUrls(casesData).forEach(url => allImageUrls.add(url));
     } catch (error) {
       // 静默处理错误
@@ -394,9 +365,9 @@ async function downloadAllImages() {
 
   // Banner设置（不需要分页，全局获取一次）
   try {
-    const bannerJson = await getBannerSetting();
-    if (bannerJson) {
-      const bannerUrls = extractImageUrls(bannerJson);
+    const banners = await getBannerData();
+    if (banners && Array.isArray(banners)) {
+      const bannerUrls = extractImageUrls({ data: banners });
       console.log('📊 Banner 中提取到', bannerUrls.length, '个图片 URL');
       bannerUrls.forEach(url => allImageUrls.add(url));
     }

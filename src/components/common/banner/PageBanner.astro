@@ -1,5 +1,7 @@
 ---
 import { Image } from 'astro:assets';
+import { getCommonBannerData } from '../../../lib/strapi.js';
+import { processImagesForAstro } from '../../../lib/imageProcessor.js';
 import { themeConfig } from '../../../config/theme.js';
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
   pageType?: string;
   showText?: boolean;
   showOverlay?: boolean;
+  useStrapiBackground?: boolean; // 新增：是否使用Strapi通用banner作为背景
 }
 
 const {
@@ -31,23 +34,44 @@ const {
   className = '',
   pageType,
   showText = true,
-  showOverlay = true
+  showOverlay = true,
+  useStrapiBackground = false
 } = Astro.props;
 
-// 从主题配置获取banner配置
-const bannerConfig = pageType ? themeConfig.layout.banner.getPageBannerConfig(pageType) : {
-  backgroundImage: themeConfig.layout.banner.defaultBackgroundImage,
-  height: themeConfig.layout.banner.defaultHeight,
-  background: 'image'
-};
+// 先初始化配置相关的变量
+// 从配置文件获取高度配置，优先级：props > 全局配置 > 默认配置
+const finalHeight = (height || 
+  (themeConfig.layout.banner.useGlobalHeight ? themeConfig.layout.banner.globalHeight : themeConfig.layout.banner.defaultHeight)) as 'small' | 'medium' | 'large';
 
-// 使用主题配置或props中的值
-const finalBackground = background || bannerConfig.background;
-const finalBackgroundImage = backgroundImage || bannerConfig.backgroundImage;
-const finalHeight = (height || bannerConfig.height) as 'small' | 'medium' | 'large';
-
-// 高度配置
+// 使用配置文件中的高度配置
 const heightClasses = themeConfig.layout.banner.heightClasses;
+
+// 获取通用banner背景图（如果启用）
+let strapiBackgroundImage = null;
+if (useStrapiBackground) {
+  try {
+    const commonBanners = await getCommonBannerData();
+    if (commonBanners.length > 0) {
+      // 使用第一个通用banner作为背景图，并通过 processImagesForAstro 处理
+      const rawImage = commonBanners[0].image;
+      const processedImages = processImagesForAstro([rawImage].filter(Boolean));
+      strapiBackgroundImage = processedImages.length > 0 ? processedImages[0] : rawImage;
+      console.log('[PageBanner] 使用Strapi通用banner背景:', rawImage, '->', strapiBackgroundImage);
+      console.log('[PageBanner] 配置信息:', {
+        height: finalHeight,
+        useGlobalHeight: themeConfig.layout.banner.useGlobalHeight,
+        globalHeight: themeConfig.layout.banner.globalHeight,
+        defaultHeight: themeConfig.layout.banner.defaultHeight
+      });
+    }
+  } catch (error) {
+    console.warn('[PageBanner] 获取Strapi背景图失败:', error);
+  }
+}
+
+// 使用props中的值，优先使用Strapi背景图
+const finalBackground = background || 'image';
+const finalBackgroundImage = strapiBackgroundImage || backgroundImage;
 
 // 文本对齐配置
 const textAlignClasses = {
@@ -56,54 +80,126 @@ const textAlignClasses = {
   right: 'text-right'
 };
 
-// 背景样式
+// 背景样式 - 去掉 bg-cover 等背景图相关样式
 const getBackgroundStyle = () => {
   if (finalBackground === 'gradient') {
     return `bg-gradient-to-r ${gradientFrom} ${gradientTo}`;
-  } else if (finalBackground === 'image' && finalBackgroundImage) {
-    return `bg-cover bg-center bg-no-repeat`;
+  } else if (finalBackground === 'image') {
+    return 'relative'; // 仅设置相对定位，让 Image 组件处理图片显示
   } else {
     return backgroundColor;
   }
 };
 
 const backgroundStyle = getBackgroundStyle();
+
+// 判断是否需要显示图片
+const shouldShowImage = finalBackground === 'image' && finalBackgroundImage;
+
+// 从配置文件获取图片尺寸
+const imageSize = themeConfig.layout.banner.imageSize.desktop;
 ---
 
 <div 
-  class={`${backgroundStyle} ${showText ? 'text-white' : ''} ${heightClasses[finalHeight]} ${className} ${showOverlay ? 'show-overlay' : ''}`}
-  style={finalBackground === 'image' && finalBackgroundImage ? `background-image: url(${finalBackgroundImage})` : ''}
+  class={`${backgroundStyle} ${showText ? 'text-white' : ''} ${heightClasses[finalHeight]} ${className} ${showOverlay ? 'show-overlay' : ''} banner-container`}
 >
+  {/* 使用合适的组件显示背景图 */}
+  {shouldShowImage && (
+    typeof finalBackgroundImage === 'string' ? (
+      <img 
+        src={finalBackgroundImage}
+        alt={title}
+        width={imageSize.width.toString()}
+        height={imageSize.height.toString()}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="banner-bg-image"
+        style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+      />
+    ) : (
+      <Image 
+        src={finalBackgroundImage}
+        alt={title}
+        width={imageSize.width}
+        height={imageSize.height}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="banner-bg-image"
+        style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
+      />
+    )
+  )}
+  
+  {/* 遮罩层 */}
+  {shouldShowImage && showOverlay && (
+    <div class="banner-overlay"></div>
+  )}
+  
+  {/* 内容层 */}
   {showText && (
-    <div class="container mx-auto px-4">
-      <div class={textAlignClasses[textAlign]}>
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
-          {title}
-        </h1>
-        {subtitle && (
-          <p class="text-xl text-red-100 max-w-2xl mx-auto">
-            {subtitle}
-          </p>
-        )}
+    <div class="banner-content">
+      <div class="container mx-auto px-4">
+        <div class={textAlignClasses[textAlign]}>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
+            {title}
+          </h1>
+          {subtitle && (
+            <p class="text-xl text-red-100 max-w-2xl mx-auto">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   )}
 </div>
 
 <style>
-  /* 岛屿化组件的样式隔离 */
+  /* Banner 容器样式 */
+  .banner-container {
+    @apply relative overflow-hidden;
+    position: relative;
+  }
+  
+  /* 背景图片样式 */
+  .banner-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 1;
+  }
+  
+  /* 遮罩层样式 */
+  .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+  }
+  
+  /* 内容层样式 */
+  .banner-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* 全局样式覆盖 */
   :global(.page-banner) {
     @apply relative overflow-hidden;
   }
-  
-  /* 背景图片遮罩 - 只在showOverlay为true时显示 */
-  .page-banner[style*="background-image"].show-overlay::before {
-    content: '';
-    @apply absolute inset-0 bg-black;
-    opacity: 0.5;
-  }
-  
-  .page-banner[style*="background-image"].show-overlay > div {
-    @apply relative z-10;
-  }
 </style> 
+

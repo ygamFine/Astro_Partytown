@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import StaticMenu from './StaticMenu.astro';
 import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
+import { getLangFromHostname, langToSubdomain, subdomainToLang } from '../../../lib/subdomainUtils.js';
 import { getSupportedLanguages } from '../../../lib/strapi.js';
 
 // 使用public目录中的图片
@@ -11,36 +12,7 @@ const logoImage = '/images/logo.png.webp';
 // 获取当前语言：优先路径，其次子域名
 const currentPath = Astro.url.pathname;
 const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = pathLangMatch ? pathLangMatch[1] : (() => {
-  const hostname = Astro.url.hostname;
-  const subdomainToLang = {
-    'zh': 'zh-CN',
-    'zh-hant': 'zh-Hant',
-    'de': 'de',
-    'ja': 'ja',
-    'fr': 'fr',
-    'ar': 'ar',
-    'es': 'es',
-    'it': 'it',
-    'pt': 'pt-pt',
-    'nl': 'nl',
-    'pl': 'pl',
-    'ru': 'ru',
-    'th': 'th',
-    'id': 'id',
-    'vi': 'vi',
-    'ms': 'ms',
-    'ml': 'ml',
-    'my': 'my',
-    'hi': 'hi',
-    'ko': 'ko',
-    'tr': 'tr'
-  } as Record<string, string>;
-  for (const [sub, lang] of Object.entries(subdomainToLang)) {
-    if (hostname.startsWith(`${sub}.`)) return lang;
-  }
-  return 'en';
-})();
+let currentLang = pathLangMatch ? pathLangMatch[1] : getLangFromHostname(Astro.url.hostname);
 
 // 生成带语言的首页链接
 const homeUrl = buildUrl(currentLang, '/');
@@ -55,7 +27,7 @@ try {
 }
 ---
 <!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
-<header class="relative z-50" data-pagefind-ignore>
+<header class="relative z-50" data-pagefind-ignore style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
   <!-- Main Header Row (Will scroll with page) -->
   <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white">
   <div class="container mx-auto px-4">
@@ -145,14 +117,14 @@ try {
         <!-- Mobile - Right side icons and menu button -->
         <div class="md:hidden flex items-center space-x-4">
           <!-- Search Icon -->
-          <button class="p-2 text-white focus:outline-none">
+          <button id="mobile-search-button" class="p-2 text-white focus:outline-none" aria-label="搜索">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </button>
           
           <!-- Globe Icon -->
-          <button class="p-2 text-white focus:outline-none">
+          <button id="mobile-language-button" class="p-2 text-white focus:outline-none" aria-label="选择语言">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
             </svg>
@@ -286,6 +258,8 @@ try {
       mobileMenu = document.getElementById('mobile-menu');
       openIcon = document.getElementById('menu-open-icon');
       closeIcon = document.getElementById('menu-close-icon');
+      const mobileSearchButton = document.getElementById('mobile-search-button');
+      const mobileLangButton = document.getElementById('mobile-language-button');
       
       if (!mobileMenuButton || !mobileMenu) return;
 
@@ -307,6 +281,42 @@ try {
       }, 100);
 
       mobileMenuButton.addEventListener('click', toggleMenu);
+
+      // 移动端搜索按钮：跳转到搜索页（按当前语言）
+      if (mobileSearchButton) {
+        mobileSearchButton.addEventListener('click', function(e){
+          e.preventDefault();
+          // 解析当前语言（路径优先，其次子域名）
+          const hostname = window.location.hostname;
+          const pathLang = (window.location.pathname.split('/')[1] || '');
+          const subToLang = { 'zh':'zh-CN','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
+          let lang = pathLang || 'en';
+          const first = hostname.split('.')[0];
+          if (!pathLang && subToLang[first]) lang = subToLang[first];
+          const isDev = hostname === 'localhost' || hostname === '127.0.0.1';
+          const url = isDev ? `/${lang}/search` : `/search`;
+          window.location.href = url;
+        });
+      }
+
+      // 移动端语言按钮：展开菜单并聚焦语言下拉
+      if (mobileLangButton) {
+        mobileLangButton.addEventListener('click', function(e){
+          e.preventDefault();
+          const isHidden = mobileMenu.classList.contains('hidden');
+          if (isHidden) {
+            mobileMenu.classList.remove('hidden');
+            mobileMenuButton.setAttribute('aria-expanded','true');
+            if (openIcon && closeIcon) { openIcon.classList.add('hidden'); closeIcon.classList.remove('hidden'); }
+          }
+          // 滚动到语言选择器
+          const selector = document.getElementById('mobile-language-selector');
+          if (selector) {
+            selector.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(()=>{ try { if (typeof selector.focus === 'function') selector.focus(); } catch(_){} }, 300);
+          }
+        });
+      }
       
       // 点击链接关闭菜单 - 使用事件委托
       mobileMenu.addEventListener('click', (e) => {
@@ -325,77 +335,13 @@ try {
 
     // 优化的滚动头部处理
     function initScrollHeader() {
+      // 固定头部：不再根据滚动切换显示，确保始终固定在页面顶部
       mainHeader = document.getElementById('main-header');
       navMenu = document.getElementById('nav-menu');
-      
       if (!mainHeader || !navMenu) return;
-      
-      lastScrollY = window.scrollY;
-      const headerHeight = mainHeader.offsetHeight;
-      
-      // 节流的滚动处理函数
-      const handleScroll = throttle(() => {
-        if (!mainHeader || !navMenu) return;
-        
-        const currentScrollY = window.scrollY;
-        
-        // 避免不必要的计算
-        if (Math.abs(currentScrollY - lastScrollY) < 5) return;
-        
-        // 批量DOM更新
-        requestAnimationFrame(() => {
-          if (currentScrollY > headerHeight && !isMenuFixed) {
-            // 固定菜单
-            Object.assign(navMenu.style, {
-              transition: 'none',
-              position: 'fixed',
-              top: '0',
-              left: '0',
-              right: '0',
-              zIndex: '50',
-              width: '100%',
-              transform: 'translateY(-100%)'
-            });
-            
-            mainHeader.style.display = 'none';
-            
-            // 触发滑入动画
-            navMenu.offsetHeight; // 强制重绘
-            navMenu.style.transition = 'transform 0.3s ease-in-out';
-            navMenu.style.transform = 'translateY(0)';
-            
-            isMenuFixed = true;
-          } else if (currentScrollY <= headerHeight && isMenuFixed) {
-            // 恢复正常布局
-            mainHeader.style.display = 'block';
-            
-            Object.assign(navMenu.style, {
-              transition: 'none',
-              position: 'relative',
-              top: 'auto',
-              left: 'auto',
-              right: 'auto',
-              width: 'auto',
-              transform: 'translateY(0)'
-            });
-            
-            // 恢复过渡
-            requestAnimationFrame(() => {
-              navMenu.style.transition = 'transform 0.3s ease-in-out';
-            });
-            
-            isMenuFixed = false;
-          }
-        });
-        
-        lastScrollY = currentScrollY;
-      }, 16); // 约60fps
-
-      // 优化的滚动监听
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      
-      // 初始状态检查
-      handleScroll();
+      // 统一保持相对定位，由外层 header 固定
+      mainHeader.style.display = 'block';
+      Object.assign(navMenu.style, { position: 'relative', top: 'auto', left: 'auto', right: 'auto', transform: 'none' });
     }
 
     // 页面可见性优化
@@ -417,32 +363,9 @@ try {
         let currentLang = pathLangMatch ? pathLangMatch[1] : null;
         if (!currentLang) {
           const hostname = window.location.hostname;
-          const subdomainToLang = {
-            'zh': 'zh-CN',
-            'zh-hant': 'zh-Hant',
-            'de': 'de',
-            'ja': 'ja',
-            'fr': 'fr',
-            'ar': 'ar',
-            'es': 'es',
-            'it': 'it',
-            'pt': 'pt-pt',
-            'nl': 'nl',
-            'pl': 'pl',
-            'ru': 'ru',
-            'th': 'th',
-            'id': 'id',
-            'vi': 'vi',
-            'ms': 'ms',
-            'ml': 'ml',
-            'my': 'my',
-            'hi': 'hi',
-            'ko': 'ko',
-            'tr': 'tr'
-          };
-          for (const [sub, lang] of Object.entries(subdomainToLang)) {
-            if (hostname.startsWith(`${sub}.`)) { currentLang = lang; break; }
-          }
+          const map = { 'zh':'zh-CN','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
+          const firstLabel = hostname.split('.')[0];
+          currentLang = map[firstLabel] || 'en';
           if (!currentLang) currentLang = 'en';
         }
         
@@ -467,7 +390,7 @@ try {
             window.open(newPath, '_blank');
           } else {
             // 生产环境：构建子域名URL，总是跳转到首页
-            const subdomain = selectedLang === 'zh-CN' ? 'zh' : selectedLang === 'zh-Hant' ? 'zh-hant' : selectedLang;
+            const subdomain = (function(x){const m={ 'zh-CN':'zh','zh-Hant':'zh-hant'};return m[x]||x;})(selectedLang);
             const currentDomain = window.location.hostname;
             const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
             const newUrl = `https://${subdomain}.${baseDomain}`;

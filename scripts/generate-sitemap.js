@@ -6,6 +6,8 @@
  */
 
 import { generateFullSitemap, generateLanguageSpecificSitemap } from '../src/lib/sitemapUtils.js';
+import { langToSubdomain } from '../src/lib/subdomainUtils.js';
+import { resolveBaseDomain } from '../src/lib/domainUtils.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -31,16 +33,7 @@ async function generateSitemap() {
       const langSitemap = generateLanguageSpecificSitemap(sitemapData.pages, lang);
       
       // 根据语言确定子域名
-      let subdomain;
-      if (lang === 'zh-CN') {
-        subdomain = 'zh';
-      } else if (lang === 'zh-Hant') {
-        subdomain = 'zh-hant';
-      } else if (lang === 'pt-pt') {
-        subdomain = 'pt';
-      } else {
-        subdomain = lang;
-      }
+      const subdomain = langToSubdomain(lang);
       
       const langSitemapPath = path.join(distDir, `${subdomain}`, 'sitemap.xml');
       const subdomainDir = path.dirname(langSitemapPath);
@@ -52,10 +45,10 @@ async function generateSitemap() {
 
     // Generate sitemap index
     const lastmod = new Date().toISOString();
-    const toSub = (lang) => lang === 'zh-CN' ? 'zh' : (lang === 'zh-Hant' ? 'zh-hant' : (lang === 'pt-pt' ? 'pt' : lang));
+    const baseDomain = resolveBaseDomain();
     const sitemapIndexEntries = languages.map((lang) => {
-      const sub = toSub(lang);
-      return `  <sitemap>\n    <loc>https://${sub}.aihuazhi.cn/sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
+      const sub = langToSubdomain(lang);
+      return `  <sitemap>\n    <loc>https://${sub}.${baseDomain}/sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
     }).join('\n');
     const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapIndexEntries}\n</sitemapindex>`;
     const sitemapIndexPath = path.join(distDir, 'sitemap-index.xml');
@@ -69,16 +62,7 @@ async function generateSitemap() {
 
       // 复制语言特定的站点地图
       for (const lang of languages) {
-        let subdomain;
-        if (lang === 'zh-CN') {
-          subdomain = 'zh';
-        } else if (lang === 'zh-Hant') {
-          subdomain = 'zh-hant';
-        } else if (lang === 'pt-pt') {
-          subdomain = 'pt';
-        } else {
-          subdomain = lang;
-        }
+        const subdomain = langToSubdomain(lang);
         const sourcePath = path.join(distDir, `${subdomain}`, 'sitemap.xml');
         const targetDir = path.join(vercelOutputDir, `${subdomain}`);
         const targetPath = path.join(targetDir, 'sitemap.xml');

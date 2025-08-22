@@ -5,7 +5,7 @@
 
 import { generateImageHash } from '../utils/hashUtils.js';
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, STRAPI_STATIC_URL_NEW, fetchJson } from './strapiClient.js';
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, STRAPI_STATIC_URL_NEW, fetchJson, fetchAllPaginated } from './strapiClient.js';
 
 // 加载图片映射文件的通用函数
 async function loadImageMappingWithCreate() {
@@ -154,9 +154,37 @@ export async function getMenus(locale = 'en') {
  * 获取产品列表 (SSG模式，构建时调用)
  */
 export async function getProducts(locale = 'en') {
+  // 兼容：支持 options 对象形式
+  const isOptionsObject = locale && typeof locale === 'object';
+  const options = isOptionsObject ? locale : { locale };
+  const {
+    locale: optLocale = 'en',
+    paginate = 'page', // 'page' | 'all'
+    page = 1,
+    pageSize = 24,
+    mode = 'shaped', // 'raw' | 'shaped'
+    mapImages = true
+  } = options;
+
+  // 构建基础 URL（集合接口）
+  const baseUrl = `${STRAPI_STATIC_URL}/api/products?locale=${optLocale}&populate=*`;
+
+  if (mode === 'raw') {
+    if (paginate === 'all') {
+      return await fetchAllPaginated(baseUrl);
+    } else {
+      const url = `${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+      return await fetchJson(url).catch(() => ({ data: [] }));
+    }
+  }
+
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/products?locale=${locale}&populate=*`);
-    const products = data.data?.map(item => ({
+    // shaped 模式
+    const json = (paginate === 'all')
+      ? await fetchAllPaginated(baseUrl)
+      : await fetchJson(`${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`);
+
+    const products = json.data?.map(item => ({
       id: item.id,
       slug: item.slug,
       name: item.Title,
@@ -181,9 +209,9 @@ export async function getProducts(locale = 'en') {
       
       if (product.image && Array.isArray(product.image) && product.image.length > 0) {
         // 处理图片数组，提取URL并映射到本地缓存
-        const processedImageUrls = product.image
-          .map(img => processImageWithMapping(img, imageMapping))
-          .filter(img => img !== null);
+        const processedImageUrls = mapImages
+          ? product.image.map(img => processImageWithMapping(img, imageMapping)).filter(img => img !== null)
+          : product.image;
         
         if (processedImageUrls.length > 0) {
           processedImages = processedImageUrls;
@@ -329,9 +357,35 @@ export async function getProduct(slugOrId, locale = 'en') {
  * 获取新闻列表 (SSG模式，构建时调用)
  */
 export async function getNews(locale = 'en') {
+  // 兼容：支持 options 对象形式
+  const isOptionsObject = locale && typeof locale === 'object';
+  const options = isOptionsObject ? locale : { locale };
+  const {
+    locale: optLocale = 'en',
+    paginate = 'page',
+    page = 1,
+    pageSize = 24,
+    mode = 'shaped',
+    mapImages = true
+  } = options;
+
+  const baseUrl = `${STRAPI_STATIC_URL}/api/news?locale=${optLocale}&populate=*`;
+
+  if (mode === 'raw') {
+    if (paginate === 'all') {
+      return await fetchAllPaginated(baseUrl);
+    } else {
+      const url = `${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+      return await fetchJson(url).catch(() => ({ data: [] }));
+    }
+  }
+
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=*`);
-    const news = data.data?.map(item => ({
+    const json = (paginate === 'all')
+      ? await fetchAllPaginated(baseUrl)
+      : await fetchJson(`${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`);
+
+    const news = json.data?.map(item => ({
       id: item.id,
       slug: item.slug,
       title: item.title,
@@ -362,7 +416,7 @@ export async function getNews(locale = 'en') {
             const cachedImage = imageMapping.strapiImages?.find(cached => 
               cached.includes(urlHash) || cached.includes(newsItem.image.split('/').pop())
             );
-            processedImage = cachedImage || newsItem.image;
+            processedImage = mapImages ? (cachedImage || newsItem.image) : newsItem.image;
           } else {
             processedImage = newsItem.image;
           }
@@ -399,7 +453,7 @@ export async function getNews(locale = 'en') {
               return false;
             });
             
-            processedImage = cachedImage || originalUrl;
+            processedImage = mapImages ? (cachedImage || originalUrl) : originalUrl;
           } else {
             processedImage = originalUrl;
           }
@@ -522,10 +576,35 @@ export async function getNewsById(id, locale = 'en') {
  * 获取案例列表 (SSG模式，构建时调用)
  */
 export async function getCases(locale = 'en') {
+  // 兼容：支持 options 对象形式
+  const isOptionsObject = locale && typeof locale === 'object';
+  const options = isOptionsObject ? locale : { locale };
+  const {
+    locale: optLocale = 'en',
+    paginate = 'page',
+    page = 1,
+    pageSize = 24,
+    mode = 'shaped',
+    mapImages = true
+  } = options;
+
+  const baseUrl = `${STRAPI_STATIC_URL}/api/case?locale=${optLocale}&populate=*`;
+
+  if (mode === 'raw') {
+    if (paginate === 'all') {
+      return await fetchAllPaginated(baseUrl);
+    } else {
+      const url = `${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+      return await fetchJson(url).catch(() => ({ data: [] }));
+    }
+  }
+
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/case?locale=${locale}&populate=*`).catch(() => null);
-    if (!data) return [];
-    const cases = data.data?.map(item => ({
+    const json = (paginate === 'all')
+      ? await fetchAllPaginated(baseUrl)
+      : await fetchJson(`${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`).catch(() => null);
+    if (!json) return [];
+    const cases = json.data?.map(item => ({
       id: item.id,
       slug: item.slug,
       title: item.title,
@@ -561,7 +640,7 @@ export async function getCases(locale = 'en') {
             const cachedImage = imageMapping.strapiImages?.find(cached => 
               cached.includes(urlHash) || cached.includes(caseItem.image.split('/').pop())
             );
-            processedImage = cachedImage || caseItem.image;
+            processedImage = mapImages ? (cachedImage || caseItem.image) : caseItem.image;
           } else {
             processedImage = caseItem.image;
           }
@@ -598,7 +677,7 @@ export async function getCases(locale = 'en') {
               return false;
             });
             
-            processedImage = cachedImage || originalUrl;
+            processedImage = mapImages ? (cachedImage || originalUrl) : originalUrl;
           } else {
             processedImage = originalUrl;
           }
@@ -727,31 +806,52 @@ export async function getCase(id, locale = 'en') {
 /**
  * 获取移动端底部菜单数据 (SSG模式，构建时调用)
  */
-export async function getMobileBottomMenu() {
-  try {
-    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/shoujiduandibucaidan?populate=*`;
-    const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
-    
-    // 提取菜单项数据
-    const menuItems = data.data?.shoujiduandibucaidan || [];
-    
-    // 转换为标准格式
-    const processedMenuItems = menuItems.map(item => ({
-      id: item.id,
-      content: item.field_neirong,
-      customLink: item.field_zidingyilianjie,
-      // 根据内容判断菜单类型
-      type: getMenuType(item.field_neirong),
-      icon: getMenuIcon(item.field_neirong)
-    }));
+export async function getMobileBottomMenu(locale = 'en') {
+  // 按语言缓存（进程内共享），并发去重
+  globalThis.__mobileBottomMenuCacheMap = globalThis.__mobileBottomMenuCacheMap || new Map();
+  globalThis.__mobileBottomMenuPromiseMap = globalThis.__mobileBottomMenuPromiseMap || new Map();
 
-    return processedMenuItems;
-
-  } catch (error) {
-    console.error('获取移动端底部菜单失败:', error);
-    // 如果API调用失败，返回空数组，不写死任何数据
-    return [];
+  if (globalThis.__mobileBottomMenuCacheMap.has(locale)) {
+    return globalThis.__mobileBottomMenuCacheMap.get(locale);
   }
+  if (globalThis.__mobileBottomMenuPromiseMap.has(locale)) {
+    return await globalThis.__mobileBottomMenuPromiseMap.get(locale);
+  }
+
+  const fetchPromise = (async () => {
+    try {
+      // 若后端支持本地化，带上 locale 查询参数；不支持也不影响
+      const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/shoujiduandibucaidan?populate=all&locale=${locale}`;
+      const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
+      
+      // 提取菜单项数据
+      const menuItems = data.data?.shoujiduandibucaidan || [];
+      
+      // 转换为标准格式
+      const processedMenuItems = menuItems.map(item => ({
+        id: item.id,
+        content: item.field_neirong,
+        customLink: item.field_zidingyilianjie,
+        // 根据内容判断菜单类型
+        type: getMenuType(item.field_neirong),
+        icon: getMenuIcon(item.field_neirong)
+      }));
+
+      globalThis.__mobileBottomMenuCacheMap.set(locale, processedMenuItems);
+      return processedMenuItems;
+
+    } catch (error) {
+      console.error('获取移动端底部菜单失败:', error);
+      // 失败也缓存为空数组，避免构建期重复请求
+      globalThis.__mobileBottomMenuCacheMap.set(locale, []);
+      return [];
+    } finally {
+      globalThis.__mobileBottomMenuPromiseMap.delete(locale);
+    }
+  })();
+
+  globalThis.__mobileBottomMenuPromiseMap.set(locale, fetchPromise);
+  return await fetchPromise;
 }
 
 /**
@@ -799,15 +899,58 @@ function getMenuIcon(content) {
 
 
 /**
- * 获取Banner数据 (SSG模式，构建时调用)
- * 从用户提供的API获取Banner轮播图数据
+ * 处理单个Banner项目的辅助函数
  */
-export async function getBannerData() {
+function processBannerItem(banner, imageMapping, type, index) {
+  if (!banner) return null;
+  
+  // 桌面端图片
+  let desktopOriginal = banner?.field_tupian?.media?.url ?? banner?.field_tupian?.url ?? null;
+  // 移动端图片（若提供则优先使用）
+  let mobileOriginal = banner?.field_shouji?.media?.url ?? banner?.field_shouji?.url ?? null;
+
+  // 兼容数组结构（若字段为数组取第一项）
+  if (!desktopOriginal && Array.isArray(banner?.field_tupian)) {
+    const first = banner?.field_tupian?.find?.(Boolean);
+    desktopOriginal = first?.media?.url ?? first?.url ?? null;
+  }
+  if (!mobileOriginal && Array.isArray(banner?.field_shouji)) {
+    const firstM = banner?.field_shouji?.find?.(Boolean);
+    mobileOriginal = firstM?.media?.url ?? firstM?.url ?? null;
+  }
+
+  // 使用通用映射函数，支持 '/uploads/' 或完整 URL
+  const imageDesktop = desktopOriginal
+    ? (processImageWithMapping({ url: desktopOriginal }, imageMapping) ?? desktopOriginal)
+    : '/images/placeholder.webp';
+  const imageMobile = mobileOriginal
+    ? (processImageWithMapping({ url: mobileOriginal }, imageMapping) ?? mobileOriginal)
+    : imageDesktop;
+  
+  return {
+    id: banner?.id || `${type}-${index}`,
+    name: banner?.field_mingcheng ?? `Banner${banner?.id ?? index}`,
+    description: banner?.field_miaoshu ?? '',
+    link: banner?.field_lianjiezhi ?? null,
+    image: imageDesktop, // 兼容旧字段：默认返回桌面图
+    mobileImage: imageMobile, // 新增：移动端专用图片
+    alt: banner?.field_tupian?.alt ?? banner?.field_mingcheng ?? `Banner${banner?.id ?? index}`,
+    type: type, // 新增：标识banner类型 'homepage' 或 'common'
+    source: type === 'homepage' ? 'field_shouyebanner' : 'field_tongyongbanner' // 新增：标识数据来源字段
+  };
+}
+
+/**
+ * 获取Banner数据 (SSG模式，构建时调用)
+ * 从用户提供的API获取Banner轮播图数据，支持首页banner和通用banner
+ * @param {string} filterType - 可选过滤类型：'homepage', 'common', 或 undefined(返回全部)
+ */
+export async function getBannerData(filterType = undefined) {
   try {
-    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate[field_shouyebanner][populate][field_tupian][populate]=*&populate[field_shouyebanner][populate][field_shouji][populate]=*`;
+    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate=all`;
     const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
     
-    if (!data.data || !data.data.field_shouyebanner) {
+    if (!data.data) {
       console.warn('Banner数据为空');
       return [];
     }
@@ -815,64 +958,74 @@ export async function getBannerData() {
     // 加载图片映射
     const imageMapping = await loadImageMappingWithCreate();
 
-    // 处理Banner数据
-    const banners = data.data.field_shouyebanner.map(banner => {
-      let imageUrl = '/images/placeholder.webp';
-      
-      if (banner.field_tupian && banner.field_tupian.media) {
-        const media = banner.field_tupian.media;
-        const originalUrl = media.url;
-        
-        if (originalUrl.startsWith('/uploads/')) {
-          // 这是Strapi的本地图片，尝试在缓存中找到对应的文件
-          const fileName = originalUrl.split('/').pop();
-          
-          // 尝试多种匹配方式
-          const cachedImage = imageMapping.strapiImages?.find(cached => {
-            // 1. 直接匹配文件名
-            if (cached.includes(fileName)) return true;
-            
-            // 2. 匹配hash
-            if (media.hash && cached.includes(media.hash)) return true;
-            
-            // 3. Base64编码匹配
-            try {
-              const encodedName = Buffer.from(fileName).toString('base64');
-              if (cached.includes(encodedName)) return true;
-              // 处理Base64填充字符
-              const encodedNameNoPadding = encodedName.replace(/=+$/, '');
-              if (cached.includes(encodedNameNoPadding)) return true;
-            } catch (e) {}
-            
-            // 4. Base64解码匹配
-            try {
-              const decodedName = Buffer.from(fileName, 'base64').toString();
-              if (cached.includes(decodedName)) return true;
-            } catch (e) {}
-            
-            return false;
-          });
-          
-          imageUrl = cachedImage || originalUrl;
-        } else {
-          imageUrl = originalUrl;
-        }
-      }
-      
-      return {
-        id: banner.id,
-        name: banner.field_mingcheng || `Banner${banner.id}`,
-        description: banner.field_miaoshu || '',
-        link: banner.field_lianjiezhi || null,
-        image: imageUrl,
-        alt: banner.field_tupian?.alt || banner.field_mingcheng || `Banner${banner.id}`
-      };
+    // 合并处理首页Banner和通用Banner数据
+    const shouyeBanners = data?.data?.field_shouyebanner ?? [];
+    const tongyongBanners = data?.data?.field_tongyongbanner ?? [];
+    
+    const allBanners = [...shouyeBanners, ...tongyongBanners];
+    
+    if (allBanners.length === 0) {
+      console.warn('没有找到任何Banner数据（首页或通用）');
+      return [];
+    }
+
+    // 处理Banner数据，同时标记来源
+    const banners = [];
+    
+    // 处理首页banners
+    shouyeBanners.forEach((banner, index) => {
+      const processed = processBannerItem(banner, imageMapping, 'homepage', index);
+      if (processed) banners.push(processed);
+    });
+    
+    // 处理通用banners
+    tongyongBanners.forEach((banner, index) => {
+      const processed = processBannerItem(banner, imageMapping, 'common', index);
+      if (processed) banners.push(processed);
     });
 
-    return banners;
+    // 根据过滤类型返回结果
+    const filteredBanners = filterType ? banners.filter(banner => banner.type === filterType) : banners;
+
+    try {
+      console.log(`[getBannerData] banners: ${banners.length}, filtered(${filterType || 'all'}): ${filteredBanners.length}`);
+      filteredBanners.slice(0, 5).forEach((b) => {
+        console.log('[getBannerData] item', {
+          id: b.id,
+          name: b.name,
+          image: b.image,
+          mobileImage: b.mobileImage,
+          type: b.type
+        });
+      });
+    } catch {}
+
+    return filteredBanners;
 
   } catch (error) {
     console.error('获取Banner数据失败:', error);
+    return [];
+  }
+}
+
+/**
+ * 获取通用Banner数据 (专门用于PageBanner组件)
+ * 直接调用 getBannerData 并过滤通用banner类型
+ */
+export async function getCommonBannerData() {
+  try {
+    // 直接使用过滤参数获取通用banner
+    const commonBanners = await getBannerData('common');
+    
+    console.log(`[getCommonBannerData] 通用banners: ${commonBanners.length}`);
+    if (commonBanners.length > 0) {
+      console.log('[getCommonBannerData] 第一个通用banner图片:', commonBanners[0]?.image);
+    }
+
+    return commonBanners;
+
+  } catch (error) {
+    console.error('获取通用Banner数据失败:', error);
     return [];
   }
 }
@@ -897,36 +1050,36 @@ export async function getHomepageContent() {
     return {
       // 产品展示区域数据
       productShowcase: {
-        title: homepageData.product_showcase?.title || 'PRODUCT SHOWCASE',
-        description: homepageData.product_showcase?.description || ''
+        title: homepageData?.product_showcase?.title ?? '',
+        description: homepageData?.product_showcase?.description ?? ''
       },
       
       // 公司介绍数据
       companyIntroduction: {
-        title: homepageData.company_introduction?.title || 'SHANDONG YONGAN CONSTRUCTION MACHINERY GROUP CO., LTD',
-        introduction: homepageData.company_introduction?.introduction || '',
+        title: homepageData?.company_introduction?.title ?? '',
+        introduction: homepageData?.company_introduction?.introduction ?? '',
         stats: {
-          incorporation: homepageData.company_introduction?.incorporation || '2001',
-          floorSpace: homepageData.company_introduction?.floorSpace || '60000',
-          exportingCountry: homepageData.company_introduction?.exportingCountry || '120+'
+          incorporation: homepageData?.company_introduction?.incorporation ?? '',
+          floorSpace: homepageData?.company_introduction?.floorSpace ?? '',
+          exportingCountry: homepageData?.company_introduction?.exportingCountry ?? ''
         },
-        buttonText: homepageData.company_introduction?.button_text || 'View all'
+        buttonText: homepageData?.company_introduction?.button_text ?? ''
       },
       
       // 热门推荐产品数据
       hotRecommendedProducts: {
-        title: homepageData.hot_recommended_products?.title || 'HOT RECOMMENDED PRODUCTS',
-        description: homepageData.hot_recommended_products?.description || ''
+        title: homepageData?.hot_recommended_products?.title ?? '',
+        description: homepageData?.hot_recommended_products?.description ?? ''
       },
       
       // 联系我们/客户需求数据
       contactUs: {
-        title: homepageData.contact_us?.title || 'MEET THE DIVERSE NEEDS OF DIFFERENT CUSTOMER GROUPS',
-        description: homepageData.contact_us?.description || '',
-        buttonText: homepageData.contact_us?.button_text || 'Contact us',
-        panoramicTitle: homepageData.contact_us?.panoramic_title || '360',
-        panoramicIntroduction: homepageData.contact_us?.panoramic_introduction || 'Click to enter Panoramic display',
-        panoramicUrl: homepageData.contact_us?.panoramic_url || null
+        title: homepageData?.contact_us?.title ?? '',
+        description: homepageData?.contact_us?.description ?? '',
+        buttonText: homepageData?.contact_us?.button_text ?? '',
+        panoramicTitle: homepageData?.contact_us?.panoramic_title ?? '',
+        panoramicIntroduction: homepageData?.contact_us?.panoramic_introduction ?? '',
+        panoramicUrl: homepageData?.contact_us?.panoramic_url ?? null
       },
       
       // 客户案例数据

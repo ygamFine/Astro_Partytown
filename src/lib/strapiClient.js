@@ -42,30 +42,6 @@ export async function fetchAllPaginated(endpoint) {
   return merged;
 }
 
-export async function getProducts(locale) {
-  const endpoint = `${STRAPI_STATIC_URL}/api/products?locale=${encodeURIComponent(locale)}&populate=*`;
-  return fetchAllPaginated(endpoint);
-}
-
-export async function getNews(locale) {
-  const endpoint = `${STRAPI_STATIC_URL}/api/news?locale=${encodeURIComponent(locale)}&populate=*`;
-  return fetchAllPaginated(endpoint);
-}
-
-export async function getCases(locale) {
-  const endpoint = `${STRAPI_STATIC_URL}/api/case?locale=${encodeURIComponent(locale)}&populate=*`;
-  return fetchAllPaginated(endpoint);
-}
-
-// BannerSetting 特殊：按你的要求使用独立地址，且无需鉴权
-export async function getBannerSetting() {
-  const url = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate[field_shouyebanner][populate][field_tupian][populate]=*`;
-  try {
-    // 若新端需要 Token，则改为 includeAuth: true, useNewToken: true
-    return await fetchJson(url, { includeAuth: !!STRAPI_TOKEN_NEW, useNewToken: true });
-  } catch {
-    return null;
-  }
-}
+// 保留底层 HTTP 工具与环境变量导出；业务层 Banner 使用 src/lib/strapi.js 的 getBannerData()
 
 
