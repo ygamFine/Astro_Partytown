@@ -51,21 +51,32 @@ let strapiBackgroundImage = null;
 if (useStrapiBackground) {
   try {
     const commonBanners = await getCommonBannerData();
-    if (commonBanners.length > 0) {
+    if (commonBanners && commonBanners.length > 0) {
       // 使用第一个通用banner作为背景图，并通过 processImagesForAstro 处理
       const rawImage = commonBanners[0].image;
-      const processedImages = processImagesForAstro([rawImage].filter(Boolean));
-      strapiBackgroundImage = processedImages.length > 0 ? processedImages[0] : rawImage;
-      console.log('[PageBanner] 使用Strapi通用banner背景:', rawImage, '->', strapiBackgroundImage);
-      console.log('[PageBanner] 配置信息:', {
-        height: finalHeight,
-        useGlobalHeight: themeConfig.layout.banner.useGlobalHeight,
-        globalHeight: themeConfig.layout.banner.globalHeight,
-        defaultHeight: themeConfig.layout.banner.defaultHeight
-      });
+      if (rawImage) {
+        const processedImages = processImagesForAstro([rawImage].filter(Boolean));
+        strapiBackgroundImage = processedImages.length > 0 ? processedImages[0] : rawImage;
+        console.log('[PageBanner] 使用Strapi通用banner背景:', rawImage, '->', strapiBackgroundImage);
+      }
+    } else {
+      console.warn('[PageBanner] 未获取到Strapi通用banner数据，将使用默认配置');
     }
+    
+    console.log('[PageBanner] 配置信息:', {
+      height: finalHeight,
+      useGlobalHeight: themeConfig.layout.banner.useGlobalHeight,
+      globalHeight: themeConfig.layout.banner.globalHeight,
+      defaultHeight: themeConfig.layout.banner.defaultHeight,
+      strapiBackgroundAvailable: !!strapiBackgroundImage
+    });
   } catch (error) {
-    console.warn('[PageBanner] 获取Strapi背景图失败:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.warn('[PageBanner] 获取Strapi背景图失败，使用降级方案:', errorMessage);
+    // 在构建环境下，不应该因为 Strapi 访问失败而中断构建
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+      console.log('[PageBanner] 构建环境下Strapi访问失败是正常的，继续使用默认配置');
+    }
   }
 }
 

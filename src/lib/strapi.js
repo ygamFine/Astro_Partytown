@@ -948,10 +948,17 @@ function processBannerItem(banner, imageMapping, type, index) {
 export async function getBannerData(filterType = undefined) {
   try {
     const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate=all`;
+    
+    // 检查必要的环境变量
+    if (!STRAPI_STATIC_URL_NEW) {
+      console.warn('[getBannerData] STRAPI_STATIC_URL_NEW 未配置，返回空数据');
+      return [];
+    }
+    
     const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
     
-    if (!data.data) {
-      console.warn('Banner数据为空');
+    if (!data || !data.data) {
+      console.warn('[getBannerData] Banner数据为空或网络请求失败');
       return [];
     }
 

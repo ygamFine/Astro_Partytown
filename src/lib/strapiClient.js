@@ -18,9 +18,22 @@ function buildHeaders(includeAuth = true, useNewToken = false) {
 }
 
 export async function fetchJson(url, { includeAuth = true, useNewToken = false } = {}) {
-  const res = await fetch(url, { headers: buildHeaders(includeAuth, useNewToken) });
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
-  return res.json();
+  try {
+    const res = await fetch(url, { 
+      headers: buildHeaders(includeAuth, useNewToken),
+      timeout: 30000, // 30秒超时
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+    return res.json();
+  } catch (error) {
+    console.error(`[Strapi] 网络请求失败: ${url}`, error.message);
+    // 在构建环境下，网络请求失败是常见的，不应该中断构建
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+      console.warn(`[Strapi] 构建环境网络请求失败，返回空数据: ${url}`);
+      return { data: null };
+    }
+    throw error;
+  }
 }
 
 // 通用分页获取，返回 { data: [] }

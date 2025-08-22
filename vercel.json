@@ -1,9 +1,11 @@
 {
     "version": 2,
     "buildCommand": "npm run build",
-
     "installCommand": "npm install",
     "framework": "astro",
+    "env": {
+        "NODE_ENV": "production"
+    },
     "rewrites": [
         { "source": "/sitemap.xml", "destination": "/en/sitemap.xml", "has": [{ "type": "host", "value": "en.*" }] },
         { "source": "/sitemap.xml", "destination": "/zh/sitemap.xml", "has": [{ "type": "host", "value": "zh.*" }] },
