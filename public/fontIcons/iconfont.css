@@ -1,8 +1,8 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 4104267 */
-  src: url('iconfont.woff2?t=1755760189803') format('woff2'),
-       url('iconfont.woff?t=1755760189803') format('woff'),
-       url('iconfont.ttf?t=1755760189803') format('truetype');
+  font-family: "iconfont"; /* Project id 5005161 */
+  src: url('iconfont.woff2?t=1755857511989') format('woff2'),
+       url('iconfont.woff?t=1755857511989') format('woff'),
+       url('iconfont.ttf?t=1755857511989') format('truetype');
 }
 
 .iconfont {
@@ -13,180 +13,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-xiazai1:before {
-  content: "\e813";
+.icon-home1:before {
+  content: "\e674";
 }
 
-.icon-douyin:before {
-  content: "\e8db";
-}
-
-.icon-whatsapp2:before {
-  content: "\e69c";
-}
-
-.icon-madechina:before {
-  content: "\e605";
-}
-
-.icon-vrbofangqi:before {
-  content: "\e87a";
-}
-
-.icon-google1:before {
-  content: "\e791";
-}
-
-.icon-a-tuite1:before {
-  content: "\e7e2";
-}
-
-.icon-navbar-Burger-menu:before {
-  content: "\e6ef";
-}
-
-.icon-common_icon_grid:before {
-  content: "\e6f4";
-}
-
-.icon-skype:before {
-  content: "\e617";
-}
-
-.icon-wechat:before {
-  content: "\e661";
-}
-
-.icon-lianxiwomen1:before {
-  content: "\e6d5";
-}
-
-.icon-personal-icon-youtube1:before {
-  content: "\e6fb";
-}
-
-.icon-social_icon_whatsup:before {
-  content: "\e702";
-}
-
-.icon-guanbi:before {
-  content: "\e664";
-}
-
-.icon-check:before {
-  content: "\e607";
-}
-
-.icon-google:before {
-  content: "\e646";
-}
-
-.icon-chuanzhen2:before {
-  content: "\e677";
-}
-
-.icon-chanpin:before {
-  content: "\e747";
-}
-
-.icon-xinwenshoucang:before {
-  content: "\e749";
-}
-
-.icon-whatsapp1:before {
-  content: "\e75b";
-}
-
-.icon-contact_icon_people2:before {
-  content: "\e696";
-}
-
-.icon-shebei:before {
-  content: "\e7ce";
-}
-
-.icon-common_fill_check:before {
-  content: "\e6eb";
-}
-
-.icon-contact_icon_iphone:before {
-  content: "\e6e1";
-}
-
-.icon-common_icon_fill_address:before {
-  content: "\e6f9";
-}
-
-.icon-youxiang6:before {
-  content: "\e6d4";
-}
-
-.icon-alibaba1:before {
-  content: "\e7cb";
-}
-
-.icon-youtube2:before {
-  content: "\e74b";
-}
-
-.icon-nav_icon_language:before {
-  content: "\e6c7";
-}
-
-.icon-lianshu:before {
-  content: "\e619";
-}
-
-.icon-twitter1:before {
-  content: "\e649";
-}
-
-.icon-common_icon_list1:before {
-  content: "\e6d6";
-}
-
-.icon-youtube1:before {
-  content: "\e764";
-}
-
-.icon-a-ziyuan2mdpi:before {
-  content: "\e788";
-}
-
-.icon-a-jiantou1:before {
-  content: "\e6b2";
-}
-
-.icon-twitter:before {
-  content: "\e8a8";
-}
-
-.icon-common_icon_down:before {
-  content: "\e6d7";
-}
-
-.icon-common_icon_up:before {
-  content: "\e6de";
-}
-
-.icon-social_icon_ins:before {
-  content: "\e6df";
-}
-
-.icon-youtube:before {
-  content: "\e709";
-}
-
-.icon-linkedin:before {
-  content: "\e648";
-}
-
-.icon-lianshu2:before {
-  content: "\e64a";
-}
-
-.icon-a-jiantou1-copy:before {
-  content: "\ea67";
+.icon-phone:before {
+  content: "\e6c2";
 }
 
 .icon-returntop:before {
@@ -247,5 +79,181 @@
 
 .icon-whatsapp:before {
   content: "\e6a7";
+}
+
+.icon-twitter:before {
+  content: "\e8a8";
+}
+
+.icon-common_icon_down:before {
+  content: "\e6d7";
+}
+
+.icon-common_icon_up:before {
+  content: "\e6de";
+}
+
+.icon-social_icon_ins:before {
+  content: "\e6df";
+}
+
+.icon-youtube:before {
+  content: "\e709";
+}
+
+.icon-linkedin:before {
+  content: "\e648";
+}
+
+.icon-lianshu2:before {
+  content: "\e64a";
+}
+
+.icon-a-jiantou1-copy:before {
+  content: "\ea67";
+}
+
+.icon-a-jiantou1:before {
+  content: "\e6b2";
+}
+
+.icon-youtube1:before {
+  content: "\e764";
+}
+
+.icon-a-ziyuan2mdpi:before {
+  content: "\e788";
+}
+
+.icon-nav_icon_language:before {
+  content: "\e6c7";
+}
+
+.icon-lianshu:before {
+  content: "\e619";
+}
+
+.icon-twitter1:before {
+  content: "\e649";
+}
+
+.icon-common_icon_list1:before {
+  content: "\e6d6";
+}
+
+.icon-alibaba1:before {
+  content: "\e7cb";
+}
+
+.icon-youtube2:before {
+  content: "\e74b";
+}
+
+.icon-common_icon_fill_address:before {
+  content: "\e6f9";
+}
+
+.icon-youxiang6:before {
+  content: "\e6d4";
+}
+
+.icon-contact_icon_iphone:before {
+  content: "\e6e1";
+}
+
+.icon-common_fill_check:before {
+  content: "\e6eb";
+}
+
+.icon-shebei:before {
+  content: "\e7ce";
+}
+
+.icon-contact_icon_people2:before {
+  content: "\e696";
+}
+
+.icon-chuanzhen2:before {
+  content: "\e677";
+}
+
+.icon-chanpin:before {
+  content: "\e747";
+}
+
+.icon-xinwenshoucang:before {
+  content: "\e749";
+}
+
+.icon-whatsapp1:before {
+  content: "\e75b";
+}
+
+.icon-google:before {
+  content: "\e646";
+}
+
+.icon-check:before {
+  content: "\e607";
+}
+
+.icon-guanbi:before {
+  content: "\e664";
+}
+
+.icon-personal-icon-youtube1:before {
+  content: "\e6fb";
+}
+
+.icon-social_icon_whatsup:before {
+  content: "\e702";
+}
+
+.icon-lianxiwomen1:before {
+  content: "\e6d5";
+}
+
+.icon-wechat:before {
+  content: "\e661";
+}
+
+.icon-skype:before {
+  content: "\e617";
+}
+
+.icon-navbar-Burger-menu:before {
+  content: "\e6ef";
+}
+
+.icon-common_icon_grid:before {
+  content: "\e6f4";
+}
+
+.icon-google1:before {
+  content: "\e791";
+}
+
+.icon-a-tuite1:before {
+  content: "\e7e2";
+}
+
+.icon-vrbofangqi:before {
+  content: "\e87a";
+}
+
+.icon-madechina:before {
+  content: "\e605";
+}
+
+.icon-whatsapp2:before {
+  content: "\e69c";
+}
+
+.icon-douyin:before {
+  content: "\e8db";
+}
+
+.icon-xiazai1:before {
+  content: "\e813";
 }
 

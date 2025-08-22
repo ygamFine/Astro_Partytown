@@ -6,7 +6,7 @@
 // 字体图标类名映射表
 export const ICON_MAP = {
   // === 基础导航图标 ===
-  home: 'icon-home',
+  home: 'icon-home1',
   search: 'icon-common_icon_search',
   menu: 'icon-navbar-Burger-menu',
   grid: 'icon-common_icon_grid',

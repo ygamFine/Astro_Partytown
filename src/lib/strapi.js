@@ -824,6 +824,9 @@ export async function getMobileBottomMenu(locale = 'en') {
       const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/shoujiduandibucaidan?populate=all&locale=${locale}`;
       const data = await fetchJson(apiUrl, { includeAuth: true, useNewToken: true });
       
+      // 加载图片映射（用于图标缓存处理）
+      const imageMapping = await loadImageMappingWithCreate();
+      
       // 提取菜单项数据
       const menuItems = data.data?.shoujiduandibucaidan || [];
       
@@ -838,8 +841,79 @@ export async function getMobileBottomMenu(locale = 'en') {
         console.log('原始 field_liebiao:', item.field_liebiao);
         console.log('提取的 uniqueId:', uniqueId);
         console.log('API返回的 icon 字段:', item.icon);
+        console.log('icon 数据结构:', JSON.stringify(item.icon, null, 2));
         console.log('映射的图标:', getDefaultMenuIcon(item));
-        console.log('最终使用的图标:', item.icon || getDefaultMenuIcon(item));
+        
+        // 深层提取并处理自定义图标（使用图片缓存系统）
+        const getProcessedCustomIcon = (iconData, imageMapping) => {
+          console.log('处理图标数据:', JSON.stringify(iconData, null, 2));
+          
+          if (!iconData) {
+            console.log('图标数据为空');
+            return null;
+          }
+          
+          // 尝试多种可能的路径结构提取原始图标数据
+          let extractedIconData = null;
+          
+          if (iconData?.media) {
+            // 标准Strapi媒体结构: icon.media
+            console.log('使用 icon.media 路径:', iconData.media);
+            extractedIconData = iconData.media;
+          } else if (iconData?.url) {
+            // 直接URL结构: icon.url
+            console.log('使用 icon.url 路径:', iconData.url);
+            extractedIconData = iconData;
+          } else if (iconData?.image) {
+            // 备选结构: icon.image
+            console.log('使用 icon.image 路径:', iconData.image);
+            extractedIconData = iconData.image;
+          } else if (typeof iconData === 'string') {
+            // 字符串URL
+            console.log('使用字符串URL:', iconData);
+            extractedIconData = { url: iconData };
+          }
+          
+          if (!extractedIconData) {
+            console.log('无法提取图标数据');
+            return null;
+          }
+          
+          console.log('提取的图标数据:', extractedIconData);
+          
+          // 使用现有的图片映射系统处理图标
+          const processedIconUrl = processImageWithMapping(extractedIconData, imageMapping);
+          console.log('映射处理后的URL:', processedIconUrl);
+          
+          // 直接返回映射后的路径，让前端组件使用 processImagesForAstro 处理
+          if (processedIconUrl) {
+            console.log('返回映射后的路径供前端处理:', processedIconUrl);
+            return processedIconUrl;
+          }
+          
+          // 如果映射失败且原始URL存在，尝试构造完整的Strapi URL
+          if (!processedIconUrl && extractedIconData?.url) {
+            const originalUrl = extractedIconData.url;
+            console.log('映射失败，使用原始URL:', originalUrl);
+            
+            // 如果是相对路径，构造完整的Strapi URL
+            if (originalUrl.startsWith('/uploads/')) {
+              const fullUrl = `${STRAPI_STATIC_URL_NEW}${originalUrl}`;
+              console.log('构造的完整URL:', fullUrl);
+              return fullUrl;
+            }
+            
+            return originalUrl;
+          }
+          
+          return processedIconUrl;
+        };
+        
+        const customIconUrl = getProcessedCustomIcon(item.icon, imageMapping);
+        console.log('提取的原始图标数据:', customIconUrl ? '成功' : '失败');
+        console.log('经过缓存映射后的图标URL:', customIconUrl);
+        console.log('最终图标类型:', customIconUrl ? 'image' : 'font');
+        console.log('使用的图标映射数量:', imageMapping?.strapiImages?.length || 0);
         console.log('---');
         
         return {
@@ -851,10 +925,10 @@ export async function getMobileBottomMenu(locale = 'en') {
           externalLink: item.field_zidingyilianjie,
           // 根据数据结构判断菜单类型，而不是依赖多语言的名称
           type: getMenuType(item),
-          // 图标处理：优先使用icon字段的图片，没有则使用field_liebiao对应的字体图标
-          icon: item.icon || getDefaultMenuIcon(item),
+          // 图标处理：优先使用深层提取的自定义图标，没有则使用field_liebiao对应的字体图标
+          icon: customIconUrl || getDefaultMenuIcon(item),
           // 新增：区分是图片图标还是字体图标
-          iconType: item.icon ? 'image' : 'font'
+          iconType: customIconUrl ? 'image' : 'font'
         };
       });
 
@@ -916,10 +990,10 @@ function getDefaultMenuIcon(item) {
     'product': 'chanpin',                     // icon-chanpin 📦
     'phone': 'phone',                         // icon-contact_icon_iphone 📞
     'whatsapp': 'whatsapp',                   // icon-whatsapp 💚 (绿色WhatsApp)
-    'email': 'email',                         // icon-contact_icon_email 📧
+    'email': 'mailbox',                         // icon-contact_icon_email 📧
     'news': 'xinwenshoucang',                 // icon-xinwenshoucang 📰
     'aboutus': 'people',                      // icon-contact_icon_people2 👥
-    'contactus': 'email',                     // icon-contact_icon_email 📧
+    'contactus': 'mailbox',                     // icon-contact_icon_email 📧
     'vr': 'vr-player',                        // icon-vrbofangqi 🥽
     'videos': 'youtube'                       // icon-youtube 📺
   };

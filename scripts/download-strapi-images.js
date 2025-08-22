@@ -14,7 +14,7 @@ import { promisify } from 'util';
 import sharp from 'sharp';
 // 复用通用 Strapi 客户端（仅封装 HTTP 层）
 import { STRAPI_STATIC_URL, STRAPI_STATIC_URL_NEW } from '../src/lib/strapiClient.js';
-import { getBannerData, getCommonBannerData, getProducts, getNews, getCases } from '../src/lib/strapi.js';
+import { getBannerData, getCommonBannerData, getProducts, getNews, getCases, getMobileBottomMenu } from '../src/lib/strapi.js';
 // 统一复用高层 API 获取语言列表，避免重复实现
 import { getSupportedLanguages as fetchSupportedLanguages } from '../src/lib/strapi.js';
 
@@ -372,6 +372,20 @@ async function downloadAllImages() {
       bannerUrls.forEach(url => allImageUrls.add(url));
     }
   } catch {}
+
+  // 移动端底部菜单图标（按语言获取）
+  for (const locale of ENABLED_LOCALES) {
+    try {
+      const mobileMenuData = await getMobileBottomMenu(locale);
+      if (mobileMenuData && Array.isArray(mobileMenuData)) {
+        const menuIconUrls = extractImageUrls({ data: mobileMenuData });
+        console.log(`📱 移动端菜单 (${locale}) 中提取到`, menuIconUrls.length, '个图标 URL');
+        menuIconUrls.forEach(url => allImageUrls.add(url));
+      }
+    } catch (error) {
+      console.warn(`移动端菜单图标获取失败 (${locale}):`, error.message);
+    }
+  }
 
   // 下载所有图片
   console.log('📥 准备下载', allImageUrls.size, '个图片');

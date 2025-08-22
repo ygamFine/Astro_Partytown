@@ -2,6 +2,8 @@
 import { getMobileBottomMenu } from '../../../lib/strapi.js';
 import { getIconClass } from '../../../lib/iconUtils.js';
 import { buildUrl } from '../../../lib/envConfig.js';
+import { processImagesForAstro } from '../../../lib/imageProcessor.js';
+import { Image } from 'astro:assets';
 
 export interface Props {
   lang?: string;
@@ -11,7 +13,23 @@ export interface Props {
 const { lang = 'en', currentPath = '/' } = Astro.props;
 
 // 获取移动端底部菜单数据（按语言缓存）
-const menuItems = await getMobileBottomMenu(lang);
+const rawMenuItems = await getMobileBottomMenu(lang);
+
+// 处理菜单项，使用和Banner相同的图片处理方式
+const menuItems = rawMenuItems.map((item: any) => {
+  if (item.iconType === 'image' && item.icon) {
+    // 使用 processImagesForAstro 处理图标，就像Banner组件一样
+    const processedImages = processImagesForAstro([item.icon].filter(Boolean));
+    return {
+      ...item,
+      processedIcon: processedImages.length > 0 ? processedImages[0] : null
+    };
+  }
+  return {
+    ...item,
+    processedIcon: null
+  };
+});
 
 // 判断当前路径是否激活
 function isActive(path: string, currentPath: string): boolean {
@@ -118,6 +136,9 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
       const link = getMenuLink(item, lang);
       const active = isActive(link, currentPath);
       
+      // 为WhatsApp类型保存原始号码（带格式）用于显示
+      const originalPhoneNumber = item.type === 'whatsapp' ? (item.externalLink || item.customLink) : null;
+      
       return (
         <a
           href={link}
@@ -128,16 +149,25 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
           }`}
           data-menu-type={item.type}
           data-menu-id={item.id}
+          data-original-phone={originalPhoneNumber}
         >
-          <div class={`w-7 h-7 mb-1 transition-colors duration-200 flex items-center justify-center ${
-            active ? 'text-blue-600' : 'text-gray-500'
-          }`}>
-            {item.iconType === 'image' ? (
-              <img src={item.icon} alt="menu icon" class="w-7 h-7 object-contain" />
-            ) : (
-              <i class={`${getIconClass(item.icon)} text-2xl`}></i>
-            )}
-          </div>
+                  <div class={`w-7 h-7 mb-1 transition-colors duration-200 flex items-center justify-center ${
+          active ? 'text-blue-600' : 'text-gray-500'
+        }`}>
+          {item.iconType === 'image' && (item as any).processedIcon ? (
+            <Image 
+              src={(item as any).processedIcon}
+              alt="menu icon" 
+              width={28}
+              height={28}
+              loading="lazy"
+              decoding="async"
+              class="w-7 h-7 object-contain"
+            />
+          ) : (
+            <i class={`${getIconClass(item.icon)} text-2xl`}></i>
+          )}
+        </div>
           <span class="text-sm font-medium leading-tight text-center block">
             {item.content}
           </span>
@@ -245,6 +275,32 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
   document.addEventListener('DOMContentLoaded', function() {
     const menuItems = document.querySelectorAll('.mobile-bottom-menu a[data-menu-type]');
     
+    // 调试：输出菜单项信息
+    console.log('=== 移动端底部菜单调试信息 ===');
+    console.log('菜单项数量:', menuItems.length);
+    
+    menuItems.forEach((item, index) => {
+      const menuType = item.getAttribute('data-menu-type');
+      const menuId = item.getAttribute('data-menu-id');
+      const href = item.getAttribute('href');
+      const img = item.querySelector('img');
+      const icon = item.querySelector('i');
+      
+      console.log(`菜单项 ${index + 1}:`);
+      console.log('  类型:', menuType);
+      console.log('  ID:', menuId);
+      console.log('  链接:', href);
+      
+      if (img) {
+        console.log('  图片src:', img.src);
+        console.log('  图片alt:', img.alt);
+        console.log('  图片状态:', img.complete ? '已加载' : '加载中');
+      } else if (icon) {
+        console.log('  字体图标类名:', icon.className);
+      }
+      console.log('---');
+    });
+    
     menuItems.forEach((item: Element) => {
       item.addEventListener('click', function(this: HTMLElement, e: Event) {
         const menuType = this.getAttribute('data-menu-type');
@@ -267,9 +323,14 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
           // WhatsApp - 自定义处理
           if (href.startsWith('#whatsapp-')) {
             e.preventDefault();
-            const phoneNumber = href.replace('#whatsapp-', '');
+            // 获取原始格式的号码（用于显示），或从链接中提取
+            const originalPhone = this.getAttribute('data-original-phone');
+            const phoneNumber = originalPhone || href.replace('#whatsapp-', '');
+            
+            // 拨打时去除所有非数字和+号的字符（空格、短横线等）
+            const cleanedNumber = phoneNumber.replace(/[^\d+]/g, '');
             const message = encodeURIComponent('您好，我想了解更多关于您的产品信息。');
-            window.open(`https://wa.me/${phoneNumber.replace(/[^\d+]/g, '')}?text=${message}`, '_blank');
+            window.open(`https://wa.me/${cleanedNumber}?text=${message}`, '_blank');
             return;
           }
           
