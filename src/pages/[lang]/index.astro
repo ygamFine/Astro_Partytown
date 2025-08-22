@@ -27,7 +27,7 @@ const t = getDictionary(lang);
 
 // 获取首页数据
 const homepageData = await getHomepageContent();
-const bannerData = await getBannerData();
+const bannerData = await getBannerData('homepage'); // 只获取首页Banner
 
 // 获取页面宽度配置
 const getPageWidth = () => {

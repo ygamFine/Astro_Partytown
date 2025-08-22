@@ -845,8 +845,8 @@ export async function getMobileBottomMenu(locale = 'en') {
         return {
           id: item.id,
           content: item.field_neirong,
-          // 链接优先级：Inline_address > field_zidingyilianjie > 默认值
-          customLink: item.Inline_address || item.field_zidingyilianjie,
+          // 链接优先级：field_zidingyilianjie > Inline_address > 默认值
+          customLink: item.field_zidingyilianjie || item.Inline_address,
           inlineAddress: item.Inline_address,
           externalLink: item.field_zidingyilianjie,
           // 根据数据结构判断菜单类型，而不是依赖多语言的名称

@@ -1,6 +1,7 @@
 ---
 import { getMobileBottomMenu } from '../../../lib/strapi.js';
 import { getIconClass } from '../../../lib/iconUtils.js';
+import { buildUrl } from '../../../lib/envConfig.js';
 
 export interface Props {
   lang?: string;
@@ -14,23 +15,82 @@ const menuItems = await getMobileBottomMenu(lang);
 
 // 判断当前路径是否激活
 function isActive(path: string, currentPath: string): boolean {
-  if (path === '/') {
-    return currentPath === '/';
+  // 特殊链接（tel:, mailto:, #whatsapp, #contact-modal等）永远不激活
+  if (path.startsWith('tel:') || path.startsWith('mailto:') || path.startsWith('#')) {
+    return false;
   }
-  return currentPath.startsWith(path);
+  
+  // 外部链接不激活
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return false;
+  }
+  
+  // 首页特殊处理 - 更精确的匹配
+  const isHomePath = path === '/' || !!path.match(/^\/[a-z]{2}(-[A-Z]{2,4})?\/$/);
+  if (isHomePath) {
+    const isCurrentHome = currentPath === '/' || !!currentPath.match(/^\/[a-z]{2}(-[A-Z]{2,4})?\/$/);
+    return isCurrentHome;
+  }
+  
+  // 其他内部链接的精确匹配逻辑
+  // 移除语言前缀进行比较
+  const normalizedPath = path.replace(/^\/[a-z]{2}(-[A-Z]{2,4})?/, '') || '/';
+  const normalizedCurrentPath = currentPath.replace(/^\/[a-z]{2}(-[A-Z]{2,4})?/, '') || '/';
+  
+  // 如果标准化后的路径是根路径，只有当前路径也是根路径时才匹配
+  if (normalizedPath === '/') {
+    return normalizedCurrentPath === '/';
+  }
+  
+  // 其他路径使用更严格的匹配：路径必须完全匹配或者是路径的子路径
+  // 确保路径边界匹配，避免 /news 匹配到 /news-center
+  return normalizedCurrentPath === normalizedPath || 
+         normalizedCurrentPath.startsWith(normalizedPath + '/') ||
+         (normalizedCurrentPath.startsWith(normalizedPath) && normalizedPath.endsWith('/'));
 }
 
 // 获取菜单链接
 function getMenuLink(item: { customLink?: string; inlineAddress?: string; externalLink?: string; type: string }, lang: string): string {
-  // 优先级：Inline_address > field_zidingyilianjie > 默认值
-  if (item.inlineAddress) {
-    // 内链地址，添加语言前缀
-    const cleanPath = item.inlineAddress.startsWith('/') ? item.inlineAddress : `/${item.inlineAddress}`;
-    return `/${lang}${cleanPath}`;
+  // 特殊类型处理：phone、whatsapp、email（优先使用 field_zidingyilianjie）
+  if (item.type === 'phone' && (item.externalLink || item.customLink)) {
+    const phoneNumber = item.externalLink || item.customLink;
+    return `tel:${phoneNumber}`;
   }
-  if (item.externalLink || item.customLink) {
-    // 外链或自定义链接，直接使用
-    return item.externalLink || item.customLink || '#';
+  
+  if (item.type === 'whatsapp' && (item.externalLink || item.customLink)) {
+    const phoneNumber = item.externalLink || item.customLink;
+    return `#whatsapp-${phoneNumber}`;
+  }
+  
+  if (item.type === 'email' && (item.externalLink || item.customLink)) {
+    const email = item.externalLink || item.customLink;
+    return `mailto:${email}`;
+  }
+  
+  // 优先级：field_zidingyilianjie > Inline_address > 默认值
+  if (item.externalLink) {
+    // field_zidingyilianjie 字段，根据内容判断是内链还是外链
+    const link = item.externalLink;
+    if (link.startsWith('/')) {
+      // 内链地址，使用 buildUrl 根据环境自动处理语言前缀
+      return buildUrl(lang, link);
+    } else if (link.startsWith('http://') || link.startsWith('https://')) {
+      // 外链，直接使用
+      return link;
+    } else {
+      // 相对路径，当作内链处理
+      const cleanPath = link.startsWith('/') ? link : `/${link}`;
+      return buildUrl(lang, cleanPath);
+    }
+  }
+  if (item.inlineAddress) {
+    // Inline_address 字段，内链地址
+    const cleanPath = item.inlineAddress.startsWith('/') ? item.inlineAddress : `/${item.inlineAddress}`;
+    return buildUrl(lang, cleanPath);
+  }
+  if (item.customLink) {
+    // 其他自定义链接，直接使用
+    return item.customLink;
   }
   // 默认值
   return '#';
@@ -69,16 +129,16 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
           data-menu-type={item.type}
           data-menu-id={item.id}
         >
-          <div class={`w-5 h-5 mb-1 transition-colors duration-200 flex items-center justify-center ${
+          <div class={`w-7 h-7 mb-1 transition-colors duration-200 flex items-center justify-center ${
             active ? 'text-blue-600' : 'text-gray-500'
           }`}>
             {item.iconType === 'image' ? (
-              <img src={item.icon} alt="menu icon" class="w-5 h-5 object-contain" />
+              <img src={item.icon} alt="menu icon" class="w-7 h-7 object-contain" />
             ) : (
-              <i class={`${getIconClass(item.icon)} text-xl`}></i>
+              <i class={`${getIconClass(item.icon)} text-2xl`}></i>
             )}
           </div>
-          <span class="text-xs font-medium leading-none text-center block">
+          <span class="text-sm font-medium leading-tight text-center block">
             {item.content}
           </span>
         </a>
@@ -105,7 +165,7 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
     gap: 2px;
   }
   
-  .mobile-bottom-menu .w-6 {
+  .mobile-bottom-menu .w-7 {
     flex-shrink: 0;
   }
   
@@ -141,13 +201,17 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
   
   /* 响应式调整 */
   @media (max-width: 360px) {
-    .mobile-bottom-menu .text-xs {
-      font-size: 10px;
+    .mobile-bottom-menu .text-sm {
+      font-size: 11px;
     }
     
-    .mobile-bottom-menu .w-5 {
-      width: 18px;
-      height: 18px;
+    .mobile-bottom-menu .w-7 {
+      width: 22px;
+      height: 22px;
+    }
+    
+    .mobile-bottom-menu .text-2xl {
+      font-size: 18px;
     }
   }
   
@@ -170,7 +234,7 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
       color: #60a5fa;
     }
     
-    .mobile-bottom-menu a.text-blue-600 .w-6 {
+    .mobile-bottom-menu a.text-blue-600 .w-7 {
       color: #60a5fa;
     }
   }
@@ -186,16 +250,42 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
         const menuType = this.getAttribute('data-menu-type');
         const href = this.getAttribute('href');
         
-        // 如果有自定义链接且不是特殊处理的链接，直接跳转
-        if (href && href !== '#' && href !== '#contact-modal' && href !== '#whatsapp') {
-          // 判断是否为外部链接
-          if (href.startsWith('http://') || href.startsWith('https://')) {
-            e.preventDefault();
-            window.open(href, '_blank');
+        // 处理特殊链接类型
+        if (href) {
+          // 电话号码 - 直接拨号
+          if (href.startsWith('tel:')) {
+            // tel: 链接会自动被浏览器处理，不需要阻止默认行为
             return;
           }
-          // 内部链接正常跳转
-          return;
+          
+          // 邮件 - 直接打开邮件应用
+          if (href.startsWith('mailto:')) {
+            // mailto: 链接会自动被浏览器处理，不需要阻止默认行为
+            return;
+          }
+          
+          // WhatsApp - 自定义处理
+          if (href.startsWith('#whatsapp-')) {
+            e.preventDefault();
+            const phoneNumber = href.replace('#whatsapp-', '');
+            const message = encodeURIComponent('您好，我想了解更多关于您的产品信息。');
+            window.open(`https://wa.me/${phoneNumber.replace(/[^\d+]/g, '')}?text=${message}`, '_blank');
+            return;
+          }
+          
+          // 其他特殊处理的链接
+          if (href === '#contact-modal') {
+            // 这个会在后续的特殊菜单类型处理中被处理
+          } else if (href !== '#') {
+            // 外部链接
+            if (href.startsWith('http://') || href.startsWith('https://')) {
+              e.preventDefault();
+              window.open(href, '_blank');
+              return;
+            }
+            // 内部链接正常跳转
+            return;
+          }
         }
         
         // 处理特殊菜单类型
@@ -207,15 +297,6 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
             contactModal.classList.remove('hidden');
             contactModal.classList.add('flex');
           }
-          return;
-        }
-        
-        if (menuType === 'whatsapp' && href === '#whatsapp') {
-          e.preventDefault();
-          // 打开WhatsApp
-          const phoneNumber = '+86-xxx-xxxx-xxxx'; // 替换为实际的电话号码
-          const message = encodeURIComponent('您好，我想了解更多关于您的产品信息。');
-          window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
           return;
         }
         

@@ -93,7 +93,7 @@ export function generateBreadcrumbs(lang, type, currentPage) {
   if (currentPage && currentPage > 1) {
     baseBreadcrumbs.push({
       name: `Page ${currentPage}`,
-      href: `/${lang}/${type}${currentPage > 1 ? `/${currentPage}` : ''}`
+      href: buildUrl(lang, `/${type}${currentPage > 1 ? `/${currentPage}` : ''}`)
     });
   }
   
