@@ -99,27 +99,45 @@ async function main() {
   
   // 查找所有图片文件
   const imageFiles = await findImageFiles('public');
+  const strapiImageFiles = await findImageFiles('src/assets/strapi', ['.jpg', '.jpeg', '.png', '.webp']);
+  const allImageFiles = [...imageFiles, ...strapiImageFiles];
   
-  // 转换为WebP
-  let convertedCount = 0;
-  for (const file of imageFiles) {
-    const webpFile = file.replace(/\.[^.]+$/, '.webp');
+  console.log(`📁 找到图片文件: public=${imageFiles.length}, strapi=${strapiImageFiles.length}`);
+  
+  // 优化现有图片（包括WebP）
+  let optimizedCount = 0;
+  for (const file of allImageFiles) {
+    // 获取文件信息
+    const stats = await fs.stat(file);
+    const fileSizeKB = Math.round(stats.size / 1024);
     
-    // 跳过已存在的WebP文件
-    try {
-      await fs.access(webpFile);
-      continue;
-    } catch {
-      // 文件不存在，需要转换
-    }
-    
-    const success = await convertToWebP(file, webpFile);
-    if (success) {
-      convertedCount++;
+    // 只优化大于50KB的图片
+    if (fileSizeKB > 50) {
+      console.log(`🔧 优化大图片: ${file} (${fileSizeKB}KB)`);
+      
+      try {
+        // 使用sharp重新压缩
+        const buffer = await sharp(file)
+          .webp({ quality: 80, effort: 6 })
+          .toBuffer();
+        
+        // 如果压缩后更小，则替换原文件
+        if (buffer.length < stats.size) {
+          await fs.writeFile(file, buffer);
+          const newSizeKB = Math.round(buffer.length / 1024);
+          const savedKB = fileSizeKB - newSizeKB;
+          console.log(`   ✅ 优化成功: ${fileSizeKB}KB -> ${newSizeKB}KB (节省${savedKB}KB)`);
+          optimizedCount++;
+        } else {
+          console.log(`   ⏭️  已是最优: ${fileSizeKB}KB`);
+        }
+      } catch (error) {
+        console.log(`   ❌ 优化失败: ${error.message}`);
+      }
     }
   }
   
-  console.log(`✅ WebP转换完成: ${convertedCount} 个文件`);
+  console.log(`✅ 图片优化完成: ${optimizedCount} 个文件`);
   
   // 不生成移动端图片；移动端资源由 Strapi 提供
   
