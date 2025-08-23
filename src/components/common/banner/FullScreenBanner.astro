@@ -10,6 +10,7 @@ export interface Props {
     description: string;
     link: string | null;
     image: string;
+    mobileImage?: string;
     alt: string;
   }>;
 }
@@ -19,10 +20,12 @@ const { bannerData = [] } = Astro.props;
 
 // 处理Banner数据，确保图片能正确加载到 <Image>（需要模块或远程URL，而不是本地字符串路径）
 const banners = bannerData.map(banner => {
-  const processed = processImagesForAstro([banner?.image].filter(Boolean));
+  const processedDesktop = processImagesForAstro([banner?.image].filter(Boolean));
+  const processedMobile = processImagesForAstro([banner?.mobileImage].filter(Boolean));
   return {
     ...banner,
-    processedImages: processed
+    processedImages: processedDesktop,
+    processedMobileImages: processedMobile
   };
 });
 
@@ -33,24 +36,57 @@ const banners = bannerData.map(banner => {
   <link rel="preload" as="image" href={banners[0].processedImages[0]} type="image/webp" fetchpriority="high">
 )}
 
-<!-- PC端Banner容器 -->
-<section class="banner-container desktop-banner" id="desktop-banner">
+<!-- 响应式Banner容器 -->
+<section class="banner-container" id="homepage-banner">
   <!-- Banner轮播 -->
   <div class="banner-carousel">
     {banners.map((banner, index) => (
-      banner.processedImages.length > 0 && (
+      (banner.processedImages.length > 0 || banner.processedMobileImages.length > 0) && (
         <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
-          <Image 
-            src={banner.processedImages[0]}
-            alt={banner.alt}
-            width={1440}
-            height={600}
-            loading={index === 0 ? "eager" : "lazy"}
-            fetchpriority={index === 0 ? "high" : "auto"}
-            decoding="async"
-            class="banner-image"
-            style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-          />
+          {/* PC端图片 */}
+          <div class="desktop-banner-image">
+            {banner.processedImages.length > 0 && (
+              <Image 
+                src={banner.processedImages[0]}
+                alt={banner.alt}
+                width={1440}
+                height={600}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              />
+            )}
+          </div>
+          {/* 手机端图片 */}
+          <div class="mobile-banner-image">
+            {banner.processedMobileImages.length > 0 ? (
+              <Image 
+                src={banner.processedMobileImages[0]}
+                alt={banner.alt}
+                width={375}
+                height={600}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              />
+            ) : banner.processedImages.length > 0 && (
+              <Image 
+                src={banner.processedImages[0]}
+                alt={banner.alt}
+                width={375}
+                height={600}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              />
+            )}
+          </div>
         </div>
       )
     ))}
@@ -69,6 +105,13 @@ const banners = bannerData.map(banner => {
     
     <!-- NEXT Label -->
     <button id="next-label" class="slide-label">NEXT</button>
+  </div>
+
+  <!-- 移动端滑动指示器 -->
+  <div class="mobile-swipe-indicator">
+    {banners.length > 1 && banners.map((_, index) => (
+      <div class={`swipe-dot ${index === 0 ? 'active' : ''}`} data-slide={index}></div>
+    ))}
   </div>
 </section>
 
@@ -152,8 +195,33 @@ const banners = bannerData.map(banner => {
     transition: width linear;
   }
 
-  /* PC端轮播图显示控制 - 强制显示 */
-  .desktop-banner {
+  /* 移动端滑动指示器 */
+  .mobile-swipe-indicator {
+    display: none;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .swipe-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .swipe-dot.active {
+    background-color: rgba(255, 255, 255, 1);
+    transform: scale(1.2);
+  }
+
+  /* Banner容器样式 */
+  .banner-container {
     display: block !important;
     position: relative;
     width: 100%;
@@ -165,21 +233,81 @@ const banners = bannerData.map(banner => {
     padding: 0;
   }
 
+  /* 响应式图片容器 */
+  .desktop-banner-image {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mobile-banner-image {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   /* Banner图片悬停放大效果 - 只对当前显示的图片生效 */
-  #desktop-banner .banner-slide.active img:hover,
-  #desktop-banner .banner-slide.active .banner-image:hover {
+  #homepage-banner .banner-slide.active .banner-image:hover {
     transform: scale(1.05) !important;
   }
 
   /* 确保悬停在当前显示的slide容器上也能触发图片缩放 */
-  #desktop-banner .banner-slide.active:hover img {
+  #homepage-banner .banner-slide.active:hover .banner-image {
     transform: scale(1.05) !important;
   }
 
-  /* 移动端隐藏PC端轮播图 */
+  /* 移动端响应式样式 */
   @media (max-width: 768px) {
-    .desktop-banner {
+    .banner-container {
+      height: 200px !important; /* 移动端降低高度 */
+      touch-action: pan-y; /* 允许垂直滚动，但限制水平滚动 */
+      user-select: none; /* 防止长按选择文本 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    .desktop-banner-image {
       display: none !important;
+    }
+    
+    .mobile-banner-image {
+      display: block !important;
+    }
+    
+    /* 移动端隐藏进度条控制器 */
+    .progress-controller {
+      display: none;
+    }
+    
+    /* 移动端显示滑动指示器 */
+    .mobile-swipe-indicator {
+      display: flex !important;
+    }
+    
+    /* 移动端Banner图片优化 */
+    .banner-slide {
+      cursor: grab;
+    }
+    
+    .banner-slide:active {
+      cursor: grabbing;
+    }
+    
+    /* 移动端图片防止拖拽 */
+    .mobile-banner-image img {
+      pointer-events: none;
+      -webkit-user-drag: none;
+      -khtml-user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
+      user-drag: none;
     }
   }
 </style>
@@ -192,10 +320,11 @@ const banners = bannerData.map(banner => {
   let progressTimer = null;
   
     // 缓存DOM元素
-  const slides = document.querySelectorAll('#desktop-banner .banner-slide');
+  const slides = document.querySelectorAll('#homepage-banner .banner-slide');
   const progressFill = document.getElementById('progress-fill');
     const prevLabel = document.getElementById('prev-label');
     const nextLabel = document.getElementById('next-label');
+    const swipeDots = document.querySelectorAll('.swipe-dot');
     
   const totalSlides = slides.length;
   const slideInterval = 5000;
@@ -222,9 +351,22 @@ const banners = bannerData.map(banner => {
     currentSlide = index;
     slides[currentSlide].classList.add('active');
     
+    // 更新移动端滑动指示器
+    updateSwipeDots();
+    
     resetProgress();
     startProgress();
       });
+  }
+
+  function updateSwipeDots() {
+    swipeDots.forEach((dot, index) => {
+      if (index === currentSlide) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
   }
 
   function nextSlide() {
@@ -312,6 +454,9 @@ const banners = bannerData.map(banner => {
       slides[0].classList.add('active');
     }
     
+    // 初始化滑动指示器
+    updateSwipeDots();
+    
       // 使用委托事件处理
     if (prevLabel) {
         prevLabel.addEventListener('click', debouncedPrev, { passive: true });
@@ -320,6 +465,15 @@ const banners = bannerData.map(banner => {
     if (nextLabel) {
         nextLabel.addEventListener('click', debouncedNext, { passive: true });
       }
+
+    // 为滑动指示器添加点击事件
+    swipeDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        stopAutoSlide();
+        goToSlide(index);
+        setTimeout(startAutoSlide, 100);
+      }, { passive: true });
+    });
 
       // 页面可见性API - 页面隐藏时停止轮播
       document.addEventListener('visibilitychange', () => {
@@ -333,15 +487,87 @@ const banners = bannerData.map(banner => {
     startAutoSlide();
   }
 
+    // 添加触摸手势支持
+    function addTouchSupport() {
+      const banner = document.getElementById('homepage-banner');
+      if (!banner) return;
+      
+      let startX = 0;
+      let startY = 0;
+      let isDragging = false;
+      
+      // 触摸开始
+      banner.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isDragging = true;
+        
+        // 停止自动轮播
+        stopAutoSlide();
+      }, { passive: true });
+      
+      // 触摸移动
+      banner.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        // 防止页面滚动（只在水平滑动时）
+        const diffX = Math.abs(e.touches[0].clientX - startX);
+        const diffY = Math.abs(e.touches[0].clientY - startY);
+        
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // 触摸结束
+      banner.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const diffX = startX - endX;
+        const diffY = Math.abs(startY - endY);
+        const threshold = 50; // 滑动阈值
+        
+        isDragging = false;
+        
+        // 只有水平滑动距离大于垂直滑动距离且超过阈值时才触发切换
+        if (Math.abs(diffX) > threshold && Math.abs(diffX) > diffY) {
+          if (diffX > 0) {
+            // 向左滑动，显示下一张
+            nextSlide();
+          } else {
+            // 向右滑动，显示上一张
+            prevSlide();
+          }
+        }
+        
+        // 重新启动自动轮播
+        setTimeout(startAutoSlide, 100);
+      }, { passive: true });
+      
+      // 触摸取消
+      banner.addEventListener('touchcancel', () => {
+        isDragging = false;
+        setTimeout(startAutoSlide, 100);
+      }, { passive: true });
+    }
+
     // 性能优化的初始化
     function init() {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
           // 使用setTimeout避免阻塞首屏渲染
-      setTimeout(initBanner, 100);
+      setTimeout(() => {
+        initBanner();
+        addTouchSupport();
+      }, 100);
     });
   } else {
-    setTimeout(initBanner, 100);
+    setTimeout(() => {
+      initBanner();
+      addTouchSupport();
+    }, 100);
   }
     }
 

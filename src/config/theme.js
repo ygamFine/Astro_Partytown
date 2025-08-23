@@ -262,8 +262,15 @@ export const themeConfig = {
       // 高度配置映射
       heightClasses: {
         small: 'py-20',
-        medium: 'py-42',
+        medium: 'py-42', 
         large: 'py-64'
+      },
+      
+      // 移动端高度配置映射  
+      mobileHeightClasses: {
+        small: 'h-32', // 128px
+        medium: 'h-40', // 160px
+        large: 'h-48'   // 192px - 接近200px的Tailwind标准高度
       },
       
       // 通用Banner图片尺寸配置

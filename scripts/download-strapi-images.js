@@ -373,6 +373,16 @@ async function downloadAllImages() {
     }
   } catch {}
 
+  // 首页Banner设置（包含PC端和手机端图片）
+  try {
+    const homepageBanners = await getBannerData('homepage');
+    if (homepageBanners && Array.isArray(homepageBanners)) {
+      const homepageBannerUrls = extractImageUrls({ data: homepageBanners });
+      console.log('🏠 首页Banner 中提取到', homepageBannerUrls.length, '个图片 URL');
+      homepageBannerUrls.forEach(url => allImageUrls.add(url));
+    }
+  } catch {}
+
   // 移动端底部菜单图标（按语言获取）
   for (const locale of ENABLED_LOCALES) {
     try {

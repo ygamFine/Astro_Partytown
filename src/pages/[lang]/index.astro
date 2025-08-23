@@ -41,9 +41,7 @@ const pageWidth = getPageWidth();
 	<main>
 		<FullScreenBanner bannerData={bannerData} />
 		<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
-			<div class="-mx-4 md:mx-0">
-				<HeroShowcase bannerData={bannerData} />
-			</div>
+			<!-- HeroShowcase 已被 FullScreenBanner 的响应式功能替代 -->
 			<ProductShowcase 
 				title={homepageData?.productShowcase?.title}
 				description={homepageData?.productShowcase?.description}
