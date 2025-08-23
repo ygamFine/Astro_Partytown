@@ -3,6 +3,8 @@
   src: url('iconfont.woff2?t=1755857511989') format('woff2'),
        url('iconfont.woff?t=1755857511989') format('woff'),
        url('iconfont.ttf?t=1755857511989') format('truetype');
+  font-display: swap; /* 字体加载期间显示回退字体 */
+  unicode-range: U+e605-U+ea67; /* 限制字体范围，只加载需要的字符 */
 }
 
 .iconfont {

@@ -1,0 +1,169 @@
+---
+// 字体优化组件 - 使用Astro的性能特性
+interface Props {
+  preloadFonts?: boolean;
+  criticalIcons?: string[];
+}
+
+const { 
+  preloadFonts = true,
+  criticalIcons = ['home', 'phone', 'youxiang', 'whatsapp'] // 关键图标
+} = Astro.props;
+
+// 构建关键CSS内联样式
+const criticalIconsCSS = criticalIcons.map(icon => {
+  const iconMap: Record<string, string> = {
+    'home': '\\e625',
+    'phone': '\\e6c2', 
+    'youxiang': '\\e62c',
+    'whatsapp': '\\e6a7',
+    'common_icon_search': '\\e6d8',
+    'contact_icon_email': '\\e6da',
+    'common_icon_down': '\\e6d7',
+    'common_icon_up': '\\e6de',
+    'chanpin': '\\e747',
+    'xinwenshoucang': '\\e749'
+  };
+  
+  return iconMap[icon] ? `.icon-${icon}:before { content: "${iconMap[icon]}"; }` : '';
+}).filter(Boolean).join('\n');
+---
+
+<!-- 预加载关键字体文件 -->
+{preloadFonts && (
+  <>
+    <link 
+      rel="preload" 
+      href="/fontIcons/iconfont.woff2" 
+      as="font" 
+      type="font/woff2" 
+      crossorigin="anonymous"
+    />
+    <link 
+      rel="preload" 
+      href="/fontIcons/iconfont.woff" 
+      as="font" 
+      type="font/woff" 
+      crossorigin="anonymous"
+    />
+  </>
+)}
+
+<!-- DNS预连接 -->
+<link rel="preconnect" href="/fontIcons" />
+
+<!-- 关键图标CSS内联 -->
+{criticalIconsCSS && (
+  <style is:inline>
+    /* 关键图标样式 - 内联以避免FOUC */
+    .iconfont {
+      font-family: "iconfont", Arial, sans-serif !important;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: normal;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    
+    /* 关键图标定义 */
+    {criticalIconsCSS}
+    
+    /* 字体加载状态管理 */
+    .font-loading .iconfont:before {
+      content: "□"; /* 加载期间显示占位符 */
+      opacity: 0.3;
+    }
+    
+    .font-loaded .iconfont:before {
+      opacity: 1;
+    }
+  </style>
+)}
+
+<!-- 字体加载检测脚本 -->
+<script is:inline>
+  // 字体加载检测和性能优化
+  (function() {
+    const iconfontLoaded = new Promise((resolve) => {
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          document.fonts.forEach(font => {
+            if (font.family === 'iconfont' && font.status === 'loaded') {
+              resolve(true);
+            }
+          });
+        });
+      } else {
+        // 回退检测方法
+        const testElement = document.createElement('div');
+        testElement.style.fontFamily = 'iconfont';
+        testElement.style.position = 'absolute';
+        testElement.style.left = '-9999px';
+        testElement.innerHTML = '&#xe625;'; // home图标
+        document.body.appendChild(testElement);
+        
+        let attempts = 0;
+        const maxAttempts = 50; // 5秒超时
+        
+        const checkFont = () => {
+          attempts++;
+          const width = testElement.offsetWidth;
+          
+          if (width > 0 || attempts >= maxAttempts) {
+            document.body.removeChild(testElement);
+            resolve(width > 0);
+          } else {
+            setTimeout(checkFont, 100);
+          }
+        };
+        
+        setTimeout(checkFont, 100);
+      }
+    });
+    
+    // 添加加载状态类
+    document.documentElement.classList.add('font-loading');
+    
+    iconfontLoaded.then(() => {
+      document.documentElement.classList.remove('font-loading');
+      document.documentElement.classList.add('font-loaded');
+      
+      // 触发自定义事件
+      const event = new CustomEvent('iconfont:loaded');
+      document.dispatchEvent(event);
+    });
+    
+    // 性能监控
+    if (window.performance && window.performance.mark) {
+      window.performance.mark('iconfont-start');
+      iconfontLoaded.then(() => {
+        window.performance.mark('iconfont-end');
+        window.performance.measure('iconfont-load', 'iconfont-start', 'iconfont-end');
+      });
+    }
+  })();
+</script>
+
+<!-- 延迟加载完整字体CSS -->
+<script is:inline>
+  // 使用requestIdleCallback延迟加载非关键字体样式
+  function loadIconFont() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/fontIcons/iconfont.css';
+    link.media = 'print'; // 先以print加载，避免阻塞渲染
+    link.onload = function() {
+      this.media = 'all'; // 加载完成后应用到所有媒体
+    };
+    document.head.appendChild(link);
+  }
+  
+  if (window.requestIdleCallback) {
+    requestIdleCallback(loadIconFont);
+  } else {
+    // 回退到延时加载
+    setTimeout(loadIconFont, 1);
+  }
+</script>
