@@ -107,20 +107,29 @@ async function main() {
   // 优化现有图片（包括WebP）
   let optimizedCount = 0;
   for (const file of allImageFiles) {
+    // 检查是否是Banner图片，如果是则跳过压缩
+    // Banner图片现在被放在banner子目录中
+    const isBannerImage = file.includes(path.sep + 'banner' + path.sep);
+
+    if (isBannerImage) {
+      console.log(`📷 跳过Banner图片压缩: ${file}`);
+      continue;
+    }
+
     // 获取文件信息
     const stats = await fs.stat(file);
     const fileSizeKB = Math.round(stats.size / 1024);
-    
+
     // 只优化大于50KB的图片
     if (fileSizeKB > 50) {
       console.log(`🔧 优化大图片: ${file} (${fileSizeKB}KB)`);
-      
+
       try {
         // 使用sharp重新压缩
         const buffer = await sharp(file)
           .webp({ quality: 80, effort: 6 })
           .toBuffer();
-        
+
         // 如果压缩后更小，则替换原文件
         if (buffer.length < stats.size) {
           await fs.writeFile(file, buffer);
