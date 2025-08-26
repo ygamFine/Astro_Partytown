@@ -653,8 +653,8 @@ async function downloadImage(imageUrl, isBannerImage = false) {
   if (imageUrl.startsWith('/uploads/')) {
     // 不再依赖文件名判断，使用调用时传入的isBannerImage参数
     const fullUrl = isBannerImage ?
-      `${STRAPI_STATIC_URL_NEW}${imageUrl}` :
-      `${STRAPI_STATIC_URL}${imageUrl}`;
+              `${STRAPI_STATIC_URL_NEW}${imageUrl}` :
+        `${STRAPI_STATIC_URL}${imageUrl}`;
 
     console.log(`处理相对路径: ${imageUrl} -> ${fullUrl} (Banner: ${isBannerImage})`);
     return await downloadImage(fullUrl, isBannerImage);
@@ -801,9 +801,14 @@ async function downloadAllImages() {
 
     console.log(`📊 总共找到 ${allBannerData.length} 个Banner项目`);
 
-    // 从Banner数据中提取所有图片URL
+    // 从Banner数据中提取所有图片和视频URL
     const bannerImageUrls = new Set();
     allBannerData.forEach(banner => {
+      // 添加视频（优先级最高）
+      if (banner.shipin && banner.shipin !== '/images/placeholder.webp') {
+        bannerImageUrls.add(banner.shipin);
+        console.log(`  🎬 视频Banner: ${banner.shipin}`);
+      }
       // 添加桌面端图片
       if (banner.image && banner.image !== '/images/placeholder.webp') {
         bannerImageUrls.add(banner.image);
@@ -986,8 +991,27 @@ async function generateBannerConfig() {
     if (apiData?.data?.field_shouyebanner) {
       apiData.data.field_shouyebanner.forEach(banner => {
         let desktopImage = null;
+        let mobileImage = null;
 
-        // 添加桌面端图片
+        // 优先级1: field_bannershipin (权重最高)
+        if (banner.field_bannershipin?.media?.url) {
+          const shipinUrl = banner.field_bannershipin.media.url;
+          const url = new URL(shipinUrl, STRAPI_STATIC_URL_NEW);
+          const pathname = url.pathname;
+          const hash = generateImageHash(pathname);
+          const originalExt = path.extname(pathname) || '.mp4';
+          const shipinImage = {
+            originalUrl: shipinUrl,
+            localPath: `src/assets/strapi/banner/${hash}${originalExt}`,
+            type: 'shipin',
+            bannerType: 'homepage',
+            isBanner: true,
+            priority: 1 // 最高优先级
+          };
+          bannerImages.push(shipinImage);
+        }
+
+        // 优先级2: field_tupian (桌面端图片)
         if (banner.field_tupian?.media?.url) {
           const imageUrl = banner.field_tupian.media.url;
           const imagePath = imageUrl.replace('/uploads/', '');
@@ -996,21 +1020,23 @@ async function generateBannerConfig() {
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${imagePath}`,
             type: 'desktop',
             bannerType: 'homepage',
-            isBanner: true
+            isBanner: true,
+            priority: 2
           };
           bannerImages.push(desktopImage);
         }
 
-        // 添加移动端图片
+        // 优先级3: field_shouji (移动端图片)
         if (banner.field_shouji?.media?.url) {
           const mobileImageUrl = banner.field_shouji.media.url;
           const mobileImagePath = mobileImageUrl.replace('/uploads/', '');
-          const mobileImage = {
+          mobileImage = {
             originalUrl: mobileImageUrl,
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${mobileImagePath}`,
             type: 'mobile',
             bannerType: 'homepage',
             isBanner: true,
+            priority: 3,
             fallbackImage: desktopImage // 记录对应的PC端图片
           };
           bannerImages.push(mobileImage);
@@ -1022,8 +1048,27 @@ async function generateBannerConfig() {
     if (apiData?.data?.field_tongyongbanner) {
       apiData.data.field_tongyongbanner.forEach(banner => {
         let desktopImage = null;
+        let mobileImage = null;
 
-        // 添加桌面端图片
+        // 优先级1: field_bannershipin (权重最高)
+        if (banner.field_bannershipin?.media?.url) {
+          const shipinUrl = banner.field_bannershipin.media.url;
+          const url = new URL(shipinUrl, STRAPI_STATIC_URL_NEW);
+          const pathname = url.pathname;
+          const hash = generateImageHash(pathname);
+          const originalExt = path.extname(pathname) || '.mp4';
+          const shipinImage = {
+            originalUrl: shipinUrl,
+            localPath: `src/assets/strapi/banner/${hash}${originalExt}`,
+            type: 'shipin',
+            bannerType: 'common',
+            isBanner: true,
+            priority: 1 // 最高优先级
+          };
+          bannerImages.push(shipinImage);
+        }
+
+        // 优先级2: field_tupian (桌面端图片)
         if (banner.field_tupian?.media?.url) {
           const imageUrl = banner.field_tupian.media.url;
           const imagePath = imageUrl.replace('/uploads/', '');
@@ -1032,21 +1077,23 @@ async function generateBannerConfig() {
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${imagePath}`,
             type: 'desktop',
             bannerType: 'common',
-            isBanner: true
+            isBanner: true,
+            priority: 2
           };
           bannerImages.push(desktopImage);
         }
 
-        // 添加移动端图片
+        // 优先级3: field_shouji (移动端图片)
         if (banner.field_shouji?.media?.url) {
           const mobileImageUrl = banner.field_shouji.media.url;
           const mobileImagePath = mobileImageUrl.replace('/uploads/', '');
-          const mobileImage = {
+          mobileImage = {
             originalUrl: mobileImageUrl,
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${mobileImagePath}`,
             type: 'mobile',
             bannerType: 'common',
             isBanner: true,
+            priority: 3,
             fallbackImage: desktopImage // 记录对应的PC端图片
           };
           bannerImages.push(mobileImage);
