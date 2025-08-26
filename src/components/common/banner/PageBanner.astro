@@ -54,18 +54,27 @@ if (useStrapiBackground) {
     if (commonBanners && commonBanners.length > 0) {
       // 处理所有通用banner图片，支持轮播和响应式图片
       strapiBannerImages = commonBanners.map(banner => {
-        if (banner.image || banner.mobileImage) {
-          // 使用processImageForDisplay来获取正确的图片URL
+        if (banner.image || banner.mobileImage || banner.shipin) {
+          // 优先级处理：视频 > 移动端图片 > 桌面端图片
+          const processedShipin = processImageForDisplay(banner.shipin);
+          const processedImage = processImageForDisplay(banner.image);
+          const processedMobileImage = processImageForDisplay(banner.mobileImage);
+          
+          // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
+          const mobileMedia = processedShipin || processedMobileImage || processedImage;
+          
           return {
-            image: processImageForDisplay(banner.image),
-            mobileImage: processImageForDisplay(banner.mobileImage),
+            image: processedImage,
+            mobileImage: mobileMedia,
+            shipin: processedShipin,
             alt: String(banner.alt || banner.name || title),
             originalImage: String(banner.image),
-            originalMobileImage: String(banner.mobileImage)
+            originalMobileImage: String(banner.mobileImage),
+            originalShipin: String(banner.shipin)
           };
         }
         return null;
-      }).filter(Boolean) as Array<{image: any, mobileImage: any, alt: string, originalImage: string, originalMobileImage: string}>;
+      }).filter(Boolean) as Array<{image: any, mobileImage: any, shipin: any, alt: string, originalImage: string, originalMobileImage: string, originalShipin: string}>;
       
 
     } else {
@@ -158,7 +167,6 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
                   src={bannerImg.mobileImage}
                   autoplay
                   muted
-                  loop
                   playsinline
                   width={imageSize.width.toString()}
                   height={imageSize.height.toString()}
@@ -188,7 +196,6 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
                   src={bannerImg.mobileImage}
                   autoplay
                   muted
-                  loop
                   playsinline
                   width={imageSize.width}
                   height={imageSize.height}

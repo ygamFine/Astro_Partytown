@@ -10,6 +10,7 @@ export interface Props {
     link: string | null;
     image: string;
     mobileImage?: string;
+    shipin?: string;
     alt: string;
   }>;
 }
@@ -19,12 +20,28 @@ const { bannerData = [] } = Astro.props;
 
 // 处理Banner数据，确保图片能正确加载到 <img>（使用正确的URL）
 const banners = bannerData.map(banner => {
+  // 优先级处理：视频 > 移动端图片 > 桌面端图片
+  const processedShipin = processImageForDisplay((banner as any)?.shipin);
   const processedDesktop = processImageForDisplay(banner?.image);
   const processedMobile = processImageForDisplay(banner?.mobileImage);
+  
+  // 检查是否为占位图
+  const isPlaceholder = (url: string) => url === '/images/placeholder.webp';
+  
+  // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
+  const mobileMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
+                     processedMobile && !isPlaceholder(processedMobile) ? processedMobile :
+                     processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null;
+  
+  // PC端优先使用视频，如果没有视频则使用桌面端图片
+  const desktopMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
+                      processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null;
+  
   return {
     ...banner,
-    processedImages: processedDesktop ? [processedDesktop] : [],
-    processedMobileImages: processedMobile ? [processedMobile] : []
+    processedImages: desktopMedia ? [desktopMedia] : [],
+    processedMobileImages: mobileMedia ? [mobileMedia] : [],
+    processedShipin: processedShipin && !isPlaceholder(processedShipin) ? [processedShipin] : []
   };
 });
 
@@ -42,21 +59,38 @@ const banners = bannerData.map(banner => {
     {banners.map((banner, index) => (
       (banner.processedImages.length > 0 || banner.processedMobileImages.length > 0) && (
         <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
-          {/* PC端图片 */}
+          {/* PC端图片/视频 */}
           <div class="desktop-banner-image">
-            {banner.processedImages.length > 0 && (
-              <img
-                src={banner.processedImages[0]}
-                alt={banner.alt}
-                width={1440}
-                height={600}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
-                decoding="async"
-                class="banner-image"
-                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-              />
-            )}
+            {banner.processedImages.length > 0 ? (
+              banner.processedImages[0].endsWith('.mp4') ||
+              banner.processedImages[0].endsWith('.webm') ||
+              banner.processedImages[0].endsWith('.mov') ? (
+                <video
+                  src={banner.processedImages[0]}
+                  autoplay
+                  muted
+                  playsinline
+                  width={1440}
+                  height={600}
+                  class="banner-image"
+                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+                >
+                  您的浏览器不支持视频播放
+                </video>
+              ) : (
+                <img
+                  src={banner.processedImages[0]}
+                  alt={banner.alt}
+                  width={1440}
+                  height={600}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchpriority={index === 0 ? "high" : "auto"}
+                  decoding="async"
+                  class="banner-image"
+                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+                />
+              )
+            ) : null}
           </div>
           {/* 手机端图片/视频 */}
           <div class="mobile-banner-image">
@@ -68,7 +102,6 @@ const banners = bannerData.map(banner => {
                   src={banner.processedMobileImages[0]}
                   autoplay
                   muted
-                  loop
                   playsinline
                   width={375}
                   height={600}
@@ -362,18 +395,34 @@ const banners = bannerData.map(banner => {
   function goToSlide(index) {
     if (index === currentSlide || totalSlides <= 1) return;
     
-      // 使用requestAnimationFrame优化动画
-      requestAnimationFrame(() => {
-    slides[currentSlide].classList.remove('active');
-    currentSlide = index;
-    slides[currentSlide].classList.add('active');
+    // 停止当前slide的自动切换
+    stopAutoSlide();
     
-    // 更新移动端滑动指示器
-    updateSwipeDots();
-    
-    resetProgress();
-    startProgress();
-      });
+    // 使用requestAnimationFrame优化动画
+    requestAnimationFrame(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = index;
+      slides[currentSlide].classList.add('active');
+      
+      // 更新移动端滑动指示器
+      updateSwipeDots();
+      
+      resetProgress();
+      
+      // 检查新slide是否包含视频，如果是则重新播放
+      const newSlideElement = slides[currentSlide];
+      const videoElement = newSlideElement?.querySelector('video');
+      if (videoElement) {
+        // 重置视频到开始位置并播放
+        videoElement.currentTime = 0;
+        videoElement.play().catch(() => {
+          // 如果自动播放失败，忽略错误
+        });
+      }
+      
+      // 重新启动自动切换
+      startAutoSlide();
+    });
   }
 
   function updateSwipeDots() {
@@ -399,11 +448,35 @@ const banners = bannerData.map(banner => {
   function startAutoSlide() {
     if (totalSlides <= 1) return;
     
-      if (autoSlideTimer) {
-        clearInterval(autoSlideTimer);
-      }
+    if (autoSlideTimer) {
+      clearInterval(autoSlideTimer);
+    }
+    
+    // 检查当前slide是否包含视频
+    const currentSlideElement = slides[currentSlide];
+    const videoElement = currentSlideElement?.querySelector('video');
+    
+    if (videoElement) {
+      // 如果当前slide包含视频，确保视频播放并等待播放完成后再切换
+      const handleVideoEnd = () => {
+        videoElement.removeEventListener('ended', handleVideoEnd);
+        nextSlide();
+        startAutoSlide(); // 重新启动自动切换
+      };
+      
+      // 确保视频播放
+      videoElement.currentTime = 0;
+      videoElement.play().catch(() => {
+        // 如果自动播放失败，忽略错误
+      });
+      
+      videoElement.addEventListener('ended', handleVideoEnd);
+      startProgress(); // 开始进度条动画
+    } else {
+      // 如果没有视频，使用定时器切换
       autoSlideTimer = setInterval(nextSlide, slideInterval);
-    startProgress();
+      startProgress();
+    }
   }
 
   function stopAutoSlide() {
@@ -424,20 +497,44 @@ const banners = bannerData.map(banner => {
   function startProgress() {
     if (!progressFill) return;
     
-    const startTime = performance.now();
+    // 检查当前slide是否包含视频
+    const currentSlideElement = slides[currentSlide];
+    const videoElement = currentSlideElement?.querySelector('video');
     
-    function animate(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min((elapsed / slideInterval) * 100, 100);
+    if (videoElement) {
+      // 如果包含视频，使用视频的实际时长
+      const videoDuration = videoElement.duration || slideInterval / 1000;
+      const startTime = performance.now();
       
-      progressFill.style.width = progress + '%';
-      
-      if (progress < 100) {
-        progressTimer = requestAnimationFrame(animate);
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min((elapsed / (videoDuration * 1000)) * 100, 100);
+        
+        progressFill.style.width = progress + '%';
+        
+        if (progress < 100) {
+          progressTimer = requestAnimationFrame(animate);
+        }
       }
+      
+      progressTimer = requestAnimationFrame(animate);
+    } else {
+      // 如果没有视频，使用默认的slideInterval
+      const startTime = performance.now();
+      
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min((elapsed / slideInterval) * 100, 100);
+        
+        progressFill.style.width = progress + '%';
+        
+        if (progress < 100) {
+          progressTimer = requestAnimationFrame(animate);
+        }
+      }
+      
+      progressTimer = requestAnimationFrame(animate);
     }
-    
-    progressTimer = requestAnimationFrame(animate);
   }
 
   function resetProgress() {

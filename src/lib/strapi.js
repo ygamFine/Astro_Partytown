@@ -1011,12 +1011,20 @@ function getDefaultMenuIcon(item) {
 function processBannerItem(banner, imageMapping, type, index) {
   if (!banner) return null;
   
-  // 桌面端图片
+  // 优先级1: field_bannershipin (权重最高)
+  let shipinOriginal = banner?.field_bannershipin?.media?.url ?? banner?.field_bannershipin?.url ?? null;
+  
+  // 优先级2: 桌面端图片
   let desktopOriginal = banner?.field_tupian?.media?.url ?? banner?.field_tupian?.url ?? null;
-  // 移动端图片（若提供则优先使用）
+  
+  // 优先级3: 移动端图片
   let mobileOriginal = banner?.field_shouji?.media?.url ?? banner?.field_shouji?.url ?? null;
 
   // 兼容数组结构（若字段为数组取第一项）
+  if (!shipinOriginal && Array.isArray(banner?.field_bannershipin)) {
+    const firstS = banner?.field_bannershipin?.find?.(Boolean);
+    shipinOriginal = firstS?.media?.url ?? firstS?.url ?? null;
+  }
   if (!desktopOriginal && Array.isArray(banner?.field_tupian)) {
     const first = banner?.field_tupian?.find?.(Boolean);
     desktopOriginal = first?.media?.url ?? first?.url ?? null;
@@ -1027,6 +1035,9 @@ function processBannerItem(banner, imageMapping, type, index) {
   }
 
   // 使用通用映射函数，支持 '/uploads/' 或完整 URL
+  const imageShipin = shipinOriginal
+    ? (processImageWithMapping({ url: shipinOriginal }, imageMapping) ?? shipinOriginal)
+    : null;
   const imageDesktop = desktopOriginal
     ? (processImageWithMapping({ url: desktopOriginal }, imageMapping) ?? desktopOriginal)
     : '/images/placeholder.webp';
@@ -1041,6 +1052,7 @@ function processBannerItem(banner, imageMapping, type, index) {
     link: banner?.field_lianjiezhi ?? null,
     image: imageDesktop, // 兼容旧字段：默认返回桌面图
     mobileImage: imageMobile, // 新增：移动端专用图片
+    shipin: imageShipin, // 新增：视频字段（优先级最高）
     alt: banner?.field_tupian?.alt ?? banner?.field_mingcheng ?? `Banner${banner?.id ?? index}`,
     type: type, // 新增：标识banner类型 'homepage' 或 'common'
     source: type === 'homepage' ? 'field_shouyebanner' : 'field_tongyongbanner' // 新增：标识数据来源字段

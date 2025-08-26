@@ -18,11 +18,17 @@ const { bannerData = [] } = Astro.props;
 
 // 处理Banner数据，确保图片能正确加载到 <img>（使用正确的URL）
 const mobileBanners = bannerData.map(banner => {
-  const candidates = [(banner as any)?.mobileImage ?? banner?.image].filter(Boolean);
-  const processed = processImageForDisplay(candidates.length > 0 ? candidates[0] : null);
+  // 优先级处理：视频 > 移动端图片 > 桌面端图片
+  const processedShipin = processImageForDisplay((banner as any)?.shipin);
+  const processedMobile = processImageForDisplay((banner as any)?.mobileImage);
+  const processedImage = processImageForDisplay(banner?.image);
+  
+  // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
+  const mobileMedia = processedShipin || processedMobile || processedImage;
+  
   return {
     ...banner,
-    processedImages: processed ? [processed] : []
+    processedImages: mobileMedia ? [mobileMedia] : []
   };
 });
 
@@ -43,7 +49,6 @@ const mobileBanners = bannerData.map(banner => {
                 src={banner.processedImages[0]}
                 autoplay
                 muted
-                loop
                 playsinline
                 width={375}
                 height={200}

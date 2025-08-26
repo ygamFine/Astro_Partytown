@@ -286,7 +286,7 @@ export async function generateMappingOnly() {
  * 生成图片文件名（WebP格式）
  */
 function generateImageFileName(originalUrl) {
-  const url = new URL(originalUrl, STRAPI_STATIC_URL);
+  const url = new URL(originalUrl, STRAPI_STATIC_URL_NEW);
   const pathname = url.pathname;
   const hash = generateImageHash(pathname);
   return `${hash}.webp`;
@@ -412,7 +412,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       if (isBannerImage) {
         // Banner图片保持原始格式，不压缩，放在banner子目录
         targetDir = BANNER_IMAGE_DIR;
-        const url = new URL(imageUrl, STRAPI_STATIC_URL);
+        const url = new URL(imageUrl, STRAPI_STATIC_URL_NEW);
         const pathname = url.pathname;
         const hash = generateImageHash(pathname);
         const originalExt = path.extname(pathname) || '.jpg';
@@ -581,7 +581,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
 
       // 确定目标目录和文件名
       const targetDir = BANNER_IMAGE_DIR;
-      const url = new URL(fullUrl, STRAPI_STATIC_URL);
+      const url = new URL(fullUrl, STRAPI_STATIC_URL_NEW);
       const pathname = url.pathname;
       const hash = generateImageHash(pathname);
       const originalExt = path.extname(pathname) || '.jpg';
@@ -652,8 +652,8 @@ async function downloadImage(imageUrl, isBannerImage = false) {
   if (imageUrl.startsWith('/uploads/')) {
     // 不再依赖文件名判断，使用调用时传入的isBannerImage参数
     const fullUrl = isBannerImage ?
-      `${STRAPI_STATIC_URL_NEW}${imageUrl}` :
-      `${STRAPI_STATIC_URL}${imageUrl}`;
+              `${STRAPI_STATIC_URL_NEW}${imageUrl}` :
+        `${STRAPI_STATIC_URL_NEW}${imageUrl}`;
 
     console.log(`处理相对路径: ${imageUrl} -> ${fullUrl} (Banner: ${isBannerImage})`);
     return await downloadImage(fullUrl, isBannerImage);
@@ -976,7 +976,8 @@ async function generateBannerConfig() {
     const bannerImages = [];
 
     // 获取API原始数据来获取真实URL
-    const apiUrl = 'http://182.92.233.160:1137/api/banner-setting?populate=all';
+    const { STRAPI_STATIC_URL_NEW } = await import('../src/lib/strapiClient.js');
+    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate=all`;
     const response = await fetch(apiUrl);
     const apiData = await response.json();
 
@@ -984,8 +985,24 @@ async function generateBannerConfig() {
     if (apiData?.data?.field_shouyebanner) {
       apiData.data.field_shouyebanner.forEach(banner => {
         let desktopImage = null;
+        let mobileImage = null;
 
-        // 添加桌面端图片
+        // 优先级1: field_bannershipin (权重最高)
+        if (banner.field_bannershipin?.media?.url) {
+          const shipinUrl = banner.field_bannershipin.media.url;
+          const shipinPath = shipinUrl.replace('/uploads/', '');
+          const shipinImage = {
+            originalUrl: shipinUrl,
+            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${shipinPath}`,
+            type: 'shipin',
+            bannerType: 'homepage',
+            isBanner: true,
+            priority: 1 // 最高优先级
+          };
+          bannerImages.push(shipinImage);
+        }
+
+        // 优先级2: field_tupian (桌面端图片)
         if (banner.field_tupian?.media?.url) {
           const imageUrl = banner.field_tupian.media.url;
           const imagePath = imageUrl.replace('/uploads/', '');
@@ -994,21 +1011,23 @@ async function generateBannerConfig() {
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${imagePath}`,
             type: 'desktop',
             bannerType: 'homepage',
-            isBanner: true
+            isBanner: true,
+            priority: 2
           };
           bannerImages.push(desktopImage);
         }
 
-        // 添加移动端图片
+        // 优先级3: field_shouji (移动端图片)
         if (banner.field_shouji?.media?.url) {
           const mobileImageUrl = banner.field_shouji.media.url;
           const mobileImagePath = mobileImageUrl.replace('/uploads/', '');
-          const mobileImage = {
+          mobileImage = {
             originalUrl: mobileImageUrl,
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${mobileImagePath}`,
             type: 'mobile',
             bannerType: 'homepage',
             isBanner: true,
+            priority: 3,
             fallbackImage: desktopImage // 记录对应的PC端图片
           };
           bannerImages.push(mobileImage);
@@ -1020,8 +1039,24 @@ async function generateBannerConfig() {
     if (apiData?.data?.field_tongyongbanner) {
       apiData.data.field_tongyongbanner.forEach(banner => {
         let desktopImage = null;
+        let mobileImage = null;
 
-        // 添加桌面端图片
+        // 优先级1: field_bannershipin (权重最高)
+        if (banner.field_bannershipin?.media?.url) {
+          const shipinUrl = banner.field_bannershipin.media.url;
+          const shipinPath = shipinUrl.replace('/uploads/', '');
+          const shipinImage = {
+            originalUrl: shipinUrl,
+            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${shipinPath}`,
+            type: 'shipin',
+            bannerType: 'common',
+            isBanner: true,
+            priority: 1 // 最高优先级
+          };
+          bannerImages.push(shipinImage);
+        }
+
+        // 优先级2: field_tupian (桌面端图片)
         if (banner.field_tupian?.media?.url) {
           const imageUrl = banner.field_tupian.media.url;
           const imagePath = imageUrl.replace('/uploads/', '');
@@ -1030,21 +1065,23 @@ async function generateBannerConfig() {
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${imagePath}`,
             type: 'desktop',
             bannerType: 'common',
-            isBanner: true
+            isBanner: true,
+            priority: 2
           };
           bannerImages.push(desktopImage);
         }
 
-        // 添加移动端图片
+        // 优先级3: field_shouji (移动端图片)
         if (banner.field_shouji?.media?.url) {
           const mobileImageUrl = banner.field_shouji.media.url;
           const mobileImagePath = mobileImageUrl.replace('/uploads/', '');
-          const mobileImage = {
+          mobileImage = {
             originalUrl: mobileImageUrl,
             localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${mobileImagePath}`,
             type: 'mobile',
             bannerType: 'common',
             isBanner: true,
+            priority: 3,
             fallbackImage: desktopImage // 记录对应的PC端图片
           };
           bannerImages.push(mobileImage);
