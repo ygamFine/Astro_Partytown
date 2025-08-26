@@ -471,7 +471,20 @@ const banners = bannerData.map(banner => {
       });
       
       videoElement.addEventListener('ended', handleVideoEnd);
-      startProgress(); // 开始进度条动画
+      
+      // 等待视频加载完成后再开始进度条
+      const handleVideoLoaded = () => {
+        startProgress(); // 开始进度条动画
+        videoElement.removeEventListener('loadedmetadata', handleVideoLoaded);
+        videoElement.removeEventListener('loadeddata', handleVideoLoaded);
+      };
+      
+      if (videoElement.readyState >= 1) {
+        startProgress(); // 视频已加载，直接开始进度条
+      } else {
+        videoElement.addEventListener('loadedmetadata', handleVideoLoaded);
+        videoElement.addEventListener('loadeddata', handleVideoLoaded);
+      }
     } else {
       // 如果没有视频，使用定时器切换
       autoSlideTimer = setInterval(nextSlide, slideInterval);
@@ -502,22 +515,62 @@ const banners = bannerData.map(banner => {
     const videoElement = currentSlideElement?.querySelector('video');
     
     if (videoElement) {
-      // 如果包含视频，使用视频的实际时长
-      const videoDuration = videoElement.duration || slideInterval / 1000;
-      const startTime = performance.now();
-      
-      function animate(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min((elapsed / (videoDuration * 1000)) * 100, 100);
-        
-        progressFill.style.width = progress + '%';
-        
-        if (progress < 100) {
+      // 如果包含视频，等待视频加载完成后再开始进度条
+      const handleVideoLoaded = () => {
+        const videoDuration = videoElement.duration;
+        if (videoDuration && videoDuration > 0) {
+          const startTime = performance.now();
+          
+          function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min((elapsed / (videoDuration * 1000)) * 100, 100);
+            
+            progressFill.style.width = progress + '%';
+            
+            if (progress < 100) {
+              progressTimer = requestAnimationFrame(animate);
+            }
+          }
+          
+          progressTimer = requestAnimationFrame(animate);
+        } else {
+          // 如果视频时长无效，使用默认时长
+          const startTime = performance.now();
+          
+          function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min((elapsed / slideInterval) * 100, 100);
+            
+            progressFill.style.width = progress + '%';
+            
+            if (progress < 100) {
+              progressTimer = requestAnimationFrame(animate);
+            }
+          }
+          
           progressTimer = requestAnimationFrame(animate);
         }
-      }
+        
+        // 移除事件监听器
+        videoElement.removeEventListener('loadedmetadata', handleVideoLoaded);
+        videoElement.removeEventListener('loadeddata', handleVideoLoaded);
+      };
       
-      progressTimer = requestAnimationFrame(animate);
+      // 如果视频已经加载完成
+      if (videoElement.readyState >= 1) {
+        handleVideoLoaded();
+      } else {
+        // 等待视频加载完成
+        videoElement.addEventListener('loadedmetadata', handleVideoLoaded);
+        videoElement.addEventListener('loadeddata', handleVideoLoaded);
+        
+        // 设置超时，防止无限等待
+        setTimeout(() => {
+          videoElement.removeEventListener('loadedmetadata', handleVideoLoaded);
+          videoElement.removeEventListener('loadeddata', handleVideoLoaded);
+          handleVideoLoaded(); // 使用默认时长
+        }, 5000);
+      }
     } else {
       // 如果没有视频，使用默认的slideInterval
       const startTime = performance.now();
