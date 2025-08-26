@@ -800,9 +800,14 @@ async function downloadAllImages() {
 
     console.log(`📊 总共找到 ${allBannerData.length} 个Banner项目`);
 
-    // 从Banner数据中提取所有图片URL
+    // 从Banner数据中提取所有图片和视频URL
     const bannerImageUrls = new Set();
     allBannerData.forEach(banner => {
+      // 添加视频（优先级最高）
+      if (banner.shipin && banner.shipin !== '/images/placeholder.webp') {
+        bannerImageUrls.add(banner.shipin);
+        console.log(`  🎬 视频Banner: ${banner.shipin}`);
+      }
       // 添加桌面端图片
       if (banner.image && banner.image !== '/images/placeholder.webp') {
         bannerImageUrls.add(banner.image);
@@ -990,10 +995,13 @@ async function generateBannerConfig() {
         // 优先级1: field_bannershipin (权重最高)
         if (banner.field_bannershipin?.media?.url) {
           const shipinUrl = banner.field_bannershipin.media.url;
-          const shipinPath = shipinUrl.replace('/uploads/', '');
+          const url = new URL(shipinUrl, STRAPI_STATIC_URL_NEW);
+          const pathname = url.pathname;
+          const hash = generateImageHash(pathname);
+          const originalExt = path.extname(pathname) || '.mp4';
           const shipinImage = {
             originalUrl: shipinUrl,
-            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${shipinPath}`,
+            localPath: `src/assets/strapi/banner/${hash}${originalExt}`,
             type: 'shipin',
             bannerType: 'homepage',
             isBanner: true,
@@ -1044,10 +1052,13 @@ async function generateBannerConfig() {
         // 优先级1: field_bannershipin (权重最高)
         if (banner.field_bannershipin?.media?.url) {
           const shipinUrl = banner.field_bannershipin.media.url;
-          const shipinPath = shipinUrl.replace('/uploads/', '');
+          const url = new URL(shipinUrl, STRAPI_STATIC_URL_NEW);
+          const pathname = url.pathname;
+          const hash = generateImageHash(pathname);
+          const originalExt = path.extname(pathname) || '.mp4';
           const shipinImage = {
             originalUrl: shipinUrl,
-            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${shipinPath}`,
+            localPath: `src/assets/strapi/banner/${hash}${originalExt}`,
             type: 'shipin',
             bannerType: 'common',
             isBanner: true,
