@@ -45,31 +45,14 @@ async function isBannerImage(filePath) {
       const bannerFileName = path.basename(bannerPath);
       const bannerFileNameWithoutExt = path.basename(bannerPath, path.extname(bannerPath));
 
-      // 多种匹配方式
-      return (
-        // 完整路径匹配
-        normalizedPath.includes(bannerPath) ||
-        // 文件名匹配
-        bannerFileName === fileName ||
-        // 文件名（不含扩展名）匹配
-        bannerFileNameWithoutExt === fileNameWithoutExt ||
-        // 路径包含banner目录
-        normalizedPath.includes('/banner/') ||
-        // 文件名包含banner关键词
-        fileNameWithoutExt.includes('banner') ||
-        fileNameWithoutExt.includes('shouji')
-      );
+      // 只使用配置文件中的路径匹配，不使用文件名
+      return normalizedPath.includes(bannerPath);
     });
   } catch (error) {
     console.warn('读取banner配置文件失败:', error.message);
-    // 如果配置文件不存在或读取失败，则回退到目录和文件名检查
+    // 如果配置文件不存在或读取失败，则回退到目录检查
     const normalizedPath = filePath.replace(/\\/g, '/');
-    const fileName = path.basename(filePath);
-    return (
-      normalizedPath.includes('/banner/') ||
-      fileName.includes('banner') ||
-      fileName.includes('shouji')
-    );
+    return normalizedPath.includes('/banner/');
   }
 }
 
