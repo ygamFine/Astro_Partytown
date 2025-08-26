@@ -564,34 +564,6 @@ try {
 </script>
 
 <style>
-  .menu-item {
-    position: relative;
-    overflow: hidden;
-    height: 6rem;
-    min-width: 15rem;
-    transition: background-color 0.15s ease;
-  }
-  
-  /* 基础菜单项样式 */
-  .menu-item {
-    background-color: transparent;
-    color: white;
-  }
-  
-  /* 预设选中状态已通过服务端渲染处理，移除CSS预设 */
-  
-  /* 选中状态 - 当前页面 */
-  .menu-item.active {
-    background-color: #b91c1c !important;
-    color: white !important;
-  }
-  
-  /* Hover状态 - 但不覆盖active状态 */
-  .menu-item:hover:not(.active) {
-    background-color: #b91c1c;
-    color: white;
-  }
-  
   /* 菜单初始状态 - 防止闪烁 */
   nav {
     visibility: visible;
@@ -607,11 +579,6 @@ try {
   /* 菜单容器预加载优化 */
   .dropdown-container {
     will-change: transform;
-  }
-  
-  /* 防止页面跳转时的闪烁 */
-  .menu-item {
-    will-change: background-color;
   }
   
   /* 页面加载时的平滑过渡 */

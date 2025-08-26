@@ -155,44 +155,4 @@ const telescopicImage = '/images/telescopic-400.webp';
   </div>
 </section>
 
-<style>
-  /* 产品卡片固定尺寸 - 防止CLS */
-  .product-card {
-    /* height: 480px; */
-    display: flex;
-    flex-direction: column;
-  }
-
-  .product-image-container {
-    width: 100%;
-    height: 200px;
-    flex-shrink: 0;
-    background: #f3f4f6;
-    overflow: hidden;
-  }
-
-  .product-card .p-6 {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  /* 性能优化的悬停效果 */
-  .product-card {
-    will-change: transform, box-shadow;
-    transform: translateZ(0);
-  }
-
-  /* 移动端优化 */
-  @media (max-width: 768px) {
-    .product-card {
-      height: auto;
-      min-height: 400px;
-    }
-
-    .product-image-container {
-      height: 200px;
-    }
-  }
-</style> 
+ 

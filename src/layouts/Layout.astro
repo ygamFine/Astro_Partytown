@@ -8,6 +8,8 @@ import AnimationSystem from "../components/common/AnimationSystem.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
 
+// 导入共享样式
+import "../styles/components.css";
 
 export interface Props {
   title: string;
@@ -55,7 +57,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
         if (document.fonts && document.fonts.check) {
           setTimeout(() => {
             const fontLoaded = document.fonts.check('16px iconfont');
-            console.log('字体加载状态:', fontLoaded);
+    
             if (!fontLoaded) {
               console.warn('字体未加载，尝试重新加载');
               // 强制重新加载字体CSS

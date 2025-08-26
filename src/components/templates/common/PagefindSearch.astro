@@ -208,48 +208,7 @@ const uiData = t.search?.ui || {};
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
-  /* Pagefind UI 样式覆盖 */
-  :global(.pagefind-ui) {
-    --pagefind-ui-primary: #dc2626;
-    --pagefind-ui-text: #374151;
-    --pagefind-ui-background: #ffffff;
-    --pagefind-ui-border: #e5e7eb;
-    --pagefind-ui-tag: #f3f4f6;
-    --pagefind-ui-border-width: 1px;
-    --pagefind-ui-border-radius: 8px;
-    --pagefind-ui-font: system-ui, -apple-system, sans-serif;
-    --pagefind-ui-font-size: 14px;
-    --pagefind-ui-line-height: 1.4;
-  }
 
-  :global(.pagefind-ui__search-input) {
-    display: none; /* 隐藏 Pagefind 自带的搜索框 */
-  }
-
-  :global(.pagefind-ui__results-area) {
-    border: none;
-    background: transparent;
-  }
-
-  :global(.pagefind-ui__result) {
-    border-bottom: 1px solid #f3f4f6;
-    padding: 1rem;
-    transition: background-color 0.2s ease;
-  }
-
-  :global(.pagefind-ui__result:hover) {
-    background-color: #f9fafb;
-  }
-
-  :global(.pagefind-ui__result-link) {
-    color: #1f2937;
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  :global(.pagefind-ui__result-link:hover) {
-    color: #dc2626;
-  }
 
   :global(.pagefind-ui__result-excerpt) {
     color: #6b7280;

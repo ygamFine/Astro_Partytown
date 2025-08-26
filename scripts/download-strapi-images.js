@@ -763,7 +763,7 @@ async function downloadAllImages() {
   // Banner图片现在通过智能识别逻辑处理，不需要在这里重复处理
 
   // 移动端底部菜单图标（按语言获取）
-  // TODO: API端点 shoujiduandibucaidan 返回404错误，暂时跳过
+      // API端点 shoujiduandibucaidan 返回404错误，暂时跳过
   console.log('⚠️  跳过移动端菜单图标下载（API端点不存在）');
   /*
   for (const locale of ENABLED_LOCALES) {

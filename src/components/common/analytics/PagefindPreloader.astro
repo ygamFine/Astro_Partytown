@@ -33,15 +33,7 @@ const getPreloadConfig = () => {
 
 const config = getPreloadConfig();
 
-if (isDev && enableDebug) {
-  console.log('🚀 Pagefind 预加载器配置:', {
-    pageType,
-    lang,
-    currentPath,
-    preloadStrategy,
-    timestamp: new Date().toISOString()
-  });
-}
+
 ---
 
 <!-- 🚀 Pagefind 预加载器 - Astro 极致优化版本 -->
@@ -67,9 +59,6 @@ if (isDev && enableDebug) {
   
   // 性能优化：避免重复初始化
   if (window.pagefindPreloaderInitialized) {
-    if (ENABLE_DEBUG) {
-      console.log('✅ Pagefind 预加载器已初始化，跳过重复初始化');
-    }
     return;
   }
   
@@ -86,10 +75,6 @@ if (isDev && enableDebug) {
     // 🎯 策略1: 立即预加载
     async preloadImmediate() {
       if (this.isPreloaded) return;
-      
-      if (ENABLE_DEBUG) {
-        console.log('🚀 Pagefind 预加载器 - 立即预加载');
-      }
       
       await this.preloadPagefind();
     }
@@ -187,16 +172,7 @@ if (isDev && enableDebug) {
           this.isPreloaded = true;
           window.pagefindPreloaded = true;
           
-          if (ENABLE_DEBUG) {
-            console.log('✅ Pagefind 预加载成功', {
-              pageType: PAGE_TYPE,
-              lang: CURRENT_LANG,
-              path: CURRENT_PATH,
-              mode: IS_PROD ? 'production' : 'development',
-              loadDuration: `${loadDuration}ms`,
-              totalTime: `${Date.now() - this.startTime}ms`
-            });
-          }
+
           
           // 触发预加载完成事件
           window.dispatchEvent(new CustomEvent('pagefind:preloaded', {
@@ -315,9 +291,7 @@ if (isDev && enableDebug) {
       },
       changeStrategy: (newStrategy) => {
         CONFIG.strategy = newStrategy;
-        if (ENABLE_DEBUG) {
-          console.log('🔄 预加载策略已更改为:', newStrategy);
-        }
+
       }
     };
   }

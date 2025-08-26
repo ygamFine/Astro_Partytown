@@ -32,15 +32,7 @@ const getAnimationConfig = () => {
 
 const config = getAnimationConfig();
 
-// 开发环境调试信息
-if (isDev && enableDebug) {
-  console.log('🎬 动画系统配置:', {
-    enableAnimations,
-    enableCounters,
-    animationStrategy,
-    timestamp: new Date().toISOString()
-  });
-}
+
 ---
 
 <!-- 🎬 动画系统 - Astro 极致优化版本 -->
@@ -64,9 +56,6 @@ if (isDev && enableDebug) {
   
   // 性能优化：避免重复初始化
   if (window.animationSystemInitialized) {
-    if (ENABLE_DEBUG) {
-      console.log('✅ 动画系统已初始化，跳过重复初始化');
-    }
     return;
   }
   
@@ -83,10 +72,6 @@ if (isDev && enableDebug) {
     // 🎯 策略1: 立即初始化
     async initImmediate() {
       if (this.isInitialized) return;
-      
-      if (ENABLE_DEBUG) {
-        console.log('🎬 动画系统 - 立即初始化');
-      }
       
       await this.initializeSystem();
     }
@@ -177,15 +162,7 @@ if (isDev && enableDebug) {
         this.isInitialized = true;
         window.animationSystemInitialized = true;
         
-        if (ENABLE_DEBUG) {
-          console.log('✅ 动画系统初始化成功', {
-            enableAnimations: ENABLE_ANIMATIONS,
-            enableCounters: ENABLE_COUNTERS,
-            strategy: CONFIG.strategy,
-            initDuration: `${initDuration}ms`,
-            totalTime: `${Date.now() - this.startTime}ms`
-          });
-        }
+
         
         // 触发初始化完成事件
         window.dispatchEvent(new CustomEvent('animation:ready', {
@@ -359,9 +336,7 @@ if (isDev && enableDebug) {
       },
       changeStrategy: (newStrategy) => {
         CONFIG.strategy = newStrategy;
-        if (ENABLE_DEBUG) {
-          console.log('🔄 动画策略已更改为:', newStrategy);
-        }
+        
       }
     };
   }

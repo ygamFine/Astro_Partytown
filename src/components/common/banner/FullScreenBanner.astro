@@ -57,72 +57,64 @@ const banners = bannerData.map(banner => {
   <!-- Banner轮播 -->
   <div class="banner-carousel">
     {banners.map((banner, index) => (
-      (banner.processedImages.length > 0 || banner.processedMobileImages.length > 0) && (
+      (banner.processedImages.length > 0 || banner.processedMobileImages.length > 0 || banner.processedShipin.length > 0) && (
         <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
           {/* PC端图片/视频 */}
           <div class="desktop-banner-image">
-            {banner.processedImages.length > 0 ? (
-              banner.processedImages[0].endsWith('.mp4') ||
-              banner.processedImages[0].endsWith('.webm') ||
-              banner.processedImages[0].endsWith('.mov') ? (
-                <video
-                  src={banner.processedImages[0]}
-                  autoplay
-                  muted
-                  playsinline
-                  width={1440}
-                  height={600}
-                  class="banner-image"
-                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-                >
-                  您的浏览器不支持视频播放
-                </video>
-              ) : (
-                <img
-                  src={banner.processedImages[0]}
-                  alt={banner.alt}
-                  width={1440}
-                  height={600}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchpriority={index === 0 ? "high" : "auto"}
-                  decoding="async"
-                  class="banner-image"
-                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-                />
-              )
+            {banner.processedShipin.length > 0 ? (
+              <video
+                src={banner.processedShipin[0]}
+                autoplay
+                muted
+                playsinline
+                width={1440}
+                height={600}
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              >
+                您的浏览器不支持视频播放
+              </video>
+            ) : banner.processedImages.length > 0 ? (
+              <img
+                src={banner.processedImages[0]}
+                alt={banner.alt}
+                width={1440}
+                height={600}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              />
             ) : null}
           </div>
           {/* 手机端图片/视频 */}
           <div class="mobile-banner-image">
-            {banner.processedMobileImages.length > 0 ? (
-              banner.processedMobileImages[0].endsWith('.mp4') ||
-              banner.processedMobileImages[0].endsWith('.webm') ||
-              banner.processedMobileImages[0].endsWith('.mov') ? (
-                <video
-                  src={banner.processedMobileImages[0]}
-                  autoplay
-                  muted
-                  playsinline
-                  width={375}
-                  height={600}
-                  class="banner-image"
-                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-                >
-                  您的浏览器不支持视频播放
-                </video>
-              ) : (
-                <img
-                  src={banner.processedMobileImages[0]}
-                  alt={banner.alt}
-                  width={375}
-                  height={600}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchpriority={index === 0 ? "high" : "auto"}
-                  decoding="async"
-                  class="banner-image"
-                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-                />
-              )
+            {banner.processedShipin.length > 0 ? (
+              <video
+                src={banner.processedShipin[0]}
+                autoplay
+                muted
+                playsinline
+                width={375}
+                height={600}
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              >
+                您的浏览器不支持视频播放
+              </video>
+            ) : banner.processedMobileImages.length > 0 ? (
+              <img
+                src={banner.processedMobileImages[0]}
+                alt={banner.alt}
+                width={375}
+                height={600}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                class="banner-image"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+              />
             ) : banner.processedImages.length > 0 && (
               <img
                 src={banner.processedImages[0]}
@@ -273,14 +265,8 @@ const banners = bannerData.map(banner => {
   /* Banner容器样式 */
   .banner-container {
     display: block !important;
-    position: relative;
-    width: 100%;
     height: 800px;
-    overflow: hidden;
     background: #f3f4f6;
-    z-index: 1;
-    margin: 0;
-    padding: 0;
   }
 
   /* 响应式图片容器 */

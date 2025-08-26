@@ -119,17 +119,7 @@ const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, pos
 
 // 不处理脚本内容，直接使用原始数据
 
-// 开发环境调试信息
-if (isDev && currentScripts) {
-  console.log(`🎯 动态脚本加载器 [${position}] - 已加载脚本:`, {
-    pageType,
-    route,
-    hasScripts: !!currentScripts.scripts,
-    hasStyles: !!currentScripts.css,
-    hasMeta: !!currentScripts.meta,
-    optimization
-  });
-}
+
 ---
 
 <!-- 🎯 动态脚本加载器 - 位置: {position} -->
