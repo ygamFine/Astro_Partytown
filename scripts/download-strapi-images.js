@@ -397,8 +397,9 @@ async function downloadImage(imageUrl, isBannerImage = false) {
     return null;
   }
 
-  // 如果是本地路径，跳过
-  if (imageUrl.startsWith('/images/') || imageUrl.startsWith('./') || imageUrl.startsWith('/assets/')) {
+  // 如果是本地路径但不是banner图片，则跳过
+  if (imageUrl.startsWith('/images/') || imageUrl.startsWith('./') ||
+      (imageUrl.startsWith('/assets/') && !imageUrl.startsWith('/assets/banner/'))) {
     return null;
   }
 
@@ -427,13 +428,28 @@ async function downloadImage(imageUrl, isBannerImage = false) {
 
       const localPath = path.join(targetDir, fileName);
 
-      // 检查文件是否已存在
+      // 检查文件是否存在
       let fileExists = false;
       try {
         await fs.access(localPath);
         fileExists = true;
       } catch {
         // 文件不存在
+      }
+
+      // 对于banner图片，如果文件存在也强制重新下载以确保原始质量
+      if (isBannerImage && fileExists) {
+        console.log(`🔄 强制重新下载Banner图片: ${fileName}`);
+        console.log(`📁 文件路径: ${localPath}`);
+        // 删除现有文件，强制重新下载
+        try {
+          await fs.unlink(localPath);
+          console.log(`🗑️  删除现有Banner文件，准备重新下载: ${fileName}`);
+          fileExists = false;
+        } catch (error) {
+          console.warn(`⚠️  无法删除现有Banner文件: ${fileName}`, error.message);
+          console.warn(`⚠️  文件路径: ${localPath}`);
+        }
       }
 
       // 如果是Banner图片且文件在目标目录不存在但在主目录存在，则移动到banner目录
@@ -450,8 +466,8 @@ async function downloadImage(imageUrl, isBannerImage = false) {
         }
       }
 
-      if (fileExists) {
-        return null; // 文件已存在，跳过
+      if (fileExists && !isBannerImage) {
+        return null; // 非banner图片且文件已存在，跳过
       }
 
       // 下载原始图片到临时文件
@@ -495,18 +511,152 @@ async function downloadImage(imageUrl, isBannerImage = false) {
     }
   }
 
+  // 处理本地banner图片路径，重新下载
+  if (imageUrl.startsWith('/assets/banner/')) {
+    try {
+      // 从API原始数据中找到对应的真实URL
+      const bannerConfigPath = path.join(__dirname, '../src/data/banner-images.json');
+      
+      // 检查配置文件是否存在，如果不存在则创建默认配置
+      let bannerConfig;
+      try {
+        const bannerConfigData = await fs.readFile(bannerConfigPath, 'utf-8');
+        bannerConfig = JSON.parse(bannerConfigData);
+      } catch (error) {
+        console.warn('Banner配置文件不存在，创建默认配置');
+        bannerConfig = { bannerImages: [] };
+        
+        // 确保目录存在
+        const configDir = path.dirname(bannerConfigPath);
+        try {
+          await fs.mkdir(configDir, { recursive: true });
+        } catch (mkdirError) {
+          console.warn('创建配置目录失败:', mkdirError.message);
+        }
+      }
+
+      // 找到对应的banner配置
+      const bannerConfigItem = bannerConfig.bannerImages.find(item => {
+        // 直接比较hash部分
+        const configHash = path.basename(item.originalUrl, path.extname(item.originalUrl));
+        const urlFileName = path.basename(imageUrl, path.extname(imageUrl));
+
+        // 如果文件名以L3VwbG9hZHMv开头，尝试base64解码
+        let urlHash = urlFileName;
+        if (urlFileName.startsWith('L3VwbG9hZHMv')) {
+          try {
+            // 移除L3VwbG9hZHMv前缀并解码
+            const encodedPart = urlFileName.replace('L3VwbG9hZHMv', '');
+            urlHash = Buffer.from(encodedPart, 'base64').toString('utf-8');
+            // 移除扩展名
+            urlHash = path.basename(urlHash, path.extname(urlHash));
+          } catch (error) {
+            // 解码失败，使用原始文件名
+            console.warn(`⚠️  Base64解码失败: ${urlFileName}`);
+          }
+        }
+
+        // 检查hash是否匹配
+        return configHash === urlHash || urlHash.includes(configHash);
+      });
+
+      if (!bannerConfigItem) {
+        console.warn(`⚠️  找不到 ${imageUrl} 对应的banner配置`);
+        return null;
+      }
+
+      // 使用原始URL重新下载
+      const originalUrl = bannerConfigItem.originalUrl;
+
+      let fullUrl;
+
+      if (originalUrl.startsWith('http')) {
+        fullUrl = originalUrl;
+      } else if (originalUrl.startsWith('/uploads/')) {
+        fullUrl = `${STRAPI_STATIC_URL_NEW}${originalUrl}`;
+      } else {
+        console.warn(`⚠️  无效的原始URL: ${originalUrl}`);
+        return null;
+      }
+
+      // 确定目标目录和文件名
+      const targetDir = BANNER_IMAGE_DIR;
+      const url = new URL(fullUrl, STRAPI_STATIC_URL);
+      const pathname = url.pathname;
+      const hash = generateImageHash(pathname);
+      const originalExt = path.extname(pathname) || '.jpg';
+      const fileName = `${hash}${originalExt}`;
+      const localPath = path.join(targetDir, fileName);
+
+      // 确保目标目录存在
+      await fs.mkdir(targetDir, { recursive: true });
+
+      // 检查文件是否存在，如果存在则删除
+      try {
+        await fs.access(localPath);
+        console.log(`🔄 强制重新下载Banner图片: ${fileName}`);
+        console.log(`📁 文件路径: ${localPath}`);
+        await fs.unlink(localPath);
+        console.log(`🗑️  删除现有Banner文件，准备重新下载: ${fileName}`);
+      } catch {
+        // 文件不存在，正常下载
+      }
+
+      // 下载图片
+      console.log(`📥 下载Banner图片: ${fullUrl}`);
+      const response = await fetch(fullUrl);
+      if (!response.ok) {
+        console.warn(`⚠️  下载失败: ${fullUrl} (${response.status})`);
+
+        // 如果是移动端图片下载失败，尝试使用PC端图片替代
+        if (bannerConfigItem.type === 'mobile' && bannerConfigItem.fallbackImage) {
+          console.log(`🔄 移动端图片下载失败，使用PC端图片替代: ${bannerConfigItem.fallbackImage.originalUrl}`);
+
+          const fallbackUrl = bannerConfigItem.fallbackImage.originalUrl.startsWith('http') ?
+            bannerConfigItem.fallbackImage.originalUrl :
+            `${STRAPI_STATIC_URL_NEW}${bannerConfigItem.fallbackImage.originalUrl}`;
+
+          try {
+            const fallbackResponse = await fetch(fallbackUrl);
+            if (!fallbackResponse.ok) {
+              console.warn(`⚠️  PC端图片也下载失败: ${fallbackUrl} (${fallbackResponse.status})`);
+              return null;
+            }
+
+            const fallbackBuffer = await fallbackResponse.arrayBuffer();
+            await fs.writeFile(localPath, Buffer.from(fallbackBuffer));
+
+            console.log(`📱 使用PC端图片替代移动端图片（不压缩）: banner/${fileName}`);
+            return fileName;
+          } catch (fallbackError) {
+            console.warn(`⚠️  PC端图片替代失败:`, fallbackError.message);
+            return null;
+          }
+        }
+
+        return null;
+      }
+
+      const buffer = await response.arrayBuffer();
+      await fs.writeFile(localPath, Buffer.from(buffer));
+
+      console.log(`📷 Banner图片已下载（不压缩）: banner/${fileName}`);
+      return fileName;
+    } catch (error) {
+      console.warn(`⚠️  处理本地banner路径失败: ${imageUrl}`, error.message);
+      return null;
+    }
+  }
+
   // 如果是相对路径，转换为绝对路径
   if (imageUrl.startsWith('/uploads/')) {
-    // 对于 Banner 图片，使用正确的服务器地址
-    // 检查是否是Banner图片（通过文件名或路径判断）
-    const isBannerImageFromPath = imageUrl.includes('banner') || imageUrl.includes('p1_') || imageUrl.includes('p2_');
-
-    const fullUrl = isBannerImageFromPath ?
+    // 不再依赖文件名判断，使用调用时传入的isBannerImage参数
+    const fullUrl = isBannerImage ?
       `${STRAPI_STATIC_URL_NEW}${imageUrl}` :
       `${STRAPI_STATIC_URL}${imageUrl}`;
 
-    console.log(`处理相对路径: ${imageUrl} -> ${fullUrl} (Banner: ${isBannerImageFromPath})`);
-    return await downloadImage(fullUrl, isBannerImageFromPath);
+    console.log(`处理相对路径: ${imageUrl} -> ${fullUrl} (Banner: ${isBannerImage})`);
+    return await downloadImage(fullUrl, isBannerImage);
   }
 
   return null;
@@ -610,33 +760,7 @@ async function downloadAllImages() {
     }
   }
 
-  // Banner设置（不需要分页，全局获取一次）
-  try {
-    const banners = await getBannerData();
-    if (banners && Array.isArray(banners)) {
-      console.log(`📊 普通Banner数据: ${banners.length} 个条目`);
-      banners.forEach(banner => {
-        if (banner.image) imageInfoList.push({ url: banner.image, isBanner: true, type: 'banner' });
-        if (banner.mobileImage && banner.mobileImage !== banner.image) {
-          imageInfoList.push({ url: banner.mobileImage, isBanner: true, type: 'banner' });
-        }
-      });
-    }
-  } catch {}
-
-  // 首页Banner设置（包含PC端和手机端图片）
-  try {
-    const homepageBanners = await getBannerData('homepage');
-    if (homepageBanners && Array.isArray(homepageBanners)) {
-      console.log(`🏠 首页Banner数据: ${homepageBanners.length} 个条目`);
-      homepageBanners.forEach(banner => {
-        if (banner.image) imageInfoList.push({ url: banner.image, isBanner: true, type: 'homepage-banner' });
-        if (banner.mobileImage && banner.mobileImage !== banner.image) {
-          imageInfoList.push({ url: banner.mobileImage, isBanner: true, type: 'homepage-banner' });
-        }
-      });
-    }
-  } catch {}
+  // Banner图片现在通过智能识别逻辑处理，不需要在这里重复处理
 
   // 移动端底部菜单图标（按语言获取）
   // TODO: API端点 shoujiduandibucaidan 返回404错误，暂时跳过
@@ -657,6 +781,52 @@ async function downloadAllImages() {
     }
   }
   */
+
+  // 智能识别Banner图片：基于数据结构而不是文件名
+  console.log('🧠 智能识别Banner图片...');
+
+  // 获取所有Banner数据（包括移动端图片）
+  let allBannerData = [];
+  try {
+    // 获取普通Banner数据
+    const commonBanners = await getBannerData('common');
+    console.log(`📊 普通Banner数据: ${commonBanners.length} 个条目`);
+    allBannerData = allBannerData.concat(commonBanners);
+
+    // 获取首页Banner数据
+    const homepageBanners = await getBannerData('homepage');
+    console.log(`🏠 首页Banner数据: ${homepageBanners.length} 个条目`);
+    allBannerData = allBannerData.concat(homepageBanners);
+
+    console.log(`📊 总共找到 ${allBannerData.length} 个Banner项目`);
+
+    // 从Banner数据中提取所有图片URL
+    const bannerImageUrls = new Set();
+    allBannerData.forEach(banner => {
+      // 添加桌面端图片
+      if (banner.image && banner.image !== '/images/placeholder.webp') {
+        bannerImageUrls.add(banner.image);
+        console.log(`  🖼️  桌面Banner: ${banner.image}`);
+      }
+      // 添加移动端图片
+      if (banner.mobileImage && banner.mobileImage !== '/images/placeholder.webp' && banner.mobileImage !== banner.image) {
+        bannerImageUrls.add(banner.mobileImage);
+        console.log(`  📱 移动Banner: ${banner.mobileImage}`);
+      }
+    });
+
+    console.log(`📊 从Banner数据中提取到 ${bannerImageUrls.size} 个图片URL`);
+
+    // 将Banner图片添加到下载队列
+    bannerImageUrls.forEach(url => {
+      imageInfoList.push({ url, isBanner: true, type: 'banner' });
+    });
+
+  } catch (error) {
+    console.warn('获取Banner数据失败:', error.message);
+    // 如果获取Banner数据失败，回退到原来的方法
+    console.log('🔄 回退到原来的Banner识别方法...');
+  }
 
   // 去重处理
   const uniqueImageMap = new Map();
@@ -690,6 +860,9 @@ async function downloadAllImages() {
 
   // 生成图片映射文件
   await generateImageMapping();
+
+  // 生成Banner配置文件
+  await generateBannerConfig();
 }
 
 /**
@@ -714,7 +887,7 @@ async function generateImageMapping() {
     try {
       const mainFiles = await fs.readdir(assetsImagesDir);
       mainFiles.forEach(file => {
-        if (/\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file)) {
+        if (/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i.test(file)) {
           files.push(file);
         }
       });
@@ -726,7 +899,7 @@ async function generateImageMapping() {
     try {
       const bannerFiles = await fs.readdir(bannerDir);
       bannerFiles.forEach(file => {
-        if (/\.(webp|jpg|jpeg|png|gif|svg)$/i.test(file)) {
+        if (/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i.test(file)) {
           files.push(path.join('banner', file));
         }
       });
@@ -761,7 +934,7 @@ async function generateImageMapping() {
     // 生成 import 语句
     imageFiles.forEach((file) => {
       const base = path.basename(file);
-      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
+      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, '');
       lines.push(`import ${hash} from '../assets/strapi/${file}';`);
     });
 
@@ -769,7 +942,7 @@ async function generateImageMapping() {
     lines.push('export const STRAPI_IMAGE_URLS = {');
     imageFiles.forEach((file) => {
       const base = path.basename(file);
-      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg)$/i, '');
+      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, '');
       lines.push(`  '${base}': ${hash},`);
       lines.push(`  '${hash}': ${hash},`);
 
@@ -790,6 +963,119 @@ async function generateImageMapping() {
 
   } catch (error) {
     console.warn('生成图片映射失败:', error.message);
+  }
+}
+
+/**
+ * 生成Banner图片配置文件
+ */
+async function generateBannerConfig() {
+  console.log('🎯 生成Banner图片配置文件...');
+
+  try {
+    const bannerImages = [];
+
+    // 获取API原始数据来获取真实URL
+    const apiUrl = 'http://182.92.233.160:1137/api/banner-setting?populate=all';
+    const response = await fetch(apiUrl);
+    const apiData = await response.json();
+
+    // 处理首页Banner
+    if (apiData?.data?.field_shouyebanner) {
+      apiData.data.field_shouyebanner.forEach(banner => {
+        let desktopImage = null;
+
+        // 添加桌面端图片
+        if (banner.field_tupian?.media?.url) {
+          const imageUrl = banner.field_tupian.media.url;
+          const imagePath = imageUrl.replace('/uploads/', '');
+          desktopImage = {
+            originalUrl: imageUrl,
+            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${imagePath}`,
+            type: 'desktop',
+            bannerType: 'homepage',
+            isBanner: true
+          };
+          bannerImages.push(desktopImage);
+        }
+
+        // 添加移动端图片
+        if (banner.field_shouji?.media?.url) {
+          const mobileImageUrl = banner.field_shouji.media.url;
+          const mobileImagePath = mobileImageUrl.replace('/uploads/', '');
+          const mobileImage = {
+            originalUrl: mobileImageUrl,
+            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${mobileImagePath}`,
+            type: 'mobile',
+            bannerType: 'homepage',
+            isBanner: true,
+            fallbackImage: desktopImage // 记录对应的PC端图片
+          };
+          bannerImages.push(mobileImage);
+        }
+      });
+    }
+
+    // 处理通用Banner
+    if (apiData?.data?.field_tongyongbanner) {
+      apiData.data.field_tongyongbanner.forEach(banner => {
+        let desktopImage = null;
+
+        // 添加桌面端图片
+        if (banner.field_tupian?.media?.url) {
+          const imageUrl = banner.field_tupian.media.url;
+          const imagePath = imageUrl.replace('/uploads/', '');
+          desktopImage = {
+            originalUrl: imageUrl,
+            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${imagePath}`,
+            type: 'desktop',
+            bannerType: 'common',
+            isBanner: true
+          };
+          bannerImages.push(desktopImage);
+        }
+
+        // 添加移动端图片
+        if (banner.field_shouji?.media?.url) {
+          const mobileImageUrl = banner.field_shouji.media.url;
+          const mobileImagePath = mobileImageUrl.replace('/uploads/', '');
+          const mobileImage = {
+            originalUrl: mobileImageUrl,
+            localPath: `src/assets/strapi/banner/L3VwbG9hZHMv${mobileImagePath}`,
+            type: 'mobile',
+            bannerType: 'common',
+            isBanner: true,
+            fallbackImage: desktopImage // 记录对应的PC端图片
+          };
+          bannerImages.push(mobileImage);
+        }
+      });
+    }
+
+    // 生成配置文件
+    const configPath = path.join(__dirname, '../src/data/banner-images.json');
+    
+    // 确保目录存在
+    const configDir = path.dirname(configPath);
+    try {
+      await fs.mkdir(configDir, { recursive: true });
+    } catch (error) {
+      console.warn('创建配置目录失败:', error.message);
+    }
+    
+    // 写入配置文件
+    await fs.writeFile(configPath, JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      bannerImages: bannerImages,
+      totalCount: bannerImages.length
+    }, null, 2));
+
+    console.log(`✅ Banner配置文件生成完成，包含 ${bannerImages.length} 个banner图片`);
+
+    return bannerImages;
+  } catch (error) {
+    console.warn('生成Banner配置文件失败:', error.message);
+    return [];
   }
 }
 

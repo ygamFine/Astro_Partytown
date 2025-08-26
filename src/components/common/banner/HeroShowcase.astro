@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import { processImagesForAstro } from '../../../lib/imageProcessor.js';
+import { processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 // 定义组件props接口
 export interface Props {
@@ -17,13 +16,13 @@ export interface Props {
 // 获取props
 const { bannerData = [] } = Astro.props;
 
-// 处理Banner数据，确保图片能正确加载到 <Image>（需要模块或远程URL，而不是本地字符串路径）
+// 处理Banner数据，确保图片能正确加载到 <img>（使用正确的URL）
 const mobileBanners = bannerData.map(banner => {
   const candidates = [(banner as any)?.mobileImage ?? banner?.image].filter(Boolean);
-  const processed = processImagesForAstro(candidates);
+  const processed = processImageForDisplay(candidates.length > 0 ? candidates[0] : null);
   return {
     ...banner,
-    processedImages: processed
+    processedImages: processed ? [processed] : []
   };
 });
 
@@ -37,17 +36,35 @@ const mobileBanners = bannerData.map(banner => {
       {mobileBanners.map((banner, index) => (
         banner.processedImages.length > 0 && (
           <div class={`mobile-slide ${index === 0 ? 'active' : ''}`}>
-            <Image 
-              src={banner.processedImages[0]}
-              alt={banner.alt}
-              width={375}
-              height={200}
-              loading={index === 0 ? "eager" : "lazy"}
-              fetchpriority={index === 0 ? "high" : "auto"}
-              decoding={index === 0 ? "sync" : "async"}
-              class="mobile-banner"
-              style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
-            />
+            {banner.processedImages[0].endsWith('.mp4') ||
+            banner.processedImages[0].endsWith('.webm') ||
+            banner.processedImages[0].endsWith('.mov') ? (
+              <video
+                src={banner.processedImages[0]}
+                autoplay
+                muted
+                loop
+                playsinline
+                width={375}
+                height={200}
+                class="mobile-banner"
+                style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+              >
+                您的浏览器不支持视频播放
+              </video>
+            ) : (
+              <img
+                src={banner.processedImages[0]}
+                alt={banner.alt}
+                width={375}
+                height={200}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
+                decoding={index === 0 ? "sync" : "async"}
+                class="mobile-banner"
+                style="width: 100%; height: 200px; object-fit: cover; object-position: center;"
+              />
+            )}
           </div>
         )
       ))}

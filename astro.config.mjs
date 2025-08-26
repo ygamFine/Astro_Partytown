@@ -33,6 +33,8 @@ export default defineConfig({
     }
   },
   
+
+
   // 🔧 集成配置
   integrations: [
     tailwind({
@@ -95,7 +97,7 @@ export default defineConfig({
             if (assetInfo.name) {
               const info = assetInfo.name.split('.');
               const ext = info[info.length - 1];
-              if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+              if (/png|jpe?g|svg|gif|tiff|bmp|ico|mp4|webm|mov/i.test(ext)) {
                 return `images/[name]-[hash][extname]`;
               }
             }

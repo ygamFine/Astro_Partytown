@@ -10,6 +10,70 @@ import path from 'path';
 import sharp from 'sharp';
 
 /**
+ * 检查图片是否为Banner图片
+ */
+async function isBannerImage(filePath) {
+  try {
+    // 读取Banner配置文件
+    const configPath = path.join(process.cwd(), 'src/data/banner-images.json');
+    
+    // 检查配置文件是否存在，如果不存在则创建默认配置
+    let config;
+    try {
+      const configData = await fs.readFile(configPath, 'utf-8');
+      config = JSON.parse(configData);
+    } catch (error) {
+      console.warn('Banner配置文件不存在，创建默认配置');
+      config = { bannerImages: [] };
+      
+      // 确保目录存在
+      const configDir = path.dirname(configPath);
+      try {
+        await fs.mkdir(configDir, { recursive: true });
+      } catch (mkdirError) {
+        console.warn('创建配置目录失败:', mkdirError.message);
+      }
+    }
+
+    // 检查文件路径是否在banner配置中
+    const normalizedPath = filePath.replace(/\\/g, '/'); // 统一路径分隔符
+    const fileName = path.basename(filePath);
+    const fileNameWithoutExt = path.basename(filePath, path.extname(filePath));
+
+    return config.bannerImages.some(banner => {
+      const bannerPath = banner.localPath.replace(/\\/g, '/');
+      const bannerFileName = path.basename(bannerPath);
+      const bannerFileNameWithoutExt = path.basename(bannerPath, path.extname(bannerPath));
+
+      // 多种匹配方式
+      return (
+        // 完整路径匹配
+        normalizedPath.includes(bannerPath) ||
+        // 文件名匹配
+        bannerFileName === fileName ||
+        // 文件名（不含扩展名）匹配
+        bannerFileNameWithoutExt === fileNameWithoutExt ||
+        // 路径包含banner目录
+        normalizedPath.includes('/banner/') ||
+        // 文件名包含banner关键词
+        fileNameWithoutExt.includes('banner') ||
+        fileNameWithoutExt.includes('shouji')
+      );
+    });
+  } catch (error) {
+    console.warn('读取banner配置文件失败:', error.message);
+    // 如果配置文件不存在或读取失败，则回退到目录和文件名检查
+    const normalizedPath = filePath.replace(/\\/g, '/');
+    const fileName = path.basename(filePath);
+    return (
+      normalizedPath.includes('/banner/') ||
+      fileName.includes('banner') ||
+      fileName.includes('shouji')
+    );
+  }
+}
+
+/**
  * 检查sharp是否可用
  */
 async function checkSharp() {
@@ -56,7 +120,7 @@ async function convertToWebP(inputPath, outputPath) {
 /**
  * 查找所有图片文件
  */
-async function findImageFiles(dir, extensions = ['.jpg', '.jpeg', '.png']) {
+async function findResourceFiles(dir, extensions = ['.jpg', '.jpeg', '.png']) {
   const files = [];
   
   async function scanDirectory(currentDir) {
@@ -98,8 +162,8 @@ async function main() {
   }
   
   // 查找所有图片文件
-  const imageFiles = await findImageFiles('public');
-  const strapiImageFiles = await findImageFiles('src/assets/strapi', ['.jpg', '.jpeg', '.png', '.webp']);
+  const imageFiles = await findResourceFiles('public');
+  const strapiImageFiles = await findResourceFiles('src/assets/strapi', ['.jpg', '.jpeg', '.png', '.webp']);
   const allImageFiles = [...imageFiles, ...strapiImageFiles];
   
   console.log(`📁 找到图片文件: public=${imageFiles.length}, strapi=${strapiImageFiles.length}`);
@@ -108,10 +172,10 @@ async function main() {
   let optimizedCount = 0;
   for (const file of allImageFiles) {
     // 检查是否是Banner图片，如果是则跳过压缩
-    // Banner图片现在被放在banner子目录中
-    const isBannerImage = file.includes(path.sep + 'banner' + path.sep);
+    // 基于配置文件的智能识别
+    const isBanner = await isBannerImage(file);
 
-    if (isBannerImage) {
+    if (isBanner) {
       console.log(`📷 跳过Banner图片压缩: ${file}`);
       continue;
     }
@@ -164,15 +228,33 @@ async function main() {
     }
   }
   
-  // 检查Strapi图片目录
+  // 检查其他静态资源
+  console.log('\n📊 静态资源检查报告:');
+
+  // 检查字体文件
   try {
-    const strapiFiles = await findImageFiles('public/images/strapi', ['.webp']);
-    console.log(`✅ Strapi图片目录存在，包含 ${strapiFiles.length} 个WebP文件`);
+    const fontFiles = await findResourceFiles('public/fontIcons', ['.woff', '.woff2', '.ttf']);
+    console.log(`✅ 字体文件: ${fontFiles.length} 个`);
   } catch {
-    console.log('⚠️  Strapi图片目录不存在');
+    console.log('⚠️  字体文件检查失败');
   }
-  
-  
+
+  // 检查JavaScript文件
+  try {
+    const jsFiles = await findResourceFiles('public/scripts', ['.js']);
+    console.log(`✅ JavaScript文件: ${jsFiles.length} 个`);
+  } catch {
+    console.log('⚠️  JavaScript文件检查失败');
+  }
+
+  // 检查PDF文件
+  try {
+    const pdfFiles = await findResourceFiles('public', ['.pdf']);
+    console.log(`✅ PDF文件: ${pdfFiles.length} 个`);
+  } catch {
+    console.log('⚠️  PDF文件检查失败');
+  }
+
   if (missingCount > 0) {
     console.log(`⚠️  发现 ${missingCount} 个缺失的关键图片`);
   } else {
@@ -180,10 +262,10 @@ async function main() {
   }
   
   // 统计报告
-  const allWebpFiles = await findImageFiles('public', ['.webp']);
-  const allJpgFiles = await findImageFiles('public', ['.jpg', '.jpeg']);
-  const allPngFiles = await findImageFiles('public', ['.png']);
-  const allSvgFiles = await findImageFiles('public', ['.svg']);
+  const allWebpFiles = await findResourceFiles('public', ['.webp']);
+  const allJpgFiles = await findResourceFiles('public', ['.jpg', '.jpeg']);
+  const allPngFiles = await findResourceFiles('public', ['.png']);
+  const allSvgFiles = await findResourceFiles('public', ['.svg']);
   
   console.log('');
   console.log('📈 图片统计报告:');

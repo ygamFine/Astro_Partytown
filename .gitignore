@@ -44,5 +44,6 @@ public/images/strapi/
 public/images/optimized/
 public/search-index.json
 src/data/strapi-image-mapping.json
+src/data/banner-images.json
 .vercel
 src/assets/strapi/

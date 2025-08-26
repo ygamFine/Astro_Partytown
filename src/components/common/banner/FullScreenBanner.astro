@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import { processImagesForAstro } from '../../../lib/imageProcessor.js';
+import { processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 // 定义组件props接口
 export interface Props {
@@ -18,14 +17,14 @@ export interface Props {
 // 获取props
 const { bannerData = [] } = Astro.props;
 
-// 处理Banner数据，确保图片能正确加载到 <Image>（需要模块或远程URL，而不是本地字符串路径）
+// 处理Banner数据，确保图片能正确加载到 <img>（使用正确的URL）
 const banners = bannerData.map(banner => {
-  const processedDesktop = processImagesForAstro([banner?.image].filter(Boolean));
-  const processedMobile = processImagesForAstro([banner?.mobileImage].filter(Boolean));
+  const processedDesktop = processImageForDisplay(banner?.image);
+  const processedMobile = processImageForDisplay(banner?.mobileImage);
   return {
     ...banner,
-    processedImages: processedDesktop,
-    processedMobileImages: processedMobile
+    processedImages: processedDesktop ? [processedDesktop] : [],
+    processedMobileImages: processedMobile ? [processedMobile] : []
   };
 });
 
@@ -46,7 +45,7 @@ const banners = bannerData.map(banner => {
           {/* PC端图片 */}
           <div class="desktop-banner-image">
             {banner.processedImages.length > 0 && (
-              <Image 
+              <img
                 src={banner.processedImages[0]}
                 alt={banner.alt}
                 width={1440}
@@ -59,22 +58,40 @@ const banners = bannerData.map(banner => {
               />
             )}
           </div>
-          {/* 手机端图片 */}
+          {/* 手机端图片/视频 */}
           <div class="mobile-banner-image">
             {banner.processedMobileImages.length > 0 ? (
-              <Image 
-                src={banner.processedMobileImages[0]}
-                alt={banner.alt}
-                width={375}
-                height={600}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
-                decoding="async"
-                class="banner-image"
-                style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
-              />
+              banner.processedMobileImages[0].endsWith('.mp4') ||
+              banner.processedMobileImages[0].endsWith('.webm') ||
+              banner.processedMobileImages[0].endsWith('.mov') ? (
+                <video
+                  src={banner.processedMobileImages[0]}
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  width={375}
+                  height={600}
+                  class="banner-image"
+                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+                >
+                  您的浏览器不支持视频播放
+                </video>
+              ) : (
+                <img
+                  src={banner.processedMobileImages[0]}
+                  alt={banner.alt}
+                  width={375}
+                  height={600}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchpriority={index === 0 ? "high" : "auto"}
+                  decoding="async"
+                  class="banner-image"
+                  style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
+                />
+              )
             ) : banner.processedImages.length > 0 && (
-              <Image 
+              <img
                 src={banner.processedImages[0]}
                 alt={banner.alt}
                 width={375}
