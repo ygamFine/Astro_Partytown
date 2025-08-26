@@ -85,7 +85,7 @@
 }
 
 /* 页面查找UI通用样式 - 使用更精确的选择器 */
-:global(.pagefind-ui) {
+.pagefind-ui {
   --pagefind-ui-primary: #dc2626;
   --pagefind-ui-text: #374151;
   --pagefind-ui-background: #ffffff;
@@ -98,16 +98,16 @@
   --pagefind-ui-line-height: 1.5;
 }
 
-:global(.pagefind-ui__search-input) {
+.pagefind-ui__search-input {
   display: none; /* 隐藏 Pagefind 自带的搜索框 */
 }
 
-:global(.pagefind-ui__results-area) {
+.pagefind-ui__results-area {
   border: none;
   background: transparent;
 }
 
-:global(.pagefind-ui__result) {
+.pagefind-ui__result {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -116,12 +116,12 @@
   transition: all 0.2s ease;
 }
 
-:global(.pagefind-ui__result:hover) {
+.pagefind-ui__result:hover {
   border-color: #dc2626;
   box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
 }
 
-:global(.pagefind-ui__result-link) {
+.pagefind-ui__result-link {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -129,7 +129,7 @@
   color: inherit;
 }
 
-:global(.pagefind-ui__result-image) {
+.pagefind-ui__result-image {
   flex-shrink: 0;
   width: 80px;
   height: 60px;
@@ -137,31 +137,31 @@
   object-fit: cover;
 }
 
-:global(.pagefind-ui__result-content) {
+.pagefind-ui__result-content {
   flex: 1;
   min-width: 0;
 }
 
-:global(.pagefind-ui__result-title) {
+.pagefind-ui__result-title {
   color: #1f2937;
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
 
-:global(.pagefind-ui__result-excerpt) {
+.pagefind-ui__result-excerpt {
   color: #6b7280;
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 0.5rem;
 }
 
-:global(.pagefind-ui__result-meta) {
+.pagefind-ui__result-meta {
   color: #9ca3af;
   font-size: 0.75rem;
 }
 
-:global(.pagefind-ui__result-category) {
+.pagefind-ui__result-category {
   background: #dc2626;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -190,7 +190,7 @@
 @media (prefers-reduced-motion: reduce) {
   .product-card,
   .menu-item,
-  :global(.pagefind-ui__result) {
+  .pagefind-ui__result {
     transition: none !important;
     animation: none !important;
   }
