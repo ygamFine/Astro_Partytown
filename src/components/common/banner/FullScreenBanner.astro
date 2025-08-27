@@ -24,24 +24,27 @@ const banners = bannerData.map(banner => {
   const processedShipin = processImageForDisplay((banner as any)?.shipin);
   const processedDesktop = processImageForDisplay(banner?.image);
   const processedMobile = processImageForDisplay(banner?.mobileImage);
-  
+
   // 检查是否为占位图
   const isPlaceholder = (url: string) => url === '/images/placeholder.webp';
-  
+
   // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
   const mobileMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
                      processedMobile && !isPlaceholder(processedMobile) ? processedMobile :
                      processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null;
-  
+
   // PC端优先使用视频，如果没有视频则使用桌面端图片
   const desktopMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
                       processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null;
-  
+
   return {
     ...banner,
     processedImages: desktopMedia ? [desktopMedia] : [],
     processedMobileImages: mobileMedia ? [mobileMedia] : [],
-    processedShipin: processedShipin && !isPlaceholder(processedShipin) ? [processedShipin] : []
+    processedShipin: processedShipin && !isPlaceholder(processedShipin) ? [processedShipin] : [],
+    // 为poster单独保存图片文件
+    posterDesktop: processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null,
+    posterMobile: processedMobile && !isPlaceholder(processedMobile) ? processedMobile : null
   };
 });
 
@@ -64,6 +67,7 @@ const banners = bannerData.map(banner => {
             {banner.processedShipin.length > 0 ? (
               <video
                 src={banner.processedShipin[0]}
+                poster={banner.posterDesktop}
                 autoplay
                 muted
                 playsinline
@@ -93,6 +97,7 @@ const banners = bannerData.map(banner => {
             {banner.processedShipin.length > 0 ? (
               <video
                 src={banner.processedShipin[0]}
+                poster={banner.posterMobile || banner.posterDesktop}
                 autoplay
                 muted
                 playsinline
