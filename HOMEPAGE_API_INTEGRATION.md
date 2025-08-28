@@ -2,7 +2,7 @@
 
 ## 概述
 
-本项目已成功集成 `http://182.92.233.160:1137/api/homepage-content?populate=*` 作为首页全页面的数据接口，实现了动态内容管理。
+本项目已成功集成 `http://182.92.233.160:1137/api/homepage-content?populate=all` 作为首页全页面的数据接口，实现了动态内容管理。
 
 ## API数据结构
 
@@ -82,12 +82,12 @@
 ## 技术实现
 
 ### 1. API数据获取
-在 `src/lib/strapi.js` 中新增 `getHomepageContent()` 函数：
+在 `src/lib/homepageApi.js` 中新增 `getHomepageContent()` 函数：
 
 ```javascript
 export async function getHomepageContent() {
   try {
-    const apiUrl = 'http://182.92.233.160:1137/api/homepage-content?populate=*';
+    const apiUrl = 'http://182.92.233.160:1137/api/homepage-content?populate=all';
     const response = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json'

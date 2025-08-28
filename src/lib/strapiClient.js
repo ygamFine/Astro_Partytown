@@ -26,10 +26,10 @@ export async function fetchJson(url, { includeAuth = true, useNewToken = false }
     if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
     return res.json();
   } catch (error) {
-    console.error(`[Strapi] 网络请求失败: ${url}`, error.message);
+    // Strapi 网络请求失败
     // 在构建环境下，网络请求失败是常见的，不应该中断构建
     if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
-      console.warn(`[Strapi] 构建环境网络请求失败，返回空数据: ${url}`);
+      // 构建环境网络请求失败，返回空数据
       return { data: null };
     }
     throw error;

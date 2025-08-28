@@ -60,8 +60,13 @@ if (useStrapiBackground) {
           const processedImage = processImageForDisplay(banner.image);
           const processedMobileImage = processImageForDisplay(banner.mobileImage);
           
+          // 检查是否为占位图
+          const isPlaceholder = (url: string) => url === '/images/placeholder.webp';
+          
           // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
-          const mobileMedia = processedShipin || processedMobileImage || processedImage;
+          const mobileMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
+                             processedMobileImage && !isPlaceholder(processedMobileImage) ? processedMobileImage :
+                             processedImage && !isPlaceholder(processedImage) ? processedImage : null;
           
           return {
             image: processedImage,
@@ -159,39 +164,12 @@ const imageSize = themeConfig.layout.banner.imageSize.desktop;
           </div>
           {/* 手机端图片/视频 */}
           <div class="mobile-banner">
-            {typeof bannerImg.mobileImage === 'string' ? (
-              bannerImg.mobileImage.endsWith('.mp4') ||
-              bannerImg.mobileImage.endsWith('.webm') ||
-              bannerImg.mobileImage.endsWith('.mov') ? (
-                <video
-                  src={bannerImg.mobileImage}
-                  autoplay
-                  muted
-                  playsinline
-                  width={imageSize.width.toString()}
-                  height={imageSize.height.toString()}
-                  class="banner-bg-image"
-                  style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
-                >
-                  您的浏览器不支持视频播放
-                </video>
-              ) : (
-                <img
-                  src={bannerImg.mobileImage}
-                  alt={bannerImg.alt}
-                  width={imageSize.width.toString()}
-                  height={imageSize.height.toString()}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchpriority={index === 0 ? "high" : "auto"}
-                  decoding="async"
-                  class="banner-bg-image"
-                  style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
-                />
-              )
-            ) : (
-              bannerImg.mobileImage.endsWith('.mp4') ||
-              bannerImg.mobileImage.endsWith('.webm') ||
-              bannerImg.mobileImage.endsWith('.mov') ? (
+            {bannerImg.mobileImage && (
+              typeof bannerImg.mobileImage === 'string' && (
+                bannerImg.mobileImage.endsWith('.mp4') ||
+                bannerImg.mobileImage.endsWith('.webm') ||
+                bannerImg.mobileImage.endsWith('.mov')
+              ) ? (
                 <video
                   src={bannerImg.mobileImage}
                   autoplay
