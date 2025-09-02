@@ -13,10 +13,12 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import sharp from 'sharp';
 // 复用通用 Strapi 客户端（仅封装 HTTP 层）
-import { STRAPI_STATIC_URL, STRAPI_STATIC_URL_NEW } from '../src/lib/strapiClient.js';
-import { getBannerData, getCommonBannerData, getProducts, getNews, getCases, getMobileBottomMenu } from '../src/lib/strapi.js';
+import { STRAPI_STATIC_URL } from '../src/lib/strapiClient.js';
+import { getBannerData, getProducts, getNews, getCases, getMobileBottomMenu } from '../src/lib/strapi.js';
 // 统一复用高层 API 获取语言列表，避免重复实现
 import { getSupportedLanguages as fetchSupportedLanguages } from '../src/lib/strapi.js';
+// 导入 homepageApi.js 中的数据获取功能
+import { getAllHomepageData } from '../src/lib/homepageApi.js';
 
 const execAsync = promisify(exec);
 
@@ -37,10 +39,15 @@ const BANNER_IMAGE_DIR = path.join(IMAGE_CACHE_DIR, 'banner');
 
 
 
-// 从环境变量获取启用的语言，如果没有设置则从API获取
-let ENABLED_LOCALES = process.env.ENABLED_LANGUAGES ? process.env.ENABLED_LANGUAGES.split(',') : [];
+import { getSupportedLanguages } from '../src/lib/languageConfig.js';
 
-// 如果没有设置环境变量，从统一 API 获取支持的语言
+// 动态获取启用的语言列表
+async function getEnabledLocales() {
+  return await getSupportedLanguages();
+}
+
+// 初始化语言列表
+let ENABLED_LOCALES = [];
 
 
 /**
@@ -286,7 +293,7 @@ export async function generateMappingOnly() {
  * 生成图片文件名（WebP格式）
  */
 function generateImageFileName(originalUrl, isBannerImage = false) {
-  const baseUrl = isBannerImage ? STRAPI_STATIC_URL_NEW : STRAPI_STATIC_URL;
+  const baseUrl = STRAPI_STATIC_URL ;
   const url = new URL(originalUrl, baseUrl);
   const pathname = url.pathname;
   const hash = generateImageHash(pathname);
@@ -405,7 +412,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
   }
 
   // 如果是完整的Strapi URL（包括 Banner 服务器）
-  if (imageUrl.startsWith(STRAPI_STATIC_URL) || imageUrl.startsWith(STRAPI_STATIC_URL_NEW)) {
+  if (imageUrl.startsWith(STRAPI_STATIC_URL)) {
     try {
       // 确定目标目录和文件名
       let targetDir, fileName;
@@ -413,7 +420,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       if (isBannerImage) {
         // Banner图片保持原始格式，不压缩，放在banner子目录
         targetDir = BANNER_IMAGE_DIR;
-        const url = new URL(imageUrl, STRAPI_STATIC_URL_NEW);
+        const url = new URL(imageUrl, STRAPI_STATIC_URL);
         const pathname = url.pathname;
         const hash = generateImageHash(pathname);
         const originalExt = path.extname(pathname) || '.jpg';
@@ -574,7 +581,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       if (originalUrl.startsWith('http')) {
         fullUrl = originalUrl;
       } else if (originalUrl.startsWith('/uploads/')) {
-        fullUrl = `${STRAPI_STATIC_URL_NEW}${originalUrl}`;
+        fullUrl = `${STRAPI_STATIC_URL}${originalUrl}`;
       } else {
         console.warn(`⚠️  无效的原始URL: ${originalUrl}`);
         return null;
@@ -582,7 +589,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
 
       // 确定目标目录和文件名
       const targetDir = BANNER_IMAGE_DIR;
-      const url = new URL(fullUrl, STRAPI_STATIC_URL_NEW);
+      const url = new URL(fullUrl, STRAPI_STATIC_URL);
       const pathname = url.pathname;
       const hash = generateImageHash(pathname);
       const originalExt = path.extname(pathname) || '.jpg';
@@ -615,7 +622,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
 
           const fallbackUrl = bannerConfigItem.fallbackImage.originalUrl.startsWith('http') ?
             bannerConfigItem.fallbackImage.originalUrl :
-            `${STRAPI_STATIC_URL_NEW}${bannerConfigItem.fallbackImage.originalUrl}`;
+            `${STRAPI_STATIC_URL}${bannerConfigItem.fallbackImage.originalUrl}`;
 
           try {
             const fallbackResponse = await fetch(fallbackUrl);
@@ -652,9 +659,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
   // 如果是相对路径，转换为绝对路径
   if (imageUrl.startsWith('/uploads/')) {
     // 不再依赖文件名判断，使用调用时传入的isBannerImage参数
-    const fullUrl = isBannerImage ?
-              `${STRAPI_STATIC_URL_NEW}${imageUrl}` :
-        `${STRAPI_STATIC_URL}${imageUrl}`;
+    const fullUrl = `${STRAPI_STATIC_URL}${imageUrl}`;
 
     console.log(`处理相对路径: ${imageUrl} -> ${fullUrl} (Banner: ${isBannerImage})`);
     return await downloadImage(fullUrl, isBannerImage);
@@ -728,13 +733,37 @@ async function downloadAllImages() {
   // 自动整理现有的Banner图片
   await organizeExistingBannerImages();
 
-  // 如果没有设置语言列表，从API获取
+  // 获取语言列表
   if (ENABLED_LOCALES.length === 0) {
-    ENABLED_LOCALES = (await fetchSupportedLanguages()).map(l => l.code);
+    ENABLED_LOCALES = await getEnabledLocales();
   }
 
   // 创建图片信息数组，记录每个图片的类型
   const imageInfoList = [];
+
+  // 首先获取首页数据（使用 homepageApi.js 的功能）
+  console.log('🏠 获取首页数据...');
+  try {
+    const allHomepageData = await getAllHomepageData();
+    if (allHomepageData && allHomepageData.homepageData) {
+      console.log('✅ 成功获取首页数据');
+      // 从首页数据中提取图片URL
+      const homepageImageUrls = extractImageUrls(allHomepageData.homepageData);
+      console.log(`📊 从首页数据中提取到 ${homepageImageUrls.length} 个图片URL`);
+      homepageImageUrls.forEach(url => {
+        const isBanner = url.includes('banner') || url.includes('shouji') || url.includes('fengjing');
+        imageInfoList.push({ url, isBanner, type: 'homepage' });
+      });
+      
+      // 立即生成首页数据的图片索引
+      console.log('📝 生成首页数据图片索引...');
+      await generateImageMapping();
+    } else {
+      console.warn('⚠️ 获取首页数据失败或为空');
+    }
+  } catch (error) {
+    console.warn('获取首页数据失败:', error.message);
+  }
 
   // 获取所有语言的数据（带分页）
   for (const locale of ENABLED_LOCALES) {
@@ -937,11 +966,19 @@ async function generateImageMapping() {
     lines.push('// 注意：实际部署时 Astro 会将文件打包到 _astro 目录中');
     lines.push('');
 
-    // 生成 import 语句
+    // 生成 import 语句 - 去重处理
+    const uniqueImports = new Map();
     imageFiles.forEach((file) => {
       const base = path.basename(file);
       const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, '');
-      lines.push(`import ${hash} from '../assets/strapi/${file}';`);
+      
+      // 如果已经存在相同的hash，跳过重复导入
+      if (!uniqueImports.has(hash)) {
+        uniqueImports.set(hash, file);
+        lines.push(`import ${hash} from '../assets/strapi/${file}';`);
+      } else {
+        console.log(`⏭️ 跳过重复导入: ${hash} (已存在: ${uniqueImports.get(hash)})`);
+      }
     });
 
     lines.push('');
@@ -982,8 +1019,8 @@ async function generateBannerConfig() {
     const bannerImages = [];
 
     // 获取API原始数据来获取真实URL
-    const { STRAPI_STATIC_URL_NEW } = await import('../src/lib/strapiClient.js');
-    const apiUrl = `${STRAPI_STATIC_URL_NEW}/api/banner-setting?populate=all`;
+    const { STRAPI_STATIC_URL } = await import('../src/lib/strapiClient.js');
+    const apiUrl = `${STRAPI_STATIC_URL}/api/banner-setting?populate=all`;
     const response = await fetch(apiUrl);
     const apiData = await response.json();
 
@@ -996,7 +1033,7 @@ async function generateBannerConfig() {
         // 优先级1: field_bannershipin (权重最高)
         if (banner.field_bannershipin?.media?.url) {
           const shipinUrl = banner.field_bannershipin.media.url;
-          const url = new URL(shipinUrl, STRAPI_STATIC_URL_NEW);
+          const url = new URL(shipinUrl, STRAPI_STATIC_URL);
           const pathname = url.pathname;
           const hash = generateImageHash(pathname);
           const originalExt = path.extname(pathname) || '.mp4';
@@ -1053,7 +1090,7 @@ async function generateBannerConfig() {
         // 优先级1: field_bannershipin (权重最高)
         if (banner.field_bannershipin?.media?.url) {
           const shipinUrl = banner.field_bannershipin.media.url;
-          const url = new URL(shipinUrl, STRAPI_STATIC_URL_NEW);
+          const url = new URL(shipinUrl, STRAPI_STATIC_URL);
           const pathname = url.pathname;
           const hash = generateImageHash(pathname);
           const originalExt = path.extname(pathname) || '.mp4';

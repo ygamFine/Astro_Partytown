@@ -14,7 +14,7 @@ export const themeConfig = {
   restrictions: {
     // 语言限制配置
     languageRestrictions: {
-      'zh-CN': {
+      'zh-Hans': {
         hidePricing: true,        // 中文站隐藏价格相关
         hideShoppingCart: true,   // 中文站隐藏购物车相关
         hideAddToCart: true       // 中文站隐藏加入购物车按钮

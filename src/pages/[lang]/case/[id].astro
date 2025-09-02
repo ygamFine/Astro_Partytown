@@ -10,7 +10,7 @@ import { getCases, getCase } from '../../../lib/strapi.js';
 import { getNews } from '../../../lib/strapi.js';
 import { generateCaseDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
-import getDictionary from '../../../i18n/dictionaries.js';
+import { getDictionary } from '../../../i18n/dictionaries.js';
 import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 export async function getStaticPaths() {
@@ -50,7 +50,7 @@ const { lang, caseItem, previousCase, nextCase } = Astro.props;
 const hasCase = caseItem !== null;
 
 // 加载国际化翻译
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 获取相关新闻（最新的4篇）
 const allNews = await getNews(lang);
@@ -74,7 +74,7 @@ const validRelatedCases = relatedCases
 // 格式化日期
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString(lang === 'zh-CN' ? 'zh-CN' : lang, { 
+  return date.toLocaleDateString(lang, { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric',

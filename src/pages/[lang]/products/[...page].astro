@@ -9,7 +9,7 @@ import Pagination from '../../../components/templates/common/Pagination.astro';
 import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getProducts } from '../../../lib/strapi.js';
 import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
-import getDictionary from '../../../i18n/dictionaries.js';
+import { getDictionary } from '../../../i18n/dictionaries.js';
 import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
 import { buildUrl } from '../../../lib/envConfig.js';
 
@@ -51,7 +51,7 @@ export async function getStaticPaths() {
 
 const { lang, page } = Astro.params;
 const { currentPage, totalPages } = Astro.props;
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 获取产品数据
 const products = await getProducts(lang);

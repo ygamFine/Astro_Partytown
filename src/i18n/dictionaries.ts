@@ -1,12 +1,5 @@
 // 动态导入翻译文件
-import { readdirSync } from 'fs';
-import { join } from 'path';
-
-// 支持的语言列表
-const SUPPORTED_LANGUAGES = [
-  'en', 'zh-CN', 'zh-Hant', 'fr', 'de', 'it', 'tr', 'es', 'pt-pt', 'nl', 
-  'pl', 'ar', 'ru', 'th', 'id', 'vi', 'ms', 'ml', 'my', 'hi', 'ja', 'ko'
-];
+import { getSupportedLanguages } from '../lib/languageConfig.js';
 
 // 翻译命名空间
 const TRANSLATION_NAMESPACES = [
@@ -31,6 +24,7 @@ async function loadTranslationFile(lang: string, namespace: string) {
 // 动态生成翻译数据映射
 async function generateTranslationData() {
   const translationData: Record<string, Record<string, any>> = {};
+  const SUPPORTED_LANGUAGES = await getSupportedLanguages();
   
   for (const lang of SUPPORTED_LANGUAGES) {
     translationData[lang] = {};
@@ -81,163 +75,9 @@ function getTranslation(lang: string, namespace: string, key: string, translatio
   }
 }
 
-// 同步版本的 getDictionary（保持兼容性）
-export default function getDictionary(lang: string): any {
-  // 这是一个简化的同步版本，主要用于构建时
-  // 在实际使用中，建议使用异步版本
-  return {
-    common: {
-      placeholders: { search: 'Search' },
-      pagination: {
-        previous: 'Previous',
-        next: 'Next',
-        first: 'First',
-        last: 'Last',
-        page: 'Page',
-        of: 'of',
-        showing: 'Showing',
-        to: 'to',
-        entries: 'entries',
-        per_page: 'per page',
-        pages: 'pages',
-        ofTotal: 'of'
-      },
-      actions: {
-        view: 'View',
-        edit: 'Edit',
-        delete: 'Delete',
-        create: 'Create',
-        add: 'Add',
-        remove: 'Remove',
-        copy: 'Copy',
-        paste: 'Paste',
-        cut: 'Cut',
-        select: 'Select',
-        deselect: 'Deselect',
-        refresh: 'Refresh',
-        reload: 'Reload',
-        export: 'Export',
-        import: 'Import',
-        print: 'Print',
-        share: 'Share',
-        bookmark: 'Bookmark',
-        like: 'Like',
-        dislike: 'Dislike',
-        grid_view: 'Grid View',
-        list_view: 'List View'
-      },
-      units: {
-        piece: 'piece',
-        pieces: 'pieces',
-        unit: 'unit',
-        units: 'units',
-        kg: 'kg',
-        ton: 'ton',
-        meter: 'm',
-        kilometer: 'km',
-        hour: 'hour',
-        day: 'day',
-        week: 'week',
-        month: 'month',
-        year: 'year',
-        percent: '%',
-        currency: '$'
-      },
-      product_card: {
-        get_quote: 'Get Quote',
-        contact_now: 'Contact Now',
-        download_pdf: 'Download PDF',
-        add_to_cart: 'Add to Cart'
-      }
-    },
-    nav: { home: 'Home' },
-    placeholder: { search: 'Search' },
-    about: { title: 'About' },
-    case: { 
-      title: 'Cases',
-      previous: 'Previous Case',
-      next: 'Next Case'
-    },
-    news: { title: 'News' },
-    contact: {
-      page_title: 'Contact',
-      subtitle: '',
-      form: {
-        title: 'Contact Form',
-        description: 'Get in touch with us'
-      }
-    },
-    search: {
-      title: 'Search',
-      description: 'Search our content',
-      placeholder: 'Search...',
-      noResults: 'No results found',
-      noResultsDescription: 'Try adjusting your search terms',
-      searchError: 'Search error',
-      searchErrorDescription: 'Something went wrong',
-      retry: 'Retry',
-      clearSearch: 'Clear Search',
-      loadMore: 'Load More',
-      results: 'Results',
-      resultsFor: 'Results for',
-      showingResults: 'Showing results',
-      filters: 'Filters',
-      filterBy: 'Filter by'
-    },
-    product: {
-      advantages: 'Advantages',
-      advantages_list: ['Advantage 1', 'Advantage 2', 'Advantage 3'], // 返回数组而不是字符串
-      contact_us: 'Contact Us',
-      share_to: 'Share to',
-      details: 'Details',
-      description: 'Description',
-      specifications: 'Specifications',
-      features: 'Features',
-      applications: 'Applications',
-      applications_text: 'Applications Text',
-      related: {
-        products: 'Related Products',
-        news: 'Related News',
-        recommended: 'Recommended',
-        view_more: 'View More',
-        contact_now: 'Contact Now',
-        get_quote: 'Get Quote'
-      },
-      button: {
-        contactNow: 'Contact Now',
-        email: 'Email',
-        telephone: 'Telephone',
-        whatsapp: 'WhatsApp'
-      }
-    },
-    navigation: {
-      previous_product: 'Previous Product',
-      next_product: 'Next Product',
-      previous_article: 'Previous Article',
-      next_article: 'Next Article'
-    },
-    form: {
-      title: 'Contact Form',
-      name: 'Name',
-      name_placeholder: 'Enter your name',
-      telephone: 'Telephone',
-      telephone_placeholder: 'Enter your phone number',
-      email: 'Email',
-      email_placeholder: 'Enter your email',
-      message: 'Message',
-      message_placeholder: 'Enter your message',
-      captcha: 'Captcha',
-      send: 'Send'
-    },
-    related: {
-      products: 'Related Products',
-      news: 'Related News'
-    }
-  };
-}
 
 // 异步版本的 getDictionary（用于未来使用）
-export async function getDictionaryAsync(lang: string): Promise<any> {
+export async function getDictionary(lang: string): Promise<any> {
   const translationData = await getTranslationData();
   
   return {

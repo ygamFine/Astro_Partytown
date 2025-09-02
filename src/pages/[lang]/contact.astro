@@ -9,7 +9,7 @@ import ContactButtons from '../../components/common/contact/ContactButtons.astro
 
 import ContactForm from '../../components/common/contact/ContactForm.astro';
 import RichTextRenderer from '../../components/templates/common/RichTextRenderer.astro';
-import getDictionary from '../../i18n/dictionaries.js';
+import { getDictionary } from '../../i18n/dictionaries.js';
 import { generateContactBreadcrumbs } from '../../lib/breadcrumbUtils.js';
 import { themeConfig } from '../../config/theme.js';
 import { generateStaticPaths } from '../../lib/i18n-routes.js';
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 面包屑导航
 const breadcrumbs = generateContactBreadcrumbs(lang);

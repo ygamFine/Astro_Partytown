@@ -11,7 +11,7 @@ import EmptyState from '../../../components/templates/common/EmptyState.astro';
 import { getCases } from '../../../lib/strapi.js';
 import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
 import { processCaseData } from '../../../lib/dataProcessor.js';
-import getDictionary from '../../../i18n/dictionaries.js';
+import { getDictionary } from '../../../i18n/dictionaries.js';
 import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { loadImageMapping } from '../../../lib/imageProcessor.js';
 import { themeConfig } from '../../../config/theme.js';
@@ -31,7 +31,7 @@ const { lang, currentPage, totalPages, items: cases } = Astro.props;
 const actualCurrentPage = parsePageParam(Astro.params.page, 'page');
 
 // 加载翻译文件
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 加载图片映射
 const imageMapping = await loadImageMapping();

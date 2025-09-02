@@ -6,7 +6,7 @@
  */
 
 import { generateFullSitemap, generateLanguageSpecificSitemap } from '../src/lib/sitemapUtils.js';
-import { langToSubdomain } from '../src/lib/subdomainUtils.js';
+import { langToSubdomain } from '../src/lib/languageConfig.js';
 import { resolveBaseDomain } from '../src/lib/domainUtils.js';
 import fs from 'fs';
 import path from 'path';

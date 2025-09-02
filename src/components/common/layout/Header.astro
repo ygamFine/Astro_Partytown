@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import StaticMenu from './StaticMenu.astro';
 import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
-import { getLangFromHostname, langToSubdomain, subdomainToLang } from '../../../lib/subdomainUtils.js';
+import { getLangFromHostname, langToSubdomain, subdomainToLang } from '../../../lib/languageConfig.js';
 import { getSupportedLanguages } from '../../../lib/strapi.js';
 
 // 使用public目录中的图片
@@ -289,7 +289,7 @@ try {
           // 解析当前语言（路径优先，其次子域名）
           const hostname = window.location.hostname;
           const pathLang = (window.location.pathname.split('/')[1] || '');
-          const subToLang = { 'zh':'zh-CN','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
+          const subToLang = { 'zh':'zh-Hans','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
           let lang = pathLang || 'en';
           const first = hostname.split('.')[0];
           if (!pathLang && subToLang[first]) lang = subToLang[first];
@@ -363,7 +363,7 @@ try {
         let currentLang = pathLangMatch ? pathLangMatch[1] : null;
         if (!currentLang) {
           const hostname = window.location.hostname;
-          const map = { 'zh':'zh-CN','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
+          const map = { 'zh':'zh-Hans','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
           const firstLabel = hostname.split('.')[0];
           currentLang = map[firstLabel] || 'en';
           if (!currentLang) currentLang = 'en';
@@ -390,7 +390,7 @@ try {
             window.open(newPath, '_blank');
           } else {
             // 生产环境：构建子域名URL，总是跳转到首页
-            const subdomain = (function(x){const m={ 'zh-CN':'zh','zh-Hant':'zh-hant'};return m[x]||x;})(selectedLang);
+            const subdomain = (function(x){const m={ 'zh-Hans':'zh','zh-Hant':'zh-hant'};return m[x]||x;})(selectedLang);
             const currentDomain = window.location.hostname;
             const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
             const newUrl = `https://${subdomain}.${baseDomain}`;

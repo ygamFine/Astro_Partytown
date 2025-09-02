@@ -9,28 +9,26 @@ const getSiteUrl = () => {
   if (import.meta.env.PUBLIC_SITE_URL) {
     return import.meta.env.PUBLIC_SITE_URL;
   }
-  
+
   // 根据环境使用不同的域名
   if (import.meta.env.DEV) {
     return import.meta.env.DEV_SITE_URL;
   }
-  
+
   // 生产环境默认域名
   return import.meta.env.PROD_SITE_URL;
 };
 
 export async function GET() {
   const siteUrl = getSiteUrl();
-  
-  const robotsTxt = `# Robots.txt for YONAN Construction Machinery
-# 山东永安建设机械集团有限公司网站爬虫规则
 
+  const robotsTxt = `
 User-agent: *
 Allow: /
 
 # 允许访问所有页面
 Allow: /en/
-Allow: /zh-CN/
+Allow: /zh-Hans/
 Allow: /zh-Hant/
 Allow: /fr/
 Allow: /de/

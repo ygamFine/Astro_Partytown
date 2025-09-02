@@ -4,7 +4,7 @@ export const revalidate = 3600; // 1小时
 
 import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';
 import RichTextRenderer from '../../components/templates/common/RichTextRenderer.astro';
-import getDictionary from '../../i18n/dictionaries.js';
+import { getDictionary } from '../../i18n/dictionaries.js';
 import { generateAboutBreadcrumbs } from '../../lib/breadcrumbUtils.js';
 import { generateStaticPaths } from '../../lib/i18n-routes.js';
 
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 面包屑导航
 const breadcrumbs = generateAboutBreadcrumbs(lang);

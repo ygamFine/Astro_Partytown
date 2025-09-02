@@ -8,7 +8,7 @@ import ContactButtons from '../../../components/common/contact/ContactButtons.as
 import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
 import { getProducts, getProduct } from '../../../lib/strapi.js';
 import { getNews } from '../../../lib/strapi.js';
-import getDictionary from '../../../i18n/dictionaries.js';
+import { getDictionary } from '../../../i18n/dictionaries.js';
 import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
 import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { themeConfig } from '../../../config/theme.js';
@@ -45,7 +45,7 @@ if (!product) {
 }
 
 // 加载国际化翻译
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 获取所有产品数据用于相关产品计算
 const allProducts = await getProducts(lang);

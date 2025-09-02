@@ -9,7 +9,7 @@ import {
   generateDynamicPaths, 
   generateCategoryPaths 
 } from '../../lib/dynamicPages.js';
-import getDictionary from '../../i18n/dictionaries.ts';
+import { getDictionary } from '../../i18n/dictionaries.ts';
 import SecondaryPageLayout from '../../components/templates/layout/SecondaryPageLayout.astro';
 import EnhancedGridList from '../../components/templates/common/EnhancedGridList.astro';
 import ViewToggle from '../../components/templates/common/ViewToggle.astro';
@@ -44,7 +44,7 @@ export async function getStaticPaths() {
 
 const { lang, slug } = Astro.params;
 const { pageData, categoryData, pageType, pagesData } = Astro.props;
-const t = getDictionary(lang);
+const t = await getDictionary(lang);
 
 // 加载图片映射
 const imageMapping = await loadImageMapping();

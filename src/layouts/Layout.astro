@@ -1,5 +1,5 @@
 ---
-import Header from "../components/common/layout/Header.astro";
+import Header from "../components/Custom/Layout/Header.astro";
 import FooterSection from "../components/common/layout/FooterSection.astro";
 import MobileBottomMenu from "../components/common/layout/MobileBottomMenu.astro";
 import DynamicScriptLoader from "../components/common/analytics/DynamicScriptLoader.astro";
@@ -7,7 +7,10 @@ import PagefindPreloader from "../components/common/analytics/PagefindPreloader.
 import AnimationSystem from "../components/common/AnimationSystem.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
+import { getSiteConfiguration } from "../apis/common.js";
 
+// 导入全局样式（包含 Tailwind CSS）
+import "../styles/global.css";
 // 导入共享样式
 import "../styles/components.css";
 
@@ -24,6 +27,15 @@ const {
   lang = "en",
   pageType = "home",
 } = Astro.props;
+
+// 获取网站配置信息
+let siteConfiguration = {};
+try {
+  siteConfiguration = await getSiteConfiguration(lang);
+} catch (error) {
+  console.error('获取网站配置失败:', error);
+  siteConfiguration = {};
+}
 
 // 页面宽度配置 - 由各页面组件自行管理
 // 每个页面组件应在其自己的文件中定义 pageWidth
@@ -106,380 +118,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       lang={lang}
     />
 
-
-    <!-- 内联关键CSS - 防止渲染阻塞 -->
-    <style>
-      /* 全局重置和基础样式 - 关键路径 */
-      *, *::before, *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      
-      html {
-        scroll-behavior: smooth;
-        font-size: 10px;
-        overflow-x: hidden;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background: #fff;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeSpeed;
-        overflow-x: hidden;
-        width: 100%;
-        max-width: 100vw;
-      }
-
-      /* RTL 语言样式 */
-      [dir="rtl"] {
-        text-align: right;
-      }
-
-      [dir="rtl"] body {
-        font-family: "Noto Sans Arabic", "Arial Unicode MS", "Tahoma", Arial, sans-serif;
-        direction: rtl;
-      }
-
-      /* 其它语言使用系统默认字体，不设置额外首选字体 */
-
-      /* RTL 布局调整 */
-      [dir="rtl"] .container {
-        direction: rtl;
-      }
-
-      [dir="rtl"] .text-left {
-        text-align: right !important;
-      }
-
-      [dir="rtl"] .text-right {
-        text-align: left !important;
-      }
-
-      [dir="rtl"] .ml-auto {
-        margin-left: 0 !important;
-        margin-right: auto !important;
-      }
-
-      [dir="rtl"] .mr-auto {
-        margin-right: 0 !important;
-        margin-left: auto !important;
-      }
-
-      /* RTL Flexbox 调整 */
-      [dir="rtl"] .flex-row {
-        flex-direction: row-reverse;
-      }
-
-      [dir="rtl"] .justify-start {
-        justify-content: flex-end;
-      }
-
-      [dir="rtl"] .justify-end {
-        justify-content: flex-start;
-      }
-
-      /* RTL Grid 调整 */
-      [dir="rtl"] .grid {
-        direction: rtl;
-      }
-
-      [dir="rtl"] .grid > * {
-        direction: ltr;
-      }
-
-      /* RTL 边距和填充调整 */
-      [dir="rtl"] .pl-2 { padding-left: 0; padding-right: 0.5rem; }
-      [dir="rtl"] .pr-2 { padding-right: 0; padding-left: 0.5rem; }
-      [dir="rtl"] .pl-3 { padding-left: 0; padding-right: 0.75rem; }
-      [dir="rtl"] .pr-3 { padding-right: 0; padding-left: 0.75rem; }
-      [dir="rtl"] .pl-4 { padding-left: 0; padding-right: 1rem; }
-      [dir="rtl"] .pr-4 { padding-right: 0; padding-left: 1rem; }
-      [dir="rtl"] .pl-6 { padding-left: 0; padding-right: 1.5rem; }
-      [dir="rtl"] .pr-6 { padding-right: 0; padding-left: 1.5rem; }
-      [dir="rtl"] .pl-8 { padding-left: 0; padding-right: 2rem; }
-      [dir="rtl"] .pr-8 { padding-right: 0; padding-left: 2rem; }
-
-      [dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
-      [dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
-      [dir="rtl"] .ml-3 { margin-left: 0; margin-right: 0.75rem; }
-      [dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
-      [dir="rtl"] .ml-4 { margin-left: 0; margin-right: 1rem; }
-      [dir="rtl"] .mr-4 { margin-right: 0; margin-left: 1rem; }
-      [dir="rtl"] .ml-6 { margin-left: 0; margin-right: 1.5rem; }
-      [dir="rtl"] .mr-6 { margin-right: 0; margin-left: 1.5rem; }
-
-      /* RTL 边框调整 */
-      [dir="rtl"] .border-l { border-left: 0; border-right: 1px solid; }
-      [dir="rtl"] .border-r { border-right: 0; border-left: 1px solid; }
-
-      /* RTL 圆角调整 */
-      [dir="rtl"] .rounded-l { border-radius: 0 0.5rem 0.5rem 0; }
-      [dir="rtl"] .rounded-r { border-radius: 0.5rem 0 0 0.5rem; }
-      [dir="rtl"] .rounded-tl { border-top-left-radius: 0; border-top-right-radius: 0.5rem; }
-      [dir="rtl"] .rounded-tr { border-top-right-radius: 0; border-top-left-radius: 0.5rem; }
-      [dir="rtl"] .rounded-bl { border-bottom-left-radius: 0; border-bottom-right-radius: 0.5rem; }
-      [dir="rtl"] .rounded-br { border-bottom-right-radius: 0; border-bottom-left-radius: 0.5rem; }
-
-      /* RTL 浮动调整 */
-      [dir="rtl"] .float-left { float: right; }
-      [dir="rtl"] .float-right { float: left; }
-
-      /* RTL Transform 调整 */
-      [dir="rtl"] .transform {
-        transform: scaleX(-1);
-      }
-
-      [dir="rtl"] .transform svg {
-        transform: scaleX(-1);
-      }
-
-      /* 阿拉伯语字体优化 */
-      [dir="rtl"] {
-        font-feature-settings: "liga" 1, "kern" 1;
-        font-variant-ligatures: common-ligatures;
-        text-rendering: optimizeLegibility;
-      }
-      
-      /* 核心布局 - 首屏必需 */
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      
-      /* 主内容区域防止溢出 */
-      main {
-        width: 100%;
-        overflow-x: hidden;
-        position: relative;
-      }
-      
-      /* 所有section防止溢出 */
-      section {
-        width: 100%;
-        overflow-x: hidden;
-        position: relative;
-        box-sizing: border-box;
-      }
-      
-      /* 防止CLS的固定尺寸 */
-      @media (max-width: 768px) {
-        .mobile-banner-container {
-          height: 200px;
-          contain: layout;
-        }
-        
-        /* 移动端额外防护 */
-        body, html {
-          position: relative;
-        }
-        
-        * {
-          box-sizing: border-box;
-        }
-        
-        section, div, main, .container {
-          max-width: 100vw;
-          overflow-x: hidden;
-        }
-      }
-
-      /* 为固定头部预留空间：移动端 6rem，桌面端约 15.9rem（主栏 9.9rem + 导航 6rem）*/
-      main {
-        padding-top: 6rem;
-      }
-
-      @media (min-width: 768px) {
-        main {
-          padding-top: 15.9rem;
-        }
-      }
-
-      /* 图片加载优化 */
-      img {
-        max-width: 100%;
-        height: auto;
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-      }
-
-      /* 性能优化的按钮 */
-      .btn-primary {
-        background: #dc2626;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 700;
-        text-decoration: none;
-        display: inline-block;
-        will-change: transform;
-        transition: transform 0.2s ease;
-      }
-      
-      .btn-primary:hover {
-        transform: translateY(-1px);
-      }
-      
-      .btn-secondary {
-        background: #e5e7eb;
-        color: #1f2937;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
-        font-weight: 700;
-        font-size: 1.125rem;
-        text-decoration: none;
-        display: inline-block;
-        will-change: transform;
-        transition: transform 0.2s ease;
-      }
-
-      .btn-secondary:hover {
-        transform: translateY(-1px);
-      }
-
-      /* 关键动画优化 */
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-
-      /* 调整移动端 banner 与产品顺序 - 防止CLS */
-      @media (max-width: 767px) {
-        #main-content {
-          display: flex;
-          flex-direction: column;
-        }
-        #main-content > section.hero-mobile {
-          order: -1 !important;
-          contain: layout;
-        }
-        #main-content > section.product-showcase {
-          order: 0 !important;
-          contain: layout;
-        }
-      }
-
-      /* 懒加载图片优化 */
-      img[loading="lazy"] {
-        transition: opacity 0.3s ease;
-      }
-
-      img[loading="lazy"]:not([src]) {
-        opacity: 0;
-      }
-
-      /* 触摸优化 */
-      .touch-target {
-        touch-action: manipulation;
-        min-height: 44px;
-        min-width: 44px;
-      }
-
-      /* 骨架屏样式 */
-      .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-      }
-
-      @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-      }
-
-      /* 移除不必要的内联字体声明，沿用系统字体栈 */
-
-      /* 简单的动画系统 */
-      .animate-fade-up {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-      }
-
-      .animate-fade-up.animate-in {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .animate-fade-left {
-        opacity: 0;
-        transform: translateX(-30px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-      }
-
-      .animate-fade-left.animate-in {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .animate-fade-right {
-        opacity: 0;
-        transform: translateX(30px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-      }
-
-      .animate-fade-right.animate-in {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .animate-scale-up {
-        opacity: 0;
-        transform: scale(0.9);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-      }
-
-      .animate-scale-up.animate-in {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      /* 延迟动画 */
-      .animate-delay-100 { transition-delay: 0.1s; }
-      .animate-delay-200 { transition-delay: 0.2s; }
-      .animate-delay-300 { transition-delay: 0.3s; }
-      .animate-delay-400 { transition-delay: 0.4s; }
-      .animate-delay-500 { transition-delay: 0.5s; }
-      .animate-delay-600 { transition-delay: 0.6s; }
-      .animate-delay-700 { transition-delay: 0.7s; }
-      .animate-delay-800 { transition-delay: 0.8s; }
-      .animate-delay-900 { transition-delay: 0.9s; }
-
-      /* 卡片悬停动画 */
-      .card-hover-animate {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .card-hover-animate:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      }
-
-      /* 按钮悬停效果 */
-      .btn-hover-animate {
-        transition: transform 0.3s ease;
-      }
-
-      .btn-hover-animate:hover {
-        transform: translateY(-2px);
-      }
-
-      /* 数字计数器 */
-      .counter-number {
-        font-variant-numeric: tabular-nums;
-      }
-    </style>
-
     <title>{title}</title>
   </head>
   <body data-pagefind-body>
@@ -490,7 +128,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       lang={lang}
     />
 
-    <Header />
+    <Header siteConfiguration={siteConfiguration} />
     
     <main id="main-content">
       <slot />
@@ -504,10 +142,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <!-- 移动端底部菜单 -->
     <MobileBottomMenu lang={lang} currentPath={Astro.url.pathname} />
-
-
-    <!-- 🚀 第三方脚本预留位置 -->
-    <!-- 如需添加第三方脚本（如客服系统），请在此处添加 -->
 
     <!-- 🚀 Pagefind 预加载器 - 使用专用组件 -->
     <PagefindPreloader
@@ -529,95 +163,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
-
-    <!-- 全局图片加载失败占位图回退，不创建新文件 -->
-    <script>
-      // @ts-nocheck
-      (function () {
-        var PLACEHOLDER_PATH = "/images/placeholder.webp";
-
-        /**
-         * @param {HTMLImageElement} img
-         */
-        function applyFallback(img) {
-          if (!img || img.dataset.fallbackApplied === "1") return;
-          if ((img.currentSrc || img.src || "").indexOf(PLACEHOLDER_PATH) !== -1) return;
-          img.dataset.fallbackApplied = "1";
-          img.srcset = "";
-          img.sizes = "";
-          img.loading = img.getAttribute("loading") || "lazy";
-          img.decoding = img.getAttribute("decoding") || "async";
-          img.src = PLACEHOLDER_PATH;
-        }
-
-        /**
-         * @param {Event} e
-         */
-        function onError(e) {
-          var target = e && e.target;
-          if (target instanceof HTMLImageElement) {
-            applyFallback(target);
-          }
-        }
-
-        /**
-         * @param {HTMLImageElement} img
-         */
-        function prepare(img) {
-          if (!img) return;
-          img.removeEventListener("error", onError);
-          img.addEventListener("error", onError, { once: true });
-          // 立即检查已经加载完成但尺寸为0或缺少src的情况
-          if ((!img.getAttribute("src") || (img.complete && img.naturalWidth === 0))) {
-            applyFallback(img);
-          }
-        }
-
-        function init() {
-          // 绑定现有图片
-          var imgs = document.querySelectorAll("img");
-          for (var i = 0; i < imgs.length; i++) prepare(imgs[i]);
-
-          // 监听后续动态添加的图片
-          var mo = new MutationObserver(function (mutations) {
-            for (var i = 0; i < mutations.length; i++) {
-              var m = mutations[i];
-              if (m.addedNodes && m.addedNodes.length) {
-                for (var j = 0; j < m.addedNodes.length; j++) {
-                  var node = m.addedNodes[j];
-                  if (!(node instanceof Element)) continue;
-                  if (node instanceof HTMLImageElement) prepare(node);
-                  var nestedImgs = node.querySelectorAll("img");
-                  for (var k = 0; k < nestedImgs.length; k++) prepare(/** @type {HTMLImageElement} */(nestedImgs[k]));
-                }
-              }
-            }
-          });
-          mo.observe(document.documentElement, { childList: true, subtree: true });
-
-          // 捕获捕捉不到的加载后错误（如某些解码失败场景）
-          document.addEventListener(
-            "load",
-            /**
-             * @param {Event} e
-             */
-            function (e) {
-              var t = e && e.target;
-              if (t instanceof HTMLImageElement && t.complete && t.naturalWidth === 0) {
-                applyFallback(t);
-              }
-            },
-            true
-          );
-        }
-
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", init);
-        } else {
-          init();
-        }
-      })();
-    </script>
 
     <FooterSection />
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->

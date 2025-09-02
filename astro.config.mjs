@@ -5,36 +5,31 @@ import partytown from '@astrojs/partytown';
 import vercel from '@astrojs/vercel';
 import critters from 'astro-critters';
 
-// https://astro.build/config
+import { getSupportedLanguages } from './src/lib/languageConfig.js';
+// 动态获取支持的语言列表
+const locales = await getSupportedLanguages();
+console.log('* 已启用的国际化语言：', locales);
 export default defineConfig({
   adapter: vercel({
     isr: true
   }),
-  
   server: {
     port: 3000,
     host: true,
   },
-  
   // 禁用 Astro Dev Toolbar
   devToolbar: {
     enabled: false
   },
-  
+
   // 🌍 国际化配置
   i18n: {
-    locales: [
-      "en", "zh-CN", "zh-Hant", "fr", "de", "it", "tr", "es", "pt-pt", 
-      "nl", "pl", "ar", "ru", "th", "id", "vi", "ms", "ml", "my", "hi", "ja", "ko"
-    ],
+    locales,
     defaultLocale: "en",
     routing: {
       prefixDefaultLocale: false
     }
   },
-  
-
-
   // 🔧 集成配置
   integrations: [
     tailwind({
@@ -57,29 +52,32 @@ export default defineConfig({
       }
     }),
   ],
-  
+
   // 🖼️ 图片优化配置
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp'
     },
   },
-  
+
   // 🏗️ 构建优化配置
   build: {
     assets: '_astro',
     // 内联小资源
     inlineStylesheets: 'auto',
   },
-  
+
   // 📁 静态资源配置
   publicDir: 'public',
-  
+
   // 📤 输出配置
   output: 'static',
-  
+
   // ⚡ Vite 构建优化
   vite: {
+    // 支持子目录中的资源文件
+    assetsInclude: ['**/*.webp', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+    
     build: {
       // 代码分割优化
       rollupOptions: {

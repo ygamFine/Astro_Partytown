@@ -8,7 +8,7 @@ import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';
-import { langToSubdomain } from './subdomainUtils.js';
+import { langToSubdomain } from './languageConfig.js';
 import { resolveBaseDomain } from './domainUtils.js';
 
 // 加载环境变量

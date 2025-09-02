@@ -1,25 +1,17 @@
-import { getSupportedLanguages } from './strapi.js';
+import { getSupportedLanguages } from './languageConfig.js';
 
-// 默认语言列表作为回退，确保所有必要的语言路径都能生成
-const DEFAULT_LANGUAGES = [
-  { code: 'en', name: 'English' },
-];
+// 动态获取支持的语言列表
+let SUPPORTED_LANGUAGES = [];
 
-// 尝试从后端获取语言列表，失败时使用默认列表
-let dynamicLanguages = [];
+// 初始化语言列表
 try {
-  dynamicLanguages = await getSupportedLanguages();
+  SUPPORTED_LANGUAGES = await getSupportedLanguages();
 } catch (e) {
   console.warn('[i18n] 获取语言列表失败，使用默认语言列表:', e?.message || e);
-  dynamicLanguages = DEFAULT_LANGUAGES;
+  SUPPORTED_LANGUAGES = ['en'];
 }
 
-const dynamicCodes = Array.isArray(dynamicLanguages) && dynamicLanguages.length > 0
-  ? dynamicLanguages.map((l) => l.code).filter(Boolean)
-  : DEFAULT_LANGUAGES.map((l) => l.code);
-
-// 最终语言列表：优先使用后端返回，失败时使用默认列表
-export const SUPPORTED_LANGUAGES = dynamicCodes;
+export { SUPPORTED_LANGUAGES };
 
 // 生成所有支持语言的静态路径
 export function generateStaticPaths() {

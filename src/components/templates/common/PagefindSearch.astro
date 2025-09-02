@@ -8,8 +8,8 @@ export interface Props {
 }
 
 const { 
-  lang = 'zh-CN', 
-  placeholder = '搜索产品、新闻、案例...',
+  lang = 'en', 
+  placeholder = '...',
   showInfo = true,
   initialQuery = '',
   showResults = true
@@ -19,8 +19,8 @@ import { buildUrl } from '../../../lib/envConfig.js';
 const searchPageUrl = buildUrl(lang, '/search');
 
 // 从字典获取多语言
-import getDictionary from '../../../i18n/dictionaries.js';
-const t = getDictionary(lang);
+import { getDictionary } from '../../../i18n/dictionaries.js';
+const t = await getDictionary(lang);
 const searchPlaceholder = t.search?.placeholder || placeholder;
 const searchInfo = `💡 ${t.search?.tip || ''}`.trim();
 // 准备客户端使用的翻译数据
@@ -64,9 +64,7 @@ const uiData = t.search?.ui || {};
     // 兼容两种结果容器ID：组件内使用的 #pagefind-results 与搜索页使用的 #pagefind-search-results
     const resultsContainer = document.getElementById('pagefind-search-results') || document.getElementById('pagefind-results');
     const langContainer = document.querySelector('.pagefind-search-container') as HTMLElement;
-    const lang = langContainer?.dataset.lang || 'zh-CN';
     const searchPageUrl = (langContainer?.dataset.searchUrl || '/search');
-    const pagefindTranslations = {};
     
     if (!searchInput) return;
     

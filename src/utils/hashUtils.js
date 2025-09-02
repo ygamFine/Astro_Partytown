@@ -33,5 +33,25 @@ export function generateFilenameHash(filename) {
  */
 export function generateImageHash(imageUrl) {
   if (!imageUrl) return '';
-  return generateUrlHash(imageUrl);
+  
+  try {
+    // 如果是完整URL，只取pathname部分
+    if (imageUrl.startsWith('http')) {
+      const url = new URL(imageUrl);
+      const pathname = url.pathname;
+      // 只对pathname进行哈希，避免完整URL过长
+      return generateUrlHash(pathname).substring(0, 16); // 限制长度为16位
+    }
+    
+    // 如果是相对路径，直接处理
+    if (imageUrl.startsWith('/')) {
+      return generateUrlHash(imageUrl).substring(0, 16); // 限制长度为16位
+    }
+    
+    // 其他情况，对整个字符串进行哈希
+    return generateUrlHash(imageUrl).substring(0, 16); // 限制长度为16位
+  } catch (error) {
+    // 如果URL解析失败，使用原始字符串的前16位哈希
+    return generateUrlHash(imageUrl).substring(0, 16);
+  }
 } 
