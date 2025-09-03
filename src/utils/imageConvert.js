@@ -500,7 +500,222 @@ export async function processUploadImage(imagePath) {
  * // 3. 或者直接使用返回的公共路径（如 /assets/strapi/xxx.webp）
  * const publicPath = await processLogoImage('/uploads/logo.png');
  * 
+ * // 4. 手动更新图片映射（当 downloadImage 自动更新失败时）
+ * import { updateImageMapping, generateImageMappingFile, scanAndGenerateMapping } from './imageConvert.js';
+ * 
+ * // 更新单个图片的映射
+ * await updateImageMapping([{
+ *   fileName: 'example.webp',
+ *   hash: 'example',
+ *   filePath: 'example.webp'
+ * }]);
+ * 
+ * // 生成完整的映射文件
+ * await generateImageMappingFile(['image1.webp', 'banner/image2.jpg']);
+ * 
+ * // 扫描目录并自动生成映射
+ * const imageFiles = await scanAndGenerateMapping();
+ * 
  * 职责分离：
- * - imageConvert.js: 负责下载、转换、返回本地文件路径
+ * - imageConvert.js: 负责下载、转换、返回本地文件路径，并自动维护映射文件
  * - imageProcessor.js: 负责运行时路径映射和 Astro 组件支持
  */
+
+/**
+ * 更新图片映射文件
+ * @param {Array} downloadedImages - 新下载的图片信息数组
+ * @param {string} mappingFilePath - 映射文件路径，默认为 strapi-image-urls.js
+ */
+export async function updateImageMapping(downloadedImages = [], mappingFilePath = '../data/strapi-image-urls.js') {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    
+    const fullMappingPath = path.join(__dirname, mappingFilePath);
+    
+    // 读取现有的映射文件
+    let existingMapping = {};
+    try {
+      const existingContent = await fs.readFile(fullMappingPath, 'utf-8');
+      // 提取现有的 STRAPI_IMAGE_URLS 对象
+      const match = existingContent.match(/export const STRAPI_IMAGE_URLS = ({[\s\S]*?});/);
+      if (match) {
+        // 简单解析现有的映射（这里可以改进为更安全的解析）
+        const mappingStr = match[1];
+        // 提取键值对
+        const pairs = mappingStr.match(/'([^']+)':\s*([^,\s]+)/g);
+        if (pairs) {
+          pairs.forEach(pair => {
+            const [key, value] = pair.split(':').map(s => s.trim().replace(/'/g, ''));
+            existingMapping[key] = value;
+          });
+        }
+      }
+    } catch (error) {
+      console.log('现有映射文件不存在，将创建新文件');
+    }
+    
+    // 添加新的映射关系
+    downloadedImages.forEach(imageInfo => {
+      const { fileName, hash, filePath } = imageInfo;
+      if (fileName && hash) {
+        existingMapping[fileName] = hash;
+        existingMapping[hash] = hash;
+        
+        // 如果是banner目录中的文件，也添加banner路径映射
+        if (filePath && filePath.includes('banner/')) {
+          const bannerKey = `banner/${fileName}`;
+          const bannerPath = `/assets/${filePath}`;
+          existingMapping[bannerKey] = hash;
+          existingMapping[bannerPath] = hash;
+        }
+      }
+    });
+    
+    // 生成新的映射文件内容
+    await generateImageMappingFile(Object.keys(existingMapping), mappingFilePath);
+    
+    console.log(`✅ 图片映射文件更新完成，包含 ${Object.keys(existingMapping).length} 个映射关系`);
+    return true;
+    
+  } catch (error) {
+    console.error('❌ 更新图片映射失败:', error.message);
+    return false;
+  }
+}
+
+/**
+ * 生成完整的图片映射文件
+ * @param {Array} imageFiles - 图片文件列表
+ * @param {string} mappingFilePath - 映射文件路径，默认为 strapi-image-urls.js
+ */
+export async function generateImageMappingFile(imageFiles = [], mappingFilePath = '../data/strapi-image-urls.js') {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    
+    const fullMappingPath = path.join(__dirname, mappingFilePath);
+    
+    // 确保目录存在
+    const dir = path.dirname(fullMappingPath);
+    await fs.mkdir(dir, { recursive: true });
+    
+    // 生成文件内容
+    const lines = [];
+    lines.push('// 自动生成：Strapi 图片 URL 映射 (由 imageConvert.js 生成)');
+    lines.push('// 注意：实际部署时 Astro 会将文件打包到 _astro 目录中');
+    lines.push('');
+    
+    // 生成 import 语句 - 去重处理
+    const uniqueImports = new Map();
+    imageFiles.forEach((file) => {
+      const base = path.basename(file);
+      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, '');
+      
+      // 如果已经存在相同的hash，跳过重复导入
+      if (!uniqueImports.has(hash)) {
+        uniqueImports.set(hash, file);
+        lines.push(`import ${hash} from '../assets/strapi/${file}';`);
+      }
+    });
+    
+    lines.push('');
+    lines.push('export const STRAPI_IMAGE_URLS = {');
+    
+    imageFiles.forEach((file) => {
+      const base = path.basename(file);
+      const hash = base.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, '');
+      lines.push(`  '${base}': ${hash},`);
+      lines.push(`  '${hash}': ${hash},`);
+      
+      // 如果是banner目录中的文件，也添加banner路径映射
+      if (file.includes('banner/')) {
+        const bannerKey = `banner/${base}`;
+        const bannerPath = `/assets/${file}`;
+        lines.push(`  '${bannerKey}': ${hash},`);
+        lines.push(`  '${bannerPath}': ${hash},`);
+      }
+    });
+    
+    lines.push('};');
+    
+    // 写入文件
+    await fs.writeFile(fullMappingPath, lines.join('\n'));
+    
+    console.log(`✅ 图片映射文件生成完成，包含 ${imageFiles.length} 个文件`);
+    return true;
+    
+  } catch (error) {
+    console.error('❌ 生成图片映射文件失败:', error.message);
+    return false;
+  }
+}
+
+/**
+ * 扫描目录并生成完整的图片映射
+ * @param {string} imageDir - 图片目录路径，默认为 src/assets/strapi
+ * @param {string} mappingFilePath - 映射文件路径
+ */
+export async function scanAndGenerateMapping(imageDir = '../assets/strapi', mappingFilePath = '../data/strapi-image-urls.js') {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    
+    const fullImageDir = path.join(__dirname, imageDir);
+    
+    // 扫描目录获取所有图片文件
+    const imageFiles = [];
+    
+    async function scanDirectory(dir) {
+      try {
+        const items = await fs.readdir(dir);
+        for (const item of items) {
+          const fullPath = path.join(dir, item);
+          const stat = await fs.stat(fullPath);
+          
+          if (stat.isDirectory()) {
+            // 递归扫描子目录
+            await scanDirectory(fullPath);
+          } else if (stat.isFile()) {
+            // 检查是否是图片文件
+            const ext = path.extname(item).toLowerCase();
+            if (['.webp', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.mp4', '.webm', '.mov'].includes(ext)) {
+              // 转换为相对路径
+              const relativePath = path.relative(fullImageDir, fullPath);
+              imageFiles.push(relativePath);
+            }
+          }
+        }
+      } catch (error) {
+        console.warn(`扫描目录失败: ${dir}`, error.message);
+      }
+    }
+    
+    await scanDirectory(fullImageDir);
+    
+    // 生成映射文件
+    if (imageFiles.length > 0) {
+      await generateImageMappingFile(imageFiles, mappingFilePath);
+      return imageFiles;
+    } else {
+      console.log('未找到图片文件');
+      return [];
+    }
+    
+  } catch (error) {
+    console.error('❌ 扫描并生成映射失败:', error.message);
+    return [];
+  }
+}
