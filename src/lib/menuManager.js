@@ -352,7 +352,6 @@ export class MenuManager {
         menu.style.display = 'none';
       }
     });
-    console.log('强制隐藏了', allSubMenus.length, '个子菜单');
   }
 
   /**
@@ -360,7 +359,6 @@ export class MenuManager {
    */
   setSupportedLanguages(languages) {
     this.supportedLanguages = languages;
-    console.log('设置支持的语言列表', this.supportedLanguages);
   }
 
   /**

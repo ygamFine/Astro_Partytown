@@ -33,7 +33,7 @@ function findAndPrintUrls(obj, path = '') {
     } else if (typeof value === 'string') {
       // 检查是否是URL
       if (value.startsWith('http') || value.startsWith('/uploads/') || value.startsWith('/assets/')) {
-        console.log(`🔗 发现URL: ${currentPath} = ${value}`);
+        // 发现URL
       }
     }
   }
@@ -45,10 +45,8 @@ function findAndPrintUrls(obj, path = '') {
 function processHomepageImages(data, imageMapping) {
   if (!data) return data;
   
-  // 首先打印所有找到的URL
-  console.log('🔍 开始扫描数据中的所有URL...');
+  // 扫描所有找到的URL
   findAndPrintUrls(data);
-  console.log('🔍 URL扫描完成');
   
   // 如果是数组，递归处理每个元素
   if (Array.isArray(data)) {
@@ -62,13 +60,11 @@ function processHomepageImages(data, imageMapping) {
       if (value && typeof value === 'object') {
         // 处理 .media.url 格式
         if (value.media && value.media.url) {
-          console.log(`🖼️ 处理media.url: ${key} = ${value.media.url}`);
           const processedImage = processImageForDisplay(value.media.url, imageMapping);
           processed[key] = processedImage;
         }
         // 处理直接包含 url 的图片对象
         else if (value.url) {
-          console.log(`🖼️ 处理url: ${key} = ${value.url}`);
           const processedImage = processImageForDisplay(value.url, imageMapping);
           processed[key] = processedImage;
         }
@@ -76,7 +72,6 @@ function processHomepageImages(data, imageMapping) {
         else if (Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === 'object') {
           const firstItem = value[0];
           if (firstItem.media?.url || firstItem.url) {
-            console.log(`🖼️ 处理图片数组: ${key} (${value.length} 个项目)`);
             const processedImages = processImageArrayForDisplay(value, imageMapping);
             processed[key] = processedImages;
           } else {
@@ -90,9 +85,8 @@ function processHomepageImages(data, imageMapping) {
       } else {
         // 处理字符串类型的图片URL
         if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('/uploads/'))) {
-          console.log(`🖼️ 处理字符串URL: ${key} = ${value}`);
           const processedImage = processImageForDisplay(value, imageMapping);
-          processed[key] = processedImage;
+          processed[key] = value;
         } else {
           processed[key] = value;
         }
@@ -120,13 +114,11 @@ export async function getHomepageContent() {
     const imageMapping = await loadImageMappingWithCreate();
     const homepageData = data.data;
     
-    console.log('开始处理首页图片数据...');
+    // 开始处理首页图片数据
     
     // 图片下载由 download-strapi-images.js 脚本处理
-    console.log('📝 数据获取完成，图片下载由 download-strapi-images.js 脚本处理');
     
     // 使用图片映射处理数据中的图片
-    console.log('🔄 开始处理图片数据...');
     const processedHomepageData = processHomepageImages(homepageData, imageMapping);
     
     return {

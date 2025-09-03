@@ -25,7 +25,6 @@ async function generateSitemap() {
     // 从站点地图数据中提取语言（来源于后端语言列表接口）
     const languages = Array.from(new Set((sitemapData.pages || []).map(p => p.lang).filter(Boolean)));
     if (!languages.length) {
-      console.warn('未从后端获取到语言列表，默认回退到 en');
       languages.push('en');
     }
     
@@ -75,9 +74,8 @@ async function generateSitemap() {
       }
     }
 
-    console.log('✅ 站点地图生成完成');
+    // 站点地图生成完成
   } catch (error) {
-    console.error('❌ 生成站点地图失败:', error);
     process.exit(1);
   }
 }

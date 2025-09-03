@@ -33,30 +33,7 @@ interface MenuItem {
 let menuItems: MenuItem[] = [];
 try {
   menuItems = await getMenus(currentLang);
-  console.log("获取到的菜单数据:", menuItems);
-  console.log("菜单项数量:", menuItems.length);
-
-  // 检查是否有子菜单
-  menuItems.forEach((item, index) => {
-    if (item.children && item.children.length > 0) {
-      console.log(
-        `菜单项 "${item.name}" 有 ${item.children.length} 个子菜单:`,
-        item.children,
-      );
-
-      // 检查二级菜单的子菜单
-      item.children.forEach((child, childIndex) => {
-        if (child.children && child.children.length > 0) {
-          console.log(
-            `  二级菜单 "${child.name}" 有 ${child.children.length} 个三级菜单:`,
-            child.children,
-          );
-        }
-      });
-    }
-  });
 } catch (error) {
-  console.error("获取菜单失败:", error);
   // 如果接口失败，不显示任何菜单
   menuItems = [];
 }
@@ -70,7 +47,6 @@ let supportedLanguages: Array<{
 try {
   supportedLanguages = await getSupportedLanguages();
 } catch (error) {
-  console.error("获取语言列表失败:", error);
   supportedLanguages = [];
 }
 ---

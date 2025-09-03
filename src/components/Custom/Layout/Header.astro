@@ -14,7 +14,6 @@ export interface Props {
 }
 
 const { siteConfiguration = {} } = Astro.props;
-console.log(siteConfiguration);
 
 // 获取当前语言：优先路径，其次子域名
 const currentPath = Astro.url.pathname;
@@ -31,7 +30,6 @@ let supportedLanguages = [];
 try {
   supportedLanguages = await getSupportedLanguages();
 } catch (error) {
-  console.error("获取语言列表失败:", error);
   supportedLanguages = [];
 }
 
@@ -59,14 +57,9 @@ try{
   }
 }
 catch(error){
-  console.error("获取logo图片失败:", error);
   logoImage = "/images/placeholder.webp";
 }
 
-
-
-
-console.log("🎯 最终使用的logo路径:", logoImage);
 ---
 
 <!-- 引入字体图标 CSS -->
@@ -230,7 +223,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
         class="hidden md:flex items-center justify-center"
         style="height: 6rem;"
       >
-        <StaticMenu client:load />
+        <StaticMenu />
       </div>
     </div>
   </div>
@@ -486,8 +479,6 @@ console.log("🎯 最终使用的logo路径:", logoImage);
       window.addEventListener('scroll', handleScroll, { passive: true });
     }
 
-
-
     // 移动端语言选择器功能
     function initMobileLanguageSelector() {
       const mobileLanguageSelector = document.getElementById(
@@ -517,8 +508,6 @@ console.log("🎯 最终使用的logo路径:", logoImage);
           const isDev =
             window.location.hostname === "localhost" ||
             window.location.hostname === "127.0.0.1";
-
-
 
           if (isDev) {
             // 本地开发：总是跳转到首页

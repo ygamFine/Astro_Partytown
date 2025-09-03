@@ -33,7 +33,6 @@ let siteConfiguration = {};
 try {
   siteConfiguration = await getSiteConfiguration(lang);
 } catch (error) {
-  console.error('获取网站配置失败:', error);
   siteConfiguration = {};
 }
 
@@ -71,7 +70,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
             const fontLoaded = document.fonts.check('16px iconfont');
     
             if (!fontLoaded) {
-              console.warn('字体未加载，尝试重新加载');
               // 强制重新加载字体CSS
               const link = document.createElement('link');
               link.rel = 'stylesheet';
@@ -151,7 +149,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       currentPath={Astro.url.pathname}
       preloadStrategy="smart"
     />
-
 
     <!-- 🎬 动画系统 - 使用专用组件 -->
     <AnimationSystem 

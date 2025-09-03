@@ -275,31 +275,7 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
   document.addEventListener('DOMContentLoaded', function() {
     const menuItems = document.querySelectorAll('.mobile-bottom-menu a[data-menu-type]');
     
-    // 调试：输出菜单项信息
-    
-    console.log('菜单项数量:', menuItems.length);
-    
-    menuItems.forEach((item, index) => {
-      const menuType = item.getAttribute('data-menu-type');
-      const menuId = item.getAttribute('data-menu-id');
-      const href = item.getAttribute('href');
-      const img = item.querySelector('img');
-      const icon = item.querySelector('i');
-      
-      console.log(`菜单项 ${index + 1}:`);
-      console.log('  类型:', menuType);
-      console.log('  ID:', menuId);
-      console.log('  链接:', href);
-      
-      if (img) {
-        console.log('  图片src:', img.src);
-        console.log('  图片alt:', img.alt);
-        console.log('  图片状态:', img.complete ? '已加载' : '加载中');
-      } else if (icon) {
-        console.log('  字体图标类名:', icon.className);
-      }
-      console.log('---');
-    });
+    // 菜单项处理
     
     menuItems.forEach((item: Element) => {
       item.addEventListener('click', function(this: HTMLElement, e: Event) {

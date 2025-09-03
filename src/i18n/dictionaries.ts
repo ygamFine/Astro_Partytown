@@ -16,7 +16,6 @@ async function loadTranslationFile(lang: string, namespace: string) {
     return module.default;
   } catch (error) {
     // 如果文件不存在，返回空对象
-    console.warn(`Translation file not found: ${lang}/${namespace}.json`);
     return {};
   }
 }
@@ -33,7 +32,6 @@ async function generateTranslationData() {
       try {
         translationData[lang][namespace] = await loadTranslationFile(lang, namespace);
       } catch (error) {
-        console.warn(`Failed to load translation for ${lang}/${namespace}:`, error);
         translationData[lang][namespace] = {};
       }
     }
@@ -74,7 +72,6 @@ function getTranslation(lang: string, namespace: string, key: string, translatio
     return key;
   }
 }
-
 
 // 异步版本的 getDictionary（用于未来使用）
 export async function getDictionary(lang: string): Promise<any> {

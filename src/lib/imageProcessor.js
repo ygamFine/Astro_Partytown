@@ -14,10 +14,8 @@ async function loadEmittedUrls() {
   try {
     const module = await import('../data/strapi-image-urls.js');
     EMITTED_URLS = module.STRAPI_IMAGE_URLS || {};
-    console.log('imageProcessor: 成功加载 EMITTED_URLS, 键数量:', Object.keys(EMITTED_URLS).length);
-    console.log('imageProcessor: EMITTED_URLS 键示例:', Object.keys(EMITTED_URLS).slice(0, 5));
   } catch (error) {
-    console.log('imageProcessor: 加载 EMITTED_URLS 失败:', error.message);
+    // 静默处理加载失败
   }
 }
 

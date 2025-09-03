@@ -400,8 +400,6 @@ const pageWidth = getPageWidth();
         pagefind.triggerSearch(query);
       }
     } catch (error) {
-      console.warn('Pagefind 加载失败:', error);
-      
       // 显示错误信息
       (resultsContainer as HTMLElement).innerHTML = `
         <div class="text-center py-12">

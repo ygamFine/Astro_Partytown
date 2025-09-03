@@ -15,13 +15,8 @@ import {
 
 // 验证环境变量
 if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
-  console.error('❌ 缺少必要的环境变量:');
-  console.error('   STRAPI_STATIC_URL:', STRAPI_STATIC_URL ? '已设置' : '未设置');
-  console.error('   STRAPI_API_TOKEN:', STRAPI_TOKEN ? '已设置' : '未设置');
   throw new Error('缺少必要的 Strapi 环境变量配置');
 }
-
-
 
 /**
  * 获取菜单数据 (SSG模式，构建时调用)
@@ -29,7 +24,6 @@ if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
 export async function getMenus(locale = 'en') {
   try {
     const data = await fetchJson(`${STRAPI_STATIC_URL}/api/menu-manages?locale=${locale}&populate=*&sort=sort:ASC`);
-    console.log('主菜单数据',data);
     // 转换为标准格式，支持国际化字段
     const menus = data.data?.map(item => ({
       name: item.name || item.attributes?.name,
@@ -105,11 +99,9 @@ export async function getProducts(locale = 'en') {
       image: processImageArray(product.image, imageMapping, mapImages)
     }));
 
-
     return processedProducts;
 
   } catch (error) {
-    console.error('获取产品列表失败:', error);
     // 如果API调用失败，返回空数组
     return [];
   }
@@ -158,7 +150,6 @@ export async function getProduct(slugOrId, locale = 'en') {
     };
 
   } catch (error) {
-    console.error('获取产品详情失败:', error);
     return null;
   }
 }
@@ -219,11 +210,9 @@ export async function getNews(locale = 'en') {
       image: processSingleImage(newsItem.image, imageMapping, mapImages)
     }));
 
-
     return processedNews;
 
   } catch (error) {
-    console.error('获取新闻列表失败:', error);
     // 如果API调用失败，返回空数组
     return [];
   }
@@ -268,7 +257,6 @@ export async function getNewsById(id, locale = 'en') {
     };
 
   } catch (error) {
-    console.error('获取新闻详情失败:', error);
     return null;
   }
 }
@@ -334,11 +322,9 @@ export async function getCases(locale = 'en') {
       image: processSingleImage(caseItem.image, imageMapping, mapImages)
     }));
 
-
     return processedCases;
 
   } catch (error) {
-    console.error('获取案例列表失败:', error);
     // 如果API调用失败，返回空数组
     return [];
   }
@@ -389,11 +375,9 @@ export async function getCase(id, locale = 'en') {
     };
 
   } catch (error) {
-    console.error('获取案例详情失败:', error);
     return null;
   }
 }
-
 
 /**
  * 获取移动端底部菜单数据 (SSG模式，构建时调用)
@@ -500,7 +484,6 @@ export async function getMobileBottomMenu(locale = 'en') {
       return processedMenuItems;
 
     } catch (error) {
-      console.error('获取移动端底部菜单失败:', error);
       // 失败也缓存为空数组，避免构建期重复请求
       globalThis.__mobileBottomMenuCacheMap.set(locale, []);
       return [];
@@ -561,13 +544,9 @@ function getDefaultMenuIcon(item) {
     'vr': 'vr-player',                        // icon-vrbofangqi 🥽
     'videos': 'youtube'                       // icon-youtube 📺
   };
-  
-  
-  
+
   return iconMapping[uniqueId] || 'circle';
 }
-
-
 
 /**
  * 处理单个Banner项目的辅助函数
@@ -634,14 +613,12 @@ export async function getBannerData(filterType = undefined) {
     
     // 检查必要的环境变量
     if (!STRAPI_STATIC_URL) {
-      console.warn('[getBannerData] STRAPI_STATIC_URL 未配置，返回空数据');
       return [];
     }
     
     const data = await fetchJson(apiUrl);
     
     if (!data || !data.data) {
-      console.warn('[getBannerData] Banner数据为空或网络请求失败');
       return [];
     }
 
@@ -655,7 +632,6 @@ export async function getBannerData(filterType = undefined) {
     const allBanners = [...shouyeBanners, ...tongyongBanners];
     
     if (allBanners.length === 0) {
-      console.warn('没有找到任何Banner数据（首页或通用）');
       return [];
     }
 
@@ -680,7 +656,6 @@ export async function getBannerData(filterType = undefined) {
     return filteredBanners;
 
   } catch (error) {
-    console.error('获取Banner数据失败:', error);
     return [];
   }
 }
@@ -699,7 +674,6 @@ export async function getCommonBannerData() {
     return commonBanners;
 
   } catch (error) {
-    console.error('获取通用Banner数据失败:', error);
     return [];
   }
 }
@@ -714,7 +688,6 @@ export async function getHomepageContent() {
     const data = await fetchJson(apiUrl);
     
     if (!data.data) {
-      console.warn('首页数据为空');
       return null;
     }
 
@@ -767,7 +740,6 @@ export async function getHomepageContent() {
     };
 
   } catch (error) {
-    console.error('获取首页数据失败:', error);
     return null;
   }
 }
@@ -814,6 +786,4 @@ export async function getSupportedLanguages() {
     return [];
   }
 }
-
-
 

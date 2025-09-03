@@ -8,7 +8,6 @@ import critters from 'astro-critters';
 import { getSupportedLanguages } from './src/lib/languageConfig.js';
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
-console.log('* 已启用的国际化语言：', locales);
 export default defineConfig({
   adapter: vercel({
     isr: true

@@ -37,8 +37,6 @@ const IMAGE_CACHE_DIR = process.env.IMAGE_CACHE_DIR || 'src/assets/strapi';
 // Banner图片专用目录
 const BANNER_IMAGE_DIR = path.join(IMAGE_CACHE_DIR, 'banner');
 
-
-
 import { getSupportedLanguages } from '../src/lib/languageConfig.js';
 
 // 动态获取启用的语言列表
@@ -48,7 +46,6 @@ async function getEnabledLocales() {
 
 // 初始化语言列表
 let ENABLED_LOCALES = [];
-
 
 /**
  * 专门处理GIF文件的转换
@@ -114,7 +111,6 @@ async function ensureCacheDir() {
  * 自动整理现有的Banner图片到banner目录
  */
 async function organizeExistingBannerImages() {
-  console.log('🔄 检查并整理现有的Banner图片...');
 
   // 确保必要的目录存在
   await ensureCacheDir();
@@ -127,7 +123,6 @@ async function organizeExistingBannerImages() {
     try {
       const banners = await getBannerData();
       if (banners && Array.isArray(banners)) {
-        console.log(`普通Banner数据: ${banners.length} 个条目`);
         banners.forEach(banner => {
           if (banner.image) bannerUrls.add(banner.image);
           if (banner.mobileImage && banner.mobileImage !== banner.image) {
@@ -141,15 +136,11 @@ async function organizeExistingBannerImages() {
     try {
       const homepageBanners = await getBannerData('homepage');
       if (homepageBanners && Array.isArray(homepageBanners)) {
-        console.log(`首页Banner数据: ${homepageBanners.length} 个条目`);
-        console.log('首页Banner URL列表:');
         homepageBanners.forEach(banner => {
           if (banner.image) {
-            console.log(`  Image: ${banner.image}`);
             bannerUrls.add(banner.image);
           }
           if (banner.mobileImage && banner.mobileImage !== banner.image) {
-            console.log(`  Mobile: ${banner.mobileImage}`);
             bannerUrls.add(banner.mobileImage);
           }
         });
@@ -160,8 +151,6 @@ async function organizeExistingBannerImages() {
       console.log('✅ 没有找到Banner数据');
       return;
     }
-
-    console.log(`📊 找到 ${bannerUrls.size} 个Banner图片URL`);
 
     // 获取所有Banner项目的完整数据，提取图片URL
     const allBannerImageUrls = new Set();
@@ -192,12 +181,8 @@ async function organizeExistingBannerImages() {
       }
     } catch {}
 
-    console.log(`📊 整理时找到Banner图片URL总数: ${allBannerImageUrls.size}`);
-
     // 检查主目录中的文件，看哪些对应Banner图片
     const files = await fs.readdir(IMAGE_CACHE_DIR);
-    console.log('🔍 找到的图片文件总数:', files.length);
-
     let movedCount = 0;
     let missingLocalBannerUrls = [];
 
@@ -240,43 +225,31 @@ async function organizeExistingBannerImages() {
       }
 
       if (fileExists) {
-        console.log(`   ⏭️ Banner图片已存在: ${fileName}`);
-      } else {
+        } else {
         // 文件不存在，需要下载
-        console.log(`   📥 需要下载Banner图片: ${url}`);
-
         // 对于远程URL，触发下载
         if (url.startsWith('/uploads/') || url.startsWith('http')) {
           try {
             await downloadImage(url, true);
-            console.log(`   ✅ 成功下载Banner图片: ${fileName}`);
             movedCount++;
           } catch (error) {
-            console.warn(`   ❌ 下载Banner图片失败: ${url}`, error.message);
-          }
+            }
         } else if (url.startsWith('/assets/')) {
           // 本地路径但文件不存在，收集起来后续处理
-          console.log(`   📥 本地路径图片不存在: ${url}`);
           missingLocalBannerUrls.push(url);
         }
       }
     }
 
     if (movedCount > 0) {
-      console.log(`✅ 成功整理 ${movedCount} 个Banner图片`);
-    } else {
-      console.log('✅ 没有发现需要整理的Banner图片');
-    }
+      } else {
+      }
 
     // 检查是否有缺失的本地Banner图片
     if (missingLocalBannerUrls.length > 0) {
-      console.log(`⚠️ 发现 ${missingLocalBannerUrls.length} 个本地路径的Banner图片不存在`);
-      console.log('🔄 这些图片可能需要重新下载，建议运行完整下载流程');
-      console.log('📝 命令: node scripts/download-strapi-images.js');
-    }
+      }
   } catch (error) {
-    console.warn('整理Banner图片时出错:', error.message);
-  }
+    }
 }
 
 // 导出函数以便单独测试
@@ -343,7 +316,6 @@ async function validateImageFile(filePath) {
 
     return false;
   } catch (error) {
-    console.log(`⚠️  文件验证失败: ${filePath}`);
     return false;
   }
 }
@@ -447,17 +419,12 @@ async function downloadImage(imageUrl, isBannerImage = false) {
 
       // 对于banner图片，如果文件存在也强制重新下载以确保原始质量
       if (isBannerImage && fileExists) {
-        console.log(`🔄 强制重新下载Banner图片: ${fileName}`);
-        console.log(`📁 文件路径: ${localPath}`);
         // 删除现有文件，强制重新下载
         try {
           await fs.unlink(localPath);
-          console.log(`🗑️  删除现有Banner文件，准备重新下载: ${fileName}`);
           fileExists = false;
         } catch (error) {
-          console.warn(`⚠️  无法删除现有Banner文件: ${fileName}`, error.message);
-          console.warn(`⚠️  文件路径: ${localPath}`);
-        }
+          }
       }
 
       // 如果是Banner图片且文件在目标目录不存在但在主目录存在，则移动到banner目录
@@ -467,7 +434,6 @@ async function downloadImage(imageUrl, isBannerImage = false) {
           await fs.access(mainDirPath);
           // 文件存在于主目录，移动到banner目录
           await fs.rename(mainDirPath, localPath);
-          console.log(`📸 移动现有Banner图片: ${fileName} -> banner/${fileName}`);
           return fileName;
         } catch {
           // 文件在主目录中也不存在，需要下载
@@ -497,13 +463,11 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       if (isBannerImage) {
         // Banner图片直接复制到目标位置，不进行压缩
         await fs.copyFile(tempPath, localPath);
-        console.log(`📷 Banner图片已下载（不压缩）: banner/${fileName}`);
-      } else {
+        } else {
         // 其他图片进行WebP转换和压缩
         const conversionSuccess = await safeConvertToWebP(tempPath, localPath, fileName);
         if (!conversionSuccess) {
-          console.log(`⚠️  WebP转换失败，但继续处理: ${fileName}`);
-        }
+          }
       }
 
       // 清理临时文件
@@ -531,7 +495,6 @@ async function downloadImage(imageUrl, isBannerImage = false) {
         const bannerConfigData = await fs.readFile(bannerConfigPath, 'utf-8');
         bannerConfig = JSON.parse(bannerConfigData);
       } catch (error) {
-        console.warn('Banner配置文件不存在，创建默认配置');
         bannerConfig = { bannerImages: [] };
         
         // 确保目录存在
@@ -539,8 +502,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
         try {
           await fs.mkdir(configDir, { recursive: true });
         } catch (mkdirError) {
-          console.warn('创建配置目录失败:', mkdirError.message);
-        }
+          }
       }
 
       // 找到对应的banner配置
@@ -560,8 +522,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
             urlHash = path.basename(urlHash, path.extname(urlHash));
           } catch (error) {
             // 解码失败，使用原始文件名
-            console.warn(`⚠️  Base64解码失败: ${urlFileName}`);
-          }
+            }
         }
 
         // 检查hash是否匹配
@@ -569,7 +530,6 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       });
 
       if (!bannerConfigItem) {
-        console.warn(`⚠️  找不到 ${imageUrl} 对应的banner配置`);
         return null;
       }
 
@@ -583,7 +543,6 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       } else if (originalUrl.startsWith('/uploads/')) {
         fullUrl = `${STRAPI_STATIC_URL}${originalUrl}`;
       } else {
-        console.warn(`⚠️  无效的原始URL: ${originalUrl}`);
         return null;
       }
 
@@ -602,24 +561,18 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       // 检查文件是否存在，如果存在则删除
       try {
         await fs.access(localPath);
-        console.log(`🔄 强制重新下载Banner图片: ${fileName}`);
-        console.log(`📁 文件路径: ${localPath}`);
         await fs.unlink(localPath);
-        console.log(`🗑️  删除现有Banner文件，准备重新下载: ${fileName}`);
-      } catch {
+        } catch {
         // 文件不存在，正常下载
       }
 
       // 下载图片
-      console.log(`📥 下载Banner图片: ${fullUrl}`);
       const response = await fetch(fullUrl);
       if (!response.ok) {
-        console.warn(`⚠️  下载失败: ${fullUrl} (${response.status})`);
+        `);
 
         // 如果是移动端图片下载失败，尝试使用PC端图片替代
         if (bannerConfigItem.type === 'mobile' && bannerConfigItem.fallbackImage) {
-          console.log(`🔄 移动端图片下载失败，使用PC端图片替代: ${bannerConfigItem.fallbackImage.originalUrl}`);
-
           const fallbackUrl = bannerConfigItem.fallbackImage.originalUrl.startsWith('http') ?
             bannerConfigItem.fallbackImage.originalUrl :
             `${STRAPI_STATIC_URL}${bannerConfigItem.fallbackImage.originalUrl}`;
@@ -627,17 +580,15 @@ async function downloadImage(imageUrl, isBannerImage = false) {
           try {
             const fallbackResponse = await fetch(fallbackUrl);
             if (!fallbackResponse.ok) {
-              console.warn(`⚠️  PC端图片也下载失败: ${fallbackUrl} (${fallbackResponse.status})`);
+              `);
               return null;
             }
 
             const fallbackBuffer = await fallbackResponse.arrayBuffer();
             await fs.writeFile(localPath, Buffer.from(fallbackBuffer));
 
-            console.log(`📱 使用PC端图片替代移动端图片（不压缩）: banner/${fileName}`);
             return fileName;
           } catch (fallbackError) {
-            console.warn(`⚠️  PC端图片替代失败:`, fallbackError.message);
             return null;
           }
         }
@@ -648,10 +599,8 @@ async function downloadImage(imageUrl, isBannerImage = false) {
       const buffer = await response.arrayBuffer();
       await fs.writeFile(localPath, Buffer.from(buffer));
 
-      console.log(`📷 Banner图片已下载（不压缩）: banner/${fileName}`);
       return fileName;
     } catch (error) {
-      console.warn(`⚠️  处理本地banner路径失败: ${imageUrl}`, error.message);
       return null;
     }
   }
@@ -661,7 +610,7 @@ async function downloadImage(imageUrl, isBannerImage = false) {
     // 不再依赖文件名判断，使用调用时传入的isBannerImage参数
     const fullUrl = `${STRAPI_STATIC_URL}${imageUrl}`;
 
-    console.log(`处理相对路径: ${imageUrl} -> ${fullUrl} (Banner: ${isBannerImage})`);
+    `);
     return await downloadImage(fullUrl, isBannerImage);
   }
 
@@ -742,28 +691,22 @@ async function downloadAllImages() {
   const imageInfoList = [];
 
   // 首先获取首页数据（使用 homepageApi.js 的功能）
-  console.log('🏠 获取首页数据...');
   try {
     const allHomepageData = await getAllHomepageData();
     if (allHomepageData && allHomepageData.homepageData) {
-      console.log('✅ 成功获取首页数据');
       // 从首页数据中提取图片URL
       const homepageImageUrls = extractImageUrls(allHomepageData.homepageData);
-      console.log(`📊 从首页数据中提取到 ${homepageImageUrls.length} 个图片URL`);
       homepageImageUrls.forEach(url => {
         const isBanner = url.includes('banner') || url.includes('shouji') || url.includes('fengjing');
         imageInfoList.push({ url, isBanner, type: 'homepage' });
       });
       
       // 立即生成首页数据的图片索引
-      console.log('📝 生成首页数据图片索引...');
       await generateImageMapping();
     } else {
-      console.warn('⚠️ 获取首页数据失败或为空');
-    }
+      }
   } catch (error) {
-    console.warn('获取首页数据失败:', error.message);
-  }
+    }
 
   // 获取所有语言的数据（带分页）
   for (const locale of ENABLED_LOCALES) {
@@ -793,42 +736,34 @@ async function downloadAllImages() {
   // Banner图片现在通过智能识别逻辑处理，不需要在这里重复处理
 
   // 移动端底部菜单图标（按语言获取）
-  // TODO: API端点 shoujiduandibucaidan 返回404错误，暂时跳过
-  console.log('⚠️  跳过移动端菜单图标下载（API端点不存在）');
-  /*
+    /*
   for (const locale of ENABLED_LOCALES) {
     try {
       const mobileMenuData = await getMobileBottomMenu(locale);
       if (mobileMenuData && Array.isArray(mobileMenuData)) {
         const menuIconUrls = extractImageUrls({ data: mobileMenuData });
-        console.log(`📱 移动端菜单 (${locale}) 中提取到`, menuIconUrls.length, '个图标 URL');
+        中提取到`, menuIconUrls.length, '个图标 URL');
         menuIconUrls.forEach(url => {
           imageInfoList.push({ url, isBanner: false, type: 'mobile-menu' });
         });
       }
     } catch (error) {
-      console.warn(`移动端菜单图标获取失败 (${locale}):`, error.message);
+      :`, error.message);
     }
   }
   */
 
   // 智能识别Banner图片：基于数据结构而不是文件名
-  console.log('🧠 智能识别Banner图片...');
-
   // 获取所有Banner数据（包括移动端图片）
   let allBannerData = [];
   try {
     // 获取普通Banner数据
     const commonBanners = await getBannerData('common');
-    console.log(`📊 普通Banner数据: ${commonBanners.length} 个条目`);
     allBannerData = allBannerData.concat(commonBanners);
 
     // 获取首页Banner数据
     const homepageBanners = await getBannerData('homepage');
-    console.log(`🏠 首页Banner数据: ${homepageBanners.length} 个条目`);
     allBannerData = allBannerData.concat(homepageBanners);
-
-    console.log(`📊 总共找到 ${allBannerData.length} 个Banner项目`);
 
     // 从Banner数据中提取所有图片和视频URL
     const bannerImageUrls = new Set();
@@ -836,21 +771,16 @@ async function downloadAllImages() {
       // 添加视频（优先级最高）
       if (banner.shipin && banner.shipin !== '/images/placeholder.webp') {
         bannerImageUrls.add(banner.shipin);
-        console.log(`  🎬 视频Banner: ${banner.shipin}`);
-      }
+        }
       // 添加桌面端图片
       if (banner.image && banner.image !== '/images/placeholder.webp') {
         bannerImageUrls.add(banner.image);
-        console.log(`  🖼️  桌面Banner: ${banner.image}`);
-      }
+        }
       // 添加移动端图片
       if (banner.mobileImage && banner.mobileImage !== '/images/placeholder.webp' && banner.mobileImage !== banner.image) {
         bannerImageUrls.add(banner.mobileImage);
-        console.log(`  📱 移动Banner: ${banner.mobileImage}`);
-      }
+        }
     });
-
-    console.log(`📊 从Banner数据中提取到 ${bannerImageUrls.size} 个图片URL`);
 
     // 将Banner图片添加到下载队列
     bannerImageUrls.forEach(url => {
@@ -858,10 +788,8 @@ async function downloadAllImages() {
     });
 
   } catch (error) {
-    console.warn('获取Banner数据失败:', error.message);
     // 如果获取Banner数据失败，回退到原来的方法
-    console.log('🔄 回退到原来的Banner识别方法...');
-  }
+    }
 
   // 去重处理
   const uniqueImageMap = new Map();
@@ -878,8 +806,6 @@ async function downloadAllImages() {
   });
 
   const uniqueImages = Array.from(uniqueImageMap.values());
-  console.log('📥 准备下载', uniqueImages.length, '个图片');
-
   // 下载所有图片
   const downloadPromises = uniqueImages.map(info => downloadImage(info.url, info.isBanner));
   const results = await Promise.allSettled(downloadPromises);
@@ -890,8 +816,6 @@ async function downloadAllImages() {
       totalDownloaded++;
     }
   });
-
-  console.log('✅ 成功下载', totalDownloaded, '个图片');
 
   // 生成图片映射文件
   await generateImageMapping();
@@ -910,7 +834,6 @@ async function generateImageMapping() {
     const assetsImagesExists = await fs.access(assetsImagesDir).then(() => true).catch(() => false);
 
     if (!assetsImagesExists) {
-      console.warn('Assets images 目录不存在，跳过图片映射生成');
       return;
     }
 
@@ -944,8 +867,6 @@ async function generateImageMapping() {
 
     const imageFiles = files;
 
-    console.log(`找到 ${imageFiles.length} 个图片文件用于映射`);
-
     // 1) 生成 JSON 映射（可供其它工具参考）
     const jsonMapping = {
       // 构建后实际可访问的资源前缀（Astro 会把导入的图片发射到 /assets）
@@ -977,7 +898,7 @@ async function generateImageMapping() {
         uniqueImports.set(hash, file);
         lines.push(`import ${hash} from '../assets/strapi/${file}';`);
       } else {
-        console.log(`⏭️ 跳过重复导入: ${hash} (已存在: ${uniqueImports.get(hash)})`);
+        })`);
       }
     });
 
@@ -1002,19 +923,14 @@ async function generateImageMapping() {
     const modulePath = path.join(__dirname, '../src/data/strapi-image-urls.js');
     await fs.writeFile(modulePath, lines.join('\n'));
 
-    console.log(`✅ 图片映射文件生成完成，包含 ${imageFiles.length} 个文件`);
-
-  } catch (error) {
-    console.warn('生成图片映射失败:', error.message);
-  }
+    } catch (error) {
+    }
 }
 
 /**
  * 生成Banner图片配置文件
  */
 async function generateBannerConfig() {
-  console.log('🎯 生成Banner图片配置文件...');
-
   try {
     const bannerImages = [];
 
@@ -1146,8 +1062,7 @@ async function generateBannerConfig() {
     try {
       await fs.mkdir(configDir, { recursive: true });
     } catch (error) {
-      console.warn('创建配置目录失败:', error.message);
-    }
+      }
     
     // 写入配置文件
     await fs.writeFile(configPath, JSON.stringify({
@@ -1156,11 +1071,8 @@ async function generateBannerConfig() {
       totalCount: bannerImages.length
     }, null, 2));
 
-    console.log(`✅ Banner配置文件生成完成，包含 ${bannerImages.length} 个banner图片`);
-
     return bannerImages;
   } catch (error) {
-    console.warn('生成Banner配置文件失败:', error.message);
     return [];
   }
 }
@@ -1181,21 +1093,17 @@ async function cleanupTempDir() {
 if (process.argv[1].endsWith('download-strapi-images.js') && process.argv[2] === '--organize-only') {
   organizeExistingBannerImages()
     .then(() => {
-      console.log('✅ Banner图片整理完成');
       process.exit(0);
     })
     .catch(error => {
-      console.error('❌ Banner图片整理失败:', error);
       process.exit(1);
     });
 } else if (process.argv[1].endsWith('download-strapi-images.js') && process.argv[2] === '--generate-mapping') {
   generateMappingOnly()
     .then(() => {
-      console.log('✅ 映射文件生成完成');
       process.exit(0);
     })
     .catch(error => {
-      console.error('❌ 映射文件生成失败:', error);
       process.exit(1);
     });
 } else {
