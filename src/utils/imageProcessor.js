@@ -206,7 +206,11 @@ function resolveEmittedUrlSync(fileNameOrHash, fallback) {
 // 返回发射映射中的原始模块对象（用于 <Image src={...}> 传入本地导入对象）
 function resolveEmittedModuleSync(fileNameOrHash) {
   const table = EMITTED_URLS;
+  console.log('----------------------------打印开始----------------------------')
   console.log('打印映射表格', typeof table);
+  console.log('打印映射表格', table);
+  console.log('图片文件名称', fileNameOrHash);
+  console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~打印结束~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
   if (!table) return null;
   const imageObject = table[fileNameOrHash];
   console.log('打印imageObject', imageObject);
