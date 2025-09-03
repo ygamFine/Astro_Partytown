@@ -605,7 +605,7 @@ export async function processUploadImage(imagePath) {
  * @param {Array} downloadedImages - 新下载的图片信息数组
  * @param {string} mappingFilePath - 映射文件路径，默认为 strapi-image-urls.js
  */
-export async function updateImageMapping(downloadedImages = [], mappingFilePath = '../data/strapi-image-urls.js') {
+export async function updateImageMapping(downloadedImages = [], mappingFilePath = null) {
   try {
     const fs = await import('fs/promises');
     const path = await import('path');
@@ -614,18 +614,67 @@ export async function updateImageMapping(downloadedImages = [], mappingFilePath 
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     
-    const fullMappingPath = path.join(__dirname, mappingFilePath);
+    // 智能路径解析：优先使用绝对路径，回退到相对路径
+    let fullMappingPath;
+    if (mappingFilePath) {
+      // 如果提供了自定义路径，使用它
+      fullMappingPath = path.isAbsolute(mappingFilePath) 
+        ? mappingFilePath 
+        : path.join(__dirname, mappingFilePath);
+    } else {
+      // 自动检测路径：尝试多个可能的位置
+      const possiblePaths = [
+        path.join(__dirname, '../data/strapi-image-urls.js'),           // 开发环境
+        path.join(__dirname, '../../data/strapi-image-urls.js'),        // 构建后环境
+        path.join(process.cwd(), 'src/data/strapi-image-urls.js'),     // 项目根目录
+        path.join(process.cwd(), 'dist/data/strapi-image-urls.js'),    // 构建输出目录
+        path.join(process.cwd(), 'data/strapi-image-urls.js'),         // 根目录下的data
+      ];
+      
+      // 尝试找到存在的文件
+      for (const testPath of possiblePaths) {
+        try {
+          await fs.access(testPath);
+          fullMappingPath = testPath;
+          console.log(`🎯 找到映射文件: ${testPath}`);
+          break;
+        } catch (error) {
+          // 继续尝试下一个路径
+        }
+      }
+      
+      // 如果都没找到，使用默认路径
+      if (!fullMappingPath) {
+        fullMappingPath = path.join(__dirname, '../data/strapi-image-urls.js');
+        console.log(`⚠️ 未找到现有映射文件，将使用默认路径: ${fullMappingPath}`);
+      }
+    }
     
     // 读取现有的映射文件
     let existingMapping = {};
+    let existingImports = new Map();
+    
     try {
       const existingContent = await fs.readFile(fullMappingPath, 'utf-8');
+      console.log('📖 读取现有映射文件...');
+      
+      // 提取现有的 import 语句
+      const importMatches = existingContent.match(/import\s+(\w+)\s+from\s+['"]([^'"]+)['"];?/g);
+      if (importMatches) {
+        importMatches.forEach(importStmt => {
+          const match = importStmt.match(/import\s+(\w+)\s+from\s+['"]([^'"]+)['"];?/);
+          if (match) {
+            const [, hash, filePath] = match;
+            existingImports.set(hash, filePath);
+            console.log(`📥 发现现有导入: ${hash} ← ${filePath}`);
+          }
+        });
+      }
+      
       // 提取现有的 STRAPI_IMAGE_URLS 对象
       const match = existingContent.match(/export const STRAPI_IMAGE_URLS = ({[\s\S]*?});/);
       if (match) {
-        // 简单解析现有的映射（这里可以改进为更安全的解析）
         const mappingStr = match[1];
-        // 提取键值对
         const pairs = mappingStr.match(/'([^']+)':\s*([^,\s]+)/g);
         if (pairs) {
           pairs.forEach(pair => {
@@ -633,9 +682,10 @@ export async function updateImageMapping(downloadedImages = [], mappingFilePath 
             existingMapping[key] = value;
           });
         }
+        console.log(`📊 现有映射包含 ${Object.keys(existingMapping).length} 个关系`);
       }
     } catch (error) {
-      console.log('现有映射文件不存在，将创建新文件');
+      console.log('📝 现有映射文件不存在，将创建新文件');
     }
     
     // 添加新的映射关系（增量更新，不删除现有的）
@@ -679,10 +729,13 @@ export async function updateImageMapping(downloadedImages = [], mappingFilePath 
     // 重新生成完整的映射文件，包含所有现有的和新添加的映射
     const allImageFiles = [];
     
-    // 从现有映射中提取文件路径
-    for (const [key, value] of Object.entries(existingMapping)) {
-      if (key.includes('.')) { // 只处理带扩展名的文件名
-        allImageFiles.push(key);
+    // 从现有导入中提取文件路径
+    for (const [hash, filePath] of existingImports) {
+      // 从 '../assets/strapi/xxx.webp' 提取 'xxx.webp'
+      const fileName = filePath.split('/').pop();
+      if (fileName) {
+        allImageFiles.push(fileName);
+        console.log(`📁 保留现有文件: ${fileName}`);
       }
     }
     
@@ -690,11 +743,13 @@ export async function updateImageMapping(downloadedImages = [], mappingFilePath 
     downloadedImages.forEach(imageInfo => {
       if (imageInfo.filePath) {
         allImageFiles.push(imageInfo.filePath);
+        console.log(`🆕 添加新文件: ${imageInfo.filePath}`);
       }
     });
     
     // 去重
     const uniqueImageFiles = [...new Set(allImageFiles)];
+    console.log(`📋 最终文件列表: ${uniqueImageFiles.join(', ')}`);
     
     // 生成新的映射文件内容
     await generateImageMappingFile(uniqueImageFiles, mappingFilePath);
@@ -713,7 +768,7 @@ export async function updateImageMapping(downloadedImages = [], mappingFilePath 
  * @param {Array} imageFiles - 图片文件列表
  * @param {string} mappingFilePath - 映射文件路径，默认为 strapi-image-urls.js
  */
-export async function generateImageMappingFile(imageFiles = [], mappingFilePath = '../data/strapi-image-urls.js') {
+export async function generateImageMappingFile(imageFiles = [], mappingFilePath = null) {
   try {
     const fs = await import('fs/promises');
     const path = await import('path');
@@ -722,7 +777,41 @@ export async function generateImageMappingFile(imageFiles = [], mappingFilePath 
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     
-    const fullMappingPath = path.join(__dirname, mappingFilePath);
+    // 智能路径解析：优先使用绝对路径，回退到相对路径
+    let fullMappingPath;
+    if (mappingFilePath) {
+      // 如果提供了自定义路径，使用它
+      fullMappingPath = path.isAbsolute(mappingFilePath) 
+        ? mappingFilePath 
+        : path.join(__dirname, mappingFilePath);
+    } else {
+      // 自动检测路径：尝试多个可能的位置
+      const possiblePaths = [
+        path.join(__dirname, '../data/strapi-image-urls.js'),           // 开发环境
+        path.join(__dirname, '../../data/strapi-image-urls.js'),        // 构建后环境
+        path.join(process.cwd(), 'src/data/strapi-image-urls.js'),     // 项目根目录
+        path.join(process.cwd(), 'dist/data/strapi-image-urls.js'),    // 构建输出目录
+        path.join(process.cwd(), 'data/strapi-image-urls.js'),         // 根目录下的data
+      ];
+      
+      // 尝试找到存在的文件
+      for (const testPath of possiblePaths) {
+        try {
+          await fs.access(testPath);
+          fullMappingPath = testPath;
+          console.log(`🎯 找到映射文件位置: ${testPath}`);
+          break;
+        } catch (error) {
+          // 继续尝试下一个路径
+        }
+      }
+      
+      // 如果都没找到，使用默认路径
+      if (!fullMappingPath) {
+        fullMappingPath = path.join(__dirname, '../data/strapi-image-urls.js');
+        console.log(`⚠️ 未找到现有映射文件，将使用默认路径: ${fullMappingPath}`);
+      }
+    }
     
     // 确保目录存在
     const dir = path.dirname(fullMappingPath);
@@ -784,7 +873,7 @@ export async function generateImageMappingFile(imageFiles = [], mappingFilePath 
  * @param {string} imageDir - 图片目录路径，默认为 src/assets/strapi
  * @param {string} mappingFilePath - 映射文件路径
  */
-export async function scanAndGenerateMapping(imageDir = '../assets/strapi', mappingFilePath = '../data/strapi-image-urls.js') {
+export async function scanAndGenerateMapping(imageDir = null, mappingFilePath = null) {
   try {
     const fs = await import('fs/promises');
     const path = await import('path');
@@ -793,7 +882,40 @@ export async function scanAndGenerateMapping(imageDir = '../assets/strapi', mapp
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     
-    const fullImageDir = path.join(__dirname, imageDir);
+    // 智能路径解析：自动检测图片目录
+    let fullImageDir;
+    if (imageDir) {
+      fullImageDir = path.isAbsolute(imageDir) 
+        ? imageDir 
+        : path.join(__dirname, imageDir);
+    } else {
+      // 自动检测图片目录位置
+      const possibleImageDirs = [
+        path.join(__dirname, '../assets/strapi'),           // 开发环境
+        path.join(__dirname, '../../assets/strapi'),        // 构建后环境
+        path.join(process.cwd(), 'src/assets/strapi'),      // 项目根目录
+        path.join(process.cwd(), 'dist/assets/strapi'),     // 构建输出目录
+        path.join(process.cwd(), 'assets/strapi'),          // 根目录下的assets
+      ];
+      
+      // 尝试找到存在的目录
+      for (const testDir of possibleImageDirs) {
+        try {
+          await fs.access(testDir);
+          fullImageDir = testDir;
+          console.log(`🎯 找到图片目录: ${testDir}`);
+          break;
+        } catch (error) {
+          // 继续尝试下一个路径
+        }
+      }
+      
+      // 如果都没找到，使用默认路径
+      if (!fullImageDir) {
+        fullImageDir = path.join(__dirname, '../assets/strapi');
+        console.log(`⚠️ 未找到现有图片目录，将使用默认路径: ${fullImageDir}`);
+      }
+    }
     
     // 扫描目录获取所有图片文件
     const imageFiles = [];
