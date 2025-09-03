@@ -638,27 +638,68 @@ export async function updateImageMapping(downloadedImages = [], mappingFilePath 
       console.log('现有映射文件不存在，将创建新文件');
     }
     
-    // 添加新的映射关系
+    // 添加新的映射关系（增量更新，不删除现有的）
+    let newMappingsAdded = 0;
     downloadedImages.forEach(imageInfo => {
       const { fileName, hash, filePath } = imageInfo;
       if (fileName && hash) {
-        existingMapping[fileName] = hash;
-        existingMapping[hash] = hash;
+        // 检查是否已存在，避免重复添加
+        if (!existingMapping[fileName]) {
+          existingMapping[fileName] = hash;
+          newMappingsAdded++;
+          console.log(`➕ 新增映射: ${fileName} → ${hash}`);
+        }
+        if (!existingMapping[hash]) {
+          existingMapping[hash] = hash;
+          newMappingsAdded++;
+          console.log(`➕ 新增映射: ${hash} → ${hash}`);
+        }
         
         // 如果是banner目录中的文件，也添加banner路径映射
         if (filePath && filePath.includes('banner/')) {
           const bannerKey = `banner/${fileName}`;
           const bannerPath = `/assets/${filePath}`;
-          existingMapping[bannerKey] = hash;
-          existingMapping[bannerPath] = hash;
+          
+          if (!existingMapping[bannerKey]) {
+            existingMapping[bannerKey] = hash;
+            newMappingsAdded++;
+            console.log(`➕ 新增Banner映射: ${bannerKey} → ${hash}`);
+          }
+          if (!existingMapping[bannerPath]) {
+            existingMapping[bannerPath] = hash;
+            newMappingsAdded++;
+            console.log(`➕ 新增Banner路径映射: ${bannerPath} → ${hash}`);
+          }
         }
       }
     });
     
-    // 生成新的映射文件内容
-    await generateImageMappingFile(Object.keys(existingMapping), mappingFilePath);
+    console.log(`🆕 本次更新新增了 ${newMappingsAdded} 个映射关系`);
     
-    console.log(`✅ 图片映射文件更新完成，包含 ${Object.keys(existingMapping).length} 个映射关系`);
+    // 重新生成完整的映射文件，包含所有现有的和新添加的映射
+    const allImageFiles = [];
+    
+    // 从现有映射中提取文件路径
+    for (const [key, value] of Object.entries(existingMapping)) {
+      if (key.includes('.')) { // 只处理带扩展名的文件名
+        allImageFiles.push(key);
+      }
+    }
+    
+    // 添加新下载的图片文件
+    downloadedImages.forEach(imageInfo => {
+      if (imageInfo.filePath) {
+        allImageFiles.push(imageInfo.filePath);
+      }
+    });
+    
+    // 去重
+    const uniqueImageFiles = [...new Set(allImageFiles)];
+    
+    // 生成新的映射文件内容
+    await generateImageMappingFile(uniqueImageFiles, mappingFilePath);
+    
+    console.log(`✅ 图片映射文件增量更新完成，总共包含 ${Object.keys(existingMapping).length} 个映射关系`);
     return true;
     
   } catch (error) {
