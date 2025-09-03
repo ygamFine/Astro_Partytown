@@ -189,6 +189,12 @@ export async function downloadImage(imageUrl, isBannerImage = false) {
     return null;
   }
 
+  // 检查环境变量是否设置
+  if (!STRAPI_STATIC_URL) {
+    console.warn('⚠️ STRAPI_STATIC_URL 环境变量未设置，无法处理远程图片');
+    return null;
+  }
+
   // 如果是本地路径但不是banner图片，则跳过
   if (imageUrl.startsWith('/images/') || imageUrl.startsWith('./') ||
       (imageUrl.startsWith('/assets/') && !imageUrl.startsWith('/assets/banner/'))) {

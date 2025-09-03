@@ -28,8 +28,8 @@ if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
  */
 export async function getMenus(locale = 'en') {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/menus?locale=${locale}&populate=*`);
-
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/menu-manages?locale=${locale}&populate=*&sort=sort:ASC`);
+    console.log('主菜单数据',data);
     // 转换为标准格式，支持国际化字段
     const menus = data.data?.map(item => ({
       name: item.name || item.attributes?.name,

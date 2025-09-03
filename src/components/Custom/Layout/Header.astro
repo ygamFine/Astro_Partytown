@@ -39,24 +39,38 @@ try {
 const contactInfo = siteConfiguration.contact_info || [];
 const phone1 = contactInfo[0]?.field_lianxidianhua || "";
 const phone2 = contactInfo[1]?.field_lianxidianhua || "";
-const email = contactInfo.field_zhandiandingbuyouxiang || "";
+const email = siteConfiguration.field_zhandiandingbuyouxiang || "";
+let logoImage
+try{
+  const logoUrl = siteConfiguration?.field_logo && siteConfiguration?.field_logo.length > 0 && siteConfiguration?.field_logo[0]?.media?.url
+  if (logoUrl) {
+    const localPath = await downloadImage(logoUrl);
+    if (localPath) {
+      // 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
+      logoImage = processImageForAstro(localPath);
+      if (!logoImage) {
+        logoImage = "/images/placeholder.webp";
+      }
+    } else {
+      logoImage = "/images/placeholder.webp";
+    }
+  } else {
+    logoImage = "/images/placeholder.webp";
+  }
+}
+catch(error){
+  console.error("获取logo图片失败:", error);
+  logoImage = "/images/placeholder.webp";
+}
 
-// // 处理logo图片本地化 - 使用 imageConvert 工具
-// let logoImage = await downloadImage(
-//   siteConfiguration?.field_logo[0]?.media?.url,
-// );
-
-const logoUrl = siteConfiguration?.field_logo[0]?.media?.url;
 
 
-const localPath = await downloadImage(logoUrl);
-console.log("🎯 本地路径:", localPath);
-
-// 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
-const logoImage = processImageForAstro(localPath);
 
 console.log("🎯 最终使用的logo路径:", logoImage);
 ---
+
+<!-- 引入字体图标 CSS -->
+<link rel="stylesheet" href="/fontIcons/iconfont.css">
 
 <!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
 <header
@@ -65,7 +79,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
   style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;"
 >
   <!-- Main Header Row (Will scroll with page) -->
-  <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white">
+  <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white" style="transition: transform 0.3s ease-in-out;">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between md:h-[9.9rem] h-24">
         <!-- TEVIS Logo -->
@@ -88,15 +102,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
           <div class="flex items-center space-x-6">
             <!-- Contact Details -->
             <div class="flex items-center space-x-3">
-              <svg
-                class="w-16 h-16 text-red-500 shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-                ></path>
-              </svg>
+              <i class="iconfont icon-phone text-red-500 text-5xl shrink-0"></i>
               <div>
                 <p class="text-gray-400 text-2xl">Contact details:</p>
                 <p
@@ -113,15 +119,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
 
             <!-- Phone/WhatsApp -->
             <div class="flex items-center space-x-3">
-              <svg
-                class="w-16 h-16 text-red-500 shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-                ></path>
-              </svg>
+              <i class="iconfont icon-whatsapp text-red-500 text-5xl shrink-0"></i>
               <div>
                 <p class="text-gray-400 text-2xl">Phone/Whatsapp:</p>
                 <p
@@ -138,18 +136,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
 
             <!-- Email -->
             <div class="flex items-center space-x-3">
-              <svg
-                class="w-16 h-16 text-red-500 shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-                ></path>
-                <path
-                  d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-                ></path>
-              </svg>
+              <i class="iconfont icon-youxiang text-red-500 text-5xl shrink-0"></i>
               <div>
                 <p class="text-gray-400 text-2xl">E-mail:</p>
                 <p
@@ -169,13 +156,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
             class="bg-red-600 hover:bg-red-700 text-white px-4 ml-3 font-bold transition-colors duration-200 flex items-center justify-center space-x-3"
             style="height: 5.9rem; width: 24.2rem; font-size: 1.8rem;"
           >
-            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-              ></path>
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-              ></path>
-            </svg>
+            <i class="iconfont icon-youxiang text-3xl"></i>
             <span>REQUEST A QUOTE</span>
           </button>
         </div>
@@ -183,15 +164,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
         <!-- Medium screens - Simplified contact -->
         <div class="hidden md:flex lg:hidden items-center space-x-3 text-xs">
           <div class="flex items-center space-x-1">
-            <svg
-              class="w-3.5 h-3.5 text-red-500"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-              ></path>
-            </svg>
+            <i class="iconfont icon-phone text-red-500 text-lg"></i>
             <span class="text-white font-medium text-xs">{phone1}</span>
           </div>
           <button
@@ -212,18 +185,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
             class="p-2 text-white focus:outline-none"
             aria-label="搜索"
           >
-            <svg
-              class="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
+            <i class="iconfont icon-common_icon_search text-xl"></i>
           </button>
 
           <!-- Globe Icon -->
@@ -232,19 +194,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
             class="p-2 text-white focus:outline-none"
             aria-label="选择语言"
           >
-            <svg
-              class="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-              ></path>
-            </svg>
+            <i class="iconfont icon-nav_icon_language text-xl"></i>
           </button>
 
           <!-- Menu Button -->
@@ -255,32 +205,14 @@ console.log("🎯 最终使用的logo路径:", logoImage);
             aria-expanded="false"
             aria-controls="mobile-menu"
           >
-            <svg
+            <i
               id="menu-open-icon"
-              class="h-6 w-6"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-            <svg
+              class="iconfont icon-common_icon_list1 text-xl"
+            ></i>
+            <i
               id="menu-close-icon"
-              class="h-6 w-6 hidden"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+              class="iconfont icon-guanbi text-xl hidden"
+            ></i>
           </button>
         </div>
       </div>
@@ -291,14 +223,14 @@ console.log("🎯 最终使用的logo路径:", logoImage);
   <div
     id="nav-menu"
     class="bg-red-600 border-red-500"
-    style="color: #e81a1a; box-shadow: 0 7px 16px 0 rgba(0, 0, 0, .64); transform: translateY(0); transition: transform 0.3s ease-in-out;"
+    style="color: #e81a1a; box-shadow: 0 7px 16px 0 rgba(0, 0, 0, .64); transform: translateY(0); transition: transform 0.3s ease-in-out; position: relative; z-index: 999;"
   >
     <div class="container mx-auto px-4">
       <div
         class="hidden md:flex items-center justify-center"
         style="height: 6rem;"
       >
-        <StaticMenu />
+        <StaticMenu client:load />
       </div>
     </div>
   </div>
@@ -352,24 +284,12 @@ console.log("🎯 最终使用的logo路径:", logoImage);
             supportedLanguages.length > 1) && (
             <div class="mt-6 pt-4 border-t border-gray-600">
               <div class="flex items-center space-x-2 text-white">
-                <svg
-                  class="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                  />
-                </svg>
+                <i class="iconfont icon-nav_icon_language text-lg"></i>
                 <select
                   id="mobile-language-selector"
                   class="bg-transparent text-white border-none focus:outline-none"
                 >
-                  {supportedLanguages.map((lang) => (
+                  {supportedLanguages.map((lang: any) => (
                     <option
                       value={lang.code}
                       selected={lang.code === currentLang}
@@ -387,41 +307,15 @@ console.log("🎯 最终使用的logo路径:", logoImage);
       <div class="mt-6 pt-4 border-t border-gray-600 space-y-3">
         <div class="text-sm text-gray-300 space-y-3">
           <div class="flex items-center space-x-2">
-            <svg
-              class="w-4 h-4 text-red-500"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-              ></path>
-            </svg>
+            <i class="iconfont icon-phone text-red-500 text-lg"></i>
             <span class="text-white">{phone1}</span>
           </div>
           <div class="flex items-center space-x-2">
-            <svg
-              class="w-4 h-4 text-red-500"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-              ></path>
-            </svg>
+            <i class="iconfont icon-whatsapp text-red-500 text-lg"></i>
             <span class="text-white">{phone2}</span>
           </div>
           <div class="flex items-center space-x-2">
-            <svg
-              class="w-4 h-4 text-red-500"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-              ></path>
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-              ></path>
-            </svg>
+            <i class="iconfont icon-youxiang text-red-500 text-lg"></i>
             <span class="text-white">{email}</span>
           </div>
         </div>
@@ -449,8 +343,6 @@ console.log("🎯 最终使用的logo路径:", logoImage);
 
     // 状态管理
     let lastScrollY = 0;
-    let isMenuFixed = false;
-    let isScrolling = false;
 
     // 节流函数
     function throttle(func, limit) {
@@ -501,39 +393,14 @@ console.log("🎯 最终使用的logo路径:", logoImage);
 
       mobileMenuButton.addEventListener("click", toggleMenu);
 
-      // 移动端搜索按钮：跳转到搜索页（按当前语言）
+      // 移动端搜索按钮：跳转到搜索页
       if (mobileSearchButton) {
         mobileSearchButton.addEventListener("click", function (e) {
           e.preventDefault();
           // 解析当前语言（路径优先，其次子域名）
           const hostname = window.location.hostname;
           const pathLang = window.location.pathname.split("/")[1] || "";
-          const subToLang = {
-            zh: "zh-Hans",
-            "zh-hant": "zh-Hant",
-            de: "de",
-            ja: "ja",
-            fr: "fr",
-            ar: "ar",
-            es: "es",
-            it: "it",
-            pt: "pt-pt",
-            nl: "nl",
-            pl: "pl",
-            ru: "ru",
-            th: "th",
-            id: "id",
-            vi: "vi",
-            ms: "ms",
-            ml: "ml",
-            my: "my",
-            hi: "hi",
-            ko: "ko",
-            tr: "tr",
-          };
           let lang = pathLang || "en";
-          const first = hostname.split(".")[0];
-          if (!pathLang && subToLang[first]) lang = subToLang[first];
           const isDev = hostname === "localhost" || hostname === "127.0.0.1";
           const url = isDev ? `/${lang}/search` : `/search`;
           window.location.href = url;
@@ -568,7 +435,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
 
       // 点击链接关闭菜单 - 使用事件委托
       mobileMenu.addEventListener("click", (e) => {
-        if (e.target.tagName === "A") {
+        if (e.target && e.target.tagName &&e.target.tagName === "A") {
           requestAnimationFrame(() => {
             mobileMenu.classList.add("hidden");
             mobileMenuButton.setAttribute("aria-expanded", "false");
@@ -581,30 +448,45 @@ console.log("🎯 最终使用的logo路径:", logoImage);
       });
     }
 
-    // 优化的滚动头部处理
+    // 滚动头部处理：向下滚动时隐藏主头部，只保留菜单位置显示在最顶部
     function initScrollHeader() {
-      // 固定头部：不再根据滚动切换显示，确保始终固定在页面顶部
       mainHeader = document.getElementById("main-header");
       navMenu = document.getElementById("nav-menu");
       if (!mainHeader || !navMenu) return;
-      // 统一保持相对定位，由外层 header 固定
-      mainHeader.style.display = "block";
-      Object.assign(navMenu.style, {
-        position: "relative",
-        top: "auto",
-        left: "auto",
-        right: "auto",
-        transform: "none",
-      });
+      
+      // 获取主头部的高度，用于计算上移距离
+      const mainHeaderHeight = mainHeader.offsetHeight;
+      
+      // 滚动处理函数
+      let lastScrollY = 0;
+      let isHeaderHidden = false;
+      
+      const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+        
+        // 向下滚动超过100px时，整个Header上移，只保留Menu位置
+        if (currentScrollY > 100 && !isHeaderHidden) {
+          // 计算上移距离：主头部的高度
+          const translateY = -mainHeaderHeight;
+          mainHeader.style.transform = `translateY(${translateY}px)`;
+          navMenu.style.transform = `translateY(${translateY}px)`;
+          isHeaderHidden = true;
+        }
+        // 向上滚动或回到顶部时，恢复Header位置
+        else if ((currentScrollY < lastScrollY || currentScrollY <= 100) && isHeaderHidden) {
+          mainHeader.style.transform = 'translateY(0)';
+          navMenu.style.transform = 'translateY(0)';
+          isHeaderHidden = false;
+        }
+        
+        lastScrollY = currentScrollY;
+      };
+      
+      // 添加滚动监听
+      window.addEventListener('scroll', handleScroll, { passive: true });
     }
 
-    // 页面可见性优化
-    function handleVisibilityChange() {
-      if (document.hidden) {
-        // 页面隐藏时暂停不必要的操作
-        isScrolling = false;
-      }
-    }
+
 
     // 移动端语言选择器功能
     function initMobileLanguageSelector() {
@@ -620,33 +502,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
         );
         let currentLang = pathLangMatch ? pathLangMatch[1] : null;
         if (!currentLang) {
-          const hostname = window.location.hostname;
-          const map = {
-            zh: "zh-Hans",
-            "zh-hant": "zh-Hant",
-            de: "de",
-            ja: "ja",
-            fr: "fr",
-            ar: "ar",
-            es: "es",
-            it: "it",
-            pt: "pt-pt",
-            nl: "nl",
-            pl: "pl",
-            ru: "ru",
-            th: "th",
-            id: "id",
-            vi: "vi",
-            ms: "ms",
-            ml: "ml",
-            my: "my",
-            hi: "hi",
-            ko: "ko",
-            tr: "tr",
-          };
-          const firstLabel = hostname.split(".")[0];
-          currentLang = map[firstLabel] || "en";
-          if (!currentLang) currentLang = "en";
+          currentLang = "en";
         }
 
         // 设置当前选中的语言
@@ -662,11 +518,7 @@ console.log("🎯 最终使用的logo路径:", logoImage);
             window.location.hostname === "localhost" ||
             window.location.hostname === "127.0.0.1";
 
-          // 替换语言前缀
-          const pathWithoutLang = currentPath.replace(
-            /^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/,
-            "/",
-          );
+
 
           if (isDev) {
             // 本地开发：总是跳转到首页
@@ -694,9 +546,6 @@ console.log("🎯 最终使用的logo路径:", logoImage);
       initMobileMenu();
       initScrollHeader();
       initMobileLanguageSelector();
-
-      // 添加页面可见性监听
-      document.addEventListener("visibilitychange", handleVisibilityChange);
     }
 
     // DOM就绪后初始化

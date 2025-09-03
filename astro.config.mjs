@@ -77,7 +77,6 @@ export default defineConfig({
   vite: {
     // 支持子目录中的资源文件
     assetsInclude: ['**/*.webp', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
-    
     build: {
       // 代码分割优化
       rollupOptions: {

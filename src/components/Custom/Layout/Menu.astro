@@ -1,16 +1,19 @@
 ---
 // SSG静态菜单组件 - 构建时获取菜单数据
-import { getMenus, getSupportedLanguages } from '../../../lib/strapi.js';
-import { getDictionary } from '../../../i18n/dictionaries.js';
-import { themeConfig } from '../../../config/theme.js';
-import { buildUrl } from '../../../lib/envConfig.js';
-import { getLangFromHostname } from '../../../lib/languageConfig.js';
+import { getMenus, getSupportedLanguages } from "@apis/common";
+import { getDictionary } from "../../../i18n/dictionaries.js";
+import { themeConfig } from "../../../config/theme.js";
+import { buildUrl } from "../../../lib/envConfig.js";
+import { getLangFromHostname } from "../../../lib/languageConfig.js";
+import { LanguageSelector } from "../LanguageSelector/index.ts";
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
 // 优先从路径解析语言；若路径无语言前缀，再尝试从子域名解析
 const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = pathLangMatch ? pathLangMatch[1] : getLangFromHostname(Astro.url.hostname);
+let currentLang = pathLangMatch
+  ? pathLangMatch[1]
+  : getLangFromHostname(Astro.url.hostname);
 
 // 加载翻译数据
 const t = await getDictionary(currentLang);
@@ -30,103 +33,189 @@ interface MenuItem {
 let menuItems: MenuItem[] = [];
 try {
   menuItems = await getMenus(currentLang);
+  console.log("获取到的菜单数据:", menuItems);
+  console.log("菜单项数量:", menuItems.length);
+
+  // 检查是否有子菜单
+  menuItems.forEach((item, index) => {
+    if (item.children && item.children.length > 0) {
+      console.log(
+        `菜单项 "${item.name}" 有 ${item.children.length} 个子菜单:`,
+        item.children,
+      );
+
+      // 检查二级菜单的子菜单
+      item.children.forEach((child, childIndex) => {
+        if (child.children && child.children.length > 0) {
+          console.log(
+            `  二级菜单 "${child.name}" 有 ${child.children.length} 个三级菜单:`,
+            child.children,
+          );
+        }
+      });
+    }
+  });
 } catch (error) {
-  console.error('获取菜单失败:', error);
+  console.error("获取菜单失败:", error);
   // 如果接口失败，不显示任何菜单
   menuItems = [];
 }
 
-
-
 // 获取支持的语言列表（从 Strapi API，不做硬编码回退）
-let supportedLanguages: Array<{code: string, name: string}> = [];
+let supportedLanguages: Array<{
+  localeCode: string;
+  name: string;
+  locale?: string;
+}> = [];
 try {
   supportedLanguages = await getSupportedLanguages();
 } catch (error) {
-  console.error('获取语言列表失败:', error);
+  console.error("获取语言列表失败:", error);
   supportedLanguages = [];
 }
 ---
+
+<!-- 引入字体图标库 -->
+<link rel="stylesheet" href="/fontIcons/iconfont.css" />
 
 <!-- 桌面端菜单 - 完整的导航栏布局 -->
 <div class="w-full flex items-center justify-between h-full">
   <!-- 左侧主导航菜单 -->
   <nav class="flex items-center" aria-label="主要导航">
-    {menuItems.map((item, index) => (
-      <div class="relative dropdown-container">
-        <div class="flex items-center">
-          <a 
-            href={withLang(item.path)} 
-            class={`menu-item text-white font-semibold text-center py-4 ${
-              (currentPath === item.path) || (currentPath === '/' && item.path === '/') ? 'active' : ''
-            }`}
-            style="font-size: 2rem; width: 15rem; display: flex; align-items: center; justify-content: center;"
-            data-path={item.path}
-            data-index={index}
-          >
-            {item.name}
-          </a>
+    {
+      menuItems.map((item, index) => (
+        <div class="relative dropdown-container">
+          <div class="flex items-center">
+            <a
+              href={withLang(item.path)}
+              class={`menu-item text-white font-semibold text-center py-4 ${
+                currentPath === item.path ||
+                (currentPath === "/" && item.path === "/")
+                  ? "active"
+                  : ""
+              }`}
+              style="font-size: 2rem; width: 15rem; display: flex; align-items: center; justify-content: center;"
+              data-path={item.path}
+              data-index={index}
+            >
+              {item.name}
+            </a>
+          </div>
           {item.children && (
-            <button type="button" class="dropdown-toggle ml-2 flex items-center" aria-haspopup="true" aria-expanded="false" tabindex="0" style="background: none; border: none; padding: 0; cursor: pointer;">
-              <svg class="w-4 h-4 dropdown-arrow transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
-            </button>
+            <div
+              class="dropdown-menu absolute top-full left-0 bg-white shadow-lg border-gray-200 rounded-md overflow-hidden z-50">
+              {item.children.map((child, index) => (
+                <div class="menu-item-wrapper relative">
+                  <a
+                    href={withLang(child.path)}
+                    class={`product-menu-item flex items-center px-6 py-4 text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border-b border-gray-100 last:border-b-0 ${index === 0 ? "featured-item" : ""}`}
+                    style="font-size: 1.5rem;"
+                  >
+                    <div class="flex-1">
+                      <div class="font-medium">{child.name}</div>
+                    </div>
+                    {child.children && child.children.length > 0 && (
+                      <span class="ml-2 text-gray-400 text-xs">▶</span>
+                    )}
+                  </a>
+                  {child.children}
+                  {/* 二级子菜单 */}
+                  {child.children && child.children.length > 0 && (
+                    <div
+                      class="submenu absolute left-full top-0 bg-white shadow-lg border border-gray-200 rounded-md overflow-hidden z-50">
+                      <div class="submenu-header bg-gray-50 px-6 py-3 border-b border-gray-200">
+                        <h4 class="text-lg font-semibold text-gray-800">
+                          {child.name}
+                        </h4>
+                        <p class="text-sm text-gray-600 mt-1">
+                          选择具体产品类型
+                        </p>
+                      </div>
+                      {child.children.map((subChild, subIndex) => (
+                        <div class="submenu-item relative">
+                          <a
+                            href={withLang(subChild.path)}
+                            class="flex items-center px-6 py-4 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border-b border-gray-100 last:border-b-0"
+                            style="font-size: 1.4rem;"
+                          >
+                            <div class="flex-1">
+                              <div class="font-medium">{subChild.name}</div>
+                            </div>
+                            {subChild.children &&
+                              subChild.children.length > 0 && (
+                                <span class="ml-2 text-gray-400 text-xs">
+                                  ▶
+                                </span>
+                              )}
+                          </a>
+
+                          {/* 三级子菜单 */}
+                          {subChild.children &&
+                            subChild.children.length > 0 && (
+                              <div
+                                class="thirdmenu absolute left-full top-0 bg-white shadow-lg border border-gray-200 rounded-md overflow-hidden z-50"
+                                style="min-width: 24rem; display: none;"
+                              >
+                                <div class="thirdmenu-header bg-red-50 px-6 py-3 border-b border-red-200">
+                                  <h5 class="text-base font-semibold text-red-800">
+                                    {subChild.name}
+                                  </h5>
+                                  <p class="text-xs text-red-600 mt-1">
+                                    详细规格
+                                  </p>
+                                </div>
+                                {subChild.children.map(
+                                  (thirdChild, thirdIndex) => (
+                                    <a
+                                      href={withLang(thirdChild.path)}
+                                      class="flex items-center px-6 py-3 text-gray-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 border-b border-gray-100 last:border-b-0"
+                                      style="font-size: 1.3rem;"
+                                    >
+                                      <div class="flex-1">
+                                        <div class="font-medium">
+                                          {thirdChild.name}
+                                        </div>
+                                      </div>
+                                    </a>
+                                  ),
+                                )}
+                              </div>
+                            )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        {item.children && (
-          <div class="dropdown-menu absolute top-full left-0 bg-white shadow-lg border border-gray-200 rounded-md overflow-hidden z-50 hidden" style="min-width: 32rem;">
-            <!-- 只保留子菜单列表，不显示Product Categories等弹框内容 -->
-            {item.children.map((child, index) => (
-              <a 
-                href={withLang(child.path)} 
-                class={`product-menu-item flex items-center px-6 py-4 text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border-b border-gray-100 last:border-b-0 ${index === 0 ? 'featured-item' : ''}`}
-                style="font-size: 1.5rem;"
-              >
-                <div class="menu-icon w-8 h-8 mr-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
-                  <!-- 保留原有图标逻辑 -->
-                  {index === 0 ? (
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a2.5 2.5 0 011.95 2H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"/>
-                    </svg>
-                  ) : null}
-                </div>
-                <div class="flex-1">
-                  <div class="font-medium">{child.name}</div>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    ))}
+      ))
+    }
   </nav>
 
   <!-- 右侧功能区 -->
   <div class="flex items-center space-x-4">
     <!-- Pagefind 搜索框 -->
     <div class="relative" id="header-search-container">
-      <input 
-        type="text" 
+      <input
+        type="text"
         id="header-search-input"
         placeholder={t.placeholder.search}
         class="round bg-red-500/95 border border-red-400/30 text-white placeholder-white/70 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200"
         style="width: 30rem; font-size: 1.4rem;"
         autocomplete="off"
       />
-      <button 
+      <button
         type="submit"
         id="header-search-button"
-        class="absolute right-2 top-1/2 transform -translate-y-1/2"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg"
       >
-        <svg class="w-5 h-5 text-white/70 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
       </button>
-      
+
       <!-- Pagefind 搜索结果下拉框 -->
-      <div 
-        id="header-search-results" 
+      <div
+        id="header-search-results"
         class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
         style="width: 30rem;"
       >
@@ -139,565 +228,171 @@ try {
     <!-- 购物车图标和地球图标 - 按原型图样式 -->
     <div class="flex items-center">
       <!-- 购物车图标 -->
-      <button class="text-white hover:text-white/80 transition-colors duration-200 p-2">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m7.5-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"/>
-        </svg>
+      <button
+        class="text-white hover:text-white/80 transition-colors duration-200 p-2"
+      >
+        <i class="iconfont icon-goumai w-8 h-8 text-2xl"></i>
       </button>
 
       <!-- 垂直分隔线 -->
       <div class="border-l border-white/30 h-8 mx-6"></div>
 
       <!-- 地球图标 -->
-      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M2 12h20"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-      </svg>
+      <i class="iconfont icon-diqiu w-8 h-8 text-white text-2xl"></i>
     </div>
 
     <!-- 语言选择器 -->
-    {themeConfig.languageSelector.showLanguageSelector && 
-     (!themeConfig.languageSelector.hideWhenSingleLanguage || supportedLanguages.length > 1) && (
-    <div class="relative flex items-center space-x-2">
-      
-      <!-- 选择器框 -->
-      <button id="language-selector" class="flex items-center space-x-2 bg-transparent border border-white/30 rounded px-3 py-2 text-white hover:bg-white/10 transition-all duration-200" style="font-size: 1.4rem;">
-        <span id="current-language-display">
-          {supportedLanguages.find(lang => lang.code === currentLang)?.name || currentLang}
-        </span>
-        <svg class="w-4 h-4 transition-transform duration-200" id="language-arrow" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-        </svg>
-      </button>
-
-      <!-- 下拉菜单 -->
-      <div id="language-dropdown" class="absolute top-full right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50 hidden" style="min-width: 16rem; max-height: 60vh; overflow-y: auto;">
-        {supportedLanguages.map(lang => (
-          <a href="#" class={`flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-200 language-option ${lang.code === currentLang ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`} data-lang={lang.code} data-name={lang.name}>
-            <span class="text-2xl">🌐</span>
-            <span class="text-gray-800 font-medium">{lang.name}</span>
-            {lang.code === currentLang && (
-              <svg class="w-4 h-4 text-blue-500 ml-auto" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-            )}
-          </a>
-        ))}
-      </div>
-    </div>
-    )}
+    <LanguageSelector
+      supportedLanguages={supportedLanguages}
+      currentLang={currentLang}
+      showLanguageSelector={themeConfig.languageSelector.showLanguageSelector}
+      hideWhenSingleLanguage={themeConfig.languageSelector
+        .hideWhenSingleLanguage}
+    />
   </div>
 </div>
 
 <!-- 移动端菜单内容 -->
 <div id="mobile-menu-items" class="hidden">
-  {menuItems.map((item, index) => (
-    <a 
-      href={withLang(item.path)} 
-      class={`block text-white hover:text-red-400 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation mobile-menu-item border-b border-gray-600 last:border-b-0 ${index === 0 ? 'mobile-active' : ''}`}
-      data-path={item.path}
-      data-index={index}
-    >
-      {item.name}
-    </a>
-  ))}
+  {
+    menuItems.map((item, index) => (
+      <a
+        href={withLang(item.path)}
+        class={`block text-white hover:text-red-400 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation mobile-menu-item border-b border-gray-600 last:border-b-0 ${index === 0 ? "mobile-active" : ""}`}
+        data-path={item.path}
+        data-index={index}
+      >
+        {item.name}
+      </a>
+    ))
+  }
 </div>
-
-<script>
-  // 立即执行，不等待DOM完全加载
-  (function initMenu() {
-    // 如果DOM还未准备好，则等待
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initMenuComponents);
-    } else {
-      // DOM已准备好，立即执行
-      initMenuComponents();
-    }
-  })();
-
-  function initMenuComponents() {
-    // 移动端菜单初始化
-    const mobileMenuItems = document.getElementById('mobile-menu-items');
-    const mobileContainer = document.getElementById('mobile-smart-menu');
-    
-    if (mobileMenuItems && mobileContainer) {
-      // 复制菜单项到移动端容器
-      mobileContainer.innerHTML = mobileMenuItems.innerHTML;
-      
-      // 为移动端菜单项添加点击事件
-      mobileContainer.querySelectorAll('.mobile-menu-item').forEach(link => {
-        link.addEventListener('click', () => {
-          // 移除所有移动端菜单项的选中状态
-          mobileContainer.querySelectorAll('.mobile-menu-item').forEach(item => {
-            item.classList.remove('mobile-active');
-          });
-          
-          // 为当前点击的菜单项添加选中状态
-          link.classList.add('mobile-active');
-          
-          // 关闭移动端菜单
-          const mobileMenu = document.getElementById('mobile-menu');
-          const menuButton = document.getElementById('mobile-menu-button');
-          const openIcon = document.getElementById('menu-open-icon');
-          const closeIcon = document.getElementById('menu-close-icon');
-          
-          if (mobileMenu) {
-            mobileMenu.classList.add('hidden');
-            if (menuButton) menuButton.setAttribute('aria-expanded', 'false');
-            if (openIcon) openIcon.classList.remove('hidden');
-            if (closeIcon) closeIcon.classList.add('hidden');
-          }
-        });
-      });
-    }
-
-    // 语言选择器功能
-    const languageSelector = document.getElementById('language-selector') as HTMLElement | null;
-    const languageDropdown = document.getElementById('language-dropdown') as HTMLElement | null;
-    const languageArrow = document.getElementById('language-arrow') as HTMLElement | null;
-    
-    if (languageSelector && languageDropdown && languageArrow) {
-      // 切换下拉菜单
-      languageSelector.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const isHidden = languageDropdown.classList.contains('hidden');
-        
-        if (isHidden) {
-          languageDropdown.classList.remove('hidden');
-          (languageArrow as HTMLElement).style.transform = 'rotate(180deg)';
-        } else {
-          languageDropdown.classList.add('hidden');
-          (languageArrow as HTMLElement).style.transform = 'rotate(0deg)';
-        }
-      });
-
-      // 语言选项点击事件
-      const languageOptions = document.querySelectorAll('.language-option') as NodeListOf<HTMLElement>;
-      languageOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          const selectedLang = option.getAttribute('data-lang');
-          const selectedName = option.getAttribute('data-name');
-          
-          if (selectedLang && selectedName) {
-            // 获取当前页面路径
-            const currentPath = window.location.pathname;
-            
-            // 根据环境构建语言切换URL
-            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            
-            // 替换语言前缀
-            const pathWithoutLang: string = currentPath.replace(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/, '/');
-            
-            if (isDev) {
-              // 本地开发：总是跳转到首页
-              const newPath = `/${selectedLang}/`;
-              // 在新标签页中打开
-              window.open(newPath, '_blank');
-            } else {
-              // 生产环境：构建子域名URL，总是跳转到首页
-              const subdomain = selectedLang;
-              const currentDomain = window.location.hostname;
-              const baseDomain = currentDomain.split('.').slice(-2).join('.'); // 获取主域名
-              const newUrl = `https://${subdomain}.${baseDomain}`;
-              // 在新标签页中打开
-              window.open(newUrl, '_blank');
-            }
-          }
-          
-          // 关闭下拉菜单
-          languageDropdown.classList.add('hidden');
-          (languageArrow as HTMLElement).style.transform = 'rotate(0deg)';
-        });
-      });
-
-      // 点击外部关闭下拉菜单
-      document.addEventListener('click', (e) => {
-        const target = e.target as Node;
-        if (target && !languageSelector.contains(target as Node) && !languageDropdown.contains(target as Node)) {
-          languageDropdown.classList.add('hidden');
-          (languageArrow as HTMLElement).style.transform = 'rotate(0deg)';
-        }
-      });
-      
-      // 初始化语言选择器显示当前语言
-      function initLanguageSelector() {
-        // 从URL路径或子域名获取语言
-        const currentPath = window.location.pathname;
-        const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        let currentLang = pathLangMatch ? pathLangMatch[1] : null;
-        if (!currentLang) {
-          const hostname = window.location.hostname;
-          const subdomainToLang = {
-            'zh': 'zh-Hans',
-            'zh-hant': 'zh-Hant',
-            'de': 'de',
-            'ja': 'ja',
-            'fr': 'fr',
-            'ar': 'ar',
-            'es': 'es',
-            'it': 'it',
-            'pt': 'pt-pt',
-            'nl': 'nl',
-            'pl': 'pl',
-            'ru': 'ru',
-            'th': 'th',
-            'id': 'id',
-            'vi': 'vi',
-            'ms': 'ms',
-            'ml': 'ml',
-            'my': 'my',
-            'hi': 'hi',
-            'ko': 'ko',
-            'tr': 'tr'
-          } as Record<string, string>;
-          for (const [sub, lang] of Object.entries(subdomainToLang)) {
-            if (hostname.startsWith(`${sub}.`)) { currentLang = lang; break; }
-          }
-          if (!currentLang) currentLang = 'en';
-        }
-        
-        // 查找对应的语言选项
-        const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);
-        
-        if (!languageSelector) return;
-        
-        const selectorText = document.getElementById('current-language-display');
-        
-        if (currentLangOption && selectorText) {
-          const selectedName = currentLangOption.getAttribute('data-name');
-          if (selectedName) {
-            selectorText.textContent = selectedName;
-          } else {
-            selectorText.textContent = currentLang;
-          }
-        } else if (selectorText) {
-          // 如果找不到对应的语言选项，显示语言代码
-          selectorText.textContent = currentLang;
-        }
-        
-        // 更新选中状态
-        document.querySelectorAll('.language-option').forEach(option => {
-          option.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-500');
-        });
-        
-        if (currentLangOption) {
-          currentLangOption.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
-        }
-      }
-      
-      // 初始化语言选择器
-      initLanguageSelector();
-      
-      // 确保在页面完全加载后再次初始化
-      if (document.readyState === 'complete') {
-        setTimeout(initLanguageSelector, 100);
-      } else {
-        window.addEventListener('load', () => {
-          setTimeout(initLanguageSelector, 100);
-        });
-      }
-    }
-
-    // 下拉菜单功能
-    function initDropdownMenus() {
-      // 只为.dropdown-toggle按钮绑定展开事件
-      document.querySelectorAll('.dropdown-toggle').forEach(toggleBtn => {
-        const dropdownContainer = toggleBtn.closest('.dropdown-container');
-        if (!dropdownContainer) return;
-        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
-        const dropdownArrow = toggleBtn.querySelector('.dropdown-arrow');
-        toggleBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (!dropdownMenu) return;
-          const isHidden = dropdownMenu.classList.contains('hidden');
-          requestAnimationFrame(() => {
-            dropdownMenu.classList.toggle('hidden');
-            if (dropdownArrow && dropdownArrow instanceof HTMLElement) {
-              dropdownArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
-            }
-          });
-        });
-      });
-
-      // 点击页面其它地方关闭所有下拉
-      document.addEventListener('click', (e) => {
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-          menu.classList.add('hidden');
-        });
-        document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
-          if (arrow instanceof HTMLElement) {
-            arrow.style.transform = 'rotate(0deg)';
-          }
-        });
-      });
-    }
-    
-    // 更新菜单选中状态
-    function updateActiveMenuItem(clickedItem: HTMLElement) {
-      const menuItems = document.querySelectorAll('.menu-item');
-      
-      // 移除所有菜单项的active状态
-      menuItems.forEach(menuItem => {
-        menuItem.classList.remove('active');
-      });
-      
-      // 为当前点击的菜单项添加active状态
-      clickedItem.classList.add('active');
-      
-      // 储存选中状态到sessionStorage，用于页面间保持状态
-      const href = clickedItem.getAttribute('href');
-      if (href) {
-        sessionStorage.setItem('activeMenuItem', href);
-      }
-    }
-    
-    // 桌面端菜单项点击事件处理（无下拉菜单的项目）
-    function initMenuSelection() {
-      const menuItems = document.querySelectorAll('.menu-item:not(.has-dropdown)');
-      
-      menuItems.forEach((item) => {
-        item.addEventListener('click', (e) => {
-          updateActiveMenuItem(item as HTMLElement);
-          // 允许正常导航
-        });
-      });
-    }
-    
-    // 设置当前页面菜单项为选中状态
-    function setActiveMenuItem() {
-      const currentPath = window.location.pathname;
-      const menuItems = document.querySelectorAll('.menu-item');
-      
-      // 检查是否已经有服务端渲染的选中状态
-      const hasActiveItem = Array.from(menuItems).some(item => item.classList.contains('active'));
-      
-      if (!hasActiveItem) {
-        // 如果没有预设的选中状态，进行客户端设置
-        let foundMatch = false;
-        
-        menuItems.forEach(item => {
-          const href = item.getAttribute('href') || item.getAttribute('data-path');
-          if (href === currentPath || (currentPath === '/' && href === '/')) {
-            item.classList.add('active');
-            foundMatch = true;
-          }
-        });
-        
-        // 如果没有找到匹配项，默认选中第一个
-        if (!foundMatch && menuItems.length > 0) {
-          menuItems[0].classList.add('active');
-        }
-      }
-      
-      // 确保只有一个菜单项被选中
-      const activeItems = document.querySelectorAll('.menu-item.active');
-      if (activeItems.length > 1) {
-        // 如果有多个选中项，只保留第一个
-        for (let i = 1; i < activeItems.length; i++) {
-          activeItems[i].classList.remove('active');
-        }
-      }
-    }
-    
-    // 初始化所有功能
-    initDropdownMenus();
-    initMenuSelection();
-    setActiveMenuItem();
-    
-    // 标记菜单已加载完成
-    const nav = document.querySelector('nav');
-    if (nav) {
-      nav.classList.add('menu-loaded');
-    }
-    
-    // 初始化头部搜索功能
-    initHeaderSearch();
-  }
-  
-  // 简单的头部搜索功能
-  function initHeaderSearch() {
-    const searchInput = document.getElementById('header-search-input') as HTMLInputElement;
-    const searchButton = document.getElementById('header-search-button');
-    
-    if (!searchInput || !searchButton) {
-      return;
-    }
-    
-    // 解析当前语言与构建搜索页URL（支持子域名与路径前缀）
-    const hostname = window.location.hostname;
-    const pathLang = (window.location.pathname.split('/')[1] || '');
-    const subdomainToLang: Record<string, string> = {
-      'zh': 'zh-Hans', 'zh-hant': 'zh-Hant', 'de': 'de', 'ja': 'ja', 'fr': 'fr', 'ar': 'ar', 'es': 'es', 'it': 'it', 'pt': 'pt-pt', 'nl': 'nl', 'pl': 'pl', 'ru': 'ru', 'th': 'th', 'id': 'id', 'vi': 'vi', 'ms': 'ms', 'ml': 'ml', 'my': 'my', 'hi': 'hi', 'ko': 'ko', 'tr': 'tr'
-    };
-    let currentLang = pathLang || 'en';
-    const firstLabel = hostname.split('.')[0];
-    if (!pathLang && subdomainToLang[firstLabel]) {
-      currentLang = subdomainToLang[firstLabel];
-    }
-    const isDev = hostname === 'localhost' || hostname === '127.0.0.1';
-    const searchBase = isDev ? `/${currentLang}/search` : `/search`;
-    
-    // 回车键搜索
-    searchInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const query = searchInput.value.trim();
-        if (query) {
-          window.location.href = `${searchBase}?q=${encodeURIComponent(query)}`;
-        }
-      }
-    });
-    
-    // 点击搜索按钮
-    searchButton.addEventListener('click', function() {
-      const query = searchInput.value.trim();
-      if (query) {
-        window.location.href = `${searchBase}?q=${encodeURIComponent(query)}`;
-      }
-    });
-  }
-</script>
-
 <style>
   /* 菜单初始状态 - 防止闪烁 */
   nav {
     visibility: visible;
     opacity: 1;
   }
-  
-  /* 菜单加载完成状态 */
-  nav.menu-loaded {
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  
+
   /* 菜单容器预加载优化 */
   .dropdown-container {
     will-change: transform;
   }
-  
+
   /* 页面加载时的平滑过渡 */
   @media (prefers-reduced-motion: no-preference) {
     .menu-item {
       transition: background-color 0.15s ease-out;
     }
   }
-  
-  /* 移除原来的动画效果 */
-  .menu-item::before {
-    display: none;
-  }
-  
-  /* 下拉菜单容器 */
+
   .dropdown-container {
     position: relative;
   }
-  
+
   /* 下拉菜单样式 */
   .dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
     background: white;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    overflow: hidden;
+    border-radius: 3px;
     z-index: 1000;
-    min-width: 32rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-15px) scale(0.95);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 24rem;
+    display: none;
+    /* transform: translateY(-15px) scale(0.95);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); */
   }
-  
-  /* 下拉菜单显示状态 */
-  .dropdown-menu:not(.hidden) {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
+
+  .dropdown-container:hover .dropdown-menu {
+    display: block;
   }
-  
+
   /* 下拉菜单头部 */
   .dropdown-header h3 {
     margin: 0;
     font-size: 1.8rem;
   }
-  
+
   .dropdown-header p {
     margin: 0;
     font-size: 1.4rem;
   }
-  
+
   /* 产品菜单项样式 */
   .product-menu-item {
     position: relative;
     transition: all 0.2s ease;
   }
-  
+
   .product-menu-item:hover {
     background: linear-gradient(to right, #fef2f2, #ffffff);
     transform: translateX(8px);
   }
-  
+
   .product-menu-item:hover .menu-icon {
     background-color: #dc2626;
     color: white;
-    transform: scale(1.1);
+    transform: scale(1);
   }
-  
+
   .product-menu-item .menu-icon {
     transition: all 0.2s ease;
   }
-  
+
   /* 特色菜单项 */
   .featured-item {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     border-left: 4px solid #dc2626;
   }
-  
+
   .featured-item .menu-icon {
     background: linear-gradient(135deg, #dc2626, #b91c1c);
     color: white;
   }
-  
+
   /* 下拉菜单底部 */
   .dropdown-footer {
     background: linear-gradient(to right, #f9fafb, #f3f4f6);
   }
-  
+
   /* 下拉箭头动画 */
   .dropdown-arrow {
     transition: transform 0.2s ease;
   }
-  
+
   /* 有下拉菜单的菜单项 */
   .has-dropdown {
     position: relative;
   }
-  
+
+  /* 多级菜单样式 */
+  .menu-item-wrapper {
+    position: relative;
+  }
   /* 移动端优化 */
   @media (max-width: 768px) {
     .mobile-menu-item {
       padding: 12px 16px;
       font-size: 16px;
     }
-    
+
     /* 移动端选中状态 */
     .mobile-menu-item.mobile-active {
       background-color: #b91c1c !important;
       color: white !important;
     }
-    
+
     /* 移动端默认第一个选中 */
     .mobile-menu-item[data-index="0"] {
       background-color: #b91c1c;
       color: white;
     }
+
+    /* 移动端隐藏多级菜单 */
+    .sub-dropdown-menu,
+    .third-level-menu {
+      display: none !important;
+    }
   }
-</style> 
+</style>

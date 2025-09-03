@@ -38,26 +38,24 @@ const pageWidth = getPageWidth();
 ---
 
 <Layout title={t.nav.home} lang={lang} pageType="home">
-	<main>
-		<FullScreenBanner bannerData={bannerData} />
-		<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
-			<!-- <ProductShowcase 
-				title={homepageData?.productShowcase?.title}
-				description={homepageData?.productShowcase?.description}
-				products={homepageData?.productShowcase?.products}
-			/>
-			<StatsSection 
-				companyData={homepageData?.companyIntroduction}
-			/>
-			<HotRecommendedProducts 
-				title={homepageData?.hotRecommendedProducts?.title}
-				description={homepageData?.hotRecommendedProducts?.description}
-			/>
-			<CustomerNeeds 
-				contactData={homepageData?.contactUs}
-			/>
-			<CustomerCases />
-			<NewsCenter /> -->
-		</div>
-	</main>
+	<FullScreenBanner bannerData={bannerData} />
+	<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
+		<!-- <ProductShowcase 
+			title={homepageData?.productShowcase?.title}
+			description={homepageData?.productShowcase?.description}
+			products={homepageData?.productShowcase?.products}
+		/>
+		<StatsSection 
+			companyData={homepageData?.companyIntroduction}
+		/>
+		<HotRecommendedProducts 
+			title={homepageData?.hotRecommendedProducts?.title}
+			description={homepageData?.hotRecommendedProducts?.description}
+		/>
+		<CustomerNeeds 
+			contactData={homepageData?.contactUs}
+		/>
+		<CustomerCases />
+		<NewsCenter /> -->
+	</div>
 </Layout>

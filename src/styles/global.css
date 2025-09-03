@@ -265,7 +265,7 @@ body {
 
 /* 核心布局 - 首屏必需 */
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 1rem;
   width: 100%;
@@ -305,7 +305,6 @@ section {
   }
 
   section,
-  div,
   main,
   .container {
     max-width: 100vw;
