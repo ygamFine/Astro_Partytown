@@ -206,8 +206,10 @@ function resolveEmittedUrlSync(fileNameOrHash, fallback) {
 // 返回发射映射中的原始模块对象（用于 <Image src={...}> 传入本地导入对象）
 function resolveEmittedModuleSync(fileNameOrHash) {
   const table = EMITTED_URLS;
+  console.log('打印映射表格', typeof table);
   if (!table) return null;
   const imageObject = table[fileNameOrHash];
+  console.log('打印imageObject', imageObject);
   if (!imageObject) return null;
   if (typeof imageObject === 'object' && imageObject.src) return imageObject;
   // 仅当是远程 URL 字符串时可用于 <Image>，否则返回 null
