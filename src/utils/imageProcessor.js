@@ -6,20 +6,40 @@
 import { generateImageHash } from '@utils/hashUtils.js';
 
 // 由构建脚本生成的URL映射（指向最终发射到/_astro/...的绝对URL）
-let EMITTED_URLS = {};
+let EMITTED_URLS = null;
+let EMITTED_URLS_LOADING = false;
+let EMITTED_URLS_LOADED = false;
 
 // 异步加载 EMITTED_URLS
 async function loadEmittedUrls() {
+  if (EMITTED_URLS_LOADING) {
+    // 如果正在加载，等待加载完成
+    while (EMITTED_URLS_LOADING) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    return EMITTED_URLS;
+  }
+  
+  if (EMITTED_URLS_LOADED && EMITTED_URLS) {
+    return EMITTED_URLS;
+  }
+  
+  EMITTED_URLS_LOADING = true;
+  
   try {
     const module = await import('../data/strapi-image-urls.js');
     EMITTED_URLS = module.STRAPI_IMAGE_URLS || {};
+    EMITTED_URLS_LOADED = true;
+    console.log('✅ EMITTED_URLS 加载成功');
   } catch (error) {
-    // 静默处理加载失败
+    console.warn('⚠️ EMITTED_URLS 加载失败:', error.message);
+    EMITTED_URLS = {};
+  } finally {
+    EMITTED_URLS_LOADING = false;
   }
+  
+  return EMITTED_URLS;
 }
-
-// 立即加载
-loadEmittedUrls();
 
 /**
  * 检查是否是 Strapi 本地化图片路径
@@ -101,9 +121,9 @@ function processImageConvertPath(imageConvertPath) {
  * 通用的路径处理函数，统一处理各种路径类型
  * @param {string} path - 图片路径
  * @param {boolean} forAstro - 是否用于 Astro 组件
- * @returns {string} 处理后的路径
+ * @returns {Promise<string>} 处理后的路径
  */
-function processPath(path, forAstro = false) {
+async function processPath(path, forAstro = false) {
   if (!path || typeof path !== 'string') {
     return path;
   }
@@ -163,8 +183,8 @@ function processPath(path, forAstro = false) {
   return path;
 }
 
-function resolveEmittedUrlSync(fileNameOrHash, fallback) {
-  const table = EMITTED_URLS;
+async function resolveEmittedUrlSync(fileNameOrHash, fallback) {
+  const table = await loadEmittedUrls();
   if (!table) return fallback;
   
   // 直接查找
@@ -204,8 +224,8 @@ function resolveEmittedUrlSync(fileNameOrHash, fallback) {
 }
 
 // 返回发射映射中的原始模块对象（用于 <Image src={...}> 传入本地导入对象）
-function resolveEmittedModuleSync(fileNameOrHash) {
-  const table = EMITTED_URLS;
+async function resolveEmittedModuleSync(fileNameOrHash) {
+  const table = await loadEmittedUrls();
   console.log('----------------------------打印开始----------------------------')
   console.log('打印映射表格', typeof table);
   console.log('打印映射表格', table);
@@ -225,37 +245,37 @@ function resolveEmittedModuleSync(fileNameOrHash) {
 export { loadImageMappingWithCreate as loadImageMapping } from '@lib/imageUtils.js';
 
 // 统一的图片处理函数 - 用于替换页面中的重复代码
-export function processImageForDisplay(imageData, imageMapping = { strapiImages: [] }) {
+export async function processImageForDisplay(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return null;
   
   // 如果是字符串，使用通用路径处理函数
   if (typeof imageData === 'string') {
-    return processPath(imageData, false);
+    return await processPath(imageData, false);
   }
   
   // 如果是数组，找到第一个有效的图片
   if (Array.isArray(imageData)) {
-    const processedImages = imageData
-      .map(img => processSingleImage(img, imageMapping))
-      .filter(img => img && img !== '/images/placeholder.webp');
+    const processedImages = await Promise.all(
+      imageData.map(img => processSingleImage(img, imageMapping))
+    );
     
     return processedImages.length > 0 ? processedImages[0] : null;
   }
   
-  return processSingleImage(imageData, imageMapping);
+  return await processSingleImage(imageData, imageMapping);
 }
 
 // 专供 astro:assets 的 <Image> / getImage 使用：优先返回“导入的图片对象”，否则返回远程 URL，找不到返回 null
-export function processImageForAstro(imageData) {
+export async function processImageForAstro(imageData) {
   if (!imageData) return '/images/placeholder.webp';
 
   if (typeof imageData === 'string') {
-    return processPath(imageData, true);
+    return await processPath(imageData, true);
   }
 
   if (Array.isArray(imageData)) {
     for (const candidate of imageData) {
-      const mod = processImageForAstro(candidate);
+      const mod = await processImageForAstro(candidate);
       if (mod) return mod;
     }
     return null;
@@ -265,42 +285,43 @@ export function processImageForAstro(imageData) {
     // 兼容传入图片对象：支持 .media.url 和 .url 格式
     const originalUrl = extractUrlFromImageObject(imageData);
     
-    if (typeof originalUrl === 'string') return processImageForAstro(originalUrl);
+    if (typeof originalUrl === 'string') return await processImageForAstro(originalUrl);
   }
 
   return null;
 }
 
-export function processImagesForAstro(images) {
+export async function processImagesForAstro(images) {
   if (!images || !Array.isArray(images)) return [];
-  return images
-    .map(img => processImageForAstro(img))
-    .filter(Boolean);
+  const processedImages = await Promise.all(
+    images.map(img => processImageForAstro(img))
+  );
+  return processedImages.filter(Boolean);
 }
 
 // 处理单个图片
-export function processImage(imageData, imageMapping = { strapiImages: [] }) {
+export async function processImage(imageData, imageMapping = { strapiImages: [] }) {
   if (!imageData) return null;
   
   // 如果是字符串，使用通用路径处理函数
   if (typeof imageData === 'string') {
-    return processPath(imageData, false);
+    return await processPath(imageData, false);
   }
   
   if (Array.isArray(imageData)) {
     // 如果是数组，找到第一个有效的图片
-    const processedImages = imageData
-      .map(img => processSingleImage(img, imageMapping))
-      .filter(img => img && img !== '/images/placeholder.webp');
+    const processedImages = await Promise.all(
+      imageData.map(img => processSingleImage(img, imageMapping))
+    );
     
     return processedImages.length > 0 ? processedImages[0] : null;
   }
   
-  return processSingleImage(imageData, imageMapping);
+  return await processSingleImage(imageData, imageMapping);
 }
 
 // 处理单个图片
-function processSingleImage(img, imageMapping) {
+async function processSingleImage(img, imageMapping) {
   if (!img) return null;
   
   if (typeof img === 'string') {
@@ -308,13 +329,13 @@ function processSingleImage(img, imageMapping) {
     if (img.includes(',')) {
       const candidates = img.split(',').map(s => s.trim()).filter(Boolean);
       for (const candidate of candidates) {
-        const resolved = processSingleImage(candidate, imageMapping);
+        const resolved = await processSingleImage(candidate, imageMapping);
         if (resolved && resolved !== '/images/placeholder.webp') return resolved;
       }
       return null;
     }
     // 使用通用路径处理函数
-    return processPath(img, false);
+    return await processPath(img, false);
     
     // 如果是本地路径且格式正确，返回原路径
     if (img.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i)) {
@@ -337,14 +358,14 @@ function processSingleImage(img, imageMapping) {
 }
 
 // 处理图片数组，使用 processImageForDisplay
-export function processImageArrayForDisplay(images, imageMapping) {
+export async function processImageArrayForDisplay(images, imageMapping) {
   if (!images || !Array.isArray(images)) {
     return [];
   }
   
-  const processedImages = images
-    .map(img => processImageForDisplay(img, imageMapping))
-    .filter(img => img && img !== '/images/placeholder.webp');
+  const processedImages = await Promise.all(
+    images.map(img => processImageForDisplay(img, imageMapping))
+  );
   
-  return processedImages;
+  return processedImages.filter(img => img && img !== '/images/placeholder.webp');
 } 
