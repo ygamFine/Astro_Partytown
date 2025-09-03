@@ -284,6 +284,25 @@ export async function downloadImage(imageUrl, isBannerImage = false) {
         };
         await updateImageMapping([imageInfo]);
         console.log(`✅ 图片映射已更新: ${fileName}`);
+        
+        // 打印更新后的映射文件内容
+        try {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const { fileURLToPath } = await import('url');
+          
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = path.dirname(__filename);
+          const mappingFilePath = path.join(__dirname, '../data/strapi-image-urls.js');
+          
+          const mappingContent = await fs.readFile(mappingFilePath, 'utf-8');
+          console.log('📄 更新后的映射文件内容:');
+          console.log('=' .repeat(50));
+          console.log(mappingContent);
+          console.log('=' .repeat(50));
+        } catch (readError) {
+          console.warn('⚠️ 读取映射文件失败:', readError.message);
+        }
       } catch (error) {
         console.warn('⚠️ 更新映射文件失败:', error.message);
       }
@@ -422,6 +441,25 @@ export async function downloadImage(imageUrl, isBannerImage = false) {
         };
         await updateImageMapping([imageInfo]);
         console.log(`✅ Banner图片映射已更新: ${fileName}`);
+        
+        // 打印更新后的映射文件内容
+        try {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const { fileURLToPath } = await import('url');
+          
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = path.dirname(__filename);
+          const mappingFilePath = path.join(__dirname, '../data/strapi-image-urls.js');
+          
+          const mappingContent = await fs.readFile(mappingFilePath, 'utf-8');
+          console.log('📄 更新后的映射文件内容:');
+          console.log('=' .repeat(50));
+          console.log(mappingContent);
+          console.log('=' .repeat(50));
+        } catch (readError) {
+          console.warn('⚠️ 读取映射文件失败:', readError.message);
+        }
       } catch (error) {
         console.warn('⚠️ 更新Banner映射文件失败:', error.message);
       }
