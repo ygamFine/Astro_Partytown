@@ -1,12 +1,11 @@
 ---
 import { Image } from "astro:assets";
 import StaticMenu from "./Menu.astro";
-import { themeConfig } from "../../../config/theme.js";
-import { buildUrl } from "../../../lib/envConfig.js";
-import { getLangFromHostname } from "../../../lib/languageConfig.js";
+import { themeConfig } from "@config/theme.js";
 import { getSupportedLanguages } from "@apis/common.js";
 import { downloadImage } from '@utils/imageConvert'
 import { processImageForAstro } from '@utils/imageProcessor';
+import { getCurrentLanguage, buildLanguageUrl } from '@utils/languageUtils';
 
 // 接收网站配置参数
 export interface Props {
@@ -15,15 +14,11 @@ export interface Props {
 
 const { siteConfiguration = {} } = Astro.props;
 
-// 获取当前语言：优先路径，其次子域名
-const currentPath = Astro.url.pathname;
-const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = pathLangMatch
-  ? pathLangMatch[1]
-  : getLangFromHostname(Astro.url.hostname);
+// 获取当前语言：使用工具函数
+const currentLang = getCurrentLanguage(Astro.url.pathname, Astro.url.hostname);
 
 // 生成带语言的首页链接
-const homeUrl = buildUrl(currentLang, "/");
+const homeUrl = buildLanguageUrl(currentLang, "/");
 
 // 获取支持的语言列表（从 Strapi API，不做硬编码回退）
 let supportedLanguages = [];
@@ -41,20 +36,11 @@ const email = siteConfiguration.field_zhandiandingbuyouxiang || "";
 let logoImage
 try{
   const logoUrl = siteConfiguration?.field_logo && siteConfiguration?.field_logo.length > 0 && siteConfiguration?.field_logo[0]?.media?.url
-  if (logoUrl) {
-    const localPath = await downloadImage(logoUrl);
-    if (localPath) {
-      // 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
-      logoImage = processImageForAstro(localPath);
-      if (!logoImage) {
-        logoImage = "/images/placeholder.webp";
-      }
-    } else {
-      logoImage = "/images/placeholder.webp";
-    }
-  } else {
-    logoImage = "/images/placeholder.webp";
-  }
+  const localPath = await downloadImage(logoUrl);
+  console.log('下载执行结果-localPath', localPath);
+  // 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
+  logoImage = processImageForAstro(localPath);
+  console.log('最终结果-logoImage', logoImage);
 }
 catch(error){
   logoImage = "/images/placeholder.webp";
@@ -64,14 +50,11 @@ catch(error){
 
 <!-- 引入字体图标 CSS -->
 <link rel="stylesheet" href="/fontIcons/iconfont.css">
-
-<!-- TEVIS Header Design - Scrollable Banner + Fixed Menu -->
 <header
   class="relative z-50"
   data-pagefind-ignore
   style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;"
 >
-  <!-- Main Header Row (Will scroll with page) -->
   <div id="main-header" class="md:bg-gray-800 bg-slate-700 text-white" style="transition: transform 0.3s ease-in-out;">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between md:h-[9.9rem] h-24">

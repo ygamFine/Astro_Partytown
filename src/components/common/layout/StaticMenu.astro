@@ -5,19 +5,19 @@ import { getDictionary } from '../../../i18n/dictionaries.js';
 import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
 import { getLangFromHostname } from '../../../lib/languageConfig.js';
+import { getCurrentLanguage, buildLanguageUrl } from '../../../utils/languageUtils';
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
-// 优先从路径解析语言；若路径无语言前缀，再尝试从子域名解析
-const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = pathLangMatch ? pathLangMatch[1] : getLangFromHostname(Astro.url.hostname);
+// 使用工具函数获取当前语言
+const currentLang = getCurrentLanguage(currentPath, Astro.url.hostname);
 
 // 加载翻译数据
 const t = await getDictionary(currentLang);
 
-// 动态生成菜单链接 - 根据环境使用不同的URL策略
+// 动态生成菜单链接 - 使用语言工具函数
 function withLang(path: string) {
-  return buildUrl(currentLang, path);
+  return buildLanguageUrl(currentLang, path);
 }
 
 // 在构建时获取菜单数据
@@ -326,40 +326,10 @@ try {
       
       // 初始化语言选择器显示当前语言
       function initLanguageSelector() {
-        // 从URL路径或子域名获取语言
+        // 从URL路径获取语言，简化逻辑
         const currentPath = window.location.pathname;
         const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        let currentLang = pathLangMatch ? pathLangMatch[1] : null;
-        if (!currentLang) {
-          const hostname = window.location.hostname;
-          const subdomainToLang = {
-            'zh': 'zh-Hans',
-            'zh-hant': 'zh-Hant',
-            'de': 'de',
-            'ja': 'ja',
-            'fr': 'fr',
-            'ar': 'ar',
-            'es': 'es',
-            'it': 'it',
-            'pt': 'pt-pt',
-            'nl': 'nl',
-            'pl': 'pl',
-            'ru': 'ru',
-            'th': 'th',
-            'id': 'id',
-            'vi': 'vi',
-            'ms': 'ms',
-            'ml': 'ml',
-            'my': 'my',
-            'hi': 'hi',
-            'ko': 'ko',
-            'tr': 'tr'
-          } as Record<string, string>;
-          for (const [sub, lang] of Object.entries(subdomainToLang)) {
-            if (hostname.startsWith(`${sub}.`)) { currentLang = lang; break; }
-          }
-          if (!currentLang) currentLang = 'en';
-        }
+        let currentLang = pathLangMatch ? pathLangMatch[1] : 'en';
         
         // 查找对应的语言选项
         const currentLangOption = document.querySelector(`[data-lang="${currentLang}"]`);

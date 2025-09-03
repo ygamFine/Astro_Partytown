@@ -215,9 +215,6 @@ function resolveEmittedModuleSync(fileNameOrHash) {
   return null;
 }
 
-// 从环境变量读取 Strapi 基础地址，用于在未命中本地映射时回退为绝对URL
-const STRAPI_STATIC_URL = typeof process !== 'undefined' ? (process.env.STRAPI_STATIC_URL || '') : '';
-
 // 重新导出 loadImageMapping 函数以保持向后兼容性
 export { loadImageMappingWithCreate as loadImageMapping } from '@lib/imageUtils.js';
 
@@ -244,7 +241,7 @@ export function processImageForDisplay(imageData, imageMapping = { strapiImages:
 
 // 专供 astro:assets 的 <Image> / getImage 使用：优先返回“导入的图片对象”，否则返回远程 URL，找不到返回 null
 export function processImageForAstro(imageData) {
-  if (!imageData) return null;
+  if (!imageData) return '/images/placeholder.webp';
 
   if (typeof imageData === 'string') {
     return processPath(imageData, true);

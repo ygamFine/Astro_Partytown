@@ -5,17 +5,16 @@ import { themeConfig } from '../../../config/theme.js';
 import { buildUrl } from '../../../lib/envConfig.js';
 import { getLangFromHostname, langToSubdomain, subdomainToLang } from '../../../lib/languageConfig.js';
 import { getSupportedLanguages } from '../../../lib/strapi.js';
+import { getCurrentLanguage, buildLanguageUrl } from '../../../utils/languageUtils';
 
 // 使用public目录中的图片
 const logoImage = '/images/logo.png.webp';
 
-// 获取当前语言：优先路径，其次子域名
-const currentPath = Astro.url.pathname;
-const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-let currentLang = pathLangMatch ? pathLangMatch[1] : getLangFromHostname(Astro.url.hostname);
+// 获取当前语言：使用工具函数
+const currentLang = getCurrentLanguage(Astro.url.pathname, Astro.url.hostname);
 
 // 生成带语言的首页链接
-const homeUrl = buildUrl(currentLang, '/');
+const homeUrl = buildLanguageUrl(currentLang, '/');
 
 // 获取支持的语言列表（从 Strapi API，不做硬编码回退）
 let supportedLanguages = [];
@@ -357,17 +356,10 @@ try {
       const mobileLanguageSelector = document.getElementById('mobile-language-selector');
       
       if (mobileLanguageSelector) {
-        // 初始化当前语言：优先路径，其次子域名
+        // 初始化当前语言：使用简化的检测逻辑
         const currentPath = window.location.pathname;
         const pathLangMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
-        let currentLang = pathLangMatch ? pathLangMatch[1] : null;
-        if (!currentLang) {
-          const hostname = window.location.hostname;
-          const map = { 'zh':'zh-Hans','zh-hant':'zh-Hant','de':'de','ja':'ja','fr':'fr','ar':'ar','es':'es','it':'it','pt':'pt-pt','nl':'nl','pl':'pl','ru':'ru','th':'th','id':'id','vi':'vi','ms':'ms','ml':'ml','my':'my','hi':'hi','ko':'ko','tr':'tr' };
-          const firstLabel = hostname.split('.')[0];
-          currentLang = map[firstLabel] || 'en';
-          if (!currentLang) currentLang = 'en';
-        }
+        let currentLang = pathLangMatch ? pathLangMatch[1] : 'en';
         
         // 设置当前选中的语言
         mobileLanguageSelector.value = currentLang;
