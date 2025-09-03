@@ -273,7 +273,22 @@ export async function downloadImage(imageUrl, isBannerImage = false) {
         // 忽略清理错误
       }
 
-      // 直接返回公共访问路径
+      // 步骤3: 更新图片映射文件
+      try {
+        const imageInfo = {
+          fileName: fileName,
+          hash: isBannerImage ? 
+            fileName.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, '') : 
+            fileName.replace(/\.(webp|jpg|jpeg|png|gif|svg|mp4|webm|mov)$/i, ''),
+          filePath: isBannerImage ? `banner/${fileName}` : fileName
+        };
+        await updateImageMapping([imageInfo]);
+        console.log(`✅ 图片映射已更新: ${fileName}`);
+      } catch (error) {
+        console.warn('⚠️ 更新映射文件失败:', error.message);
+      }
+
+      // 步骤4: 返回公共访问路径（供 Astro Image 标签使用）
       return isBannerImage ? 
         `/assets/strapi/banner/${fileName}` : 
         `/assets/strapi/${fileName}`;
@@ -398,6 +413,20 @@ export async function downloadImage(imageUrl, isBannerImage = false) {
       const buffer = await response.arrayBuffer();
       await fs.writeFile(localPath, Buffer.from(buffer));
 
+      // 步骤3: 更新图片映射文件
+      try {
+        const imageInfo = {
+          fileName: fileName,
+          hash: hash,
+          filePath: `banner/${fileName}`
+        };
+        await updateImageMapping([imageInfo]);
+        console.log(`✅ Banner图片映射已更新: ${fileName}`);
+      } catch (error) {
+        console.warn('⚠️ 更新Banner映射文件失败:', error.message);
+      }
+
+      // 步骤4: 返回公共访问路径（供 Astro Image 标签使用）
       return `/assets/strapi/banner/${fileName}`;
     } catch (error) {
       return null;
@@ -490,17 +519,26 @@ export async function processUploadImage(imagePath) {
 /**
  * 使用示例：
  * 
- * // 1. 使用 imageConvert.js 下载和转换图片
+ * 完整流程示例：
+ * 
+ * // 步骤1: 下载图片并自动更新映射
  * const localPath = await downloadImage(imageUrl, false);
  * 
- * // 2. 在组件中使用 imageProcessor.js 进行路径映射（可选）
- * // import { processImageForDisplay } from './imageProcessor.js';
- * // const finalPath = processImageForDisplay(localPath);
+ * // 步骤2: 在 Astro 组件中使用
+ * // 方式1: 直接使用返回的路径（推荐）
+ * <img src={localPath} alt="图片" />
  * 
- * // 3. 或者直接使用返回的公共路径（如 /assets/strapi/xxx.webp）
- * const publicPath = await processLogoImage('/uploads/logo.png');
+ * // 方式2: 通过 imageProcessor.js 处理（可选）
+ * import { processImageForDisplay } from './imageProcessor.js';
+ * const finalPath = processImageForDisplay(localPath);
  * 
- * // 4. 手动更新图片映射（当 downloadImage 自动更新失败时）
+ * // 方式3: 在 Astro Image 组件中使用
+ * import { Image } from 'astro:assets';
+ * <Image src={localPath} alt="图片" />
+ * 
+ * 手动操作示例：
+ * 
+ * // 手动更新图片映射（当 downloadImage 自动更新失败时）
  * import { updateImageMapping, generateImageMappingFile, scanAndGenerateMapping } from './imageConvert.js';
  * 
  * // 更新单个图片的映射
@@ -517,8 +555,11 @@ export async function processUploadImage(imagePath) {
  * const imageFiles = await scanAndGenerateMapping();
  * 
  * 职责分离：
- * - imageConvert.js: 负责下载、转换、返回本地文件路径，并自动维护映射文件
+ * - imageConvert.js: 负责下载、转换、自动更新映射文件、返回可用路径
  * - imageProcessor.js: 负责运行时路径映射和 Astro 组件支持
+ * 
+ * 数据流：
+ * Strapi URL → 下载图片 → 更新映射 → 返回路径 → Astro Image 标签加载
  */
 
 /**
