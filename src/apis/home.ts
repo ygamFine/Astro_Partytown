@@ -19,8 +19,7 @@ export async function getHomepageContent() {
       }
   
       const homepageData = data.data;
-      console.log('获取到的首页数据:', homepageData.product_showcase);
-      
+      console.log('获取到的首页数据:', homepageData.company_introduction);
       
       return {
         productShowcase: {
@@ -29,10 +28,17 @@ export async function getHomepageContent() {
             products: homepageData.product_showcase.products?.map((item: any) => {
                 return {
                     ...item,
-                    image: extractUrl(item, true),
+                    image: extractUrl(item.picture, true),
                     url_text: item.url_text,
+                    bigImage: extractUrl(item.product_big, true),
                 }
             }) || [],
+        },
+        companyIntroduction: {
+            title: homepageData.company_introduction.title,
+            introduction: homepageData.company_introduction.introduction,
+            stats: homepageData.company_introduction.stats,
+            buttonText: homepageData.company_introduction.button_text,
         },
       };
   

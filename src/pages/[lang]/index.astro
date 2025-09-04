@@ -6,11 +6,11 @@ import Layout from '@layouts/Layout.astro';
 import FullScreenBanner from '@components/Custom/Home/FullScreenBanner.astro';
 import HeroShowcase from '../../components/common/banner/HeroShowcase.astro';
 import ProductShowcase from '@components/Custom/Home/ProductShowcase.astro';
+import StatsSection from '@components/Custom/Home/StatsSection.astro';
 import CustomerNeeds from '../../components/CustomerNeeds.astro';
 import CustomerCases from '../../components/CustomerCases.astro';
 import NewsCenter from '../../components/NewsCenter.astro';
 import HotRecommendedProducts from '../../components/HotRecommendedProducts.astro';
-import StatsSection from '../../components/StatsSection.astro';
 
 import { themeConfig } from '../../config/theme.js';
 import { generateStaticPaths } from '../../lib/i18n-routes.js';
@@ -27,7 +27,7 @@ const t = await getDictionary(lang);
 
 // 获取首页数据
 const homepageData = await getHomepageContent();
-console.log('获取到的 homepageData', homepageData.productShowcase.products);
+// console.log('获取到的 homepageData', homepageData.productShowcase.products);
 // 获取页面宽度配置
 const getPageWidth = () => {
   return themeConfig.layout.dynamicWidth.getPageWidth('home');
@@ -38,8 +38,8 @@ const pageWidth = getPageWidth();
 <Layout title={t.nav.home} lang={lang} pageType="home">
 	<FullScreenBanner />
 	<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
-		<ProductShowcase data={homepageData?.productShowcase}
-		/>
+		<ProductShowcase data={homepageData?.productShowcase} />
+		<StatsSection />
 		<!-- 
 		<StatsSection 
 			companyData={homepageData?.companyIntroduction}

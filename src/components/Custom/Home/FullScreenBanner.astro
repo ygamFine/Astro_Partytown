@@ -47,8 +47,8 @@ const banners = await getBannerData('homepage');
               <Image
                 src={banner.desktopImage}
                 alt={banner.alt}
-                width={1440}
-                height={600}
+                width={1920}
+                height={800}
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"

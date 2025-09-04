@@ -9,6 +9,7 @@ export interface Props {
     url_text?: string;
     products?: Array<{
       image?: string;
+      bigImage?: string;
       name?: string;
       title?: string;
       slug?: string;
@@ -117,7 +118,7 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
           <div class="tevis-watermark" aria-hidden="true">TEVIS</div>
           <Image 
             id="mainProductImage" 
-            src={safeProducts.length > 0 ? (safeProducts[0].image || '/images/placeholder.webp') : '/images/placeholder.webp'}
+            src={safeProducts.length > 0 ? (safeProducts[0].bigImage || '/images/placeholder.webp') : '/images/placeholder.webp'}
             alt={safeProducts.length > 0 ? (safeProducts[0].name || safeProducts[0].title || '') : ''}
             width={600}
             height={400}
@@ -374,7 +375,7 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
 
 <!-- 将数据传递给客户端脚本 -->
 <script define:vars={{ productsData: safeProducts.map((product, index) => ({
-  image: product.image || '/images/placeholder.webp',
+  bigImage: product.bigImage || '/images/placeholder.webp',
   alt: product.name || product.title || `Product ${index + 1}`,
   name: product.name || product.title || `Product ${index + 1}`,
   slug: product.slug || `product-${index + 1}`
@@ -411,7 +412,7 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
         imgElement.style.transform = 'scale(0.95)';
         
         setTimeout(() => {
-          imgElement.src = productsData[index].image;
+          imgElement.src = productsData[index].bigImage;
           imgElement.alt = productsData[index].alt;
           imgElement.style.opacity = '1';
           imgElement.style.transform = 'scale(1)';
