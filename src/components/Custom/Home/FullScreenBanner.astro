@@ -1,6 +1,7 @@
 ---
-import { processImageForDisplay } from '@lib/imageProcessor.js';
-import { imageProcess } from '@utils/index';
+import { getBannerData } from '@apis/homeBanner';
+
+import { Image } from 'astro:assets';
 
 // 定义组件props接口
 export interface Props {
@@ -17,58 +18,22 @@ export interface Props {
 }
 
 // 获取props
-const { bannerData = [] } = Astro.props;
-
-// 处理Banner数据，确保图片能正确加载到 <img>（使用正确的URL）
-const banners = bannerData.map(banner => {
-  // 优先级处理：视频 > 移动端图片 > 桌面端图片
-  const processedShipin = processImageForDisplay((banner as any)?.shipin);
-  const processedDesktop = imageProcess(banner?.image);
-  const processedMobile = imageProcess(banner?.mobileImage || '');
-
-  // 检查是否为占位图
-  const isPlaceholder = (url: string) => url === '/images/placeholder.webp';
-
-  // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
-  const mobileMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
-                     processedMobile && !isPlaceholder(processedMobile) ? processedMobile :
-                     processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null;
-
-  // PC端优先使用视频，如果没有视频则使用桌面端图片
-  const desktopMedia = processedShipin && !isPlaceholder(processedShipin) ? processedShipin :
-                      processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null;
-
-  return {
-    ...banner,
-    processedImages: desktopMedia ? [desktopMedia] : [],
-    processedMobileImages: mobileMedia ? [mobileMedia] : [],
-    processedShipin: processedShipin && !isPlaceholder(processedShipin) ? [processedShipin] : [],
-    // 为poster单独保存图片文件
-    posterDesktop: processedDesktop && !isPlaceholder(processedDesktop) ? processedDesktop : null,
-    posterMobile: processedMobile && !isPlaceholder(processedMobile) ? processedMobile : null
-  };
-});
-
+const banners = await getBannerData('homepage');
+console.log('获取到的 bannerData', banners);
 ---
-
-<!-- 预加载关键Banner图片 -->
-{banners.length > 0 && banners[0].processedImages.length > 0 && (
-  <link rel="preload" as="image" href={banners[0].processedImages[0]} type="image/webp" fetchpriority="high">
-)}
 
 <!-- 响应式Banner容器 -->
 <section class="banner-container" id="homepage-banner">
   <!-- Banner轮播 -->
   <div class="banner-carousel">
     {banners.map((banner, index) => (
-      (banner.processedImages.length > 0 || banner.processedMobileImages.length > 0 || banner.processedShipin.length > 0) && (
-        <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
+              <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
           {/* PC端图片/视频 */}
           <div class="desktop-banner-image">
-            {banner.processedShipin.length > 0 ? (
+            {banner.field_bannershipin_url ? (
               <video
-                src={banner.processedShipin[0]}
-                poster={banner.posterDesktop}
+                src={banner.field_bannershipin_url}
+                poster={banner.field_tupian_url}
                 autoplay
                 muted
                 playsinline
@@ -79,9 +44,9 @@ const banners = bannerData.map(banner => {
               >
                 您的浏览器不支持视频播放
               </video>
-            ) : banner.processedImages.length > 0 ? (
-              <img
-                src={banner.processedImages[0]}
+            ) : banner.desktopImage ? (
+              <Image
+                src={banner.desktopImage}
                 alt={banner.alt}
                 width={1440}
                 height={600}
@@ -95,10 +60,10 @@ const banners = bannerData.map(banner => {
           </div>
           {/* 手机端图片/视频 */}
           <div class="mobile-banner-image">
-            {banner.processedShipin.length > 0 ? (
+            {banner.field_bannershipin_url ? (
               <video
-                src={banner.processedShipin[0]}
-                poster={banner.posterMobile || banner.posterDesktop}
+                src={banner.field_bannershipin_url}
+                poster={banner.field_shouji_url || banner.field_tupian_url}
                 autoplay
                 muted
                 playsinline
@@ -109,9 +74,9 @@ const banners = bannerData.map(banner => {
               >
                 您的浏览器不支持视频播放
               </video>
-            ) : banner.processedMobileImages.length > 0 ? (
-              <img
-                src={banner.processedMobileImages[0]}
+            ) : banner.field_shouji_url ? (
+              <Image
+                src={banner.field_shouji_url}
                 alt={banner.alt}
                 width={375}
                 height={600}
@@ -121,9 +86,9 @@ const banners = bannerData.map(banner => {
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
               />
-            ) : banner.processedImages.length > 0 && (
-              <img
-                src={banner.processedImages[0]}
+            ) : banner.field_tupian_url && (
+              <Image
+                src={banner.field_tupian_url}
                 alt={banner.alt}
                 width={375}
                 height={600}
@@ -136,8 +101,7 @@ const banners = bannerData.map(banner => {
             )}
           </div>
         </div>
-      )
-    ))}
+    )  )  }
   </div>
 
   <!-- Progress Bar Controller - 原始样式 -->

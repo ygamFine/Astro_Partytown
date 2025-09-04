@@ -1,12 +1,5 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson, fetchAllPaginated } from '@lib/strapiClient.js';
-// 使用公共图片处理工具
-import {
-  loadImageMappingWithCreate,
-  processImageWithMapping,
-  processImageArray,
-  processSingleImage
-} from '@lib/imageUtils.js';
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from '@lib/strapiClient.js';
 // 使用菜单工具函数
 import { buildMenuTree } from '@utils/tools.js';
 
@@ -40,7 +33,7 @@ export async function getSupportedLanguages() {
     const data = await fetchJson(`${STRAPI_STATIC_URL}/api/huazhi-translation-plugin/language-settings`);
     // 转换为标准格式，支持国际化字段
     const apiData = data.data
-    const locales = apiData?.languageSettings?.map(item => {item.configValue = apiData?.siteNavigationType.configValue; return item}) || [];
+    const locales = apiData?.languageSettings?.map((item: any) => {item.configValue = apiData?.siteNavigationType.configValue; return item}) || [];
 
     return locales;
 
@@ -57,7 +50,7 @@ export async function getMenus(locale = 'en') {
     const data = await fetchJson(`${STRAPI_STATIC_URL}/api/menu-manages?locale=${locale}&populate=all&sort=sort:ASC`);
     
     // 转换为标准格式，支持国际化字段
-    const flatMenus = data.data?.map(item => ({
+    const flatMenus = data.data?.map((item: any) => ({
       id: item.id,
       name: item.title,
       path: item.link,

@@ -37,6 +37,11 @@ export function getCurrentLanguage(pathname, hostname = '') {
  * @returns {string} 完整的多语言URL
  */
 export function buildLanguageUrl(lang, path, baseUrl = '') {
+  // 空值过滤：如果path为null、undefined或空字符串，返回空字符串
+  if (!path || path === null || path === undefined) {
+    return '';
+  }
+  
   // 确保路径以/开头
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   
