@@ -3,11 +3,9 @@ import { Image } from "astro:assets";
 import StaticMenu from "./Menu.astro";
 import { themeConfig } from "@config/theme.js";
 import { getSupportedLanguages } from "@apis/common.js";
-import { downloadImage } from '@utils/imageConvert'
-import { processImageForAstro } from '@utils/imageProcessor';
+import { imageProcess } from '@utils/index';
 import { getCurrentLanguage, buildLanguageUrl } from '@utils/languageUtils';
-import { processImageForDisplay } from "@lib/imageProcessor";
-import { preprocess } from "astro:schema";
+
 
 // 接收网站配置参数
 export interface Props {
@@ -38,13 +36,7 @@ const email = siteConfiguration.field_zhandiandingbuyouxiang || "";
 let logoImage
 try{
   const logoUrl = siteConfiguration?.field_logo && siteConfiguration?.field_logo.length > 0 && siteConfiguration?.field_logo[0]?.media?.url
-  const localPath = await downloadImage(logoUrl);
-  console.log('下载执行结果-localPath', localPath);
-  // 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
-  logoImage = processImageForDisplay(localPath);
-  console.log('最终结果-logoImage', logoUrl);
-  logoImage = 'http://182.92.233.160:1137' + logoUrl
-  // logoImage = "/images/placeholder.webp";
+  logoImage = imageProcess(logoUrl)
 }
 catch(error){
   logoImage = "/images/placeholder.webp";
