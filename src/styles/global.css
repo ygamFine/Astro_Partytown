@@ -432,7 +432,6 @@ img[loading="lazy"]:not([src]) {
 
 /* 简单的动画系统 */
 .animate-fade-up {
-  opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
@@ -443,7 +442,6 @@ img[loading="lazy"]:not([src]) {
 }
 
 .animate-fade-left {
-  opacity: 0;
   transform: translateX(-30px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
@@ -454,7 +452,6 @@ img[loading="lazy"]:not([src]) {
 }
 
 .animate-fade-right {
-  opacity: 0;
   transform: translateX(30px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
