@@ -27,66 +27,10 @@ async function loadEmittedUrls() {
   EMITTED_URLS_LOADING = true;
   
   try {
-    // 智能路径解析：尝试多个可能的位置（与 imageConvert.js 保持一致）
-    const possiblePaths = [
-      '../data/strapi-image-urls.js',           // 开发环境
-      '../../data/strapi-image-urls.js',        // 构建后环境
-      './data/strapi-image-urls.js',            // 当前目录
-      '/data/strapi-image-urls.js',             // 绝对路径
-    ];
-    
-    let module = null;
-    let loadedPath = null;
-    
-    // 尝试每个可能的路径
-    for (const testPath of possiblePaths) {
-      try {
-        module = await import(testPath);
-        loadedPath = testPath;
-        console.log(`🎯 成功加载映射文件: ${testPath}`);
-        break;
-      } catch (error) {
-        // 继续尝试下一个路径
-        console.log(`⚠️ 路径 ${testPath} 加载失败: ${error.message}`);
-      }
-    }
-    
-    // 如果相对路径都失败了，尝试使用 process.cwd() 构建的路径
-    if (!module) {
-      const { fileURLToPath } = await import('url');
-      const path = await import('path');
-      
-      const __filename = fileURLToPath(import.meta.url);
-      const __dirname = path.dirname(__filename);
-      
-      const fallbackPaths = [
-        path.join(__dirname, '../data/strapi-image-urls.js'),           // 开发环境
-        path.join(__dirname, '../../data/strapi-image-urls.js'),        // 构建后环境
-        path.join(process.cwd(), 'src/data/strapi-image-urls.js'),     // 项目根目录
-        path.join(process.cwd(), 'dist/data/strapi-image-urls.js'),    // 构建输出目录
-        path.join(process.cwd(), 'data/strapi-image-urls.js'),         // 根目录下的data
-      ];
-      
-      for (const testPath of fallbackPaths) {
-        try {
-          module = await import(testPath);
-          loadedPath = testPath;
-          console.log(`🎯 成功加载映射文件（回退路径）: ${testPath}`);
-          break;
-        } catch (error) {
-          // 继续尝试下一个路径
-          console.log(`⚠️ 回退路径 ${testPath} 加载失败: ${error.message}`);
-        }
-      }
-    }
-    
-    if (module && module.STRAPI_IMAGE_URLS) {
-      EMITTED_URLS = module.STRAPI_IMAGE_URLS;
-      EMITTED_URLS_LOADED = true;
-      console.log(`✅ EMITTED_URLS 加载成功，来源: ${loadedPath}`);
-    } else {
-      throw new Error('未找到有效的映射文件或映射数据');
-    }
+    const module = await import('../data/strapi-image-urls.js');
+    EMITTED_URLS = module.STRAPI_IMAGE_URLS || {};
+    EMITTED_URLS_LOADED = true;
+    console.log('✅ EMITTED_URLS 加载成功');
   } catch (error) {
     console.warn('⚠️ EMITTED_URLS 加载失败:', error.message);
     EMITTED_URLS = {};

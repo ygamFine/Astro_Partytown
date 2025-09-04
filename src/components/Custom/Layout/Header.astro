@@ -41,6 +41,7 @@ try{
   // 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
   logoImage = processImageForAstro(localPath);
   console.log('最终结果-logoImage', logoImage);
+  logoImage = "/images/placeholder.webp";
 }
 catch(error){
   logoImage = "/images/placeholder.webp";
