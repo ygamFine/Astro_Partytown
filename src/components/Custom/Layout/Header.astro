@@ -6,6 +6,7 @@ import { getSupportedLanguages } from "@apis/common.js";
 import { downloadImage } from '@utils/imageConvert'
 import { processImageForAstro } from '@utils/imageProcessor';
 import { getCurrentLanguage, buildLanguageUrl } from '@utils/languageUtils';
+import { processImageForDisplay } from "@lib/imageProcessor";
 
 // 接收网站配置参数
 export interface Props {
@@ -39,9 +40,9 @@ try{
   const localPath = await downloadImage(logoUrl);
   console.log('下载执行结果-localPath', localPath);
   // 使用 processImageForAstro 处理图片，返回 Astro 兼容的图片对象
-  logoImage = processImageForAstro(localPath);
+  logoImage = processImageForDisplay(localPath);
   console.log('最终结果-logoImage', logoImage);
-  logoImage = "/images/placeholder.webp";
+  // logoImage = "/images/placeholder.webp";
 }
 catch(error){
   logoImage = "/images/placeholder.webp";
