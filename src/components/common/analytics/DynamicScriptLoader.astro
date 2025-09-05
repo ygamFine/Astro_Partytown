@@ -3,7 +3,7 @@
 const isProd = import.meta.env.PROD;
 const isDev = import.meta.env.DEV;
 // 优先读服务端环境变量，其次读公开前缀（用于浏览器端兜底）
-const STRAPI_STATIC_URL = (typeof process !== 'undefined' ? process.env.STRAPI_STATIC_URL : '') || import.meta.env.PUBLIC_STRAPI_STATIC_URL_NEW || '';
+const STRAPI_STATIC_URL = (typeof process !== 'undefined' ? process.env.STRAPI_STATIC_URL : '') || import.meta.env.STRAPI_STATIC_URL || '';
 // 生产构建缺省禁用动态脚本获取；如需开启，设置 ENABLE_DYNAMIC_SCRIPTS=true 或 PUBLIC_ENABLE_DYNAMIC_SCRIPTS=true
 const ENABLE_DYNAMIC_SCRIPTS = (
   (typeof process !== 'undefined' ? process.env.ENABLE_DYNAMIC_SCRIPTS : '') === 'true'
@@ -69,7 +69,7 @@ if (shouldLoadScripts) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ...(process.env.STRAPI_API_TOKEN_NEW ? { 'Authorization': `Bearer ${process.env.STRAPI_API_TOKEN_NEW}` } : {})
+        ...(process.env.STRAPI_API_TOKEN ? { 'Authorization': `Bearer ${process.env.STRAPI_API_TOKEN}` } : {})
       },
       // 生产环境使用缓存，开发环境实时获取
       cache: isProd ? 'force-cache' : 'no-store'
