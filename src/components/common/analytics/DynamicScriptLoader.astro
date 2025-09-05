@@ -122,20 +122,30 @@ const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, pos
       <Fragment set:html={currentScripts.css} />
     )}
 
-    <!-- 📜 JavaScript 脚本 - 使用 Astro 优化 -->
+    <!-- 📜 JavaScript 脚本 - 使用 Astro 内联脚本优化 -->
     {currentScripts.scripts && (
       <script 
-        type={optimization.usePartytown ? "text/partytown" : "module"}
+        is:inline
+        type={optimization.usePartytown ? "text/partytown" : "text/javascript"}
         define:vars={{ 
           scriptContent: currentScripts.scripts,
           position
         }}
       >
-        // 脚本执行
-        const script = document.createElement('script');
-        script.innerHTML = scriptContent;
-        script.async = true;
-        document.head.appendChild(script);
+        // 安全执行脚本内容 - 使用 Astro 优化
+        (function() {
+          try {
+            // 清理脚本内容，移除 HTML 标签
+            const cleanScript = scriptContent.replace(/<script[^>]*>|<\/script>/gi, '');
+            
+            // 直接执行清理后的脚本内容
+            if (cleanScript.trim()) {
+              eval(cleanScript);
+            }
+          } catch (error) {
+            console.warn('脚本执行失败:', error);
+          }
+        })();
       </script>
     )}
   </>
