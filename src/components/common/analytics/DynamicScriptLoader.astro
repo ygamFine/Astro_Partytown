@@ -162,35 +162,56 @@ const processedScripts = currentScripts ? {
     )}
 
     <!-- 📜 JavaScript 脚本 - 使用 Astro 安全脚本处理 -->
-    {processedScripts?.scripts && (
-      <script 
-        is:inline
-        type={optimization.usePartytown ? "text/partytown" : "text/javascript"}
-        define:vars={{ 
-          scriptContent: processedScripts.scripts,
-          position,
-          useAsync: optimization.useAsync,
-          useLazyLoad: optimization.useLazyLoad
-        }}
-      >
-        // 安全执行脚本内容 - 使用 Astro 优化
-        (function() {
-          try {
-            // 脚本内容已经在服务端预处理过，直接执行
-            if (scriptContent && scriptContent.trim()) {
-              // 使用 Function 构造函数更安全地执行
-              const scriptFunction = new Function(scriptContent);
-              scriptFunction();
-            }
-          } catch (error) {
-            console.warn('脚本执行失败:', error);
-            // 在开发环境显示详细错误
-            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-              console.error('脚本内容:', scriptContent);
-            }
-          }
-        })();
-      </script>
+    {currentScripts?.scripts && (
+      <>
+        {optimization.usePartytown ? (
+          <!-- Partytown 脚本 - 使用 define:vars 传递脚本内容 -->
+          <script 
+            type="text/partytown"
+            define:vars={{ 
+              scriptContent: processedScripts?.scripts || '',
+              position
+            }}
+          >
+            // Partytown 环境中的脚本执行
+            (function() {
+              try {
+                if (scriptContent && scriptContent.trim()) {
+                  // 在 Partytown 环境中，脚本会自动转发到主线程执行
+                  eval(scriptContent);
+                }
+              } catch (error) {
+                console.warn('Partytown 脚本执行失败:', error);
+              }
+            })();
+          </script>
+        ) : (
+          <!-- 主线程脚本 - 使用 define:vars 安全执行 -->
+          <script 
+            is:inline
+            type="text/javascript"
+            define:vars={{ 
+              scriptContent: processedScripts?.scripts || '',
+              position
+            }}
+          >
+            // 安全执行脚本内容 - 主线程环境
+            (function() {
+              try {
+                if (scriptContent && scriptContent.trim()) {
+                  const scriptFunction = new Function(scriptContent);
+                  scriptFunction();
+                }
+              } catch (error) {
+                console.warn('脚本执行失败:', error);
+                if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+                  console.error('脚本内容:', scriptContent);
+                }
+              }
+            })();
+          </script>
+        )}
+      </>
     )}
   </>
 )}
