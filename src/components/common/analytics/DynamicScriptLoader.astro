@@ -28,13 +28,21 @@ const {
   lang = 'en'
 } = Astro.props;
 
-// 🚀 简单优化策略 - 基于位置
+// 🚀 智能优化策略 - 基于位置和脚本类型
 const getOptimizationStrategy = () => {
   // Body Bottom 位置使用 Partytown，其他位置使用标准脚本
   if (position === 'body-bottom') {
-    return { usePartytown: true };
+    return { 
+      usePartytown: true,
+      useLazyLoad: true,
+      useAsync: true
+    };
   }
-  return { usePartytown: false };
+  return { 
+    usePartytown: false,
+    useLazyLoad: false,
+    useAsync: false
+  };
 };
 
 const optimization = getOptimizationStrategy();
@@ -106,6 +114,37 @@ const getScriptsByPosition = (scripts: any, pos: string) => {
 // 获取当前位置的脚本
 const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, position) : null;
 
+// 🚀 脚本内容预处理函数
+const preprocessScriptContent = (scriptContent: string) => {
+  if (!scriptContent) return '';
+  
+  let processed = scriptContent;
+  
+  // 移除所有 HTML 标签
+  processed = processed.replace(/<script[^>]*>/gi, '');
+  processed = processed.replace(/<\/script>/gi, '');
+  processed = processed.replace(/<[^>]*>/g, '');
+  
+  // 移除 HTML 实体
+  processed = processed.replace(/&lt;/g, '<');
+  processed = processed.replace(/&gt;/g, '>');
+  processed = processed.replace(/&amp;/g, '&');
+  processed = processed.replace(/&quot;/g, '"');
+  processed = processed.replace(/&#39;/g, "'");
+  processed = processed.replace(/&nbsp;/g, ' ');
+  
+  // 清理多余的空白字符
+  processed = processed.trim();
+  
+  return processed;
+};
+
+// 预处理脚本内容
+const processedScripts = currentScripts ? {
+  ...currentScripts,
+  scripts: currentScripts.scripts ? preprocessScriptContent(currentScripts.scripts) : null
+} : null;
+
 
 ---
 
@@ -122,28 +161,33 @@ const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, pos
       <Fragment set:html={currentScripts.css} />
     )}
 
-    <!-- 📜 JavaScript 脚本 - 使用 Astro 内联脚本优化 -->
-    {currentScripts.scripts && (
+    <!-- 📜 JavaScript 脚本 - 使用 Astro 安全脚本处理 -->
+    {processedScripts?.scripts && (
       <script 
         is:inline
         type={optimization.usePartytown ? "text/partytown" : "text/javascript"}
         define:vars={{ 
-          scriptContent: currentScripts.scripts,
-          position
+          scriptContent: processedScripts.scripts,
+          position,
+          useAsync: optimization.useAsync,
+          useLazyLoad: optimization.useLazyLoad
         }}
       >
         // 安全执行脚本内容 - 使用 Astro 优化
         (function() {
           try {
-            // 清理脚本内容，移除 HTML 标签
-            const cleanScript = scriptContent.replace(/<script[^>]*>|<\/script>/gi, '');
-            
-            // 直接执行清理后的脚本内容
-            if (cleanScript.trim()) {
-              eval(cleanScript);
+            // 脚本内容已经在服务端预处理过，直接执行
+            if (scriptContent && scriptContent.trim()) {
+              // 使用 Function 构造函数更安全地执行
+              const scriptFunction = new Function(scriptContent);
+              scriptFunction();
             }
           } catch (error) {
             console.warn('脚本执行失败:', error);
+            // 在开发环境显示详细错误
+            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+              console.error('脚本内容:', scriptContent);
+            }
           }
         })();
       </script>
