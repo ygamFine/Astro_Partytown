@@ -29,6 +29,9 @@ const {
 // 安全处理产品数据
 const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
 
+// 为每个产品生成唯一ID
+const productIds = safeProducts.map((_, index) => `product-${index}`);
+
 ---
 
 <section class="product-showcase">
@@ -46,9 +49,14 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
         <div class="progress-container animate-fade-up animate-delay-300">
           <div class="progress-bar">
             <div class="progress-line"></div>
-            <div class="progress-dot active" data-index="0" style="left: 15%;"></div>
-            <div class="progress-dot" data-index="1"></div>
-            <div class="progress-dot" data-index="2" style="right: 15%;"></div>
+            {safeProducts.map((_, index) => (
+              <div 
+                class={`progress-dot ${index === 0 ? 'active' : ''}`} 
+                data-index={index}
+                data-product-id={productIds[index]}
+                style={index === 0 ? 'left: 15%;' : index === 2 ? 'right: 15%;' : ''}
+              ></div>
+            ))}
           </div>
         </div>
         
@@ -65,6 +73,7 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
                 <div 
                   class={`product-item ${index === 0 ? 'active' : ''} animate-fade-left animate-delay-${400 + index * 100}`} 
                   data-index={index}
+                  data-product-id={productIds[index]}
                   role="button"
                   tabindex="0"
                   aria-label={`View ${productName}`}
@@ -116,16 +125,36 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
       <div class="product-main-display animate-fade-right animate-delay-400">
         <div class="main-image-container overflow-hidden">
           <div class="tevis-watermark" aria-hidden="true">TEVIS</div>
-          <Image 
-            id="mainProductImage" 
-            src={safeProducts.length > 0 ? (safeProducts[0].bigImage || '/images/placeholder.webp') : '/images/placeholder.webp'}
-            alt={safeProducts.length > 0 ? (safeProducts[0].name || safeProducts[0].title || '') : ''}
-            width={600}
-            height={400}
-            loading="eager"
-            decoding="async"
-            class="main-product-image transition-transform duration-300 hover:scale-105" 
-          />
+          {safeProducts.length > 0 ? (
+            safeProducts.map((product, index) => {
+              const productName = product.name || product.title || `Product ${index + 1}`;
+              const bigImage = product.bigImage || '/images/placeholder.webp';
+              
+              return (
+                <Image 
+                  id={`mainProductImage-${index}`}
+                  src={bigImage}
+                  alt={productName}
+                  width={600}
+                  height={400}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  class={`main-product-image transition-all duration-500 ease-in-out hover:scale-105 ${index === 0 ? 'active' : 'hidden'}`}
+                  data-product-id={productIds[index]}
+                />
+              );
+            })
+          ) : (
+            <Image 
+              src="/images/placeholder.webp"
+              alt="No products available"
+              width={600}
+              height={400}
+              loading="eager"
+              decoding="async"
+              class="main-product-image transition-all duration-500 ease-in-out hover:scale-105 active"
+            />
+          )}
         </div>
       </div>
     </div>
@@ -314,6 +343,21 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
     object-fit: contain;
     transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: opacity, transform;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .main-product-image.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  
+  .main-product-image.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
   .tevis-watermark {
     position: absolute;
@@ -373,92 +417,94 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
   }
   </style>
 
-<!-- 将数据传递给客户端脚本 -->
-<script define:vars={{ productsData: safeProducts.map((product, index) => ({
-  bigImage: product.bigImage || '/images/placeholder.webp',
-  alt: product.name || product.title || `Product ${index + 1}`,
-  name: product.name || product.title || `Product ${index + 1}`,
-  slug: product.slug || `product-${index + 1}`
-})) }}>
-  document.addEventListener('DOMContentLoaded', function() {
-    const productItems = document.querySelectorAll('.product-item');
-    const progressDots = document.querySelectorAll('.progress-dot');
-    const mainProductImage = document.getElementById('mainProductImage');
+<!-- 使用 Astro 官方推荐的客户端脚本方法 -->
+<script client:load>
+  class ProductShowcase {
+    constructor() {
+      this.currentIndex = 0;
+      this.productItems = [];
+      this.progressDots = [];
+      this.mainImages = [];
+      this.init();
+    }
 
-    // 更新显示 - 增强版
-    function updateDisplay(index) {
-      // 更新左侧小图的active状态
-      productItems.forEach((item, i) => {
-        if (i === index) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
-
-      // 更新进度条点的状态
-      progressDots.forEach((dot, i) => {
-        if (i === index) {
-          dot.classList.add('active');
-        } else {
-          dot.classList.remove('active');
-        }
-      });
-
-      // 更新右侧大图 - 添加平滑过渡效果
-      const imgElement = mainProductImage;
-      if (imgElement && productsData[index]) {
-        imgElement.style.opacity = '0';
-        imgElement.style.transform = 'scale(0.95)';
-        
-        setTimeout(() => {
-          imgElement.src = productsData[index].bigImage;
-          imgElement.alt = productsData[index].alt;
-          imgElement.style.opacity = '1';
-          imgElement.style.transform = 'scale(1)';
-        }, 200);
+    init() {
+      // 等待 DOM 完全加载
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.setup());
+      } else {
+        this.setup();
       }
     }
 
-    // 绑定点击事件 - 增强版
-    productItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        updateDisplay(index);
-      });
+    setup() {
+      this.productItems = Array.from(document.querySelectorAll('.product-item'));
+      this.progressDots = Array.from(document.querySelectorAll('.progress-dot'));
+      this.mainImages = Array.from(document.querySelectorAll('.main-product-image'));
       
-      // 添加键盘支持
-      item.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          updateDisplay(index);
+      if (this.productItems.length === 0) return;
+
+      this.bindEvents();
+    }
+
+    bindEvents() {
+      // 绑定产品项点击事件
+      this.productItems.forEach((item, index) => {
+        item.addEventListener('click', () => this.updateDisplay(index));
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.updateDisplay(index);
+          }
+        });
+      });
+
+      // 绑定进度点点击事件
+      this.progressDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => this.updateDisplay(index));
+        dot.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.updateDisplay(index);
+          }
+        });
+      });
+
+      // 键盘导航
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' && this.currentIndex > 0) {
+          this.updateDisplay(this.currentIndex - 1);
+        } else if (e.key === 'ArrowRight' && this.currentIndex < this.productItems.length - 1) {
+          this.updateDisplay(this.currentIndex + 1);
         }
       });
-    });
+    }
 
-    // 进度条点也可以点击
-    progressDots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        updateDisplay(index);
-      });
-      
-      // 添加键盘支持
-      dot.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          updateDisplay(index);
-        }
-      });
-    });
-
-    // 添加键盘导航支持
-    document.addEventListener('keydown', (e) => {
-      const currentActiveIndex = Array.from(productItems).findIndex(item => item.classList.contains('active'));
-      
-      if (e.key === 'ArrowLeft' && currentActiveIndex > 0) {
-        updateDisplay(currentActiveIndex - 1);
-      } else if (e.key === 'ArrowRight' && currentActiveIndex < productsData.length - 1) {
-        updateDisplay(currentActiveIndex + 1);
+    updateDisplay(index) {
+      if (index === this.currentIndex || index < 0 || index >= this.productItems.length) {
+        return;
       }
-    });
-  });
+
+      this.currentIndex = index;
+
+      // 更新产品项状态
+      this.productItems.forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+      });
+
+      // 更新进度点状态
+      this.progressDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+
+      // 更新主图显示
+      this.mainImages.forEach((img, i) => {
+        img.classList.toggle('active', i === index);
+        img.classList.toggle('hidden', i !== index);
+      });
+    }
+  }
+
+  // 初始化组件
+  new ProductShowcase();
 </script> 
