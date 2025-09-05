@@ -56,30 +56,10 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- 简单高效的字体优化 -->
+    <!-- 简化的字体加载优化 -->
     <link rel="preload" href="/fontIcons/iconfont.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="/fontIcons/iconfont.css" />
-    
-    <!-- 字体加载检测 -->
-    <script>
-      // 简单的字体加载检测
-      document.addEventListener('DOMContentLoaded', function() {
-        // 检查字体是否加载
-        if (document.fonts && document.fonts.check) {
-          setTimeout(() => {
-            const fontLoaded = document.fonts.check('16px iconfont');
-    
-            if (!fontLoaded) {
-              // 强制重新加载字体CSS
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.href = '/fontIcons/iconfont.css?t=' + Date.now();
-              document.head.appendChild(link);
-            }
-          }, 100);
-        }
-      });
-    </script>
+    <link rel="preload" href="/fontIcons/iconfont.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/fontIcons/iconfont.css" /></noscript>
 
     <!-- 阿拉伯语字体预加载（仅阿语时预连接与预加载） -->
     {isRTL && (
