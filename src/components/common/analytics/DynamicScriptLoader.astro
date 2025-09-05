@@ -28,24 +28,13 @@ const {
   lang = 'en'
 } = Astro.props;
 
-// 🚀 极简优化策略 - 基于位置和页面类型
+// 🚀 简单优化策略 - 基于位置
 const getOptimizationStrategy = () => {
-  // Header 位置 - 关键脚本，使用模块化
-  if (position === 'header') {
-    return { useModule: true, useDefineVars: isDev };
-  }
-  
-  // Body Top 位置 - 页面初始化
-  if (position === 'body-top') {
-    return { useModule: true, useDefineVars: isDev };
-  }
-  
-  // Body Bottom 位置 - 非关键脚本，使用 Partytown
+  // Body Bottom 位置使用 Partytown，其他位置使用标准脚本
   if (position === 'body-bottom') {
-    return { usePartytown: true, useDefineVars: isDev };
+    return { usePartytown: true };
   }
-  
-  return { useModule: true, useDefineVars: isDev };
+  return { usePartytown: false };
 };
 
 const optimization = getOptimizationStrategy();
@@ -117,8 +106,6 @@ const getScriptsByPosition = (scripts: any, pos: string) => {
 // 获取当前位置的脚本
 const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, position) : null;
 
-// 不处理脚本内容，直接使用原始数据
-
 
 ---
 
@@ -135,30 +122,28 @@ const currentScripts = dynamicScripts ? getScriptsByPosition(dynamicScripts, pos
       <Fragment set:html={currentScripts.css} />
     )}
 
-    <!-- 📜 JavaScript 脚本 - 直接输出原始内容 -->
+    <!-- 📜 JavaScript 脚本 - 使用 Astro 优化 -->
     {currentScripts.scripts && (
-      <Fragment set:html={currentScripts.scripts} />
+      <script 
+        type={optimization.usePartytown ? "text/partytown" : "module"}
+        define:vars={{ 
+          scriptContent: currentScripts.scripts,
+          position
+        }}
+      >
+        // 脚本执行
+        const script = document.createElement('script');
+        script.innerHTML = scriptContent;
+        script.async = true;
+        document.head.appendChild(script);
+      </script>
     )}
   </>
 )}
 
-<!-- 🚀 Astro 脚本优化 - 使用 define:vars 注入变量 -->
-{optimization.useDefineVars && (
-  <script define:vars={{ 
-    isProd, 
-    isDev, 
-    pageType, 
-    route, 
-    position,
-    currentPath: Astro.url.pathname
-  }}>
-    // 极简变量注入 - 零运行时开销
-  </script>
-)}
-
 <!-- 开发环境错误提示 -->
 {isDev && error && (
-  <script define:vars={{ error, position, pageType, route }}>
-    console.warn(`🎯 动态脚本加载器 [${position}] 警告:`, error, { pageType, route });
+  <script define:vars={{ error, position }}>
+    console.warn(`🎯 动态脚本加载器 [${position}] 警告:`, error);
   </script>
 )}

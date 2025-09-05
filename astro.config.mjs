@@ -36,10 +36,19 @@ export default defineConfig({
     }),
     partytown({
       config: {
-        forward: ['dataLayer.push', 'gtag'],
+        forward: [
+          'dataLayer.push', 
+          'gtag',
+          'fbq',
+          'ga',
+          'gtm',
+          'dataLayer',
+          'google_tag_manager',
+          'google_analytics'
+        ],
         debug: false,
         // 🚀 Partytown 性能优化
-        lib: '/~partytown/',
+        lib: '/~partytown/'
       }
     }),
     // ⚡ 自动提取并内联首屏关键 CSS
