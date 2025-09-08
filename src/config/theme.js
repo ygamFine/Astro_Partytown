@@ -266,11 +266,18 @@ export const themeConfig = {
         large: 'py-64'
       },
       
+      // PC端高度配置映射
+      desktopHeightClasses: {
+        small: '128px', // 128px
+        medium: '192px', // 192px
+        large: '400px'   // 256px
+      },
+      
       // 移动端高度配置映射  
       mobileHeightClasses: {
-        small: 'h-32', // 128px
-        medium: 'h-40', // 160px
-        large: 'h-48'   // 192px - 接近200px的Tailwind标准高度
+        small: '128px', // 128px
+        medium: '160px', // 160px
+        large: '192px'   // 192px
       },
       
       // 通用Banner图片尺寸配置

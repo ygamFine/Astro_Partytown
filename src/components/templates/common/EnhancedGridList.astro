@@ -8,7 +8,7 @@ interface Props {
     image: any; // 改为any类型，支持导入的图片对象
     excerpt?: string;
     category?: string;
-    href: string;
+    url_slug: string;
     price?: string; // 添加价格字段
     advantages?: string[]; // 添加优势字段
     date?: string; // 添加日期字段
@@ -22,34 +22,17 @@ interface Props {
 }
 
 // 导入主题配置
-import { themeConfig } from '../../../config/theme.js';
-import { processImageForAstro } from '../../../lib/imageProcessor.js';
+import { themeConfig } from '@config/theme.js';
 
 // 根据侧边栏显示状态动态调整列数
 const sidebarVisible = themeConfig.layout.sidebar.visible;
+// 列数
 const defaultItemsPerRow = sidebarVisible ? 3 : 4;
 
+// 传递的参数
 const { items, itemsPerRow = defaultItemsPerRow, maxRows = 4, mode = 'product', translations = {}, lang = 'en', viewMode = 'grid' } = Astro.props;
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
-
-// 过滤有效的图片
-const validItems = displayItems.filter(item => {
-  if (!item.image) return false;
-  if (typeof item.image === 'string') {
-    // 检查是否是有效的图片URL
-    return item.image.trim() !== '' && item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
-  }
-  return true; // 如果是导入的图片对象，认为是有效的
-});
-
-// 转换为可被 <Image> 接受的资源（导入的图片模块或远程 URL）
-const itemsWithDisplay = validItems
-  .map((item) => ({
-    ...item,
-    image: processImageForAstro(item.image)
-  }))
-  .filter(item => !!item.image);
 
 // 获取翻译文本
 const t = translations || {};
@@ -69,9 +52,9 @@ const formatDate = (dateString: string | undefined) => {
   <!-- 卡片视图容器 -->
   <div class="grid-view-container" data-view="grid" data-astro-reload>
     <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
-      {itemsWithDisplay.map((item) => (
+      {displayItems.map((item) => (
         <article class={`grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative ${cardConfig.style.hoverEffect === 'lift' ? 'hover:-translate-y-1' : cardConfig.style.hoverEffect === 'scale' ? 'hover:scale-105' : ''}`}>
-          <a href={item.href} class="block h-full">
+          <a href={'/' + lang + '/products' + item.url_slug} class="block h-full">
             <div class="aspect-video overflow-hidden">
               <Image 
                 src={item.image} 
@@ -225,7 +208,7 @@ const formatDate = (dateString: string | undefined) => {
   <!-- 列表视图容器 -->
   <div class="list-view-container hidden" data-view="list" data-astro-reload>
     <div class="space-y-6">
-      {itemsWithDisplay.map((item) => (
+      {displayItems.map((item: any) => (
         <article class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
           <div class="flex flex-col md:flex-row">
             <!-- 左侧图片 -->
@@ -272,7 +255,7 @@ const formatDate = (dateString: string | undefined) => {
                   <div class="mb-4">
                     <p class="text-sm font-semibold text-gray-700 mb-2">产品优势：</p>
                     <ul class="text-sm text-gray-600 space-y-1">
-                      {item.advantages.slice(0, 3).map(advantage => (
+                      {item.advantages.slice(0, 3).map((advantage: any) => (
                         <li class="flex items-center">
                           <svg class="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>

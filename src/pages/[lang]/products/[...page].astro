@@ -1,20 +1,19 @@
 ---
 export const prerender = true;
 
-import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
-import GridList from '../../../components/templates/common/GridList.astro';
-import EnhancedGridList from '../../../components/templates/common/EnhancedGridList.astro';
-import ViewToggle from '../../../components/templates/common/ViewToggle.astro';
-import Pagination from '../../../components/templates/common/Pagination.astro';
-import EmptyState from '../../../components/templates/common/EmptyState.astro';
-import { getProducts } from '../../../lib/strapi.js';
-import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
-import { getDictionary } from '../../../i18n/dictionaries.js';
-import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
-import { buildUrl } from '../../../lib/envConfig.js';
+import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
+import EnhancedGridList from '@components/templates/common/EnhancedGridList.astro';
+import ViewToggle from '@components/templates/common/ViewToggle.astro';
+import Pagination from '@components/templates/common/Pagination.astro';
+import EmptyState from '@components/templates/common/EmptyState.astro';
+import { getProducts } from '@apis/common.js';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
+import { getDictionary } from '@i18n/dictionaries.js';
+import { buildUrl } from '@utils/envConfig.js';
 
 // 只为配置中启用的语言和页面生成路由
 export async function getStaticPaths() {
+
   const paths: any[] = [];
   const itemsPerPage = 9;
   
@@ -22,7 +21,7 @@ export async function getStaticPaths() {
   for (const lang of SUPPORTED_LANGUAGES) {
     const products = await getProducts(lang);
     const totalPages = Math.ceil(products.length / itemsPerPage);
-    
+    console.log('lang', lang);
     if (products.length > 0) {
       // 第一页 (无页码)
       paths.push({
@@ -65,24 +64,8 @@ const startIndex = hasProducts ? (currentPage - 1) * itemsPerPage : 0;
 const endIndex = hasProducts ? startIndex + itemsPerPage : 0;
 const displayProducts = hasProducts ? products.slice(startIndex, endIndex) : [];
 
-// 加载图片映射
-const imageMapping = await loadImageMapping();
-
 // 转换产品数据格式以适配GridList组件
-const gridItems = hasProducts ? displayProducts
-  .map((product: any) => {
-    const validImage = processImageForDisplay(product.image, imageMapping);
-    
-    return {
-      id: product.id,
-      title: product.name,
-      image: validImage,
-      excerpt: product.excerpt,
-      category: product.category,
-      href: buildUrl(lang, `/products/${product.slug || product.id}`)
-    };
-  }) : [];
-
+const gridItems = hasProducts ? displayProducts : [];
 // 面包屑导航
 const breadcrumbs = [
   { label: 'Home', href: buildUrl(lang, '/') },
@@ -95,7 +78,7 @@ const baseUrl = buildUrl(lang, '/products');
 
 <SecondaryPageLayout 
   title="Products"
-  description="Explore our comprehensive range of construction machinery"
+  description=""
   breadcrumbs={breadcrumbs}
   currentSection="products"
   contentType="grid"

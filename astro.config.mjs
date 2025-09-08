@@ -138,6 +138,7 @@ export default defineConfig({
         debug: false,
         // 🚀 Partytown 性能优化
         lib: '/~partytown/',
+        swPath: 'partytown-sw.js',
         // 允许第三方脚本在 Web Worker 中运行
         allowThirdPartyScripts: true,
         // 启用脚本预加载

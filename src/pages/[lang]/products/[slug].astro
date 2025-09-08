@@ -2,31 +2,33 @@
 export const prerender = true;
 
 import { Image } from 'astro:assets';
-import Layout from '../../../layouts/Layout.astro';
-import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
-import ContactButtons from '../../../components/common/contact/ContactButtons.astro';
-import RichTextRenderer from '../../../components/templates/common/RichTextRenderer.astro';
-import { getProducts, getProduct } from '../../../lib/strapi.js';
-import { getNews } from '../../../lib/strapi.js';
-import { getDictionary } from '../../../i18n/dictionaries.js';
-import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
-import { generateProductBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
-import { themeConfig } from '../../../config/theme.js';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/templates/navigation/Breadcrumb.astro';
+import ContactButtons from '@components/common/contact/ContactButtons.astro';
+import RichTextRenderer from '@components/templates/common/RichTextRenderer.astro';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
+import { getProducts, getProduct } from '@apis/common.js';
+import { getNews } from '@lib/strapi.js';
+import { getDictionary } from '@i18n/dictionaries.js';
+import { generateProductBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { buildUrl } from '@utils/envConfig.js';
+import { themeConfig } from '@config/theme.js';
 import { loadImageMapping, processImages as processImagesFromLib, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
   const paths: any[] = [];
-  const enabledLanguages = SUPPORTED_LANGUAGES;
   
-  for (const lang of enabledLanguages) {
+  for (const lang of SUPPORTED_LANGUAGES) {
+    console.log('lang0', lang);
     const products = await getProducts(lang);
+    console.log('lang1', lang);
     for (const product of products) {
       // 仅为有有效 slug 的产品生成详情页
-      if (product && typeof product.slug === 'string' && product.slug.trim().length > 0) {
+      if (product && typeof product.url_slug === 'string' && product.url_slug.trim().length > 0) {
         paths.push({
-          params: { lang, slug: product.slug },
-          props: { slug: product.slug, lang }
+          params: { lang, slug: product.url_slug },
+          props: { slug: product.url_slug, lang }
         });
       }
     }
@@ -36,13 +38,13 @@ export async function getStaticPaths() {
 }
 
 const { slug, lang } = Astro.props;
-
+console.log('slug创建页面数据', slug, lang);
 // 单独调用 Strapi 详情接口获取产品数据
 const product = await getProduct(slug, lang);
 // 如果产品不存在，返回404
-if (!product) {
-  return Astro.redirect('/404');
-}
+// if (!product) {
+//   return Astro.redirect('/404');
+// }
 
 // 加载国际化翻译
 const t = await getDictionary(lang);
@@ -465,7 +467,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               </h2>
               
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedProductsDisplay.map(relatedProduct => (
+                {relatedProductsDisplay.map((relatedProduct: any) => (
                   <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${relatedProduct.slug}`} class="block h-full">
                       <div class="aspect-[3/2] overflow-hidden">
@@ -526,7 +528,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               </h2>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {relatedNews.map(newsItem => (
+                {relatedNews.map((newsItem: any) => (
                   <div class="flex items-start space-x-4">
                     <div class="flex-1">
                       <a href={`/${lang}/news/${newsItem.slug}`} class="block">
@@ -556,7 +558,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               </h3>
               
               <div class="space-y-4">
-                {recommendedProductsDisplay.slice(0, 2).map(recommended => (
+                {recommendedProductsDisplay.slice(0, 2).map((recommended: any) => (
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
                     <a href={`/${lang}/products/${recommended.slug}`} class="block">
                       <div class="aspect-[3/2] overflow-hidden">

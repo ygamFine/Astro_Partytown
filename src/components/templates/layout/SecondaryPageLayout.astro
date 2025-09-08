@@ -10,16 +10,14 @@ const {
   listDescription,
   showListDescription = false,
   bannerSubtitle,
-  bannerBackground,
-  bannerHeight,
   showContentTitle = true
 } = Astro.props;
 
-import Layout from '../../../layouts/Layout.astro';
+import Layout from '@layouts/Layout.astro';
 import Breadcrumb from '../navigation/Breadcrumb.astro';
 import Sidebar from './Sidebar.astro';
-import PageBanner from '../../common/banner/PageBanner.astro';
-import { themeConfig } from '../../../config/theme.js';
+import PageBanner from '@components/common/banner/PageBanner.astro';
+import { themeConfig } from '@config/theme.js';
 
 // 获取页面宽度配置
 const getPageWidth = () => {
@@ -30,18 +28,13 @@ const pageWidth = getPageWidth();
 ---
 
 <Layout title={title} description={description} lang={lang} pageType={pageType}>
-  <main>
     <!-- Page Banner - 岛屿化组件，使用Strapi通用banner背景 -->
     <PageBanner
       title={title}
       subtitle={bannerSubtitle}
-      background={bannerBackground}
-      height={bannerHeight}
       className="page-banner"
-      pageType={pageType}
       showText={false}
       showOverlay={false}
-      useStrapiBackground={true}
     />
 
     <!-- Breadcrumb -->
@@ -93,7 +86,6 @@ const pageWidth = getPageWidth();
         </div>
       </div>
     </section>
-  </main>
 </Layout>
 
 <style>

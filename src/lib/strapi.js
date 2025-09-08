@@ -78,6 +78,7 @@ export async function getProducts(locale = 'en') {
     const products = json.data?.map(item => ({
       id: item.id,
       slug: item.slug,
+      url_slug: item.url_slug, // 添加 url_slug 字段
       name: item.Title,
       category: item.cate?.name || item.category,
       image: item.imgs || ['/images/placeholder.webp'],
@@ -117,7 +118,7 @@ export async function getProduct(slugOrId, locale = 'en') {
     const isNumericId = (typeof slugOrId === 'number');
     const url = isNumericId
       ? `${STRAPI_STATIC_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=*`
-      : `${STRAPI_STATIC_URL}/api/product-manages?filters[slug][$eq]=${slugOrId}&locale=${locale}&populate=*`;
+      : `${STRAPI_STATIC_URL}/api/product-manages?filters[url_slug][$eq]=/${slugOrId}.html&locale=${locale}&populate=*`;
     const data = await fetchJson(url);
 
     // 适配两种响应：集合查询或单条查询

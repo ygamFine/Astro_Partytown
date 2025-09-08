@@ -1,7 +1,7 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from '@lib/strapiClient.js';
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson, fetchAllPaginated } from '@lib/strapiClient.js';
 // 使用菜单工具函数
-import { buildMenuTree } from '@utils/tools.js';
+import { buildMenuTree, extractUrl } from '@utils/tools.js';
 
 // 验证环境变量
 if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
@@ -70,3 +70,67 @@ export async function getMenus(locale = 'en') {
     return [];
   }
 }
+
+/**
+ * 获取产品列表 (SSG模式，构建时调用)
+ */
+export async function getProducts(locale = 'en') {
+  // 兼容：支持 options 对象形式
+  const isOptionsObject = locale && typeof locale === 'object';
+  const options = isOptionsObject ? locale : { locale };
+  const {
+    locale: optLocale = 'en',
+    paginate = 'page', // 'page' | 'all'
+    page = 1,
+    pageSize = 24,
+  } = options;
+
+  // 构建基础 URL（集合接口）
+  const baseUrl = `${STRAPI_STATIC_URL}/api/product-manages?locale=${optLocale}&populate=all`;
+  try {
+    // shaped 模式
+    const json = (paginate === 'all')
+      ? await fetchAllPaginated(baseUrl)
+      : await fetchJson(`${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`);
+    const products = json.data?.map((item: any) => ({
+      ...item,
+      image: extractUrl(item.picture, true) || '/images/placeholder.webp',
+    })) || [];
+
+    return products;
+
+  } catch (error) {
+    // 如果API调用失败，返回空数组
+    return [];
+  }
+}
+/**
+ * 获取单个产品详情 (SSG模式，构建时调用)
+ */
+export async function getProduct(slugOrId: string | number, locale = 'en') {
+  console.log('slug创建页面数据', slugOrId, locale);
+  try {
+    // 只获取指定语言的数据，不回退到其他语言
+    // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
+    const isNumericId = (typeof slugOrId === 'number');
+    const url = isNumericId
+      ? `${STRAPI_STATIC_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=all`
+      : `${STRAPI_STATIC_URL}/api/product-manages?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+    const data = await fetchJson(url);
+
+    // 适配两种响应：集合查询或单条查询
+    const item = Array.isArray(data?.data) ? data.data[0] : data?.data;
+    if (!item) {
+      return null;
+    }
+
+    return {
+      ...item,
+      image: extractUrl(item.picture, true) || '/images/placeholder.webp',
+    }
+
+  } catch (error) {
+    return null;
+  }
+}
+
