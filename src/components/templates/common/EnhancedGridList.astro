@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { formatDate, generateUrl } from '@utils/tools.js';
+import { formatDate, generateUrl, getFirstImage } from '@utils/tools.js';
 
 interface Props {
   items: Array<{
@@ -52,8 +52,8 @@ const cardConfig = themeConfig.layout.productCard;
           <a href={generateUrl(lang, '/products', item.url_slug) || 'javascript:void(0)'} class="block h-full">
             <div class="aspect-video overflow-hidden">
               <Image 
-                src={item.image && item.image.length > 0 ? item.image[0].url : '/images/placeholder.webp'} 
-                alt={item.image && item.image.length > 0 ? item.image[0].name : ''}
+                src={getFirstImage(item.image || [])?.url || '/images/placeholder.webp'} 
+                alt={getFirstImage(item.image || [])?.name || 'placeholder'}
                 width="400"
                 height="300"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
