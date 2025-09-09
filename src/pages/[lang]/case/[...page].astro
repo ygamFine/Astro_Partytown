@@ -15,7 +15,7 @@ import { getDictionary } from '../../../i18n/dictionaries.js';
 import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
 import { loadImageMapping } from '../../../lib/imageProcessor.js';
 import { themeConfig } from '../../../config/theme.js';
-import { buildUrl } from '../../../lib/envConfig.js';
+import { generateUrl } from '@utils/tools.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
@@ -89,7 +89,7 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actual
       <Pagination 
         currentPage={actualCurrentPage}
         totalPages={totalPages}
-        baseUrl={buildUrl(lang, '/case')}
+        baseUrl={generateUrl(lang, '/case')}
         i18n={t.common}
       />
     </>

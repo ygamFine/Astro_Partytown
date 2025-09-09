@@ -1,7 +1,7 @@
 ---
 import { getMobileBottomMenu } from '../../../lib/strapi.js';
 import { getIconClass } from '../../../lib/iconUtils.js';
-import { buildUrl } from '../../../lib/envConfig.js';
+import { generateUrl } from '@utils/tools.js';
 import { processImagesForAstro } from '../../../lib/imageProcessor.js';
 import { Image } from 'astro:assets';
 
@@ -91,20 +91,20 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
     const link = item.externalLink;
     if (link.startsWith('/')) {
       // 内链地址，使用 buildUrl 根据环境自动处理语言前缀
-      return buildUrl(lang, link);
+      return generateUrl(lang, link);
     } else if (link.startsWith('http://') || link.startsWith('https://')) {
       // 外链，直接使用
       return link;
     } else {
       // 相对路径，当作内链处理
       const cleanPath = link.startsWith('/') ? link : `/${link}`;
-      return buildUrl(lang, cleanPath);
+      return generateUrl(lang, cleanPath);
     }
   }
   if (item.inlineAddress) {
     // Inline_address 字段，内链地址
     const cleanPath = item.inlineAddress.startsWith('/') ? item.inlineAddress : `/${item.inlineAddress}`;
-    return buildUrl(lang, cleanPath);
+    return generateUrl(lang, cleanPath);
   }
   if (item.customLink) {
     // 其他自定义链接，直接使用

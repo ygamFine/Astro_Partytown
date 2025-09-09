@@ -39,5 +39,9 @@
     "popular_articles": "Popüler Makaleler",
     "categories": "Kategoriler",
     "latest_news": "Son Haberler"
+  },
+  "empty_state": {
+    "no_news_title": "Haber mevcut değil",
+    "no_news_description": "Mevcut dilde haber bilgisi mevcut değil. Lütfen daha sonra tekrar deneyin veya başka bir dile geçin."
   }
 }

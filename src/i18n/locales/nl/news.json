@@ -39,5 +39,9 @@
     "popular_articles": "Populaire artikelen",
     "categories": "Categorieën",
     "latest_news": "Laatste nieuws"
+  },
+  "empty_state": {
+    "no_news_title": "Geen nieuws beschikbaar",
+    "no_news_description": "Geen nieuws informatie beschikbaar in de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal."
   }
 }

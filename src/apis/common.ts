@@ -165,7 +165,10 @@ export async function getNews(locale = 'en') {
     // 处理所有新闻的图片，使用缓存的图片
     const news = json.data?.map((item: any) => ({
       ...item,
-      image: extractUrl(item.picture, true) || [],
+      image: extractUrl(item.picture, true) || {
+        url: '/images/placeholder.webp',
+        name: 'placeholder',
+      },
     }));
 
     return news;

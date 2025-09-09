@@ -39,5 +39,9 @@
     "popular_articles": "熱門文章",
     "categories": "分類",
     "latest_news": "最新新聞"
+  },
+  "empty_state": {
+    "no_news_title": "暫無新聞數據",
+    "no_news_description": "當前語言暫無新聞信息，請稍後再試或切換其他語言。"
   }
 }

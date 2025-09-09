@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import StaticMenu from './StaticMenu.astro';
 import { themeConfig } from '../../../config/theme.js';
-import { buildUrl } from '../../../lib/envConfig.js';
+import { generateUrl } from '@utils/tools.js';
 import { getLangFromHostname, langToSubdomain, subdomainToLang } from '../../../lib/languageConfig.js';
 import { getSupportedLanguages } from '../../../lib/strapi.js';
 import { getCurrentLanguage, buildLanguageUrl } from '../../../utils/languageUtils';

@@ -7,89 +7,47 @@ import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { getProducts } from '@apis/common.js';
+import { generatePaginationPaths, parsePageParam } from '@utils/paginationUtils.js';
 import { generateProductListBreadcrumbs } from '@utils/breadcrumbUtils.js';
-import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
 import { getDictionary } from '@i18n/dictionaries.js';
-import { buildUrl } from '@utils/envConfig.js';
+import { generateUrl } from '@utils/tools.js';
 
-// 只为配置中启用的语言和页面生成路由
+// 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
-
-  const paths: any[] = [];
-  const itemsPerPage = 9;
-  
-  // 为每种语言获取产品数据来计算总页数
-  for (const lang of SUPPORTED_LANGUAGES) {
-    const products = await getProducts(lang);
-    const totalPages = Math.ceil(products.length / itemsPerPage);
-    console.log('lang', lang);
-    if (products.length > 0) {
-      // 第一页 (无页码)
-      paths.push({
-        params: { lang, page: undefined },
-        props: { locale: lang, currentPage: 1, totalPages }
-      });
-      
-      // 其他页面
-      for (let page = 2; page <= totalPages; page++) {
-        paths.push({
-          params: { lang, page: page.toString() },
-          props: { locale: lang, currentPage: page, totalPages }
-        });
-      }
-    } else {
-      // 无数据也生成第一页，避免 404，页面内展示空状态
-      paths.push({
-        params: { lang, page: undefined },
-        props: { locale: lang, currentPage: 1, totalPages: 0 }
-      });
-    }
-  }
-  
-  return paths;
+  const productsPerPage = 9; // 每页显示6个产品（2行x3列）
+  return generatePaginationPaths(getProducts, productsPerPage, 'productPage');
 }
 
-const { lang } = Astro.params;
-const { currentPage, totalPages } = Astro.props;
+const { lang, totalPages, items: gridItems } = Astro.props;
+
+// 解析页码参数
+const actualCurrentPage = parsePageParam(Astro.params.page, 'productPage');
+
 const t = await getDictionary(lang);
 
-// 获取产品数据
-const products = await getProducts(lang);
-
-// 检查是否有数据
-const hasProducts = products && products.length > 0;
-
-// 分页配置
-const itemsPerPage = 9;
-const startIndex = hasProducts ? (currentPage - 1) * itemsPerPage : 0;
-const endIndex = hasProducts ? startIndex + itemsPerPage : 0;
-const displayProducts = hasProducts ? products.slice(startIndex, endIndex) : [];
-
-// 转换产品数据格式以适配GridList组件
-const gridItems = hasProducts ? displayProducts : [];
 // 面包屑导航
 const breadcrumbs = generateProductListBreadcrumbs(lang)
 
 // 生成分页基础URL
-const baseUrl = buildUrl(lang, '/products');
+const baseUrl = generateUrl(lang, '/products');
 ---
 
 <SecondaryPageLayout 
   title={t.product.title}
-  description=""
   breadcrumbs={breadcrumbs}
   currentSection="products"
+  pageType="products"
   contentType="grid"
   lang={lang}
 >
-  {hasProducts ? (
+  {gridItems ? (
     <>
       <!-- 视图切换控件 -->
       <ViewToggle 
         currentView="grid"
         translations={t.common}
         lang={lang}
-        totalItems={displayProducts.length}
+        totalItems={gridItems.length}
         showTotal={true}
       />
       
@@ -106,7 +64,7 @@ const baseUrl = buildUrl(lang, '/products');
       
       <!-- 分页 -->
       <Pagination 
-        currentPage={currentPage}
+        currentPage={actualCurrentPage}
         totalPages={totalPages}
         baseUrl={baseUrl}
         i18n={t.common}

@@ -135,31 +135,44 @@ export function formatDate(date: string | Date, format = 'YYYY-MM-DD'): string {
 }
 
 /**
- * 生成URL - 自动处理url_slug前面的斜杠
+ * 生成URL - 自动处理url_slug前面的斜杠，支持开发/生产环境差异
  * @param lang 语言代码
- * @param urlSlug URL slug
  * @param basePath 基础路径，如 '/products', '/news' 等
+ * @param urlSlug URL slug（可选，如果不提供则只处理basePath）
  * @returns 完整的URL
  */
-export function generateUrl(lang: string, basePath: string, urlSlug: string): string {
+export function generateUrl(lang: string, basePath: string, urlSlug?: string): string {
   // 检查参数是否存在
-  if (!lang || !urlSlug || !basePath) {
+  if (!lang || !basePath) {
     return '';
   }
   
-  // 如果 basePath 是 HTTP 地址，直接返回
-  if (urlSlug.startsWith('http://') || urlSlug.startsWith('https://')) {
+  // 如果提供了urlSlug且是HTTP地址，直接返回
+  if (urlSlug && (urlSlug.startsWith('http://') || urlSlug.startsWith('https://'))) {
     return urlSlug;
   }
   
   // 确保 basePath 以 / 开头
   const normalizedBasePath = basePath.startsWith('/') ? basePath : `/${basePath}`;
   
-  // 确保 urlSlug 以 / 开头
-  const normalizedSlug = urlSlug.startsWith('/') ? urlSlug : `/${urlSlug}`;
+  // 构建完整路径
+  let fullPath = normalizedBasePath;
+  if (urlSlug) {
+    // 确保 urlSlug 以 / 开头
+    const normalizedSlug = urlSlug.startsWith('/') ? urlSlug : `/${urlSlug}`;
+    fullPath = `${normalizedBasePath}${normalizedSlug}`;
+  }
   
-  // 构建完整URL
-  return `/${lang}${normalizedBasePath}${normalizedSlug}`;
+  // 检查是否为开发环境
+  const isDevelopment = import.meta.env.DEV;
+  
+  if (isDevelopment) {
+    // 本地开发模式：添加语言前缀
+    return `/${lang}${fullPath}`;
+  } else {
+    // 生产环境：子域名模式，直接返回路径
+    return fullPath;
+  }
 }
 
 /**

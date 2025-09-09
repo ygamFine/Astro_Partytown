@@ -3,7 +3,7 @@
 import { getMenus, getSupportedLanguages } from '../../../lib/strapi.js';
 import { getDictionary } from '../../../i18n/dictionaries.js';
 import { themeConfig } from '../../../config/theme.js';
-import { buildUrl } from '../../../lib/envConfig.js';
+import { generateUrl } from '@utils/tools.js';
 import { getLangFromHostname } from '../../../lib/languageConfig.js';
 import { getCurrentLanguage, buildLanguageUrl } from '../../../utils/languageUtils';
 

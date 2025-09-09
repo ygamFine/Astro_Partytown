@@ -184,9 +184,9 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
 
             <!-- 产品描述 -->
             <div class="bg-gray-50 rounded-lg p-6">
-              <div class="space-y-4"> 
+              <div class="space-y-4">
                 <div class="pt-4 border-gray-200">
-                  <h4 class="font-medium text-gray-900 mb-2">{t.product.advantages}</h4>
+              <h4 class="font-medium text-gray-900 mb-2">{t.product.advantages}</h4>
                   <div class="text-sm text-gray-600 space-y-1" set:html={product.product_advantage}></div>
                 </div>
               </div>
@@ -325,7 +325,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
             <div class="bg-white rounded-lg p-6 shadow-sm">
               <div class="flex justify-between items-center">
                 <div class="flex-1">
-                    {previousProduct && (
+                                      {previousProduct && (
                       <a href={generateUrl(lang, '/products', previousProduct.url_slug)} class="flex items-center text-gray-600 hover:text-red-600 group">
                         <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -611,7 +611,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
       console.log('脚本开始执行');
       
       const container = document.getElementById('imageContainer');
-      const slider = document.getElementById('imageSlider');
+        const slider = document.getElementById('imageSlider');
       const thumbnails = document.querySelectorAll('.thumbnail-img');
       const prevBtn = document.getElementById('thumbnailPrev');
       const nextBtn = document.getElementById('thumbnailNext');
@@ -738,7 +738,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
           // 图片高度填满容器，宽度居中
           actualImageHeight = imageRect.height;
           actualImageWidth = imageRect.height * naturalAspectRatio;
-        } else {
+          } else {
           // 图片宽度填满容器，高度居中
           actualImageWidth = imageRect.width;
           actualImageHeight = imageRect.width / naturalAspectRatio;
@@ -917,7 +917,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
         startX = e.touches[0].clientX;
         startTime = Date.now();
       }, { passive: true });
-      
+
       container.addEventListener('touchend', (e) => {
         const deltaX = e.changedTouches[0].clientX - startX;
         const timeDiff = Date.now() - startTime;
@@ -925,9 +925,9 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
           deltaX > 0 ? goToImage(currentIndex - 1) : goToImage(currentIndex + 1);
         }
       }, { passive: true });
-      
+
       // 表单处理
-      const form = document.querySelector('form');
+    const form = document.querySelector('form');
       form?.addEventListener('submit', (e) => {
         e.preventDefault();
         const button = form.querySelector('button[type="submit"]');
@@ -953,14 +953,14 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
       window.addToCart = () => {
         const button = event?.target;
         if (button && button.style) {
-          const originalText = button.innerHTML;
-          button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
-          button.style.backgroundColor = '#10b981';
-          setTimeout(() => {
-            button.innerHTML = originalText;
-            button.style.backgroundColor = '';
-          }, 2000);
-        }
+        const originalText = button.innerHTML;
+        button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
+        button.style.backgroundColor = '#10b981';
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.style.backgroundColor = '';
+        }, 2000);
+      }
       };
       
       // 初始化

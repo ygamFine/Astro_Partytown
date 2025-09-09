@@ -39,5 +39,9 @@
     "popular_articles": "Bài viết phổ biến",
     "categories": "Danh mục",
     "latest_news": "Tin tức mới nhất"
+  },
+  "empty_state": {
+    "no_news_title": "Không có tin tức",
+    "no_news_description": "Không có thông tin tin tức nào trong ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác."
   }
 }

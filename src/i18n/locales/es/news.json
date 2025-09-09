@@ -39,5 +39,9 @@
     "popular_articles": "Artículos Populares",
     "categories": "Categorías",
     "latest_news": "Últimas Noticias"
+  },
+  "empty_state": {
+    "no_news_title": "No hay noticias disponibles",
+    "no_news_description": "No hay información de noticias disponible en el idioma actual. Por favor, inténtelo de nuevo más tarde o cambie a otro idioma."
   }
 }

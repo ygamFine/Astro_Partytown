@@ -15,8 +15,8 @@ const {
   showResults = true
 } = Astro.props;
 
-import { buildUrl } from '../../../lib/envConfig.js';
-const searchPageUrl = buildUrl(lang, '/search');
+import { generateUrl } from '@utils/tools.js';
+const searchPageUrl = generateUrl(lang, '/search');
 
 // 从字典获取多语言
 import { getDictionary } from '../../../i18n/dictionaries.js';

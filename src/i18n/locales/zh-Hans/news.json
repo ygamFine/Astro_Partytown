@@ -39,5 +39,9 @@
     "popular_articles": "热门文章",
     "categories": "分类",
     "latest_news": "最新新闻"
+  },
+  "empty_state": {
+    "no_news_title": "暂无新闻数据",
+    "no_news_description": "当前语言暂无新闻信息，请稍后再试或切换其他语言。"
   }
 }

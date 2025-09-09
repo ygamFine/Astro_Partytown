@@ -39,5 +39,9 @@
     "popular_articles": "Artikel Popular",
     "categories": "Kategori",
     "latest_news": "Berita Terkini"
+  },
+  "empty_state": {
+    "no_news_title": "Tiada Berita Tersedia",
+    "no_news_description": "Tiada maklumat berita tersedia dalam bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain."
   }
 }

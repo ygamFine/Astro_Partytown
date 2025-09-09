@@ -39,5 +39,9 @@
     "popular_articles": "人気記事",
     "categories": "カテゴリー",
     "latest_news": "最新ニュース"
+  },
+  "empty_state": {
+    "no_news_title": "ニュースデータがありません",
+    "no_news_description": "現在の言語でニュース情報がありません。後でもう一度お試しいただくか、他の言語に切り替えてください。"
   }
 }

@@ -3,21 +3,21 @@
  * 用于生成标准化的面包屑导航数据
  */
 
-import { buildUrl } from '@utils/envConfig.js';
+import { generateUrl } from '@utils/tools.js';
 
 /**
  * 生成产品页面的面包屑
  */
 export function generateProductBreadcrumbs(lang, productName, category) {
   const breadcrumbs = [
-    { label: 'home', href: buildUrl(lang, '/') },
-    { label: 'products', href: buildUrl(lang, '/products') }
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: 'products', href: generateUrl(lang, '/products') }
   ];
 
   if (category) {
     breadcrumbs.push({
       label: 'category',
-      href: buildUrl(lang, `/products?category=${encodeURIComponent(category)}`)
+      href: generateUrl(lang, `/products?category=${encodeURIComponent(category)}`)
     });
   }
 
@@ -31,11 +31,11 @@ export function generateProductBreadcrumbs(lang, productName, category) {
  */
 export function generateProductListBreadcrumbs(lang, category) {
   const breadcrumbs = [
-    { label: 'home', href: buildUrl(lang, '/') }
+    { label: 'home', href: generateUrl(lang, '/') }
   ];
 
   if (category) {
-    breadcrumbs.push({ label: 'products', href: buildUrl(lang, '/products') });
+    breadcrumbs.push({ label: 'products', href: generateUrl(lang, '/products') });
     breadcrumbs.push({ label: category });
   } else {
     breadcrumbs.push({ label: 'products' });
@@ -49,8 +49,8 @@ export function generateProductListBreadcrumbs(lang, category) {
  */
 export function generateNewsBreadcrumbs(lang, page) {
   const breadcrumbs = [
-    { label: 'home', href: buildUrl(lang, '/') },
-    { label: 'news', href: buildUrl(lang, page && page > 1 ? `/news/${page}` : `/news`) }
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: 'news', href: generateUrl(lang, page && page > 1 ? `/news/${page}` : `/news`) }
   ];
 
   return breadcrumbs;
@@ -61,8 +61,8 @@ export function generateNewsBreadcrumbs(lang, page) {
  */
 export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
   return [
-    { label: 'home', href: buildUrl(lang, '/') },
-    { label: 'news', href: buildUrl(lang, '/news') },
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: 'news', href: generateUrl(lang, '/news') },
     { label: newsTitle }
   ];
 }
@@ -72,8 +72,8 @@ export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
  */
 export function generateCaseBreadcrumbs(lang, page) {
   const breadcrumbs = [
-    { label: 'home', href: buildUrl(lang, '/') },
-    { label: 'case', href: buildUrl(lang, page && page > 1 ? `/case/${page}` : `/case`) }
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: 'case', href: generateUrl(lang, page && page > 1 ? `/case/${page}` : `/case`) }
   ];
 
   return breadcrumbs;
@@ -84,8 +84,8 @@ export function generateCaseBreadcrumbs(lang, page) {
  */
 export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
   return [
-    { label: 'home', href: buildUrl(lang, '/') },
-    { label: 'case', href: buildUrl(lang, '/case') },
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: 'case', href: generateUrl(lang, '/case') },
     { label: caseTitle }
   ];
 }
@@ -95,7 +95,7 @@ export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
  */
 export function generateAboutBreadcrumbs(lang) {
   return [
-    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'home', href: generateUrl(lang, '/') },
     { label: 'about' }
   ];
 }
@@ -105,7 +105,7 @@ export function generateAboutBreadcrumbs(lang) {
  */
 export function generateContactBreadcrumbs(lang) {
   return [
-    { label: 'home', href: buildUrl(lang, '/') },
+    { label: 'home', href: generateUrl(lang, '/') },
     { label: 'contact' }
   ];
 }
@@ -115,8 +115,8 @@ export function generateContactBreadcrumbs(lang) {
  */
 export function generateSearchBreadcrumbs(lang, searchTerm) {
   return [
-    { label: 'home', href: buildUrl(lang, '/') },
-    { label: 'search', href: buildUrl(lang, '/search') },
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: 'search', href: generateUrl(lang, '/search') },
     { label: searchTerm || 'search' }
   ];
 }
@@ -126,7 +126,7 @@ export function generateSearchBreadcrumbs(lang, searchTerm) {
  */
 export function generateCustomBreadcrumbs(lang, items) {
   const breadcrumbs = [
-    { label: 'home', href: buildUrl(lang, '/') }
+    { label: 'home', href: generateUrl(lang, '/') }
   ];
 
   breadcrumbs.push(...items);
