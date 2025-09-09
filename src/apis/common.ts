@@ -95,7 +95,10 @@ export async function getProducts(locale = 'en') {
     const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
     const products = json.data?.map((item: any) => ({
       ...item,
-      image: extractUrl(item.picture, true) || '/images/placeholder.webp',
+      image: extractUrl(item.picture, true) || {
+        url: '/images/placeholder.webp',
+        name: 'placeholder',
+      },
     })) || [];
 
     return products;
