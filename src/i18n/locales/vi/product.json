@@ -51,5 +51,9 @@
     "email": "Email",
     "telephone": "Điện thoại",
     "whatsapp": "WhatsApp"
+  },
+  "empty_state": {
+    "no_products_title": "Không có sản phẩm nào",
+    "no_products_description": "Không có thông tin sản phẩm cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác."
   }
 } 

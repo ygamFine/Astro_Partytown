@@ -1,28 +1,20 @@
 ---
-export const prerender = true;
-
 import { Image } from 'astro:assets';
-import Layout from '@layouts/Layout.astro';
-import Breadcrumb from '@components/templates/navigation/Breadcrumb.astro';
+import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
 import ContactButtons from '@components/common/contact/ContactButtons.astro';
-import RichTextRenderer from '@components/templates/common/RichTextRenderer.astro';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
-import { getProducts, getProduct } from '@apis/common.js';
-import { getNews } from '@lib/strapi.js';
+import { getProducts, getProduct, getNews } from '@apis/common.js';
+import { extractUrl, formatDate, generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateProductBreadcrumbs } from '@utils/breadcrumbUtils.js';
-import { buildUrl } from '@utils/envConfig.js';
 import { themeConfig } from '@config/theme.js';
-import { loadImageMapping, processImages as processImagesFromLib, processImageForDisplay } from '../../../lib/imageProcessor.js';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
   const paths: any[] = [];
   
   for (const lang of SUPPORTED_LANGUAGES) {
-    console.log('lang0', lang);
     const products = await getProducts(lang);
-    console.log('lang1', lang);
     for (const product of products) {
       // 仅为有有效 slug 的产品生成详情页
       if (product && typeof product.url_slug === 'string' && product.url_slug.trim().length > 0) {
@@ -42,9 +34,9 @@ console.log('slug创建页面数据', slug, lang);
 // 单独调用 Strapi 详情接口获取产品数据
 const product = await getProduct(slug, lang);
 // 如果产品不存在，返回404
-// if (!product) {
-//   return Astro.redirect('/404');
-// }
+if (!product) {
+  return Astro.redirect('/404');
+}
 
 // 加载国际化翻译
 const t = await getDictionary(lang);
@@ -54,56 +46,55 @@ const allProducts = await getProducts(lang);
 
 // 获取相关产品（同类别的其他产品，最多显示3个）
 const relatedProducts = allProducts
-  .filter((p: any) => p.category === product.category && p.id !== product.id)
+  .filter((p: any) => p?.product_category?.id === product?.product_category?.id)
   .slice(0, 3);
 
-// 加载图片映射
-const imageMapping = await loadImageMapping();
 
 // 相关产品：生成可展示的首图
 const relatedProductsDisplay = relatedProducts.map((p: any) => ({
   ...p,
-  displayImage: processImageForDisplay(p.image, imageMapping)
+  displayImage: extractUrl(p, true)
 }));
+console.log('相关产品', relatedProductsDisplay)
+console.log('相关产品 displayImage', relatedProductsDisplay[0].displayImage)
 
 // 获取相关新闻（最新的4篇）
 const allNews = await getNews(lang);
+console.log('相关新闻', allNews)
 const relatedNews = allNews.slice(0, 4);
 
 // 获取当前产品在列表中的位置，用于上一个/下一个导航
 const currentIndex = allProducts.findIndex((p: any) => p.id === product.id);
 const previousProduct = currentIndex > 0 ? allProducts[currentIndex - 1] : null;
+console.log('上一个产品', previousProduct)
 const nextProduct = currentIndex < allProducts.length - 1 ? allProducts[currentIndex + 1] : null;
 
 // 推荐产品（不同类别的产品）
 const recommendedProducts = allProducts
-  .filter((p: any) => p.category !== product.category)
-  .slice(0, 2);
+  .filter((p: any) => p?.product_category?.id != product?.product_category?.id)
+  .slice(0, 3);
 
 // 推荐产品：生成可展示的首图
 const recommendedProductsDisplay = recommendedProducts.map((p: any) => ({
   ...p,
-  displayImage: processImageForDisplay(p.image, imageMapping)
+  displayImage: extractUrl(p, true)
 }));
 
 // 面包屑导航
-const breadcrumbs = generateProductBreadcrumbs(lang, product.name, product.category);
+const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.category);
 
-const images: string[] = processImagesFromLib(product.image, imageMapping);
 ---
 
-<Layout title={`${product.name} - 产品详情`} lang={lang}>
+<SecondaryPageLayout
+  breadcrumbs={breadcrumbs}
+  lang={lang}
+  showContentTitle={false}
+  hideSidebar={true}
+>
   <!-- Pagefind 图片元数据 -->
-  <div data-pagefind-meta="image" data-pagefind-meta-image={images[0] || ''} style="display: none;"></div>
-  <main class="bg-gray-50 min-h-screen">
-    <!-- 面包屑导航 -->
-    <div class="bg-white border-b">
-      <div class="container mx-auto px-4 py-4">
-        <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
-      </div>
-    </div>
-
-    <!-- 第一行：产品主要信息 -->
+  <div data-pagefind-meta="image"  data-pagefind-meta-image={product.image && product.image.length > 0 ? product.image[0] : ''} style="display: none;"></div>
+  <!-- <div data-pagefind-meta="image" style="display: none;"></div>   -->
+  <!-- 第一行：产品主要信息 -->
     <section class="bg-white py-8">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:items-start">
@@ -116,13 +107,13 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                 <div 
                   id="imageSlider" 
                   class="flex transition-transform duration-500 ease-in-out h-full"
-                  style={`width: ${images.length * 100}%;`}
+                  style="width: 100%;"
                 >
                   {/* 所有图片 */}
-                  {images.map((img, index) => (
+                  {product.image && product.image.length > 0 && product.image.map((img: any, index: any) => (
                     <Image 
-                      src={img} 
-                      alt={`${product.name} ${index + 1}`}
+                      src={img.url} 
+                      alt={`${img.name} ${index + 1}`}
                       width={800}
                       height={400}
                       class="object-contain cursor-crosshair select-none flex-shrink-0"
@@ -133,11 +124,10 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                   ))}
                 </div>
                 <!-- 透明放大镜选择框 -->
-                <div id="magnifierLens" class="absolute border-2 border-gray-400 pointer-events-none opacity-0 transition-opacity duration-200 z-10" style="width: 100px; height: 100px; background: rgba(255,255,255,0.1);"></div>
+                <div id="magnifierLens" class="absolute border-2 border-red-500 pointer-events-none opacity-0 transition-opacity duration-200 z-10 rounded-full" style="width: 100px; height: 100px; background: rgba(255,255,255,0.2); box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>
               </div>
-              
-              <!-- 放大显示区域 - 直接放在主图右侧 -->
-              <div id="magnifierZoom" class="absolute top-0 bg-white border border-gray-300 rounded-lg shadow-lg pointer-events-none opacity-0 transition-opacity duration-200 z-50 overflow-hidden" style="left: calc(100% + 20px); width: 400px; height: 100%; background-repeat: no-repeat;"></div>
+              <!-- 放大显示区域 -->
+              <div id="magnifierZoom" class="absolute top-0 bg-white border border-gray-300 rounded-lg shadow-xl pointer-events-none opacity-0 transition-opacity duration-200 z-50 overflow-hidden hidden lg:block" style="left: calc(100% + 20px); width: 400px; height: 400px; background-repeat: no-repeat; background-size: 400% 400%; background-position: 0 0;"></div>
             </div>
             
             <!-- 缩略图区域 -->
@@ -159,15 +149,15 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                 class="flex space-x-2 overflow-x-hidden flex-1 scroll-smooth"
                 style="scroll-behavior: smooth;"
               >
-                {images.map((img, index) => (
+                {product.image && product.image.length > 0 && product.image.map((img: any, index: number) => (
                   <Image 
-                    src={img} 
-                    alt={`${product.name} ${index + 1}`}
+                    src={img.url} 
+                    alt={`${img.name} ${index + 1}`}
                     width={80}
                     height={80}
                     class={`w-20 h-20 object-cover rounded cursor-pointer flex-shrink-0 thumbnail-img select-none ${index === 0 ? 'border-2 border-red-600' : 'border border-gray-200 hover:border-red-600'}`}
                     data-index={index}
-                    data-src={img}
+                    data-src={img.url}
                     draggable="false"
                     style="user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;"
                   />
@@ -190,21 +180,14 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
           <!-- 右侧：产品信息区 -->
           <div class="lg:col-span-3 flex flex-col space-y-6">
             <!-- 产品名称 -->
-            <h1 class="text-3xl font-bold text-gray-900">{product.name}</h1>
+            <h1 class="text-3xl font-bold text-gray-900">{product.title}</h1>
 
             <!-- 产品描述 -->
             <div class="bg-gray-50 rounded-lg p-6">
-              <div class="space-y-4">
-                <p class="text-gray-700 leading-relaxed">
-                  {product.excerpt}
-                </p>
-                <div class="pt-4 border-t border-gray-200">
-              <h4 class="font-medium text-gray-900 mb-2">{t.product.advantages}</h4>
-                  <ul class="text-sm text-gray-600 space-y-1">
-                 {t.product.advantages_list.map((advantage: any) => (
-                      <li>• {advantage}</li>
-                    ))}
-                  </ul>
+              <div class="space-y-4"> 
+                <div class="pt-4 border-gray-200">
+                  <h4 class="font-medium text-gray-900 mb-2">{t.product.advantages}</h4>
+                  <div class="text-sm text-gray-600 space-y-1" set:html={product.product_advantage}></div>
                 </div>
               </div>
             </div>
@@ -290,10 +273,10 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
             <div class="bg-white rounded-lg p-8 shadow-sm">
               <h2 class="text-2xl font-bold text-gray-900 mb-6">{t.product.details}</h2>
               <!-- 富文本内容 -->
-              {product.info && product.info.length > 0 && (
-                <div class="mb-8">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.description}</h3>
-                  <RichTextRenderer content={product.info} />
+              {product.details && (
+                <div class="mb-8 fwb" set:html={product.details}>
+                  {/* <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.description}</h3>
+                  <RichTextRenderer content={ } /> */}
                 </div>
               )}
               
@@ -342,14 +325,14 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
             <div class="bg-white rounded-lg p-6 shadow-sm">
               <div class="flex justify-between items-center">
                 <div class="flex-1">
-                                      {previousProduct && (
-                      <a href={`/${lang}/products/${previousProduct.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
+                    {previousProduct && (
+                      <a href={generateUrl(lang, '/products', previousProduct.url_slug)} class="flex items-center text-gray-600 hover:text-red-600 group">
                         <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                         <div>
                           <div class="text-sm">{t.navigation.previous_product}</div>
-                          <div class="font-medium">{previousProduct.name}</div>
+                          <div class="font-medium">{previousProduct.title}</div>
                         </div>
                       </a>
                     )}
@@ -469,11 +452,11 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedProductsDisplay.map((relatedProduct: any) => (
                   <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
-                    <a href={`/${lang}/products/${relatedProduct.slug}`} class="block h-full">
+                    <a href={generateUrl(lang, '/products', relatedProduct.url_slug)} class="block h-full">
                       <div class="aspect-[3/2] overflow-hidden">
                         <Image 
-                          src={relatedProduct.displayImage} 
-                          alt={relatedProduct.name}
+                          src={relatedProduct.displayImage && relatedProduct.displayImage.length > 0 ? relatedProduct.displayImage[0]?.url : ''} 
+                          alt={relatedProduct.displayImage && relatedProduct.displayImage.length > 0 ? relatedProduct.displayImage[0]?.name : ''}
                           width={400}
                           height={300}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -484,7 +467,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                       
                       <div class="p-4 relative">
                          <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
-                          {relatedProduct.name}
+                          {relatedProduct.title}
                         </h3>
                         
                         <p class="text-gray-600 text-sm mb-2 line-clamp-2">
@@ -502,7 +485,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                         <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
                         <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
                           <div>
-                            <h4 class="font-bold text-base leading-tight">{relatedProduct.name}</h4>
+                            <h4 class="font-bold text-base leading-tight">{relatedProduct.title}</h4>
                             <p class="text-xs opacity-90">{t.product.related.get_quote}</p>
                           </div>
                           <div class="flex items-center space-x-1">
@@ -531,13 +514,13 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                 {relatedNews.map((newsItem: any) => (
                   <div class="flex items-start space-x-4">
                     <div class="flex-1">
-                      <a href={`/${lang}/news/${newsItem.slug}`} class="block">
+                      <a href={generateUrl(lang, '/news', newsItem.url_slug)} class="block">
                         <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
                           {newsItem.title}
                         </h3>
                       </a>
                       <div class="text-sm text-gray-500">
-                        {newsItem.date}
+                        {formatDate(newsItem.publishedAt)}
                       </div>
                     </div>
                   </div>
@@ -558,13 +541,13 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
               </h3>
               
               <div class="space-y-4">
-                {recommendedProductsDisplay.slice(0, 2).map((recommended: any) => (
+                {recommendedProductsDisplay.map((recommended: any) => (
                   <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
-                    <a href={`/${lang}/products/${recommended.slug}`} class="block">
+                    <a href={generateUrl(lang, '/products', recommended.url_slug)} class="block">
                       <div class="aspect-[3/2] overflow-hidden">
                         <Image 
-                          src={recommended.displayImage} 
-                          alt={recommended.name}
+                          src={recommended.displayImage && recommended.displayImage.length > 0 ? recommended.displayImage[0]?.url : ''} 
+                          alt={recommended.displayImage && recommended.displayImage.length > 0 ? recommended.displayImage[0]?.name : ''}
                           width={400}
                           height={300}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -575,7 +558,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                       
                       <div class="p-4 relative">
                         <h4 class="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-lg">
-                          {recommended.name}
+                          {recommended.title}
                         </h4>
                         
                         <p class="text-gray-600 text-sm mb-2 line-clamp-2">
@@ -593,7 +576,7 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
                         <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
                         <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
                           <div>
-                            <h5 class="font-bold text-base leading-tight">{recommended.name}</h5>
+                            <h5 class="font-bold text-base leading-tight">{recommended.title}</h5>
                             <p class="text-xs opacity-90">{t.product.get_quote}</p>
                           </div>
                           <div class="flex items-center space-x-1">
@@ -622,652 +605,370 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
         </div>
       </div>
     </section>
-  </main>
-
-  <script>
-    // 缩略图点击切换已在initImageNavigation中处理
-
-    // 图片放大镜效果
-    function initMagnifier() {
-      const imageContainer = document.getElementById('imageContainer');
-      const imageSlider = document.getElementById('imageSlider');
-      const magnifierLens = document.getElementById('magnifierLens');
-      const magnifierZoom = document.getElementById('magnifierZoom');
+  <script is:inline>
+    // 图片画廊和放大镜功能
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('脚本开始执行');
       
-      if (!imageContainer || !imageSlider || !magnifierLens || !magnifierZoom) return;
-      
-      // 获取当前显示的图片
-      function getCurrentImage() {
-        const slider = document.getElementById('imageSlider');
-        if (!slider) return null;
-        const allImages = slider.querySelectorAll('img');
-        return allImages[currentImageIndex] as HTMLImageElement || null;
-      }
-      
-      // 初始化放大镜背景图
-      function initZoomBackground() {
-        const container = document.getElementById('imageContainer');
-        if (!container) return;
-        const rect = container.getBoundingClientRect();
-        const img = getCurrentImage();
-        if (!img) return;
-        
-        const imgNaturalWidth = img.naturalWidth || img.width;
-        const imgNaturalHeight = img.naturalHeight || img.height;
-        
-        // 计算图片在容器中的实际显示区域
-        const containerWidth = rect.width;
-        const containerHeight = rect.height;
-        const imgAspectRatio = imgNaturalWidth / imgNaturalHeight;
-        const containerAspectRatio = containerWidth / containerHeight;
-        
-        let imgDisplayWidth, imgDisplayHeight;
-        
-        if (imgAspectRatio > containerAspectRatio) {
-          // 图片较宽，以容器宽度为准
-          imgDisplayWidth = containerWidth;
-          imgDisplayHeight = containerWidth / imgAspectRatio;
-        } else {
-          // 图片较高，以容器高度为准
-          imgDisplayWidth = containerHeight * imgAspectRatio;
-          imgDisplayHeight = containerHeight;
-        }
-        
-        if (!magnifierZoom) return;
-        magnifierZoom.style.backgroundImage = `url('${img.src}')`;
-        // 设置背景图大小为实际显示图片的4倍放大
-        const zoomFactor = 4;
-        magnifierZoom.style.backgroundSize = `${imgDisplayWidth * zoomFactor}px ${imgDisplayHeight * zoomFactor}px`;
-      }
-      
-      initZoomBackground();
-      
-      // 鼠标移入显示放大镜
-      imageContainer.addEventListener('mouseenter', function() {
-        initZoomBackground(); // 确保背景图正确
-        magnifierLens.style.opacity = '1';
-        magnifierZoom.style.opacity = '1';
-      });
-      
-      // 鼠标移出隐藏放大镜
-      imageContainer.addEventListener('mouseleave', function() {
-        magnifierLens.style.opacity = '0';
-        magnifierZoom.style.opacity = '0';
-      });
-
-      // 鼠标移动更新放大镜选择框和放大内容
-      imageContainer.addEventListener('mousemove', function(e) {
-        const container = document.getElementById('imageContainer');
-        if (!container) return;
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // 获取实际图片在容器中的尺寸和位置
-        const img = getCurrentImage();
-        if (!img) return;
-        
-        const imgNaturalWidth = img.naturalWidth || img.width;
-        const imgNaturalHeight = img.naturalHeight || img.height;
-        const containerWidth = rect.width;
-        const containerHeight = rect.height;
-        
-        // 计算图片在容器中的实际显示区域
-        const imgAspectRatio = imgNaturalWidth / imgNaturalHeight;
-        const containerAspectRatio = containerWidth / containerHeight;
-        
-        let imgDisplayWidth, imgDisplayHeight, imgOffsetX, imgOffsetY;
-        
-        if (imgAspectRatio > containerAspectRatio) {
-          // 图片较宽，以容器宽度为准
-          imgDisplayWidth = containerWidth;
-          imgDisplayHeight = containerWidth / imgAspectRatio;
-          imgOffsetX = 0;
-          imgOffsetY = (containerHeight - imgDisplayHeight) / 2;
-        } else {
-          // 图片较高，以容器高度为准
-          imgDisplayWidth = containerHeight * imgAspectRatio;
-          imgDisplayHeight = containerHeight;
-          imgOffsetX = (containerWidth - imgDisplayWidth) / 2;
-          imgOffsetY = 0;
-        }
-        
-        // 选择框尺寸
-        const lensSize = 100;
-        const lensRadius = lensSize / 2;
-        
-        // 计算选择框位置（限制在图片实际显示区域内）
-        let lensX = x - lensRadius;
-        let lensY = y - lensRadius;
-        
-        // 边界检查 - 限制在图片实际显示区域内
-        if (lensX < imgOffsetX) lensX = imgOffsetX;
-        if (lensY < imgOffsetY) lensY = imgOffsetY;
-        if (lensX + lensSize > imgOffsetX + imgDisplayWidth) lensX = imgOffsetX + imgDisplayWidth - lensSize;
-        if (lensY + lensSize > imgOffsetY + imgDisplayHeight) lensY = imgOffsetY + imgDisplayHeight - lensSize;
-        
-        // 设置选择框位置
-        if (magnifierLens) {
-          magnifierLens.style.left = lensX + 'px';
-          magnifierLens.style.top = lensY + 'px';
-        }
-        
-        // 计算放大区域的背景图位置（基于实际图片区域）
-        const zoomX = (lensX + lensRadius - imgOffsetX) / imgDisplayWidth;
-        const zoomY = (lensY + lensRadius - imgOffsetY) / imgDisplayHeight;
-        
-        // 计算背景图位置，确保只显示选中区域的放大版本
-        const zoomFactor = 4;
-        const magnifierWidth = 400;
-        const magnifierHeight = rect.height;
-        
-        const backgroundX = -zoomX * (imgDisplayWidth * zoomFactor) + (magnifierWidth / 2);
-        const backgroundY = -zoomY * (imgDisplayHeight * zoomFactor) + (magnifierHeight / 2);
-        
-        if (magnifierZoom) {
-          magnifierZoom.style.backgroundPosition = `${backgroundX}px ${backgroundY}px`;
-        }
-      });
-    }
-    
-    // 页面加载完成后初始化放大镜
-    document.addEventListener('DOMContentLoaded', function() {
-      initMagnifier();
-      initAffix();
-      initThumbnailSlider();
-      const imageNav = initImageNavigation();
-      if (imageNav) {
-        globalUpdateImage = imageNav.updateImage;
-      }
-      initImageSwipe();
-    });
-
-    // Affix 功能 - 推荐产品固定定位
-    function initAffix() {
-      const sidebar = document.getElementById('recommendedProductsSidebar');
-      if (!sidebar) return;
-      
-      const affixOffset = 80; // 距离顶部70px
-      const originalParent = sidebar.parentNode;
-      const originalNextSibling = sidebar.nextSibling;
-      let isAffixed = false;
-      let originalTop = 0;
-      let sidebarWidth = 0;
-      let originalLeft = 0;
-      
-      function updateAffix() {
-        const sidebar = document.getElementById('recommendedProductsSidebar');
-        if (!sidebar) return;
-        const rect = sidebar.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const windowHeight = window.innerHeight;
-        
-        if (!isAffixed) {
-          originalTop = scrollTop + rect.top;
-          sidebarWidth = rect.width;
-          originalLeft = rect.left;
-        }
-        
-        // 判断推荐产品是否需要固定以保持在可视窗口内
-        const sidebarHeight = rect.height;
-        const sidebarTop = isAffixed ? scrollTop : rect.top + scrollTop;
-        const sidebarBottom = sidebarTop + sidebarHeight;
-        
-        // 检测footer位置
-        const footer = document.querySelector('footer');
-        let footerTop = Infinity;
-        
-        if (footer) {
-          const footerRect = footer.getBoundingClientRect();
-          footerTop = scrollTop + footerRect.top;
-        }
-        
-        // 计算合适的固定位置
-        let shouldFix = false;
-        let fixedTop = affixOffset;
-        
-        // 如果推荐产品顶部滚出屏幕，则固定在顶部
-        if (rect.top < affixOffset) {
-          shouldFix = true;
-          fixedTop = affixOffset;
-          
-          // 检查是否会超出屏幕底部
-          if (fixedTop + sidebarHeight > windowHeight) {
-            fixedTop = windowHeight - sidebarHeight - 20; // 留20px边距
-          }
-          
-          // 检查是否会与footer重叠
-          if (scrollTop + fixedTop + sidebarHeight > footerTop) {
-            fixedTop = footerTop - scrollTop - sidebarHeight - 20;
-          }
-          
-          // 确保不会出现负值
-          if (fixedTop < 20) {
-            shouldFix = false; // 如果空间不足，取消固定
-          }
-        }
-        
-        if (shouldFix && !isAffixed) {
-          // 创建占位元素
-          const placeholder = document.createElement('div');
-          placeholder.style.width = sidebarWidth + 'px';
-          placeholder.style.height = rect.height + 'px';
-          placeholder.id = 'sidebar-placeholder';
-          
-          // 插入占位元素
-          if (originalParent) {
-            originalParent.insertBefore(placeholder, sidebar);
-          }
-          
-          // 设置固定定位
-          if (sidebar) {
-            sidebar.style.position = 'fixed';
-            sidebar.style.top = fixedTop + 'px';
-            sidebar.style.left = originalLeft + 'px';
-            sidebar.style.width = sidebarWidth + 'px';
-            sidebar.style.zIndex = '1000';
-            sidebar.classList.add('affixed');
-          }
-          
-          isAffixed = true;
-        } else if (isAffixed && shouldFix) {
-          // 更新已固定元素的位置
-          if (sidebar) {
-            sidebar.style.top = fixedTop + 'px';
-          }
-        } else if (!shouldFix && isAffixed) {
-          // 移除占位元素
-          const placeholder = document.getElementById('sidebar-placeholder');
-          if (placeholder) {
-            placeholder.remove();
-          }
-          
-          // 恢复原始定位
-          if (sidebar) {
-            sidebar.style.position = '';
-            sidebar.style.top = '';
-            sidebar.style.left = '';
-            sidebar.style.width = '';
-            sidebar.style.zIndex = '';
-            sidebar.classList.remove('affixed');
-          }
-          
-          // 恢复到原始位置
-          if (originalNextSibling) {
-            if (originalParent && sidebar) originalParent.insertBefore(sidebar, originalNextSibling);
-          } else {
-            if (originalParent && sidebar) originalParent.appendChild(sidebar);
-          }
-          
-          isAffixed = false;
-        }
-      }
-      
-      // 监听滚动事件
-      window.addEventListener('scroll', updateAffix, { passive: true });
-      window.addEventListener('resize', updateAffix, { passive: true });
-      
-      // 初始检查
-      setTimeout(updateAffix, 100);
-    }
-    
-    // 图片加载完成后重新初始化放大镜
-    const imageSlider = document.getElementById('imageSlider');
-    if (imageSlider) {
-      const allImages = imageSlider.querySelectorAll('img');
-      allImages.forEach(img => {
-        img.addEventListener('load', function() {
-          initMagnifier();
-        });
-      });
-    }
-
-    // 缩略图切换功能
-    function initThumbnailSlider() {
-      const container = document.getElementById('thumbnailContainer');
+      const container = document.getElementById('imageContainer');
+      const slider = document.getElementById('imageSlider');
+      const thumbnails = document.querySelectorAll('.thumbnail-img');
       const prevBtn = document.getElementById('thumbnailPrev');
       const nextBtn = document.getElementById('thumbnailNext');
+      const lens = document.getElementById('magnifierLens');
+      const zoom = document.getElementById('magnifierZoom');
       
-      if (!container || !prevBtn || !nextBtn) return;
+      console.log('元素检查:', {
+        container: !!container,
+        slider: !!slider,
+        thumbnails: thumbnails.length,
+        prevBtn: !!prevBtn,
+        nextBtn: !!nextBtn,
+        lens: !!lens,
+        zoom: !!zoom
+      });
       
-      const itemWidth = 88; // 80px + 8px margin
-      let currentOffset = 0;
-      
-      // 检查是否需要显示切换按钮
-      function checkButtons() {
-        if (!container || !prevBtn || !nextBtn) return;
-        
-        const containerWidth = container.clientWidth;
-        const totalWidth = container.scrollWidth;
-        const maxOffset = totalWidth - containerWidth;
-        
-        // 始终显示按钮进行测试
-        prevBtn.style.display = 'flex';
-        nextBtn.style.display = 'flex';
-        
-        // 根据当前位置调整按钮透明度
-        if (totalWidth > containerWidth) {
-          prevBtn.style.opacity = currentOffset > 0 ? '1' : '0.5';
-          nextBtn.style.opacity = currentOffset < maxOffset ? '1' : '0.5';
-        } else {
-          // 即使不需要滑动也显示，但降低透明度
-          prevBtn.style.opacity = '0.3';
-          nextBtn.style.opacity = '0.3';
-        }
+      if (!container || !slider) {
+        console.log('关键元素未找到，退出');
+        return;
       }
       
-      // 向左滑动
-      prevBtn.addEventListener('click', function() {
-        if (!container) return;
-        
-        currentOffset = Math.max(0, currentOffset - itemWidth * 3);
-        container.scrollTo({
-          left: currentOffset,
-          behavior: 'smooth'
+      const images = Array.from(slider.querySelectorAll('img'));
+      let currentIndex = 0;
+      
+      console.log('找到图片数量:', images.length);
+      
+      // 初始化图片容器宽度
+      if (images.length > 0) {
+        slider.style.width = `${images.length * 100}%`;
+        images.forEach(img => {
+          img.style.width = `${100 / images.length}%`;
         });
-        setTimeout(checkButtons, 300);
-        
-        // 同时切换主图到上一张
-        switchToPreviousImage();
-      });
+      }
       
-      // 向右滑动
-      nextBtn.addEventListener('click', function() {
-        if (!container) return;
+      // 图片切换
+      function goToImage(index) {
+        if (index < 0 || index >= images.length) return;
+        currentIndex = index;
+        console.log('切换到图片:', index);
+        updateDisplay();
+      }
+      
+      function updateDisplay() {
+        if (!slider) return;
         
-        const containerWidth = container.clientWidth;
-        const maxOffset = container.scrollWidth - containerWidth;
-        currentOffset = Math.min(maxOffset, currentOffset + itemWidth * 3);
-        container.scrollTo({
-          left: currentOffset,
-          behavior: 'smooth'
+        const translateX = -(currentIndex * (100 / images.length));
+        slider.style.transform = `translateX(${translateX}%)`;
+        console.log('更新显示，translateX:', translateX);
+        
+        thumbnails.forEach((thumb, i) => {
+          thumb.classList.toggle('border-red-600', i === currentIndex);
+          thumb.classList.toggle('border-2', i === currentIndex);
+          thumb.classList.toggle('border-gray-200', i !== currentIndex);
         });
-        setTimeout(checkButtons, 300);
         
-        // 同时切换主图到下一张
-        switchToNextImage();
-      });
+        // 自动滚动缩略图到当前选中的图片
+        scrollToCurrentThumbnail();
+        
+        updateMagnifier();
+      }
       
-      // 监听容器滚动事件，更新当前偏移量
-      container.addEventListener('scroll', function() {
-        currentOffset = container.scrollLeft;
-      });
-      
-      // 窗口大小改变时重新检查按钮状态
-      window.addEventListener('resize', checkButtons);
-      
-      // 初始检查 - 增加延迟确保图片加载完成
-      setTimeout(checkButtons, 500);
-      
-      // 当所有图片加载完成后再次检查
-      const images = container.querySelectorAll('img');
-      let loadedCount = 0;
-      images.forEach(img => {
-        if (img.complete) {
-          loadedCount++;
-        } else {
-          img.addEventListener('load', () => {
-            loadedCount++;
-            if (loadedCount === images.length) {
-              setTimeout(checkButtons, 100);
-            }
+      // 滚动缩略图到当前选中的图片
+      function scrollToCurrentThumbnail() {
+        const thumbnailContainer = document.getElementById('thumbnailContainer');
+        const currentThumbnail = thumbnails[currentIndex];
+        
+        if (!thumbnailContainer || !currentThumbnail) return;
+        
+        const containerRect = thumbnailContainer.getBoundingClientRect();
+        const thumbnailRect = currentThumbnail.getBoundingClientRect();
+        
+        // 检查缩略图是否在可视区域内
+        const isVisible = thumbnailRect.left >= containerRect.left && 
+                         thumbnailRect.right <= containerRect.right;
+        
+        if (!isVisible) {
+          // 计算需要滚动的距离
+          const scrollLeft = currentThumbnail.offsetLeft - 
+                           (thumbnailContainer.offsetWidth / 2) + 
+                           (currentThumbnail.offsetWidth / 2);
+          
+          thumbnailContainer.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: 'smooth'
           });
         }
-      });
-      
-      if (loadedCount === images.length) {
-        setTimeout(checkButtons, 100);
       }
-    }
-
-    // 主图导航功能 - 无缝滑动切换
-    let currentImageIndex = 0;
-    
-    function initImageNavigation() {
-      const imageSlider = document.getElementById('imageSlider');
-      const allImages = imageSlider?.querySelectorAll('img');
-      const thumbnails = document.querySelectorAll('.thumbnail-img');
       
-      if (!imageSlider || !allImages) return;
-      
-      const totalImages = allImages.length;
-      
-      // 设置slider宽度为图片数量的总宽度
-      imageSlider.style.width = `${totalImages * 100}%`;
-      
-      // 设置每张图片的宽度为slider宽度的1/n
-      const imageWidth = `${100 / totalImages}%`;
-      allImages.forEach(img => {
-        img.style.width = imageWidth;
-      });
-      
-      // 更新放大镜背景图
-      function updateMagnifierImage(imageSrc: string) {
-        const magnifierZoom = document.getElementById('magnifierZoom');
-        if (magnifierZoom) {
-          magnifierZoom.style.backgroundImage = `url('${imageSrc}')`;
+      // 放大镜功能
+      function updateMagnifier() {
+        if (!zoom || !images[currentIndex]) return;
+        const currentImage = images[currentIndex];
+        console.log('更新放大镜，图片:', currentImage.src);
+        
+        // 获取图片的实际URL
+        const imageSrc = currentImage.src || currentImage.getAttribute('src');
+        
+        if (currentImage.complete && imageSrc) {
+          zoom.style.backgroundImage = `url('${imageSrc}')`;
+          // 设置初始背景尺寸（保持宽高比）
+          setCorrectBackgroundSize(currentImage);
+        } else if (imageSrc) {
+          currentImage.addEventListener('load', () => {
+            zoom.style.backgroundImage = `url('${imageSrc}')`;
+            // 设置初始背景尺寸（保持宽高比）
+            setCorrectBackgroundSize(currentImage);
+          }, { once: true });
         }
       }
       
-      // 更新主图滑动位置和缩略图选中状态
-      function updateImage(index: number) {
-        if (index < 0 || index >= totalImages) return;
+      // 设置正确的背景尺寸（保持宽高比）
+      function setCorrectBackgroundSize(image) {
+        const imageRect = image.getBoundingClientRect();
+        const naturalWidth = image.naturalWidth;
+        const naturalHeight = image.naturalHeight;
         
-        currentImageIndex = index;
+        // 计算图片的显示宽高比
+        const displayAspectRatio = imageRect.width / imageRect.height;
+        const naturalAspectRatio = naturalWidth / naturalHeight;
         
-        // 使用transform实现无缝滑动动画
-        const translateX = -(index * (100 / totalImages));
-        const slider = document.getElementById('imageSlider');
-        if (slider) {
-          slider.style.transform = `translateX(${translateX}%)`;
+        // 计算实际显示的图片尺寸（考虑object-contain的效果）
+        let actualImageWidth, actualImageHeight;
+        if (displayAspectRatio > naturalAspectRatio) {
+          // 图片高度填满容器，宽度居中
+          actualImageHeight = imageRect.height;
+          actualImageWidth = imageRect.height * naturalAspectRatio;
+        } else {
+          // 图片宽度填满容器，高度居中
+          actualImageWidth = imageRect.width;
+          actualImageHeight = imageRect.width / naturalAspectRatio;
         }
         
-        // 更新放大镜背景图
-        const currentImg = (allImages?.[index] as HTMLImageElement) || null;
-        if (currentImg) updateMagnifierImage(currentImg.src);
+        // 计算放大倍数（基于实际图片尺寸）
+        const zoomScale = Math.max(2, Math.min(4, 400 / Math.min(actualImageWidth, actualImageHeight)));
         
-        // 更新缩略图选中状态
-        thumbnails.forEach((thumb, i) => {
-          thumb.classList.remove('border-red-600', 'border-2');
-          thumb.classList.add('border-gray-200');
+        // 设置背景尺寸（保持宽高比）
+        zoom.style.backgroundSize = `${actualImageWidth * zoomScale}px ${actualImageHeight * zoomScale}px`;
+      }
+      
+      function setupMagnifier() {
+        if (!lens || !zoom) {
+          console.log('放大镜元素未找到');
+          return;
+        }
+        
+        if (window.innerWidth < 1024) {
+          console.log('非桌面端，禁用放大镜');
+          return;
+        }
+        
+        console.log('设置放大镜');
+        
+        container.addEventListener('mouseenter', () => {
+          console.log('鼠标进入');
+          lens.style.opacity = '1';
+          zoom.style.opacity = '1';
+          updateMagnifier();
+        });
+        
+        container.addEventListener('mouseleave', () => {
+          console.log('鼠标离开');
+          lens.style.opacity = '0';
+          zoom.style.opacity = '0';
+        });
+        
+        container.addEventListener('mousemove', (e) => {
+          const rect = container.getBoundingClientRect();
+          const currentImage = images[currentIndex];
           
-          if (i === index) {
-            thumb.classList.remove('border-gray-200');
-            thumb.classList.add('border-red-600', 'border-2');
+          if (!currentImage) return;
+          
+          // 获取当前图片的实际显示尺寸和位置
+          const imageRect = currentImage.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          
+          // 计算图片在容器中的相对位置
+          const imageOffsetX = imageRect.left - containerRect.left;
+          const imageOffsetY = imageRect.top - containerRect.top;
+          
+          // 鼠标相对于容器的位置
+          const mouseX = e.clientX - containerRect.left;
+          const mouseY = e.clientY - containerRect.top;
+          
+          // 鼠标相对于图片的位置
+          const relativeX = mouseX - imageOffsetX;
+          const relativeY = mouseY - imageOffsetY;
+          
+          // 检查鼠标是否在图片区域内
+          if (relativeX >= 0 && relativeX <= imageRect.width && 
+              relativeY >= 0 && relativeY <= imageRect.height) {
+            
+            // 计算放大镜位置（相对于容器）
+            const lensX = Math.max(0, Math.min(mouseX - 50, rect.width - 100));
+            const lensY = Math.max(0, Math.min(mouseY - 50, rect.height - 100));
+            
+            lens.style.left = lensX + 'px';
+            lens.style.top = lensY + 'px';
+            
+            // 获取图片的原始尺寸
+            const naturalWidth = currentImage.naturalWidth;
+            const naturalHeight = currentImage.naturalHeight;
+            
+            // 计算图片的显示宽高比
+            const displayAspectRatio = imageRect.width / imageRect.height;
+            const naturalAspectRatio = naturalWidth / naturalHeight;
+            
+            // 计算实际显示的图片尺寸（考虑object-contain的效果）
+            let actualImageWidth, actualImageHeight;
+            if (displayAspectRatio > naturalAspectRatio) {
+              // 图片高度填满容器，宽度居中
+              actualImageHeight = imageRect.height;
+              actualImageWidth = imageRect.height * naturalAspectRatio;
+            } else {
+              // 图片宽度填满容器，高度居中
+              actualImageWidth = imageRect.width;
+              actualImageHeight = imageRect.width / naturalAspectRatio;
+            }
+            
+            // 计算图片在容器中的实际偏移
+            const actualOffsetX = (imageRect.width - actualImageWidth) / 2;
+            const actualOffsetY = (imageRect.height - actualImageHeight) / 2;
+            
+            // 重新计算鼠标相对于实际图片的位置
+            const actualRelativeX = relativeX - actualOffsetX;
+            const actualRelativeY = relativeY - actualOffsetY;
+            
+            // 检查鼠标是否在实际图片区域内
+            if (actualRelativeX >= 0 && actualRelativeX <= actualImageWidth && 
+                actualRelativeY >= 0 && actualRelativeY <= actualImageHeight) {
+              
+              // 计算放大倍数（基于实际图片尺寸）
+              const zoomScale = Math.max(2, Math.min(4, 400 / Math.min(actualImageWidth, actualImageHeight)));
+              
+              // 计算背景位置（基于实际图片位置）
+              const bgX = -(actualRelativeX * zoomScale - 200);
+              const bgY = -(actualRelativeY * zoomScale - 200);
+              
+              zoom.style.backgroundPosition = `${bgX}px ${bgY}px`;
+              zoom.style.backgroundSize = `${actualImageWidth * zoomScale}px ${actualImageHeight * zoomScale}px`;
+            }
           }
         });
       }
       
-      // 缩略图点击事件
+      // 事件绑定
       thumbnails.forEach((thumb, index) => {
-        thumb.addEventListener('click', function() {
-          updateImage(index);
+        thumb.addEventListener('click', () => {
+          console.log('缩略图点击:', index);
+          goToImage(index);
         });
       });
       
-      // 键盘导航支持
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowLeft' && currentImageIndex > 0) {
-          updateImage(currentImageIndex - 1);
-        } else if (e.key === 'ArrowRight' && currentImageIndex < totalImages - 1) {
-          updateImage(currentImageIndex + 1);
-        }
-      });
-      
-      // 初始化时更新放大镜
-      if (allImages.length > 0) {
-        const firstImg = allImages[0] as HTMLImageElement;
-        updateMagnifierImage(firstImg.src);
-      }
-      
-      return { updateImage, imageCount: totalImages };
-    }
-    
-    // 定义全局更新图片函数
-    let globalUpdateImage: ((index: number) => void) | null = null;
-    
-    // 切换到上一张图片
-    function switchToPreviousImage() {
-      if (globalUpdateImage && currentImageIndex > 0) {
-        globalUpdateImage(currentImageIndex - 1);
-      }
-    }
-    
-    // 切换到下一张图片
-    function switchToNextImage() {
-      const imageSlider = document.getElementById('imageSlider');
-      const totalImages = imageSlider?.querySelectorAll('img').length || 0;
-      
-      if (globalUpdateImage && currentImageIndex < totalImages - 1) {
-        globalUpdateImage(currentImageIndex + 1);
-      }
-    }
-
-    // 主图滑动切换功能
-    function initImageSwipe() {
-      const imageContainer = document.getElementById('imageContainer');
-      if (!imageContainer) return;
-
-      let startX = 0;
-      let startY = 0;
-      let isSwipping = false;
-      let startTime = 0;
-
-      // 触摸开始
-      function handleStart(clientX: number, clientY: number) {
-        startX = clientX;
-        startY = clientY;
-        isSwipping = true;
-        startTime = Date.now();
-      }
-
-      // 触摸结束，判断滑动方向
-      function handleEnd(clientX: number, clientY: number) {
-        if (!isSwipping) return;
+      // 缩略图滚动功能
+      function scrollThumbnails(direction) {
+        const thumbnailContainer = document.getElementById('thumbnailContainer');
+        if (!thumbnailContainer) return;
         
-        const endTime = Date.now();
-        const timeDiff = endTime - startTime;
-        const deltaX = clientX - startX;
-        const deltaY = clientY - startY;
+        const scrollAmount = 100; // 每次滚动的像素数
+        const currentScroll = thumbnailContainer.scrollLeft;
+        const newScroll = direction === 'left' 
+          ? Math.max(0, currentScroll - scrollAmount)
+          : currentScroll + scrollAmount;
         
-        // 只有在快速滑动（小于500ms）且水平位移大于50px时才触发
-        if (timeDiff < 500 && Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
-          if (deltaX > 0) {
-            // 向右滑动 - 上一张图片
-            switchToPreviousImage();
-          } else {
-            // 向左滑动 - 下一张图片
-            switchToNextImage();
-          }
-        }
-        
-        isSwipping = false;
+        thumbnailContainer.scrollTo({
+          left: newScroll,
+          behavior: 'smooth'
+        });
       }
-
-      // 触摸事件（移动端）
-      imageContainer.addEventListener('touchstart', function(e) {
-        const touch = e.touches[0];
-        handleStart(touch.clientX, touch.clientY);
-      }, { passive: true });
-
-      imageContainer.addEventListener('touchend', function(e) {
-        if (e.changedTouches.length > 0) {
-          const touch = e.changedTouches[0];
-          handleEnd(touch.clientX, touch.clientY);
-        }
-      }, { passive: true });
-
-      // 鼠标事件（桌面端）
-      let isMouseDown = false;
       
-      imageContainer.addEventListener('mousedown', function(e) {
-        isMouseDown = true;
-        handleStart(e.clientX, e.clientY);
-        e.preventDefault(); // 防止选中文本
+      prevBtn?.addEventListener('click', () => {
+        console.log('上一张');
+        goToImage(currentIndex - 1);
       });
-
-      imageContainer.addEventListener('mousemove', function(e) {
-        if (isMouseDown) {
-          e.preventDefault(); // 防止默认拖拽行为
-        }
+      
+      nextBtn?.addEventListener('click', () => {
+        console.log('下一张');
+        goToImage(currentIndex + 1);
       });
-
-      imageContainer.addEventListener('mouseup', function(e) {
-        if (isMouseDown) {
-          handleEnd(e.clientX, e.clientY);
-          isMouseDown = false;
-        }
-      });
-
-      imageContainer.addEventListener('mouseleave', function() {
-        isMouseDown = false;
-        isSwipping = false;
-      });
-    }
-
-    // 表单提交处理
-    const form = document.querySelector('form');
-    if (form) {
-      form.addEventListener('submit', function(e) {
+      
+      // 缩略图左右滚动按钮
+      const thumbnailPrevBtn = document.getElementById('thumbnailPrev');
+      const thumbnailNextBtn = document.getElementById('thumbnailNext');
+      
+      thumbnailPrevBtn?.addEventListener('click', (e) => {
         e.preventDefault();
+        scrollThumbnails('left');
+      });
+      
+      thumbnailNextBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollThumbnails('right');
+      });
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') goToImage(currentIndex - 1);
+        if (e.key === 'ArrowRight') goToImage(currentIndex + 1);
+      });
+      
+      // 滑动功能
+      let startX = 0, startTime = 0;
+      
+      container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startTime = Date.now();
+      }, { passive: true });
+      
+      container.addEventListener('touchend', (e) => {
+        const deltaX = e.changedTouches[0].clientX - startX;
+        const timeDiff = Date.now() - startTime;
+        if (timeDiff < 500 && Math.abs(deltaX) > 50) {
+          deltaX > 0 ? goToImage(currentIndex - 1) : goToImage(currentIndex + 1);
+        }
+      }, { passive: true });
+      
+      // 表单处理
+      const form = document.querySelector('form');
+      form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const button = form.querySelector('button[type="submit"]');
+        if (!button) return;
         
-        // 使用更优雅的反馈方式
-        const submitButton = this.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const originalText = submitButton.textContent;
-        submitButton.textContent = '发送中...';
-        submitButton.disabled = true;
+        const originalText = button.textContent;
+        button.textContent = '发送中...';
+        button.disabled = true;
         
-        // 模拟发送过程
         setTimeout(() => {
-          submitButton.textContent = '发送成功！';
-          submitButton.style.backgroundColor = '#10b981';
-          
+          button.textContent = '发送成功！';
+          button.style.backgroundColor = '#10b981';
           setTimeout(() => {
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
-            submitButton.style.backgroundColor = '';
-            this.reset();
+            button.textContent = originalText;
+            button.disabled = false;
+            button.style.backgroundColor = '';
+            form.reset();
           }, 2000);
         }, 1000);
       });
-    }
-
-    // 分享功能
-    document.querySelectorAll('button[class*="bg-blue-600"], button[class*="bg-green-600"], button[class*="bg-gray-600"]').forEach(function(btn) {
-      btn.addEventListener('click', function(this: HTMLButtonElement) {
-        // 使用更优雅的反馈方式
-        const originalText = this.textContent;
-        this.textContent = '功能开发中...';
-        this.disabled = true;
-        
-        setTimeout(() => {
-          this.textContent = originalText;
-          this.disabled = false;
-        }, 1500);
-      });
+      
+      // 购物车按钮
+      window.addToCart = () => {
+        const button = event?.target;
+        if (button && button.style) {
+          const originalText = button.innerHTML;
+          button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
+          button.style.backgroundColor = '#10b981';
+          setTimeout(() => {
+            button.innerHTML = originalText;
+            button.style.backgroundColor = '';
+          }, 2000);
+        }
+      };
+      
+      // 初始化
+      console.log('开始初始化');
+      updateDisplay();
+      setupMagnifier();
+      console.log('初始化完成');
     });
-
-    // 购物车功能
-    // 加入购物车函数
-    (window as any).addToCart = function() {
-      // 显示成功提示
-      const button = event?.target as HTMLButtonElement;
-      if (button) {
-        const originalText = button.innerHTML;
-        button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
-        button.style.backgroundColor = '#10b981';
-        
-        setTimeout(() => {
-          button.innerHTML = originalText;
-          button.style.backgroundColor = '';
-        }, 2000);
-      }
-      
-      // 这里可以添加实际的购物车逻辑
-      
-    };
-
-
   </script>
 
   <style>
@@ -1305,5 +1006,32 @@ const images: string[] = processImagesFromLib(product.image, imageMapping);
         grid-template-columns: repeat(1, minmax(0, 1fr));
       }
     }
+
+    .fwb{
+      p{
+        span{
+          text-wrap-mode: wrap;
+        }
+      }
+    }
+    
+    /* 放大镜样式优化 */
+    #magnifierLens {
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    
+    #magnifierZoom {
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    /* 移动端隐藏放大镜 */
+    @media (max-width: 1023px) {
+      #magnifierLens,
+      #magnifierZoom {
+        display: none !important;
+      }
+    }
   </style>
-</Layout> 
+</SecondaryPageLayout>

@@ -51,5 +51,9 @@
     "email": "E-Mail",
     "telephone": "Telefon",
     "whatsapp": "WhatsApp"
+  },
+  "empty_state": {
+    "no_products_title": "Tiada produk tersedia",
+    "no_products_description": "Tiada maklumat produk tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain."
   }
 } 

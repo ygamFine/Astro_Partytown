@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { getFirstImage, generateUrl } from '@utils/tools';
 
 // 定义组件props接口
 export interface Props {
@@ -8,27 +9,35 @@ export interface Props {
     description?: string;
     url_text?: string;
     products?: Array<{
-      image?: string;
-      bigImage?: string;
+      image?: Array<{
+        url: string;
+        name: string;
+      }>;
+      bigImage?: Array<{
+        url: string;
+        name: string;
+      }>;
       name?: string;
       title?: string;
-      slug?: string;
+      url?: string;
       url_text?: string;
     }>;
   };
+  lang: string;
 }
 
 // 获取props，提供默认值
-const { data = {} } = Astro.props;
+const { data = {}, lang } = Astro.props;
 const { 
-  title = 'Our Products', 
-  description = 'Discover our innovative solutions', 
+  title = '', 
+  description = '', 
   products = [] 
 } = data;
 
 // 安全处理产品数据
 const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
-
+console.log('获取到的 title', title);
+console.log('获取到的 description', description);
 // 为每个产品生成唯一ID
 const productIds = safeProducts.map((_, index) => `product-${index}`);
 
@@ -65,9 +74,9 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
           {safeProducts.length > 0 ? (
             safeProducts.map((product, index) => {
               const productName = product.name || product.title || `Product ${index + 1}`;
-              const productImage = product.image || '/images/placeholder.webp';
-              const productSlug = product.slug || `product-${index + 1}`;
-              const urlText = product.url_text || 'View Details';
+              const productImage = getFirstImage(product.image || []);
+              const productSlug = product.url || `product-${index + 1}`;
+              const urlText = product.url_text || '';
               
               return (
                 <div 
@@ -80,8 +89,8 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                 >
                   <div class="overflow-hidden">
                     <Image 
-                      src={productImage}
-                      alt={productName}
+                      src={productImage?.url || '/images/placeholder.webp'}
+                      alt={productImage?.name || productName}
                       width={200}
                       height={150}
                       loading="lazy"
@@ -91,7 +100,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                   </div>
                   <h3>{productName}</h3>
                   <a 
-                    href={`/products/${productSlug}`} 
+                    href={generateUrl(lang, '/products', productSlug)} 
                     class="view-details-btn btn-hover-animate"
                     aria-label={`View details for ${productName}`}
                   >
@@ -128,13 +137,13 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
           {safeProducts.length > 0 ? (
             safeProducts.map((product, index) => {
               const productName = product.name || product.title || `Product ${index + 1}`;
-              const bigImage = product.bigImage || '/images/placeholder.webp';
+              const bigImage = getFirstImage(product.bigImage || [])
               
               return (
                 <Image 
                   id={`mainProductImage-${index}`}
-                  src={bigImage}
-                  alt={productName}
+                  src={bigImage?.url || '/images/placeholder.webp'}
+                  alt={bigImage?.name || productName}
                   width={600}
                   height={400}
                   loading={index === 0 ? "eager" : "lazy"}

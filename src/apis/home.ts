@@ -10,16 +10,16 @@ if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
 /**
  * 获取首页数据
  */
-export async function getHomepageContent() {
+export async function getHomepageContent(lang: string) {
     try {
-      const data = await fetchJson(`${STRAPI_STATIC_URL}/api/homepage-content?populate=all`);
+      const data = await fetchJson(`${STRAPI_STATIC_URL}/api/homepage-content?populate=all&locale=${lang}`);
   
       if (!data.data) {
         return null;
       }
   
       const homepageData = data.data;
-      console.log('获取到的首页数据:', homepageData.company_introduction);
+      // console.log('获取到的首页数据:', homepageData.company_introduction);
       
       return {
         productShowcase: {

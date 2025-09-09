@@ -51,5 +51,9 @@
     "email": "E-mail",
     "telephone": "Telefoon",
     "whatsapp": "WhatsApp"
+  },
+  "empty_state": {
+    "no_products_title": "Geen producten beschikbaar",
+    "no_products_description": "Geen productinformatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal."
   }
 } 

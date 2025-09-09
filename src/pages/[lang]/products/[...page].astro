@@ -7,6 +7,7 @@ import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { getProducts } from '@apis/common.js';
+import { generateProductListBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
 import { getDictionary } from '@i18n/dictionaries.js';
 import { buildUrl } from '@utils/envConfig.js';
@@ -48,7 +49,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { lang, page } = Astro.params;
+const { lang } = Astro.params;
 const { currentPage, totalPages } = Astro.props;
 const t = await getDictionary(lang);
 
@@ -67,17 +68,14 @@ const displayProducts = hasProducts ? products.slice(startIndex, endIndex) : [];
 // 转换产品数据格式以适配GridList组件
 const gridItems = hasProducts ? displayProducts : [];
 // 面包屑导航
-const breadcrumbs = [
-  { label: 'Home', href: buildUrl(lang, '/') },
-  { label: 'Products', href: buildUrl(lang, '/products') }
-];
+const breadcrumbs = generateProductListBreadcrumbs(lang)
 
 // 生成分页基础URL
 const baseUrl = buildUrl(lang, '/products');
 ---
 
 <SecondaryPageLayout 
-  title="Products"
+  title={t.product.title}
   description=""
   breadcrumbs={breadcrumbs}
   currentSection="products"
@@ -116,8 +114,8 @@ const baseUrl = buildUrl(lang, '/products');
     </>
   ) : (
     <EmptyState 
-      title="暂无产品数据"
-      description="当前语言暂无产品信息，请稍后再试或切换其他语言。"
+      title={t.product.empty_state.no_products_title}
+      description={t.product.empty_state.no_products_description}
       icon="product"
       lang={lang}
     />

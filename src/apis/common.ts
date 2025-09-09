@@ -75,23 +75,24 @@ export async function getMenus(locale = 'en') {
  * 获取产品列表 (SSG模式，构建时调用)
  */
 export async function getProducts(locale = 'en') {
-  // 兼容：支持 options 对象形式
-  const isOptionsObject = locale && typeof locale === 'object';
-  const options = isOptionsObject ? locale : { locale };
-  const {
-    locale: optLocale = 'en',
-    paginate = 'page', // 'page' | 'all'
-    page = 1,
-    pageSize = 24,
-  } = options;
+  // // 兼容：支持 options 对象形式
+  // const isOptionsObject = locale && typeof locale === 'object';
+  // const options = isOptionsObject ? locale : { locale };
+  // const {
+  //   locale: optLocale = 'en',
+  //   paginate = 'page', // 'page' | 'all'
+  //   page = 1,
+  //   pageSize = 24,
+  // } = options;
 
   // 构建基础 URL（集合接口）
-  const baseUrl = `${STRAPI_STATIC_URL}/api/product-manages?locale=${optLocale}&populate=all`;
+  const baseUrl = `${STRAPI_STATIC_URL}/api/product-manages?locale=${locale}&populate=all`;
   try {
-    // shaped 模式
-    const json = (paginate === 'all')
-      ? await fetchAllPaginated(baseUrl)
-      : await fetchJson(`${baseUrl}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`);
+    // // shaped 模式
+    // const json = (paginate === 'all')
+    //   ? await fetchAllPaginated(baseUrl)
+    //   : 
+    const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
     const products = json.data?.map((item: any) => ({
       ...item,
       image: extractUrl(item.picture, true) || '/images/placeholder.webp',
@@ -126,7 +127,7 @@ export async function getProduct(slugOrId: string | number, locale = 'en') {
 
     return {
       ...item,
-      image: extractUrl(item.picture, true) || '/images/placeholder.webp',
+      image: extractUrl(item.picture, true) || [],
     }
 
   } catch (error) {
@@ -134,3 +135,40 @@ export async function getProduct(slugOrId: string | number, locale = 'en') {
   }
 }
 
+/**
+ * 获取新闻列表 (SSG模式，构建时调用)
+ */
+export async function getNews(locale = 'en') {
+  // // 兼容：支持 options 对象形式
+  // const isOptionsObject = locale && typeof locale === 'object';
+  // const options = isOptionsObject ? locale : { locale };
+  // const {
+  //   locale: optLocale = 'en',
+  //   paginate = 'page',
+  //   page = 1,
+  //   pageSize = 24,
+  //   mode = 'shaped',
+  //   mapImages = true
+  // } = options;
+
+  const baseUrl = `${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=all`;
+
+  try {
+    // const json = (paginate === 'all')
+    //   ? await fetchAllPaginated(baseUrl)
+    //   : 
+    const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+
+    // 处理所有新闻的图片，使用缓存的图片
+    const news = json.data?.map((item: any) => ({
+      ...item,
+      image: extractUrl(item.picture, true) || [],
+    }));
+
+    return news;
+
+  } catch (error) {
+    // 如果API调用失败，返回空数组
+    return [];
+  }
+}

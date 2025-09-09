@@ -59,26 +59,119 @@ export function buildMenuTree(flatMenus: any[], parentIdField = 'parent', idFiel
 
 
 /**
- * 递归提取对象中的URL，优先取出media下面的url
- * @param {any} obj - 要搜索的对象
- * @returns {string|null} 找到的URL或null
+ * 递归提取对象中的图片信息，返回包含图片地址和名字的对象数组
+ * @param {any} input - 要搜索的对象或对象数组
+ * @param {boolean} isFullUrl - 是否返回完整URL
+ * @returns {Array<{url: string, name: string}>} 图片信息对象数组
  */
-export function extractUrl(obj: any, isFullUrl = false): string | null {
-  if (!obj || typeof obj !== 'object') return null;
+export function extractUrl(input: any, isFullUrl = false): Array<{url: string, name: string}> {
+  const result: Array<{url: string, name: string}> = [];
 
-  // 优先查找 media.url
-  if (obj.media?.url) return isFullUrl ? strapiStaticUrl + obj.media.url : obj.media.url;
+  // 递归提取单个对象中的图片信息
+  function extractFromObject(obj: any): void {
+    if (!obj || typeof obj !== 'object') return;
 
-  // 其次查找直接的url
-  if (obj.url) return isFullUrl ? strapiStaticUrl + obj.url : obj.url;
+    // 优先查找 media.url
+    if (obj.media?.url) {
+      const url = isFullUrl ? strapiStaticUrl + obj.media.url : obj.media.url;
+      const name = obj.media.name || obj.name || 'image';
+      result.push({ url, name });
+      return;
+    }
 
-  // 递归搜索所有属性
-  for (const value of Object.values(obj)) {
-    if (typeof value === 'object' && value !== null) {
-      const result = extractUrl(value, isFullUrl);
-      if (result) return result;
+    // 其次查找直接的url
+    if (obj.url) {
+      const url = isFullUrl ? strapiStaticUrl + obj.url : obj.url;
+      const name = obj.name || 'image';
+      result.push({ url, name });
+      return;
+    }
+
+    // 递归搜索所有属性
+    for (const value of Object.values(obj)) {
+      if (typeof value === 'object' && value !== null) {
+        extractFromObject(value);
+      }
     }
   }
 
-  return null;
+  // 处理输入数据
+  if (Array.isArray(input)) {
+    input.forEach(item => extractFromObject(item));
+  } else {
+    extractFromObject(input);
+  }
+
+  return result;
+}
+
+/**
+ * 格式化时间
+ * @param date 时间字符串或Date对象
+ * @param format 格式，默认为 'YYYY-MM-DD'
+ * @returns 格式化后的时间字符串
+ */
+export function formatDate(date: string | Date, format = 'YYYY-MM-DD'): string {
+  const d = new Date(date);
+  
+  if (isNaN(d.getTime())) {
+    return '';
+  }
+  
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+  
+  return format
+    .replace('YYYY', String(year))
+    .replace('MM', month)
+    .replace('DD', day)
+    .replace('HH', hours)
+    .replace('mm', minutes)
+    .replace('ss', seconds);
+}
+
+/**
+ * 生成URL - 自动处理url_slug前面的斜杠
+ * @param lang 语言代码
+ * @param urlSlug URL slug
+ * @param basePath 基础路径，如 '/products', '/news' 等
+ * @returns 完整的URL
+ */
+export function generateUrl(lang: string, basePath: string, urlSlug: string): string {
+  // 检查参数是否存在
+  if (!lang || !urlSlug || !basePath) {
+    return '';
+  }
+  
+  // 如果 basePath 是 HTTP 地址，直接返回
+  if (urlSlug.startsWith('http://') || urlSlug.startsWith('https://')) {
+    return urlSlug;
+  }
+  
+  // 确保 basePath 以 / 开头
+  const normalizedBasePath = basePath.startsWith('/') ? basePath : `/${basePath}`;
+  
+  // 确保 urlSlug 以 / 开头
+  const normalizedSlug = urlSlug.startsWith('/') ? urlSlug : `/${urlSlug}`;
+  
+  // 构建完整URL
+  return `/${lang}${normalizedBasePath}${normalizedSlug}`;
+}
+
+/**
+ * 获取第一个有效的图片对象
+ * @param images extractUrl方法的返回值数组
+ * @returns 第一个图片对象，如果没有则返回null
+ */
+export function getFirstImage(images: Array<{url: string, name: string}>): {url: string, name: string} | null {
+  if (!images || !Array.isArray(images) || images.length === 0) {
+    return null;
+  }
+  
+  // 返回第一个有效的图片对象
+  return images[0];
 }

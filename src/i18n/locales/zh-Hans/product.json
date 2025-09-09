@@ -51,5 +51,9 @@
     "email": "邮箱",
     "telephone": "电话",
     "whatsapp": "WhatsApp"
+  },
+  "empty_state": {
+    "no_products_title": "暂无产品数据",
+    "no_products_description": "当前语言暂无产品信息，请稍后再试或切换其他语言。"
   }
 } 

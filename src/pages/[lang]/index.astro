@@ -26,8 +26,7 @@ const { lang } = Astro.params;
 const t = await getDictionary(lang);
 
 // 获取首页数据
-const homepageData = await getHomepageContent();
-// console.log('获取到的 homepageData', homepageData.productShowcase.products);
+const homepageData = await getHomepageContent(lang);
 // 获取页面宽度配置
 const getPageWidth = () => {
   return themeConfig.layout.dynamicWidth.getPageWidth('home');
@@ -38,7 +37,7 @@ const pageWidth = getPageWidth();
 <Layout title={t.nav.home} lang={lang} pageType="home">
 	<FullScreenBanner />
 	<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
-		<ProductShowcase data={homepageData?.productShowcase} />
+		<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
 		<StatsSection />
 		<!-- 
 		<StatsSection 

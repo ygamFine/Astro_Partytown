@@ -31,10 +31,6 @@ const getPageUrl = (page: number) => {
   if (page === 1) {
     return baseUrl;
   }
-  // 对于案例页面，使用 page- 前缀避免与详情页面冲突
-  if (baseUrl.includes('/case')) {
-    return `${baseUrl}/page-${page}`;
-  }
   return `${baseUrl}/${page}`;
 };
 

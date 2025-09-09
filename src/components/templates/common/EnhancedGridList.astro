@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { formatDate, generateUrl } from '@utils/tools.js';
 
 interface Props {
   items: Array<{
@@ -33,19 +34,13 @@ const defaultItemsPerRow = sidebarVisible ? 3 : 4;
 const { items, itemsPerRow = defaultItemsPerRow, maxRows = 4, mode = 'product', translations = {}, lang = 'en', viewMode = 'grid' } = Astro.props;
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
-
+console.log('获取产品数据 displayItems', displayItems[0].image)
 // 获取翻译文本
 const t = translations || {};
 
 // 获取产品卡片配置
 const cardConfig = themeConfig.layout.productCard;
 
-// 格式化日期
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
-};
 ---
 
 <div class="enhanced-grid-list" data-view-mode="grid" data-astro-reload>
@@ -54,11 +49,11 @@ const formatDate = (dateString: string | undefined) => {
     <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
       {displayItems.map((item) => (
         <article class={`grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative ${cardConfig.style.hoverEffect === 'lift' ? 'hover:-translate-y-1' : cardConfig.style.hoverEffect === 'scale' ? 'hover:scale-105' : ''}`}>
-          <a href={'/' + lang + '/products' + item.url_slug} class="block h-full">
+          <a href={generateUrl(lang, '/products', item.url_slug) || 'javascript:void(0)'} class="block h-full">
             <div class="aspect-video overflow-hidden">
               <Image 
-                src={item.image} 
-                alt={item.title || ''}
+                src={item.image && item.image.length > 0 ? item.image[0].url : '/images/placeholder.webp'} 
+                alt={item.image && item.image.length > 0 ? item.image[0].name : ''}
                 width="400"
                 height="300"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -213,10 +208,10 @@ const formatDate = (dateString: string | undefined) => {
           <div class="flex flex-col md:flex-row">
             <!-- 左侧图片 -->
             <div class="md:w-80 md:flex-shrink-0 overflow-hidden">
-              <a href={item.href} class="block aspect-[4/3] group">
+              <a href={generateUrl(lang, '/products', item.url_slug) || 'javascript:void(0)'} class="block aspect-[4/3] group">
                 <Image 
-                  src={item.image} 
-                  alt={item.title || ''}
+                  src={item.image && item.image.length > 0 ? item.image[0].url : '/images/placeholder.webp'}
+                  alt={item.image && item.image.length > 0 ? item.image[0].name : ''}
                   width="400"
                   height="300"
                   class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"

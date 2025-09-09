@@ -223,7 +223,7 @@ export const themeConfig = {
 
       // 价格和购物车配置
       pricing: {
-        showPricing: true,           // 显示价格区域
+        showPricing: false,           // 显示价格区域
         showMultiplePrices: true,    // 显示多币种价格
         showAddToCart: true,         // 显示加入购物车按钮
 

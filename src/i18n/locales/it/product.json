@@ -51,5 +51,9 @@
     "email": "E-Mail",
     "telephone": "Telefono",
     "whatsapp": "WhatsApp"
+  },
+  "empty_state": {
+    "no_products_title": "Nessun prodotto disponibile",
+    "no_products_description": "Nessuna informazione sui prodotti disponibile per la lingua corrente. Riprova più tardi o passa a un'altra lingua."
   }
 } 

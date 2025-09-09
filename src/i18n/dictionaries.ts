@@ -145,7 +145,13 @@ export async function getDictionary(lang: string): Promise<any> {
         add_to_cart: getTranslation(lang, 'common', 'product_card.add_to_cart', translationData),
       },
     },
-    
+    // 面包屑
+    breadcrumb: {
+      home: getTranslation(lang, 'breadcrumb', 'home', translationData),
+      products: getTranslation(lang, 'breadcrumb', 'products', translationData),
+      news: getTranslation(lang, 'breadcrumb', 'news', translationData),
+      case: getTranslation(lang, 'breadcrumb', 'case', translationData),
+    },
     // 导航
     nav: {
       home: getTranslation(lang, 'breadcrumb', 'home', translationData),
@@ -204,6 +210,7 @@ export async function getDictionary(lang: string): Promise<any> {
     
     // 产品页面
     product: {
+      title: getTranslation(lang, 'product', 'product.title', translationData),
       advantages: getTranslation(lang, 'product', 'product.advantages', translationData),
       advantages_list: getTranslation(lang, 'product', 'product.advantages_list', translationData),
       contact_us: getTranslation(lang, 'product', 'product.contact_us', translationData),

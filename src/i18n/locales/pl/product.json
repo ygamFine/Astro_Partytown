@@ -51,5 +51,9 @@
     "email": "Email",
     "telephone": "Telefon",
     "whatsapp": "WhatsApp"
+  },
+  "empty_state": {
+    "no_products_title": "Brak dostępnych produktów",
+    "no_products_description": "Brak informacji o produktach dla bieżącego języka. Spróbuj ponownie później lub przełącz na inny język."
   }
 } 
