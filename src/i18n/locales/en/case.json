@@ -41,5 +41,13 @@
     "related_cases": "Related Cases",
     "categories": "Categories",
     "latest_cases": "Latest Cases"
+  },
+  "empty_state": {
+    "no_cases_title": "No Cases Available",
+    "no_cases_description": "No case information is available for the current language. Please try again later or switch to another language.",
+    "no_case_content_title": "No Case Content",
+    "no_case_content_description": "No case information is available for the current language. Please try again later or switch to another language.",
+    "back_to_case_list": "Back to Case List",
+    "back_to_home": "Back to Home"
   }
 }

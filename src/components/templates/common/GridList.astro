@@ -1,6 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 
+// 导入主题配置
+import { themeConfig } from '@config/theme.js';
+import { generateUrl, getFirstImage } from '@utils/tools.js';
+
+
 interface Props {
   items: Array<{
     id: string | number;
@@ -19,9 +24,6 @@ interface Props {
   lang?: string; // 添加语言参数
 }
 
-// 导入主题配置
-import { themeConfig } from '../../../config/theme.js';
-import { processImageForAstro } from '../../../lib/imageProcessor.js';
 
 // 根据侧边栏显示状态动态调整列数
 const sidebarVisible = themeConfig.layout.sidebar.visible;
@@ -31,23 +33,6 @@ const { items, itemsPerRow = defaultItemsPerRow, maxRows = 4, mode = 'product', 
 const maxItems = itemsPerRow * maxRows;
 const displayItems = items.slice(0, maxItems);
 
-// 过滤有效的图片
-const validItems = displayItems.filter(item => {
-  if (!item.image) return false;
-  if (typeof item.image === 'string') {
-    // 检查是否是有效的图片URL
-    return item.image.trim() !== '' && item.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
-  }
-  return true; // 如果是导入的图片对象，认为是有效的
-});
-
-// 转换为可被 <Image> 接受的资源（导入的图片模块或远程 URL）
-const itemsWithDisplay = validItems
-  .map((item) => ({
-    ...item,
-    image: processImageForAstro(item.image)
-  }))
-  .filter(item => !!item.image);
 
 // 获取翻译文本
 const t = translations.common || {};
@@ -58,13 +43,13 @@ const cardConfig = themeConfig.layout.productCard;
 
 <div class="grid-list">
   <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
-    {itemsWithDisplay.map((item) => (
+    {displayItems.map((item: any) => (
       <article class={`grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative ${cardConfig.style.hoverEffect === 'lift' ? 'hover:-translate-y-1' : cardConfig.style.hoverEffect === 'scale' ? 'hover:scale-105' : ''}`}>
-        <a href={item.href} class="block h-full">
+        <a href={generateUrl(lang, '/' + mode, item.url_slug) || 'javascript:void(0)'} class="block h-full">
           <div class="aspect-video overflow-hidden">
             <Image 
-              src={item.image} 
-              alt={item.title || ''}
+              src={getFirstImage(item.image || [])?.url || '/images/placeholder.webp'} 
+              alt={getFirstImage(item.image || [])?.name || 'placeholder'}
               width="400"
               height="300"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -126,16 +111,7 @@ const cardConfig = themeConfig.layout.productCard;
                   {cardConfig.hoverOverlay.showAdvantages && item.advantages && item.advantages.length > 0 && (
                     <div class="mb-3">
                       <p class="text-xs font-semibold mb-1">产品优势：</p>
-                      <ul class="text-xs opacity-90 space-y-1">
-                        {item.advantages.slice(0, 2).map(advantage => (
-                          <li class="flex items-center">
-                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            {advantage}
-                          </li>
-                        ))}
-                      </ul>
+                      <div class="text-xs opacity-90 space-y-1" set:html={item.product_advantage}></div>
                     </div>
                   )}
                 </div>

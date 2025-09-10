@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "Không có sản phẩm nào",
-    "no_products_description": "Không có thông tin sản phẩm cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác."
+    "no_products_description": "Không có thông tin sản phẩm cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác.",
+    "no_product_content_title": "Không có nội dung sản phẩm",
+    "no_product_content_description": "Không có thông tin sản phẩm nào có sẵn cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác.",
+    "back_to_product_list": "Quay lại danh sách sản phẩm",
+    "back_to_home": "Quay lại trang chủ"
   }
-} 
+}

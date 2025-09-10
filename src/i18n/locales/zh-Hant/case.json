@@ -41,5 +41,13 @@
     "related_cases": "相關案例",
     "categories": "分類",
     "latest_cases": "最新案例"
+  },
+  "empty_state": {
+    "no_cases_title": "暫無案例數據",
+    "no_cases_description": "當前語言暫無客戶案例信息，請稍後再試或切換其他語言。",
+    "no_case_content_title": "暫無案例內容",
+    "no_case_content_description": "當前語言暫無案例信息，請稍後再試或切換其他語言。",
+    "back_to_case_list": "返回案例列表",
+    "back_to_home": "返回首頁"
   }
 }

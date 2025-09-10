@@ -41,5 +41,13 @@
     "related_cases": "Cas connexes",
     "categories": "Catégories",
     "latest_cases": "Derniers cas"
+  },
+  "empty_state": {
+    "no_cases_title": "Aucun cas disponible",
+    "no_cases_description": "Aucune information de cas n'est disponible pour la langue actuelle. Veuillez réessayer plus tard ou passer à une autre langue.",
+    "no_case_content_title": "Aucun contenu de cas",
+    "no_case_content_description": "Aucune information de cas n'est disponible pour la langue actuelle. Veuillez réessayer plus tard ou passer à une autre langue.",
+    "back_to_case_list": "Retour à la liste des cas",
+    "back_to_home": "Retour à l'accueil"
   }
 }

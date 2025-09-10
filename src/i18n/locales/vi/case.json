@@ -41,5 +41,13 @@
     "related_cases": "Tình huống liên quan",
     "categories": "Danh mục",
     "latest_cases": "Tình huống mới nhất"
+  },
+  "empty_state": {
+    "no_cases_title": "Không có trường hợp nào có sẵn",
+    "no_cases_description": "Không có thông tin trường hợp nào có sẵn cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác.",
+    "no_case_content_title": "Không có nội dung trường hợp",
+    "no_case_content_description": "Không có thông tin trường hợp nào có sẵn cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác.",
+    "back_to_case_list": "Quay lại danh sách trường hợp",
+    "back_to_home": "Quay lại trang chủ"
   }
 }

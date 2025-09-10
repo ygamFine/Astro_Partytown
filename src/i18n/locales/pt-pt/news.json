@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Nenhuma notícia disponível",
-    "no_news_description": "Nenhuma informação de notícias disponível no idioma atual. Tente novamente mais tarde ou mude para outro idioma."
+    "no_news_description": "Nenhuma informação de notícias disponível no idioma atual. Tente novamente mais tarde ou mude para outro idioma.",
+    "no_news_content_title": "Sem conteúdo de notícias",
+    "no_news_content_description": "Nenhuma informação de notícias está disponível para o idioma atual. Tente novamente mais tarde ou mude para outro idioma.",
+    "back_to_news_list": "Voltar à lista de notícias",
+    "back_to_home": "Voltar ao início"
   }
 }

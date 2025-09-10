@@ -1,278 +1,190 @@
 ---
-export const prerender = true;
-export const revalidate = 3600; // 1小时
-import { Image } from 'astro:assets';
-import Layout from '../../../layouts/Layout.astro';
-import Breadcrumb from '../../../components/templates/navigation/Breadcrumb.astro';
-import GridList from '../../../components/templates/common/GridList.astro';
-import EmptyState from '../../../components/templates/common/EmptyState.astro';
-import { getNews, getNewsById } from '../../../lib/strapi.js';
-import { getProducts } from '../../../lib/strapi.js';
-import { SUPPORTED_LANGUAGES } from '../../../lib/i18n-routes.js';
-import { generateNewsDetailBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
-import { loadImageMapping, processImageForDisplay } from '../../../lib/imageProcessor.js';
+import SecondaryPageLayout from "@components/templates/layout/SecondaryPageLayout.astro";
+import GridList from "@components/templates/common/GridList.astro";
+import RelatedNews from "@components/templates/common/RelatedNews.astro";
+import PopularArticles from "@components/templates/common/PopularArticles.astro";
+import PageNavigation from "@components/templates/common/PageNavigation.astro";
+import EmptyState from "@components/templates/common/EmptyState.astro";
+import { getNews, getProducts } from "@apis/common";
+import { getDictionary } from "@i18n/dictionaries";
+import { getFirstImage, formatDate, generateUrl } from "@utils/tools.js";
+import { SUPPORTED_LANGUAGES } from "@utils/i18n-routes.js";
+import { generateNewsDetailBreadcrumbs } from "@utils/breadcrumbUtils.js";
 
 export async function getStaticPaths() {
-  const enabledLanguages = SUPPORTED_LANGUAGES;
-  let paths: any[] = [];
+  // 只为配置中启用的语言和产品生成静态路径
+  const paths: any[] = [];
 
-  // 为每种启用的语言生成路径
-  for (const lang of enabledLanguages) {
+  for (const lang of SUPPORTED_LANGUAGES) {
     const news = await getNews(lang);
-    
-    if (news && news.length > 0) {
-      // 只有当有新闻数据时才生成页面
-      // 按日期降序排序新闻
-      const sortedNews = news.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      
-      sortedNews.forEach((item, index) => {
-        const previousNews = index > 0 ? sortedNews[index - 1] : null;
-        const nextNews = index < sortedNews.length - 1 ? sortedNews[index + 1] : null;
-
+    for (const newsItem of news) {
+      // 仅为有有效 slug 的产品生成详情页
+      if (
+        newsItem &&
+        typeof newsItem.url_slug === "string" &&
+        newsItem.url_slug.trim().length > 0
+      ) {
         paths.push({
-          params: { lang, slug: item.slug || item.id },
-          props: { lang, news: item, previousNews, nextNews }
+          params: { lang, slug: newsItem.url_slug },
+          props: { slug: newsItem.url_slug, lang, news, newsItem },
         });
-      });
-    } else {
-      // 没有数据时，生成一个通用的空状态页面
-      // 使用一个特殊的 slug 来标识空状态
-      paths.push({
-        params: { lang, slug: 'no-content' },
-        props: { lang, news: null, previousNews: null, nextNews: null }
-      });
+      }
     }
   }
 
   return paths;
 }
 
-const { lang, news, previousNews, nextNews } = Astro.props;
+const { lang, news, newsItem } = Astro.props;
+
+// 如果产品不存在，返回404
+if (!newsItem) {
+  return Astro.redirect("/404");
+}
 
 // 检查是否有新闻数据
-const hasNews = news !== null;
+const hasNews = newsItem !== null;
 
-// 动态加载对应语言的翻译文件
-let t;
-let commonT;
-try {
-  t = await import(`../../../i18n/locales/${lang}/news.json`);
-  commonT = await import(`../../../i18n/locales/${lang}/common.json`);
-} catch (error) {
-  // 如果加载失败，使用英文作为默认
-  t = await import(`../../../i18n/locales/en/news.json`);
-  commonT = await import(`../../../i18n/locales/en/common.json`);
-}
+// 加载国际化翻译
+const t = await getDictionary(lang);
+
+// 获取当前产品在列表中的位置，用于上一个/下一个导航
+const currentIndex = news.findIndex(
+  (p: any) => p.url_slug === newsItem.url_slug,
+);
+const previousNews = currentIndex > 0 ? news[currentIndex - 1] : null;
+const nextNews = currentIndex < news.length - 1 ? news[currentIndex + 1] : null;
 
 // 获取3个相关产品（随机）
 const products = await getProducts(lang);
 const shuffledProducts = products.sort(() => 0.5 - Math.random());
 const relatedProducts = shuffledProducts.slice(0, 3);
 
-// 过滤有效的相关产品图片
-const validRelatedProducts = relatedProducts.filter(product => {
-  if (!product.image) return false;
-  if (typeof product.image === 'string') {
-    return product.image.match(/\.(jpe?g|png|webp|gif|svg|avif|tiff?)$/i);
-  }
-  return true; // 如果是导入的图片对象，认为是有效的
-});
-
 // 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
 const allNews = await getNews(lang);
 const relatedNews = allNews
-  .filter(item => item.slug !== news.slug)
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .filter((item: any) => item.url_slug !== news.url_slug)
+  .sort(
+    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  )
   .slice(0, 4);
 
 // 获取热门文章 (最新的5篇，排除当前文章) -> 用于右侧边栏
 const popularArticles = allNews
-  .filter(item => item.slug !== news.slug)
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .filter((item: any) => item.url_slug !== news.url_slug)
+  .sort(
+    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  )
   .slice(0, 5);
 
-const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, news.title) : [];
-
-const formatDate = (dateString: string) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
-};
-
-// 加载图片映射
-const imageMapping = await loadImageMapping();
-
-const validNewsImage = hasNews ? processImageForDisplay(news.image, imageMapping) : null;
+  // 面包屑导航
+const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title) : [];
 ---
-
-<Layout title={hasNews ? news.title : '新闻详情'} description={hasNews ? news.excerpt : ''} lang={lang}>
-  <!-- Pagefind 图片元数据 -->
-  {hasNews && validNewsImage && (
-    <div data-pagefind-meta="image" data-pagefind-meta-image={validNewsImage} style="display: none;"></div>
-  )}
-  <main class="bg-gray-50 min-h-screen">
-    {hasNews ? (
-      <>
-        <!-- Breadcrumb -->
-        <div class="bg-white border-b">
-          <div class="container mx-auto px-4 py-4">
-            <Breadcrumb breadcrumbs={breadcrumbs} lang={lang} />
-          </div>
-        </div>
-        
-        <!-- Main Content Section -->
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <!-- 中间主内容区 -->
-                <div class="lg:col-span-3">
-                  <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <article>
-        <!-- Article Header -->
-                        <header class="mb-8">
-                          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{news.title}</h1>
-                          <time datetime={news.date} class="text-sm text-gray-500 block">{formatDate(news.date)}</time>
-        </header>
-
-        <!-- Article Image -->
-                        {validNewsImage && (
-        <div class="mb-8">
-                <Image 
-            src={validNewsImage} 
-            alt={news.title || ''} 
-            width="800"
-            height="500"
-                            class="w-full h-auto max-h-[500px] object-cover rounded-lg"
-                            loading="eager"
-            decoding="async"
-          />
-        </div>
-                        )}
-
-        <!-- Article Content -->
-                        <div class="prose max-w-none" set:html={news.content} />
-                    </article>
-                  </div>
-
-              <!-- Previous/Next 导航 -->
-              <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
-                <div class="flex justify-between items-center">
-                    <div class="flex-1">
-                        {previousNews && (
-                        <a href={`/${lang}/news/${previousNews.slug}`} class="flex items-center text-gray-600 hover:text-red-600 group">
-                            <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div>
-                            <div class="text-sm">{t.navigation.previous_article}</div>
-                            <div class="font-medium line-clamp-1">{previousNews.title}</div>
-                            </div>
-                        </a>
-                        )}
-                    </div>
-                    <div class="flex-1 text-right">
-                        {nextNews && (
-                        <a href={`/${lang}/news/${nextNews.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
-                            <div class="text-right">
-                            <div class="text-sm">{t.navigation.next_article}</div>
-                            <div class="font-medium line-clamp-1">{nextNews.title}</div>
-                            </div>
-                            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                        </a>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-              <!-- Related Products -->
-              <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
-                  <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                    <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                    {t.related.products}
-                  </h2>
-                  <GridList 
-                      items={validRelatedProducts.map(p => ({
-                          id: p.id,
-                          title: p.name, // 使用 name 字段作为 title
-                          image: p.image,
-                          excerpt: p.excerpt,
-                          href: `/${lang}/products/${p.slug}`
-                      }))}
-                      itemsPerRow={3}
-                      translations={{ common: commonT.default }}
-                      lang={lang}
-                  />
-              </div>
-
-              <!-- Related News -->
-              <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                  {t.related.news}
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                  {relatedNews.map((newsItem) => (
-                    <div class="flex items-start space-x-4">
-                      <div class="flex-1">
-                        <a href={`/${lang}/news/${newsItem.slug}`} class="block">
-                          <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
-                            {newsItem.title}
-                          </h3>
-                        </a>
-                        <div class="text-sm text-gray-500">
-                          {formatDate(newsItem.date)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-            </div>
-            </div>
-
-            <!-- 右侧热门文章 -->
-            <aside class="lg:col-span-1 space-y-8">
-              <!-- Popular Articles -->
-              <div class="bg-white p-6 rounded-lg shadow-sm">
-                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                  <div class="w-1 h-6 bg-blue-600 mr-3"></div>
-                  {t.sidebar.popular_articles}
-                </h3>
-                <ul class="space-y-4">
-                  {popularArticles.map(article => (
-                    <li>
-                      <a href={`/${lang}/news/${article.slug}`} class="font-medium text-gray-800 hover:text-blue-600 transition-colors duration-200 ease-in-out line-clamp-2">
-                        {article.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </aside>
-        </div>
+<>
+{ !hasNews ? (
+  <SecondaryPageLayout
+    breadcrumbs={breadcrumbs}
+    lang={lang}
+    showContentTitle={false}
+    hideSidebar={true}
+  >
+      <div class="container mx-auto px-4 py-8">
+        <EmptyState 
+          title={t.news.empty_state.no_news_title}
+          description={t.news.empty_state.no_news_description}
+          icon="news"
+          lang={lang}
+          actions={[{
+            label: t.news.empty_state.back_to_news_list,
+            href: `/${lang}/news`,
+            variant: 'secondary'
+          }]}
+        />
+      </div>
+  </SecondaryPageLayout>
+  ) : (
+  <SecondaryPageLayout
+    breadcrumbs={breadcrumbs}
+    lang={lang}
+    showContentTitle={false}
+    hideSidebar={true}
+  >
+    <!-- Pagefind 图片元数据 -->
+    <div
+      data-pagefind-meta="image"
+      data-pagefind-meta-image={getFirstImage(news.image)?.url}
+      style="display: none;"
+    >
     </div>
-      </>
-    ) : (
-      <EmptyState 
-        title="暂无新闻内容"
-        description="当前语言暂无新闻信息，请稍后再试或切换其他语言。"
-        icon="news"
-        lang={lang}
-        actions={[{
-          label: '返回新闻列表',
-          href: `/${lang}/news`,
-          variant: 'secondary'
-        }]}
-      />
-    )}
-  </main>
-</Layout>
+    <!-- Main Content Section -->
+    <div class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- 中间主内容区 -->
+        <div class="lg:col-span-3">
+          <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <article>
+              <!-- Article Header -->
+              <header class="mb-8">
+                <h1
+                  class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight"
+                >
+                  {newsItem.title}
+                </h1>
+                <time
+                  datetime={formatDate(newsItem.publishedAt)}
+                  class="text-sm text-gray-500 block"
+                  >{formatDate(newsItem.publishedAt)}</time
+                >
+              </header>
+              <!-- Article Content -->
+              <div class="prose max-w-none" set:html={newsItem.news_detail} />
+            </article>
+          </div>
 
+          <!-- Previous/Next 导航 -->
+          <PageNavigation previous={previousNews} next={nextNews} lang={lang} mode="news" />
+
+          <!-- Related Products -->
+          <div class="bg-white rounded-lg p-8 shadow-sm mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+              <div class="w-1 h-6 bg-red-600 mr-3"></div>
+              {t.related.products}
+            </h2>
+            <GridList
+              items={relatedProducts.map((p: any) => ({
+                id: p.id,
+                title: p.title, // 使用 name 字段作为 title
+                image: p.image,
+                excerpt: p.excerpt,
+                href: `/${lang}/products/${p.url_slug}`,
+              }))}
+              itemsPerRow={3}
+              translations={{ common: t.common }}
+              lang={lang}
+            />
+          </div>
+
+          <!-- Related News -->
+          <RelatedNews relatedNews={relatedNews} lang={lang} />
+        </div>
+
+        <!-- 右侧热门文章 -->
+        <PopularArticles popularArticles={popularArticles} lang={lang} />
+      </div>
+    </div>
+  </SecondaryPageLayout>
+)}
+</>
 <style is:global>
   .prose {
     @apply text-gray-800 leading-relaxed;
   }
-  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
     @apply text-gray-900 font-bold;
   }
   .prose a {
@@ -281,7 +193,8 @@ const validNewsImage = hasNews ? processImageForDisplay(news.image, imageMapping
   .prose p {
     @apply my-4;
   }
-  .prose ul, .prose ol {
+  .prose ul,
+  .prose ol {
     @apply my-4 pl-6;
   }
   .prose li {
@@ -293,4 +206,4 @@ const validNewsImage = hasNews ? processImageForDisplay(news.image, imageMapping
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-</style> 
+</style>

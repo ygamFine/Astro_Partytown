@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "No News Available",
-    "no_news_description": "No news information is available in the current language. Please try again later or switch to another language."
+    "no_news_description": "No news information is available in the current language. Please try again later or switch to another language.",
+    "no_news_content_title": "No News Content",
+    "no_news_content_description": "No news information is available for the current language. Please try again later or switch to another language.",
+    "back_to_news_list": "Back to News List",
+    "back_to_home": "Back to Home"
   }
 }

@@ -41,5 +41,13 @@
     "related_cases": "Kes Berkaitan",
     "categories": "Kategori",
     "latest_cases": "Kes Terkini"
+  },
+  "empty_state": {
+    "no_cases_title": "Tiada kes tersedia",
+    "no_cases_description": "Tiada maklumat kes tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain.",
+    "no_case_content_title": "Tiada kandungan kes",
+    "no_case_content_description": "Tiada maklumat kes tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain.",
+    "back_to_case_list": "Kembali ke senarai kes",
+    "back_to_home": "Kembali ke laman utama"
   }
 }

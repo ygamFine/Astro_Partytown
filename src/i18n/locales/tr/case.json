@@ -41,5 +41,13 @@
     "related_cases": "İlgili Vakalar",
     "categories": "Kategoriler",
     "latest_cases": "En Son Vakalar"
+  },
+  "empty_state": {
+    "no_cases_title": "Kullanılabilir vaka yok",
+    "no_cases_description": "Mevcut dil için vaka bilgisi mevcut değil. Lütfen daha sonra tekrar deneyin veya başka bir dile geçin.",
+    "no_case_content_title": "Vaka içeriği yok",
+    "no_case_content_description": "Mevcut dil için vaka bilgisi mevcut değil. Lütfen daha sonra tekrar deneyin veya başka bir dile geçin.",
+    "back_to_case_list": "Vaka listesine dön",
+    "back_to_home": "Ana sayfaya dön"
   }
 }

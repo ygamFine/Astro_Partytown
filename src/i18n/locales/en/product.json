@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "No Products Available",
-    "no_products_description": "No product information is available for the current language. Please try again later or switch to another language."
+    "no_products_description": "No product information is available for the current language. Please try again later or switch to another language.",
+    "no_product_content_title": "No Product Content",
+    "no_product_content_description": "No product information is available for the current language. Please try again later or switch to another language.",
+    "back_to_product_list": "Back to Product List",
+    "back_to_home": "Back to Home"
   }
-} 
+}

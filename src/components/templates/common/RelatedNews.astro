@@ -1,0 +1,44 @@
+---
+import { formatDate, generateUrl } from '@utils/tools.js';
+import { getDictionary } from '@i18n/dictionaries.js';
+interface Props {
+  relatedNews: any[];
+  lang: string;
+  translations?: {
+    related: {
+      news: string;
+    };
+  };
+}
+
+const { relatedNews, lang } = Astro.props;
+
+// 加载国际化翻译
+const t = await getDictionary(lang);
+---
+
+<!-- Related News -->
+<div class="bg-white rounded-lg p-8 shadow-sm mb-8">
+  <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+    <div class="w-1 h-6 bg-red-600 mr-3"></div>
+    {t.related.news}
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+    {
+      relatedNews.map((newsItem: any) => (
+        <div class="flex items-start space-x-4">
+          <div class="flex-1">
+            <a href={generateUrl(lang, '/news', newsItem.url_slug)} class="block">
+              <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
+                {newsItem.title}
+              </h3>
+            </a>
+            <div class="text-sm text-gray-500">
+              {formatDate(newsItem.publishedAt)}
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>

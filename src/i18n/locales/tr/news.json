@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Haber mevcut değil",
-    "no_news_description": "Mevcut dilde haber bilgisi mevcut değil. Lütfen daha sonra tekrar deneyin veya başka bir dile geçin."
+    "no_news_description": "Mevcut dilde haber bilgisi mevcut değil. Lütfen daha sonra tekrar deneyin veya başka bir dile geçin.",
+    "no_news_content_title": "Haber içeriği yok",
+    "no_news_content_description": "Mevcut dil için haber bilgisi mevcut değil. Lütfen daha sonra tekrar deneyin veya başka bir dile geçin.",
+    "back_to_news_list": "Haber listesine dön",
+    "back_to_home": "Ana sayfaya dön"
   }
 }

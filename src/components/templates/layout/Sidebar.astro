@@ -1,16 +1,26 @@
 ---
+import { getMenus } from '@apis/common.js';
+import { generateUrl } from '@utils/tools.js';
+
+type MenuSection = 'products' | 'news' | 'case' | 'about';
 interface Props {
-  currentSection?: 'products' | 'news' | 'cases' | 'about';
+  currentSection?: MenuSection;
+  lang: string;
 }
 
-const { currentSection } = Astro.props;
+const { currentSection, lang } = Astro.props;
 const currentPath = Astro.url.pathname;
+console.log('获取到的 currentPath', currentPath, currentSection)
 
 // 导入主题配置
-import { themeConfig } from '../../../config/theme.js';
+import { themeConfig } from '@config/theme.js';
 
 // 获取侧边栏配置
 const sidebarConfig = themeConfig.layout.sidebar;
+
+const menus = await getMenus(lang);
+
+// console.log('获取到的 menus', menus)
 
 // 定义主要菜单项
 const menuItems = [
@@ -76,19 +86,28 @@ const menuItems = [
 const getProcessedMenuItems = () => {
   const { displayMode, fixedOrder, autoExpandCurrent } = sidebarConfig;
   
+  // 过滤菜单项，只保留 path 字段中包含 MenuSection 的菜单项
+  const validMenuSections: MenuSection[] = sidebarConfig.fixedOrder as MenuSection[];
+  const filteredMenus = menus.filter(menu => {
+    if (!menu?.path) return false;
+    return validMenuSections.some(section => menu.path.includes(section));
+  });
+
   // 为每个菜单项添加状态信息
-  const allMenuItems = menuItems.map(menu => ({
+  const allMenuItems = filteredMenus.map(menu => ({
     ...menu,
-    isActive: menu.id === currentSection,
-    defaultOpen: autoExpandCurrent && menu.id === currentSection
+    isActive: menu?.path?.indexOf(currentSection) > -1 || false,
+    defaultOpen: autoExpandCurrent && menu?.path?.indexOf(currentSection) > -1 || false
   }));
+
+  console.log('获取到的 allMenuItems', allMenuItems)
 
   switch (displayMode) {
     case 'current-top':
       // 当前菜单项置顶显示
       return [...allMenuItems].sort((a, b) => {
-        if (a.id === currentSection) return -1;
-        if (b.id === currentSection) return 1;
+        if (a.path?.indexOf(currentSection) !== -1) return -1;
+        if (b.path?.indexOf(currentSection) !== -1) return 1;
         return 0;
       });
 
@@ -99,7 +118,7 @@ const getProcessedMenuItems = () => {
       
       // 按照固定顺序排列
       fixedOrder.forEach(id => {
-        const item = remainingItems.find(item => item.id === id);
+        const item = remainingItems.find(item => item.path?.indexOf(id) !== -1);
         if (item) {
           orderedItems.push(item);
           remainingItems.splice(remainingItems.indexOf(item), 1);
@@ -112,7 +131,7 @@ const getProcessedMenuItems = () => {
       
     case 'current-only':
       // 只显示当前模块菜单
-      return allMenuItems.filter(item => item.id === currentSection);
+      return allMenuItems.filter(item => item.path?.indexOf(currentSection) !== -1);
       
     default:
       return allMenuItems;
@@ -126,53 +145,56 @@ const accordionMenus = getProcessedMenuItems();
   <!-- 手风琴菜单 -->
   <nav class="accordion-nav">
     {accordionMenus.map((menu) => (
-      <div class="accordion-section" data-section={menu.id}>
+      <div class="accordion-section" data-section={menu.path}>
         <div class={`accordion-header-wrapper ${menu.isActive ? 'active' : ''}`}>
           <!-- 可点击的标题链接区域 -->
           <a 
-            href={menu.mainLink}
+            href={generateUrl(lang, menu.path)}
             class="accordion-title-link"
           >
             <div class="flex items-center flex-1">
               <span class="text-2xl mr-3">{menu.icon}</span>
-              <span class="font-medium">{menu.title}</span>
+              <span class="font-medium">{menu.name}</span>
             </div>
           </a>
           
           <!-- 手风琴切换按钮 -->
-          <button 
-            class="accordion-toggle-btn"
-            data-accordion-toggle={menu.id}
-            aria-expanded={menu.defaultOpen ? 'true' : 'false'}
-            aria-label={`展开/折叠 ${menu.title} 菜单`}
-            type="button"
-          >
-            <svg 
-              class="accordion-chevron w-6 h-6 transform transition-transform duration-200"
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+          {menu.children.length > 0 && (
+            <span class="accordion-count">({menu.children.length})</span>
+            <button 
+              class="accordion-toggle-btn"
+              data-accordion-toggle={menu.path}
+              aria-expanded={menu.defaultOpen ? 'true' : 'false'}
+              aria-label={menu.name}
+              type="button"
+            >
+              <svg 
+                class="accordion-chevron w-6 h-6 transform transition-transform duration-200"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
+          )}
         </div>
         
         <div 
           class={`accordion-content ${menu.defaultOpen ? 'accordion-open' : ''}`}
-          data-accordion-content={menu.id}
+          data-accordion-content={menu.path}
         >
           <ul class="accordion-list">
             <!-- 子分类链接 -->
-            {menu.items.map((item) => (
+            {menu.children.map((item: any) => (
               <li>
                 <a 
-                  href={item.href}
-                  class={`accordion-link ${currentPath === item.href ? 'active' : ''}`}
+                  href={generateUrl(lang, menu.path, item.path)}
+                  class={`accordion-link ${currentPath.indexOf(item.path) > -1 ? 'active' : ''}`}
                 >
-                  <span class="flex-1">{item.label}</span>
-                  {sidebarConfig.showCount && (
-                  <span class="accordion-count">({item.count})</span>
+                  <span class="flex-1">{item.name}</span>
+                  {item.children.length > 0 && (
+                  <span class="accordion-count">({item.children.length})</span>
                   )}
                 </a>
               </li>

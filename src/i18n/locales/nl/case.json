@@ -41,5 +41,13 @@
     "related_cases": "Gerelateerde cases",
     "categories": "Categorieën",
     "latest_cases": "Nieuwste cases"
+  },
+  "empty_state": {
+    "no_cases_title": "Geen gevallen beschikbaar",
+    "no_cases_description": "Geen gevalinformatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal.",
+    "no_case_content_title": "Geen case-inhoud",
+    "no_case_content_description": "Geen case-informatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal.",
+    "back_to_case_list": "Terug naar casuslijst",
+    "back_to_home": "Terug naar startpagina"
   }
 }

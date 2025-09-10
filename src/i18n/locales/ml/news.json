@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "No News Available",
-    "no_news_description": "No news information is available in the current language. Please try again later or switch to another language."
+    "no_news_description": "No news information is available in the current language. Please try again later or switch to another language.",
+    "no_news_content_title": "വാർത്ത ഉള്ളടക്കം ഇല്ല",
+    "no_news_content_description": "നിലവിലുള്ള ഭാഷയ്ക്ക് വാർത്ത വിവരങ്ങൾ ലഭ്യമല്ല. ദയവായി പിന്നീട് വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ മറ്റൊരു ഭാഷയിലേക്ക് മാറുക.",
+    "back_to_news_list": "വാർത്ത പട്ടികയിലേക്ക് തിരികെ പോകുക",
+    "back_to_home": "ഹോമിലേക്ക് തിരികെ പോകുക"
   }
 }

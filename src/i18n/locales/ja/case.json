@@ -41,5 +41,13 @@
     "related_cases": "関連事例",
     "categories": "カテゴリー",
     "latest_cases": "最新事例"
+  },
+  "empty_state": {
+    "no_cases_title": "ケースがありません",
+    "no_cases_description": "現在の言語でケース情報が利用できません。後でもう一度お試しいただくか、他の言語に切り替えてください。",
+    "no_case_content_title": "ケースコンテンツなし",
+    "no_case_content_description": "現在の言語ではケース情報が利用できません。後でもう一度お試しいただくか、他の言語に切り替えてください。",
+    "back_to_case_list": "ケース一覧に戻る",
+    "back_to_home": "ホームに戻る"
   }
 }

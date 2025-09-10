@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "Tidak ada produk tersedia",
-    "no_products_description": "Tidak ada informasi produk yang tersedia untuk bahasa saat ini. Silakan coba lagi nanti atau beralih ke bahasa lain."
+    "no_products_description": "Tidak ada informasi produk yang tersedia untuk bahasa saat ini. Silakan coba lagi nanti atau beralih ke bahasa lain.",
+    "no_product_content_title": "Tidak ada konten produk",
+    "no_product_content_description": "Tidak ada informasi produk yang tersedia untuk bahasa saat ini. Silakan coba lagi nanti atau beralih ke bahasa lain.",
+    "back_to_product_list": "Kembali ke daftar produk",
+    "back_to_home": "Kembali ke beranda"
   }
-} 
+}

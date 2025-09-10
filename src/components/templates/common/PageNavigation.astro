@@ -1,0 +1,85 @@
+---
+import { getDictionary } from '@i18n/dictionaries.js';
+import { generateUrl } from '@utils/tools.js';
+interface Props {
+  previous: any;
+  next: any;
+  lang: string;
+  mode: string;
+  translations?: {
+    navigation: {
+      previous_article: string;
+      next_article: string;
+    };
+  };
+}
+
+const { previous, next, mode, lang } = Astro.props;
+
+// 加载国际化翻译
+const t = await getDictionary(lang);
+---
+
+<!-- Previous/Next 导航 -->
+<div class="bg-white rounded-lg p-6 shadow-sm mb-8">
+  <div class="flex justify-between items-center">
+    <div class="flex-1">
+      {
+        previous && (
+          <a
+            href={generateUrl(lang, '/' + mode, previous.url_slug)}
+            class="flex items-center text-gray-600 hover:text-red-600 group"
+          >
+            <svg
+              class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <div>
+              <div class="text-sm">
+                {t.navigation.previous_article}
+              </div>
+              <div class="font-medium line-clamp-1">
+                {previous.title}
+              </div>
+            </div>
+          </a>
+        )
+      }
+    </div>
+    <div class="flex-1 text-right">
+      {
+        next && (
+          <a
+            href={generateUrl(lang, '/' + mode, next.url_slug)}
+            class="flex items-center justify-end text-gray-600 hover:text-red-600 group"
+          >
+            <div class="text-right">
+              <div class="text-sm">{t.navigation.next_article}</div>
+              <div class="font-medium line-clamp-1">
+                {next.title}
+              </div>
+            </div>
+            <svg
+              class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</div>

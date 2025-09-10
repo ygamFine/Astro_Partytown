@@ -1,0 +1,40 @@
+---
+import { getDictionary } from '@i18n/dictionaries.js';
+import { generateUrl } from '@utils/tools.js';
+interface Props {
+  popularArticles: any[];
+  lang: string;
+  translations?: {
+    news: {
+      popular_articles: string;
+    };
+  };
+}
+
+const { popularArticles, lang } = Astro.props;
+
+// 加载国际化翻译
+const t = await getDictionary(lang);
+---
+
+<!-- Popular Articles -->
+<div class="bg-white p-6 rounded-lg shadow-sm">
+  <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+    <div class="w-1 h-6 bg-blue-600 mr-3"></div>
+    {t.news.popular_articles}
+  </h3>
+  <ul class="space-y-4">
+    {
+      popularArticles.map((article: any) => (
+        <li>
+          <a
+            href={generateUrl(lang, '/news', article.url_slug)}
+            class="font-medium text-gray-800 hover:text-blue-600 transition-colors duration-200 ease-in-out line-clamp-2"
+          >
+            {article.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

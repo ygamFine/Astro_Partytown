@@ -149,7 +149,7 @@ export const themeConfig = {
       displayMode: 'current-top',
 
       // 固定顺序模式下的菜单顺序
-      fixedOrder: ['products', 'cases', 'news', 'about'],
+      fixedOrder: ['products', 'case', 'news', 'about'],
 
       // 是否显示菜单项数量
       showCount: true,

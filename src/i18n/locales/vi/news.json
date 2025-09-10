@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Không có tin tức",
-    "no_news_description": "Không có thông tin tin tức nào trong ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác."
+    "no_news_description": "Không có thông tin tin tức nào trong ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác.",
+    "no_news_content_title": "Không có nội dung tin tức",
+    "no_news_content_description": "Không có thông tin tin tức nào có sẵn cho ngôn ngữ hiện tại. Vui lòng thử lại sau hoặc chuyển sang ngôn ngữ khác.",
+    "back_to_news_list": "Quay lại danh sách tin tức",
+    "back_to_home": "Quay lại trang chủ"
   }
 }

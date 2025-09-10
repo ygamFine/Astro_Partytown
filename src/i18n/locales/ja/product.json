@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "製品データがありません",
-    "no_products_description": "現在の言語では製品情報がありません。後でもう一度お試しいただくか、他の言語に切り替えてください。"
+    "no_products_description": "現在の言語では製品情報がありません。後でもう一度お試しいただくか、他の言語に切り替えてください。",
+    "no_product_content_title": "製品コンテンツなし",
+    "no_product_content_description": "現在の言語では製品情報が利用できません。後でもう一度お試しいただくか、他の言語に切り替えてください。",
+    "back_to_product_list": "製品一覧に戻る",
+    "back_to_home": "ホームに戻る"
   }
-} 
+}

@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Tiada Berita Tersedia",
-    "no_news_description": "Tiada maklumat berita tersedia dalam bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain."
+    "no_news_description": "Tiada maklumat berita tersedia dalam bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain.",
+    "no_news_content_title": "Tiada kandungan berita",
+    "no_news_content_description": "Tiada maklumat berita tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain.",
+    "back_to_news_list": "Kembali ke senarai berita",
+    "back_to_home": "Kembali ke laman utama"
   }
 }

@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Aucune actualité disponible",
-    "no_news_description": "Aucune information d'actualité disponible dans la langue actuelle. Veuillez réessayer plus tard ou passer à une autre langue."
+    "no_news_description": "Aucune information d'actualité disponible dans la langue actuelle. Veuillez réessayer plus tard ou passer à une autre langue.",
+    "no_news_content_title": "Aucun contenu de nouvelles",
+    "no_news_content_description": "Aucune information de nouvelles n'est disponible pour la langue actuelle. Veuillez réessayer plus tard ou passer à une autre langue.",
+    "back_to_news_list": "Retour à la liste des nouvelles",
+    "back_to_home": "Retour à l'accueil"
   }
 }

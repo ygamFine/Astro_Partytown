@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "暫無新聞數據",
-    "no_news_description": "當前語言暫無新聞信息，請稍後再試或切換其他語言。"
+    "no_news_description": "當前語言暫無新聞信息，請稍後再試或切換其他語言。",
+    "no_news_content_title": "暫無新聞內容",
+    "no_news_content_description": "當前語言暫無新聞信息，請稍後再試或切換其他語言。",
+    "back_to_news_list": "返回新聞列表",
+    "back_to_home": "返回首頁"
   }
 }

@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "ニュースデータがありません",
-    "no_news_description": "現在の言語でニュース情報がありません。後でもう一度お試しいただくか、他の言語に切り替えてください。"
+    "no_news_description": "現在の言語でニュース情報がありません。後でもう一度お試しいただくか、他の言語に切り替えてください。",
+    "no_news_content_title": "ニュースコンテンツなし",
+    "no_news_content_description": "現在の言語ではニュース情報が利用できません。後でもう一度お試しいただくか、他の言語に切り替えてください。",
+    "back_to_news_list": "ニュース一覧に戻る",
+    "back_to_home": "ホームに戻る"
   }
 }

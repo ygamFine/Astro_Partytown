@@ -1,58 +1,46 @@
 ---
-export const prerender = true;
-export const revalidate = 3600; // 1小时
-
-import SecondaryPageLayout from '../../../components/templates/layout/SecondaryPageLayout.astro';
+import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
 import GridList from '../../../components/templates/common/GridList.astro';
-import EnhancedGridList from '../../../components/templates/common/EnhancedGridList.astro';
-import ViewToggle from '../../../components/templates/common/ViewToggle.astro';
-import Pagination from '../../../components/templates/common/Pagination.astro';
-import EmptyState from '../../../components/templates/common/EmptyState.astro';
-import { getCases } from '../../../lib/strapi.js';
-import { generatePaginationPaths, parsePageParam } from '../../../lib/paginationUtils.js';
-import { processCaseData } from '../../../lib/dataProcessor.js';
-import { getDictionary } from '../../../i18n/dictionaries.js';
-import { generateCaseBreadcrumbs } from '../../../lib/breadcrumbUtils.js';
-import { loadImageMapping } from '../../../lib/imageProcessor.js';
-import { themeConfig } from '../../../config/theme.js';
+import EnhancedGridList from '@components/templates/common/EnhancedGridList.astro';
+import ViewToggle from '@components/templates/common/ViewToggle.astro';
+import Pagination from '@components/templates/common/Pagination.astro';
+import EmptyState from '@components/templates/common/EmptyState.astro';
+import { getCases } from '@apis/common.js';
+import { generatePaginationPaths, parsePageParam } from '@utils/paginationUtils.js';
+import { getDictionary } from '@i18n/dictionaries.js';
+import { generateCaseBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { themeConfig } from '@config/theme.js';
 import { generateUrl } from '@utils/tools.js';
 
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
-  const casesPerPage = 6; // 每页显示6个案例（2行x3列）
-  return generatePaginationPaths(getCases, casesPerPage, 'page');
+  const casesPerPage = 9; // 每页显示9个新闻（3行x3列）
+  return generatePaginationPaths(getCases, casesPerPage, 'casesPage');
 }
 
-const { lang, currentPage, totalPages, items: cases } = Astro.props;
+const { lang, totalPages, items: gridItems } = Astro.props;
 
 
 
 // 解析页码参数
-const actualCurrentPage = parsePageParam(Astro.params.page, 'page');
+const actualCurrentPage = parsePageParam(Astro.params.page, 'casesPage');
 
 // 加载翻译文件
 const t = await getDictionary(lang);
 
-// 加载图片映射
-const imageMapping = await loadImageMapping();
-
-// 处理案例数据
-const gridItems = processCaseData(cases, lang, imageMapping);
-
 // 面包屑导航
 const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
+// 生成分页基础URL
+const baseUrl = generateUrl(lang, '/cases');
 ---
 
 <SecondaryPageLayout 
   title={t.case.title || "Cases"}
-  description="展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。"
   breadcrumbs={breadcrumbs}
+  pageType="cases"
   currentSection="cases"
   contentType="grid"
   lang={lang}
-  pageType="cases"
-  listDescription="展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。每个案例都体现了我们产品的卓越性能和可靠品质。"
-  showListDescription={true}
 >
   {gridItems.length > 0 ? (
     <>
@@ -69,7 +57,7 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actual
       <EnhancedGridList 
         items={gridItems}
         itemsPerRow={3}
-        maxRows={2}
+        maxRows={3}
         mode="case"
         translations={t.common}
         lang={lang}
@@ -80,7 +68,7 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actual
       {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
         <div class="mt-8 mb-6">
           <p class="text-lg text-gray-600 leading-relaxed">
-            展示我们的产品在实际工程项目中的应用案例，涵盖建筑、矿业、农业、市政等多个领域。每个案例都体现了我们产品的卓越性能和可靠品质。
+            {/* TODO: 缺少描述字段 */}
           </p>
         </div>
       )}
@@ -89,14 +77,14 @@ const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actual
       <Pagination 
         currentPage={actualCurrentPage}
         totalPages={totalPages}
-        baseUrl={generateUrl(lang, '/case')}
+        baseUrl={baseUrl}
         i18n={t.common}
       />
     </>
   ) : (
     <EmptyState 
-      title="暂无案例数据"
-      description="当前语言暂无客户案例信息，请稍后再试或切换其他语言。"
+      title={t.case.empty_state.no_cases_title}
+      description={t.case.empty_state.no_cases_description}
       icon="case"
       lang={lang}
   />

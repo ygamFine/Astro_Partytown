@@ -1,0 +1,142 @@
+---
+import SecondaryPageLayout from "@components/templates/layout/SecondaryPageLayout.astro";
+import RichTextRenderer from '@components/templates/common/RichTextRenderer.astro';
+import EmptyState from '@components/templates/common/EmptyState.astro';
+import PageNavigation from '@components/templates/common/PageNavigation.astro';
+import RelatedNews from '@components/templates/common/RelatedNews.astro';
+import RelatedCasesSidebar from '@components/templates/common/RelatedCasesSidebar.astro';
+import { getCases, getNews } from '@apis/common.js';
+import { generateCaseDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes.js';
+import { formatDate } from '@utils/tools.js';
+import { getDictionary } from '@i18n/dictionaries.js';
+
+export async function getStaticPaths() {
+  // 只为配置中启用的语言和产品生成静态路径
+  const paths: any[] = [];
+
+  for (const lang of SUPPORTED_LANGUAGES) {
+    const cases = await getCases(lang);
+    for (const casesItem of cases) {
+      // 仅为有有效 slug 的产品生成详情页
+      if (
+        casesItem &&
+        typeof casesItem.url_slug === "string" &&
+        casesItem.url_slug.trim().length > 0
+      ) {
+        paths.push({
+          params: { lang, slug: casesItem.url_slug },
+          props: { slug: casesItem.url_slug, lang, cases, casesItem },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+const { lang, cases, casesItem } = Astro.props;
+
+// 如果产品不存在，返回404
+if (!casesItem) {
+  return Astro.redirect("/404");
+}
+
+// 检查是否有案例数据
+const hasCase = casesItem !== null;
+
+// 加载国际化翻译
+const t = await getDictionary(lang);
+
+// 获取当前产品在列表中的位置，用于上一个/下一个导航
+const currentIndex = cases.findIndex(
+  (p: any) => p.url_slug === casesItem.url_slug,
+);
+const previousCase = currentIndex > 0 ? cases[currentIndex - 1] : null;
+const nextCase = currentIndex < cases.length - 1 ? cases[currentIndex + 1] : null;
+
+
+// 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
+const allNews = await getNews(lang);
+const relatedNews = allNews.slice(0, 4);
+
+// 获取相关案例（排除当前案例，取前3个）
+const relatedCases = cases.filter((c: any) => c.case_category?.id == casesItem?.case_category?.id).slice(0, 3);
+
+
+// 面包屑导航
+const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.title) : [];
+---
+<>
+{!hasCase ? (
+  <SecondaryPageLayout
+    breadcrumbs={breadcrumbs}
+    lang={lang}
+    showContentTitle={false}
+    hideSidebar={true}
+  >
+      <div class="container mx-auto px-4 py-8">
+        <EmptyState 
+          title={t.case.empty_state.no_cases_title}
+          description={t.case.empty_state.no_cases_description}
+          icon="case"
+          lang={lang}
+          actions={[{
+            label: t.case.empty_state.back_to_case_list,
+            href: `/${lang}/case`,
+            variant: 'secondary'
+          }]}
+        />
+      </div>
+  </SecondaryPageLayout>
+  ) : (
+  <SecondaryPageLayout
+    breadcrumbs={breadcrumbs}
+    lang={lang}
+    showContentTitle={false}
+    hideSidebar={true}
+  >
+    <div class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <!-- 主要内容区域 -->
+        <div class="xl:col-span-3">
+          <!-- 案例标题和信息 -->
+          <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <!-- 案例头部信息 -->
+            <header class="mb-8">
+              <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight" data-pagefind-title>{casesItem.title}</h1>
+              <time datetime={formatDate(casesItem.publish_date)} class="text-sm text-gray-500 mb-6 block" data-pagefind-date>{formatDate(casesItem.publish_date)}</time>
+            </header>
+
+            <!-- 案例详细内容 -->
+            {casesItem.details && (
+              <div class="mb-8" data-pagefind-content set:html={casesItem.details}></div>
+            )}
+            
+            <!-- 案例元数据 -->
+            <div class="hidden" data-pagefind-category="case">
+            </div>
+          </div>
+
+          <!-- Previous/Next 导航 -->
+          <PageNavigation previous={previousCase} next={nextCase} lang={lang} mode="case" />
+
+          <!-- Related News -->
+          <RelatedNews relatedNews={relatedNews} lang={lang} />
+        </div>
+
+        <!-- 侧边栏 -->
+        <RelatedCasesSidebar validRelatedCases={relatedCases} lang={lang} />
+      </div>
+    </div>
+  </SecondaryPageLayout>
+)}
+</>
+<style is:global>
+  .prose h3 {
+    @apply text-2xl font-bold my-6 text-gray-800;
+  }
+  .prose p {
+    @apply mb-6;
+  }
+
+</style> 

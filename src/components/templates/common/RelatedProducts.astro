@@ -1,0 +1,40 @@
+---
+import GridList from "./GridList.astro";
+import { getDictionary } from "@i18n/dictionaries.js";
+import { generateUrl } from "@utils/tools.js";
+
+interface Props {
+  relatedProducts: any[];
+  lang: string;
+  translations?: {
+    related: {
+      products: string;
+    };
+    common: any;
+  };
+}
+
+const { relatedProducts, lang } = Astro.props;
+// 加载国际化翻译
+const t = await getDictionary(lang);
+---
+
+<!-- Related Products -->
+<div class="bg-white rounded-lg p-8 shadow-sm mb-8">
+  <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+    <div class="w-1 h-6 bg-red-600 mr-3"></div>
+    {t.related.products}
+  </h2>
+  <GridList
+    items={relatedProducts.map((p: any) => ({
+      id: p.id,
+      title: p.title, // 使用 name 字段作为 title
+      image: p.image,
+      excerpt: p.excerpt,
+      href: generateUrl(lang, '/products', p.url_slug),
+    }))}
+    itemsPerRow={3}
+    translations={{ common: t.common }}
+    lang={lang}
+  />
+</div>

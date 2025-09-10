@@ -2,9 +2,14 @@
 import { Image } from 'astro:assets';
 import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
 import ContactButtons from '@components/common/contact/ContactButtons.astro';
+import RelatedNews from '@components/templates/common/RelatedNews.astro';
+import PageNavigation from '@components/templates/common/PageNavigation.astro';
+import RelatedProducts from '@components/templates/common/RelatedProducts.astro';
+import RecommendedProductsSidebar from '@components/templates/common/RecommendedProductsSidebar.astro';
+import EmptyState from '@components/templates/common/EmptyState.astro';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
-import { getProducts, getProduct, getNews } from '@apis/common.js';
-import { extractUrl, formatDate, generateUrl } from '@utils/tools.js';
+import { getProducts, getNews } from '@apis/common.js';
+import { extractUrl, getFirstImage } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateProductBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
@@ -20,7 +25,7 @@ export async function getStaticPaths() {
       if (product && typeof product.url_slug === 'string' && product.url_slug.trim().length > 0) {
         paths.push({
           params: { lang, slug: product.url_slug },
-          props: { slug: product.url_slug, lang }
+          props: { slug: product.url_slug, lang, products , product}
         });
       }
     }
@@ -29,48 +34,37 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { slug, lang } = Astro.props;
-console.log('slug创建页面数据', slug, lang);
-// 单独调用 Strapi 详情接口获取产品数据
-const product = await getProduct(slug, lang);
+const { lang, products, product } = Astro.props;
 // 如果产品不存在，返回404
 if (!product) {
   return Astro.redirect('/404');
 }
+// 检查是否有案例数据
+const hasProduct = product !== null;
 
 // 加载国际化翻译
 const t = await getDictionary(lang);
 
-// 获取所有产品数据用于相关产品计算
-const allProducts = await getProducts(lang);
-
 // 获取相关产品（同类别的其他产品，最多显示3个）
-const relatedProducts = allProducts
+const relatedProducts = products
   .filter((p: any) => p?.product_category?.id === product?.product_category?.id)
   .slice(0, 3);
+  console.log('相关产品', relatedProducts)
 
-
-// 相关产品：生成可展示的首图
-const relatedProductsDisplay = relatedProducts.map((p: any) => ({
-  ...p,
-  displayImage: extractUrl(p, true)
-}));
-console.log('相关产品', relatedProductsDisplay)
-console.log('相关产品 displayImage', relatedProductsDisplay[0].displayImage)
 
 // 获取相关新闻（最新的4篇）
 const allNews = await getNews(lang);
-console.log('相关新闻', allNews)
+
 const relatedNews = allNews.slice(0, 4);
 
 // 获取当前产品在列表中的位置，用于上一个/下一个导航
-const currentIndex = allProducts.findIndex((p: any) => p.id === product.id);
-const previousProduct = currentIndex > 0 ? allProducts[currentIndex - 1] : null;
-console.log('上一个产品', previousProduct)
-const nextProduct = currentIndex < allProducts.length - 1 ? allProducts[currentIndex + 1] : null;
+const currentIndex = products.findIndex((p: any) => p.id === product.id);
+const previousProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
+
+const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
 
 // 推荐产品（不同类别的产品）
-const recommendedProducts = allProducts
+const recommendedProducts = products
   .filter((p: any) => p?.product_category?.id != product?.product_category?.id)
   .slice(0, 3);
 
@@ -81,18 +75,39 @@ const recommendedProductsDisplay = recommendedProducts.map((p: any) => ({
 }));
 
 // 面包屑导航
-const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.category);
-
+const breadcrumbs = hasProduct ? generateProductBreadcrumbs(lang, product.title, product.category) : [];
 ---
-
-<SecondaryPageLayout
-  breadcrumbs={breadcrumbs}
-  lang={lang}
-  showContentTitle={false}
-  hideSidebar={true}
->
+<>
+{ !hasProduct ? (
+  <SecondaryPageLayout
+    breadcrumbs={breadcrumbs}
+    lang={lang}
+    showContentTitle={false}
+    hideSidebar={true}
+  >
+    <div class="container mx-auto px-4 py-8">
+      <EmptyState 
+        title={t.product.empty_state.no_products_title}
+        description={t.product.empty_state.no_products_description}
+        icon="news"
+        lang={lang}
+        actions={[{
+          label: t.product.empty_state.back_to_products_list,
+          href: `/${lang}/products`,
+          variant: 'secondary'
+        }]}
+      />
+    </div>
+  </SecondaryPageLayout>
+) : (
+  <SecondaryPageLayout
+    breadcrumbs={breadcrumbs}
+    lang={lang}
+    showContentTitle={false}
+    hideSidebar={true}
+  >
   <!-- Pagefind 图片元数据 -->
-  <div data-pagefind-meta="image"  data-pagefind-meta-image={product.image && product.image.length > 0 ? product.image[0] : ''} style="display: none;"></div>
+  <div data-pagefind-meta="image"  data-pagefind-meta-image={getFirstImage(product.image)?.url} style="display: none;"></div>
   <!-- <div data-pagefind-meta="image" style="display: none;"></div>   -->
   <!-- 第一行：产品主要信息 -->
     <section class="bg-white py-8">
@@ -194,7 +209,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
 
             <!-- 价格和购物车区域 -->
             {themeConfig.layout.productDetail.pricing.showPricing && 
-             !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hidePricing && (
+            !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hidePricing && (
               <div class="bg-gray-50 rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">产品价格</h3>
                 
@@ -214,7 +229,7 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
                 
                 <!-- 加入购物车按钮 -->
                 {themeConfig.layout.productDetail.pricing.showAddToCart && 
-                 !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hideAddToCart && (
+                !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hideAddToCart && (
                   <div class="flex justify-start">
                     <button 
                       class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 flex items-center gap-2"
@@ -275,83 +290,12 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
               <!-- 富文本内容 -->
               {product.details && (
                 <div class="mb-8 fwb" set:html={product.details}>
-                  {/* <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.description}</h3>
-                  <RichTextRenderer content={ } /> */}
                 </div>
               )}
-              
-              <!-- 完整技术参数 -->
-              <!-- {product.specs && product.specs.length > 0 && (
-                <div class="mb-8">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.specifications}</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {product.specs.map(spec => (
-                      <div class="flex justify-between py-2 border-b border-gray-100">
-                        <span class="text-gray-600">{spec.key}</span>
-                        <span class="font-medium text-gray-900">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )} -->
-              
-              <!-- 产品特点 -->
-              <!-- {product.features && product.features.length > 0 && (
-                <div class="mb-8">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.features}</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {product.features.map(feature => (
-                      <div class="flex items-start">
-                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-gray-700">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )} -->
-
-              <!-- 产品应用场景 -->
-              <!-- <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.applications}</h3>
-                <p class="text-gray-600 leading-relaxed">
-                  {t.product.applications_text}
-                </p>
-              </div> -->
             </div>
 
             <!-- Previous / Next 导航 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
-              <div class="flex justify-between items-center">
-                <div class="flex-1">
-                                      {previousProduct && (
-                      <a href={generateUrl(lang, '/products', previousProduct.url_slug)} class="flex items-center text-gray-600 hover:text-red-600 group">
-                        <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <div>
-                          <div class="text-sm">{t.navigation.previous_product}</div>
-                          <div class="font-medium">{previousProduct.title}</div>
-                        </div>
-                      </a>
-                    )}
-                </div>
-                <div class="flex-1 text-right">
-                  {nextProduct && (
-                    <a href={`/${lang}/products/${nextProduct.slug}`} class="flex items-center justify-end text-gray-600 hover:text-red-600 group">
-                      <div class="text-right">
-                        <div class="text-sm">{t.navigation.next_product}</div>
-                        <div class="font-medium">{nextProduct.name}</div>
-                      </div>
-                      <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                      </svg>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
+          <PageNavigation previous={previousProduct} next={nextProduct} lang={lang} mode="products" />
 
             <!-- Leave your messages 表单 -->
             <div class="bg-white rounded-lg p-8 shadow-sm">
@@ -443,168 +387,25 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
             </div>
 
             <!-- Related Products -->
-            <div class="bg-white rounded-lg p-8 shadow-sm">
-              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                {t.related.products}
-              </h2>
-              
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedProductsDisplay.map((relatedProduct: any) => (
-                  <article class="bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative transform hover:-translate-y-1">
-                    <a href={generateUrl(lang, '/products', relatedProduct.url_slug)} class="block h-full">
-                      <div class="aspect-[3/2] overflow-hidden">
-                        <Image 
-                          src={relatedProduct.displayImage && relatedProduct.displayImage.length > 0 ? relatedProduct.displayImage[0]?.url : ''} 
-                          alt={relatedProduct.displayImage && relatedProduct.displayImage.length > 0 ? relatedProduct.displayImage[0]?.name : ''}
-                          width={400}
-                          height={300}
-                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </div>
-                      
-                      <div class="p-4 relative">
-                         <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
-                          {relatedProduct.title}
-                        </h3>
-                        
-                        <p class="text-gray-600 text-sm mb-2 line-clamp-2">
-                          {relatedProduct.excerpt}
-                        </p>
-                        
-                        <!-- 费用占位区域 -->
-                        <div class="mb-3">
-                          <div class="flex items-center justify-between">
-                            <span class="text-red-600 font-bold text-sm" style="visibility: hidden;">面议</span>
-                            <span class="text-gray-500 text-xs" style="visibility: hidden;">起</span>
-                          </div>
-                        </div>
-                        
-                        <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
-                        <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
-                          <div>
-                            <h4 class="font-bold text-base leading-tight">{relatedProduct.title}</h4>
-                            <p class="text-xs opacity-90">{t.product.related.get_quote}</p>
-                          </div>
-                          <div class="flex items-center space-x-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                            </svg>
-                            <span class="font-medium text-sm">{t.product.button.contactNow}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                  </article>
-                ))}
-              </div>
-            </div>
+            <RelatedProducts relatedProducts={relatedProducts} lang={lang} />
 
             <!-- Related News -->
-            <div class="bg-white rounded-lg p-8 shadow-sm">
-              <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                <div class="w-1 h-6 bg-red-600 mr-3"></div>
-                {t.related.news}
-              </h2>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {relatedNews.map((newsItem: any) => (
-                  <div class="flex items-start space-x-4">
-                    <div class="flex-1">
-                      <a href={generateUrl(lang, '/news', newsItem.url_slug)} class="block">
-                        <h3 class="font-medium text-gray-900 mb-2 hover:text-red-600 transition-colors line-clamp-2">
-                          {newsItem.title}
-                        </h3>
-                      </a>
-                      <div class="text-sm text-gray-500">
-                        {formatDate(newsItem.publishedAt)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-
+            <RelatedNews 
+              relatedNews={relatedNews}
+              lang={lang}
+            />
           </div>
 
           {/* 右侧：推荐产品 */}
           {themeConfig.layout.productDetail.sidebar.showSidebar && (
-            <div class="space-y-6" id="recommendedProductsSidebar">
-            <div class="bg-white rounded-lg p-6 shadow-sm">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <div class="w-1 h-5 bg-red-600 mr-2"></div>
-                {t.product.related.recommended}
-              </h3>
-              
-              <div class="space-y-4">
-                {recommendedProductsDisplay.map((recommended: any) => (
-                  <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
-                    <a href={generateUrl(lang, '/products', recommended.url_slug)} class="block">
-                      <div class="aspect-[3/2] overflow-hidden">
-                        <Image 
-                          src={recommended.displayImage && recommended.displayImage.length > 0 ? recommended.displayImage[0]?.url : ''} 
-                          alt={recommended.displayImage && recommended.displayImage.length > 0 ? recommended.displayImage[0]?.name : ''}
-                          width={400}
-                          height={300}
-                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </div>
-                      
-                      <div class="p-4 relative">
-                        <h4 class="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-lg">
-                          {recommended.title}
-                        </h4>
-                        
-                        <p class="text-gray-600 text-sm mb-2 line-clamp-2">
-                          {recommended.excerpt}
-                        </p>
-                        
-                        <!-- 费用占位区域 -->
-                        <div class="mb-3">
-                          <div class="flex items-center justify-between">
-                            <span class="text-red-600 font-bold text-sm" style="visibility: hidden;">面议</span>
-                            <span class="text-gray-500 text-xs" style="visibility: hidden;">起</span>
-                          </div>
-                        </div>
-                        
-                        <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
-                        <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
-                          <div>
-                            <h5 class="font-bold text-base leading-tight">{recommended.title}</h5>
-                            <p class="text-xs opacity-90">{t.product.get_quote}</p>
-                          </div>
-                          <div class="flex items-center space-x-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                            </svg>
-                            <span class="font-medium text-sm">{t.product.contactNow}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                  </article>
-                ))}
-              </div>
-              
-              <!-- 查看更多推荐产品 -->
-              <div class="mt-4 text-center">
-                <a href={`/${lang}/products`} class="text-sm text-red-600 hover:text-red-700 font-medium">
-                  {t.related.view_more} →
-                </a>
-              </div>
-            </div>
-          </div>
+            <RecommendedProductsSidebar recommendedProductsDisplay={recommendedProductsDisplay} lang={lang} />
           )}
         </div>
       </div>
     </section>
+  </SecondaryPageLayout>
+)}
+</>
   <script is:inline>
     // 图片画廊和放大镜功能
     document.addEventListener('DOMContentLoaded', () => {
@@ -1034,4 +835,3 @@ const breadcrumbs = generateProductBreadcrumbs(lang, product.title, product.cate
       }
     }
   </style>
-</SecondaryPageLayout>

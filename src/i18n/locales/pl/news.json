@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Brak dostępnych wiadomości",
-    "no_news_description": "Brak informacji o wiadomościach w bieżącym języku. Spróbuj ponownie później lub przełącz na inny język."
+    "no_news_description": "Brak informacji o wiadomościach w bieżącym języku. Spróbuj ponownie później lub przełącz na inny język.",
+    "no_news_content_title": "Brak treści wiadomości",
+    "no_news_content_description": "Brak informacji o wiadomościach dla bieżącego języka. Spróbuj ponownie później lub przełącz na inny język.",
+    "back_to_news_list": "Powrót do listy wiadomości",
+    "back_to_home": "Powrót do strony głównej"
   }
 }

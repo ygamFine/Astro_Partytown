@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "Tiada produk tersedia",
-    "no_products_description": "Tiada maklumat produk tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain."
+    "no_products_description": "Tiada maklumat produk tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain.",
+    "no_product_content_title": "Tiada kandungan produk",
+    "no_product_content_description": "Tiada maklumat produk tersedia untuk bahasa semasa. Sila cuba lagi kemudian atau tukar ke bahasa lain.",
+    "back_to_product_list": "Kembali ke senarai produk",
+    "back_to_home": "Kembali ke laman utama"
   }
-} 
+}

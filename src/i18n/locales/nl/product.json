@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "Geen producten beschikbaar",
-    "no_products_description": "Geen productinformatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal."
+    "no_products_description": "Geen productinformatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal.",
+    "no_product_content_title": "Geen productinhoud",
+    "no_product_content_description": "Geen productinformatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal.",
+    "back_to_product_list": "Terug naar productlijst",
+    "back_to_home": "Terug naar startpagina"
   }
-} 
+}

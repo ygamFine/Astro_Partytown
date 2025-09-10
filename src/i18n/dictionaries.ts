@@ -80,6 +80,9 @@ export async function getDictionary(lang: string): Promise<any> {
   return {
     // 通用翻译
     common: {
+      empty_state: {
+        back_to_home: getTranslation(lang, 'common', 'empty_state.back_to_home', translationData),
+      },
       placeholders: {
         search: getTranslation(lang, 'common', 'placeholders.search', translationData),
       },
@@ -145,6 +148,9 @@ export async function getDictionary(lang: string): Promise<any> {
         add_to_cart: getTranslation(lang, 'common', 'product_card.add_to_cart', translationData),
       },
     },
+    empty_state: {
+      back_to_home: getTranslation(lang, 'case', 'empty_state.back_to_home', translationData),
+    },
     // 面包屑
     breadcrumb: {
       home: getTranslation(lang, 'breadcrumb', 'home', translationData),
@@ -172,11 +178,27 @@ export async function getDictionary(lang: string): Promise<any> {
       title: getTranslation(lang, 'case', 'case.title', translationData),
       previous: getTranslation(lang, 'case', 'navigation.previous_case', translationData),
       next: getTranslation(lang, 'case', 'navigation.next_case', translationData),
+      related: {
+        cases: getTranslation(lang, 'case', 'related.cases', translationData),
+        news: getTranslation(lang, 'case', 'related.news', translationData),
+        view_more: getTranslation(lang, 'case', 'related.view_more', translationData),
+      },
+      empty_state: {
+        no_cases_title: getTranslation(lang, 'case', 'empty_state.no_cases_title', translationData),
+        no_cases_description: getTranslation(lang, 'case', 'empty_state.no_cases_description', translationData),
+        back_to_case_list: getTranslation(lang, 'case', 'empty_state.back_to_case_list', translationData),
+      },
     },
     
     // 新闻页面
     news: {
       title: getTranslation(lang, 'news', 'news.title', translationData),
+      popular_articles: getTranslation(lang, 'news', 'news.popular_articles', translationData),
+      empty_state: {
+        no_news_title: getTranslation(lang, 'news', 'empty_state.no_news_title', translationData),
+        no_news_description: getTranslation(lang, 'news', 'empty_state.no_news_description', translationData),
+        back_to_news_list: getTranslation(lang, 'news', 'empty_state.back_to_news_list', translationData),
+      },
     },
     
     // 联系页面
@@ -234,6 +256,11 @@ export async function getDictionary(lang: string): Promise<any> {
         email: getTranslation(lang, 'product', 'button.email', translationData),
         telephone: getTranslation(lang, 'product', 'button.telephone', translationData),
         whatsapp: getTranslation(lang, 'product', 'button.whatsapp', translationData),
+      },
+      empty_state: {
+        no_products_title: getTranslation(lang, 'product', 'empty_state.no_products_title', translationData),
+        no_products_description: getTranslation(lang, 'product', 'empty_state.no_products_description', translationData),
+        back_to_products_list: getTranslation(lang, 'product', 'empty_state.back_to_product_list', translationData),
       },
     },
     

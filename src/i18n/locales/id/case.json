@@ -41,5 +41,13 @@
     "related_cases": "Kasus Terkait",
     "categories": "Kategori",
     "latest_cases": "Kasus Terbaru"
+  },
+  "empty_state": {
+    "no_cases_title": "Tidak ada kasus tersedia",
+    "no_cases_description": "Tidak ada informasi kasus yang tersedia untuk bahasa saat ini. Silakan coba lagi nanti atau beralih ke bahasa lain.",
+    "no_case_content_title": "Tidak ada konten kasus",
+    "no_case_content_description": "Tidak ada informasi kasus yang tersedia untuk bahasa saat ini. Silakan coba lagi nanti atau beralih ke bahasa lain.",
+    "back_to_case_list": "Kembali ke daftar kasus",
+    "back_to_home": "Kembali ke beranda"
   }
 }

@@ -72,54 +72,33 @@ export async function getMenus(locale = 'en') {
 }
 
 /**
- * 获取产品列表 (SSG模式，构建时调用)
+ * 获取产品列表以及详情
  */
-export async function getProducts(locale = 'en') {
-  // // 兼容：支持 options 对象形式
-  // const isOptionsObject = locale && typeof locale === 'object';
-  // const options = isOptionsObject ? locale : { locale };
-  // const {
-  //   locale: optLocale = 'en',
-  //   paginate = 'page', // 'page' | 'all'
-  //   page = 1,
-  //   pageSize = 24,
-  // } = options;
-
-  // 构建基础 URL（集合接口）
-  const baseUrl = `${STRAPI_STATIC_URL}/api/product-manages?locale=${locale}&populate=all`;
+export async function getProducts(locale = 'en', slugOrId?: string | number) {
   try {
-    // // shaped 模式
-    // const json = (paginate === 'all')
-    //   ? await fetchAllPaginated(baseUrl)
-    //   : 
-    const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
-    const products = json.data?.map((item: any) => ({
-      ...item,
-      image: extractUrl(item.picture, true) || {
-        url: '/images/placeholder.webp',
-        name: 'placeholder',
-      },
-    })) || [];
+    // 如果没有传入 slugOrId，则获取产品列表
+    if (slugOrId === undefined) {
+      const baseUrl = `${STRAPI_STATIC_URL}/api/product-manages?locale=${locale}&populate=all`;
+      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+      
+      // 处理所有产品的图片，使用缓存的图片
+      const products = json.data?.map((item: any) => ({
+        ...item,
+        image: extractUrl(item.picture, true) || {
+          url: '/images/placeholder.webp',
+          name: 'placeholder',
+        },
+      })) || [];
 
-    return products;
-
-  } catch (error) {
-    // 如果API调用失败，返回空数组
-    return [];
-  }
-}
-/**
- * 获取单个产品详情 (SSG模式，构建时调用)
- */
-export async function getProduct(slugOrId: string | number, locale = 'en') {
-  console.log('slug创建页面数据', slugOrId, locale);
-  try {
-    // 只获取指定语言的数据，不回退到其他语言
+      return products;
+    }
+    
     // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
     const isNumericId = (typeof slugOrId === 'number');
     const url = isNumericId
       ? `${STRAPI_STATIC_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=all`
       : `${STRAPI_STATIC_URL}/api/product-manages?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+    
     const data = await fetchJson(url);
 
     // 适配两种响应：集合查询或单条查询
@@ -131,50 +110,110 @@ export async function getProduct(slugOrId: string | number, locale = 'en') {
     return {
       ...item,
       image: extractUrl(item.picture, true) || [],
-    }
+    };
 
   } catch (error) {
-    return null;
+    // 如果API调用失败，返回空数组（列表）或null（详情）
+    return slugOrId === undefined ? [] : null;
   }
 }
 
 /**
- * 获取新闻列表 (SSG模式，构建时调用)
+ * 获取新闻列表以及详情
  */
-export async function getNews(locale = 'en') {
-  // // 兼容：支持 options 对象形式
-  // const isOptionsObject = locale && typeof locale === 'object';
-  // const options = isOptionsObject ? locale : { locale };
-  // const {
-  //   locale: optLocale = 'en',
-  //   paginate = 'page',
-  //   page = 1,
-  //   pageSize = 24,
-  //   mode = 'shaped',
-  //   mapImages = true
-  // } = options;
-
-  const baseUrl = `${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=all`;
-
+export async function getNews(locale = 'en', slugOrId?: string | number) {
   try {
-    // const json = (paginate === 'all')
-    //   ? await fetchAllPaginated(baseUrl)
-    //   : 
-    const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+    // 如果没有传入 slugOrId，则获取新闻列表
+    if (slugOrId === undefined) {
+      const baseUrl = `${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=all`;
+      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
 
-    // 处理所有新闻的图片，使用缓存的图片
-    const news = json.data?.map((item: any) => ({
+      // 处理所有新闻的图片，使用缓存的图片
+      const news = json.data?.map((item: any) => ({
+        ...item,
+        image: extractUrl(item.picture, true) || {
+          url: '/images/placeholder.webp',
+          name: 'placeholder',
+        },
+      }));
+
+      return news;
+    }
+    
+    // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
+    const isNumericId = (typeof slugOrId === 'number');
+    const url = isNumericId
+      ? `${STRAPI_STATIC_URL}/api/news/${slugOrId}?locale=${locale}&populate=all`
+      : `${STRAPI_STATIC_URL}/api/news?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+    
+    const data = await fetchJson(url);
+
+    // 适配两种响应：集合查询或单条查询
+    const item = Array.isArray(data?.data) ? data.data[0] : data?.data;
+    if (!item) {
+      return null;
+    }
+
+    return {
       ...item,
       image: extractUrl(item.picture, true) || {
         url: '/images/placeholder.webp',
         name: 'placeholder',
       },
-    }));
-
-    return news;
+    };
 
   } catch (error) {
-    // 如果API调用失败，返回空数组
-    return [];
+    // 如果API调用失败，返回空数组（列表）或null（详情）
+    return slugOrId === undefined ? [] : null;
+  }
+}
+
+/**
+ * 获取案例列表以及详情
+ */
+export async function getCases(locale = 'en', slugOrId?: string | number) {
+  try {
+    // 如果没有传入 slugOrId，则获取案例列表
+    if (slugOrId === undefined) {
+      const baseUrl = `${STRAPI_STATIC_URL}/api/cases?locale=${locale}&populate=all`;
+      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+
+      // 处理所有新闻的图片，使用缓存的图片
+      const cases = json.data?.map((item: any) => ({
+        ...item,
+        image: extractUrl(item.picture, true) || {
+          url: '/images/placeholder.webp',
+          name: 'placeholder',
+        },
+      }));
+
+      return cases;
+    }
+    
+    // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
+    const isNumericId = (typeof slugOrId === 'number');
+    const url = isNumericId
+      ? `${STRAPI_STATIC_URL}/api/cases/${slugOrId}?locale=${locale}&populate=all`
+      : `${STRAPI_STATIC_URL}/api/cases?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+    
+    const data = await fetchJson(url);
+
+    // 适配两种响应：集合查询或单条查询
+    const item = Array.isArray(data?.data) ? data.data[0] : data?.data;
+    if (!item) {
+      return null;
+    }
+
+    return {
+      ...item,
+      image: extractUrl(item.picture, true) || {
+        url: '/images/placeholder.webp',
+        name: 'placeholder',
+      },
+    };
+
+  } catch (error) {
+    // 如果API调用失败，返回空数组（列表）或null（详情）
+    return slugOrId === undefined ? [] : null;
   }
 }

@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Geen nieuws beschikbaar",
-    "no_news_description": "Geen nieuws informatie beschikbaar in de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal."
+    "no_news_description": "Geen nieuws informatie beschikbaar in de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal.",
+    "no_news_content_title": "Geen nieuwsinhoud",
+    "no_news_content_description": "Geen nieuws informatie beschikbaar voor de huidige taal. Probeer het later opnieuw of schakel over naar een andere taal.",
+    "back_to_news_list": "Terug naar nieuwslijst",
+    "back_to_home": "Terug naar startpagina"
   }
 }

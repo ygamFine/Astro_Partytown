@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import { getDictionary } from '@i18n/dictionaries.js';
+import { generateUrl, getFirstImage } from '@utils/tools.js';
+
+interface Props {
+  validRelatedCases: any[];
+  lang: string;
+  translations?: {
+    case: {
+      related: string;
+      view_more: string;
+    };
+  };
+}
+
+const { validRelatedCases, lang } = Astro.props;
+const t = await getDictionary(lang);
+---
+
+<div class="xl:col-span-1">
+  <!-- Related Cases -->
+  <div class="bg-white rounded-lg p-6 shadow-sm">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+      <div class="w-1 h-5 bg-red-600 mr-2"></div>
+      {t.case.related?.cases}
+    </h3>
+    
+    <div class="space-y-4">
+      {validRelatedCases.map(relatedCase => (
+        <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
+          <a href={generateUrl(lang, '/case', relatedCase.url_slug)} class="block">
+            <div class="aspect-[5/3] overflow-hidden">
+              <Image 
+                src={getFirstImage(relatedCase.image || [])?.url || '/images/placeholder.webp'} 
+                alt={getFirstImage(relatedCase.image || [])?.name || 'placeholder'}
+                width={400}
+                height={240}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            
+            <div class="p-3 relative min-h-[50px] flex items-center">
+              <h4 class="font-semibold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2 text-lg">
+                {relatedCase.title}
+              </h4>
+              
+              <!-- 从下往上滑出的案例信息 - 覆盖整个信息区域 -->
+              <div class="absolute inset-0 bg-red-600 text-white px-3 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center">
+                <h5 class="font-bold text-base leading-tight">{relatedCase.title}</h5>
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+    
+    <!-- 查看更多相关案例 -->
+    <div class="mt-4 text-center">
+      <a href={`/${lang}/case`} class="text-sm text-red-600 hover:text-red-700 font-medium">
+        {t.case.view_more} →
+      </a>
+    </div>
+  </div>
+</div>

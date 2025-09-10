@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "Brak dostępnych produktów",
-    "no_products_description": "Brak informacji o produktach dla bieżącego języka. Spróbuj ponownie później lub przełącz na inny język."
+    "no_products_description": "Brak informacji o produktach dla bieżącego języka. Spróbuj ponownie później lub przełącz na inny język.",
+    "no_product_content_title": "Brak treści produktu",
+    "no_product_content_description": "Brak informacji o produkcie dla bieżącego języka. Spróbuj ponownie później lub przełącz na inny język.",
+    "back_to_product_list": "Powrót do listy produktów",
+    "back_to_home": "Powrót do strony głównej"
   }
-} 
+}

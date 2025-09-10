@@ -54,6 +54,10 @@
   },
   "empty_state": {
     "no_products_title": "暫無產品數據",
-    "no_products_description": "當前語言暫無產品信息，請稍後再試或切換其他語言。"
+    "no_products_description": "當前語言暫無產品信息，請稍後再試或切換其他語言。",
+    "no_product_content_title": "暫無產品內容",
+    "no_product_content_description": "當前語言暫無產品信息，請稍後再試或切換其他語言。",
+    "back_to_product_list": "返回產品列表",
+    "back_to_home": "返回首頁"
   }
-} 
+}

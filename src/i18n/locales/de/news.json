@@ -42,6 +42,10 @@
   },
   "empty_state": {
     "no_news_title": "Keine Nachrichten verfügbar",
-    "no_news_description": "Keine Nachrichteninformationen in der aktuellen Sprache verfügbar. Bitte versuchen Sie es später erneut oder wechseln Sie zu einer anderen Sprache."
+    "no_news_description": "Keine Nachrichteninformationen in der aktuellen Sprache verfügbar. Bitte versuchen Sie es später erneut oder wechseln Sie zu einer anderen Sprache.",
+    "no_news_content_title": "Keine Nachrichteninhalte",
+    "no_news_content_description": "Für die aktuelle Sprache sind keine Nachrichteninformationen verfügbar. Bitte versuchen Sie es später erneut oder wechseln Sie zu einer anderen Sprache.",
+    "back_to_news_list": "Zurück zur Nachrichtenliste",
+    "back_to_home": "Zurück zur Startseite"
   }
 }
