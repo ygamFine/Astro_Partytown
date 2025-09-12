@@ -20,10 +20,13 @@ interface PageProps {
   items?: any[];
 }
 
+const MODEL = 'case';
+const MODEL_PATH = '/case';
+
 // 生成静态路径
 export async function getStaticPaths() {
   const productsPerPage = 9;
-  return generateStaticPaths(productsPerPage, 'case');
+  return generateStaticPaths(productsPerPage, MODEL);
 }
 
 const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
@@ -33,13 +36,13 @@ const categoryPathArray = categoryPath && categoryPath.length > 0
   ? categoryPath.split('/').filter(segment => segment !== '')
   : [];
 
-const categoryInfo = await getCategoryInfo(lang, categoryPathArray, 'case');
+const categoryInfo = await getCategoryInfo(lang, categoryPathArray, MODEL);
 const t = await getDictionary(lang);
 
 // 面包屑导航
 console.log('参数打印', lang, categoryPath, t.case.title)
 const breadcrumbs = categoryPath && categoryPath.length > 0 
-  ? generateCategoryBreadcrumbs(lang, categoryPath, '/case', t.case.title)
+  ? generateCategoryBreadcrumbs(lang, categoryPath, MODEL_PATH, t.case.title)
   : generateCaseListBreadcrumbs(lang);
 
 ---
@@ -47,8 +50,8 @@ const breadcrumbs = categoryPath && categoryPath.length > 0
 <SecondaryPageLayout 
 title={categoryInfo.current.name || t.case.title}
   breadcrumbs={breadcrumbs}
-  pageType="case"
-  currentSection="case"
+  pageType={MODEL}
+  currentSection={MODEL}
   contentType="grid"
   lang={lang}
 >
@@ -88,7 +91,7 @@ title={categoryInfo.current.name || t.case.title}
         <Pagination
           currentPage={page || 1}
           totalPages={totalPages}
-          baseUrl={generateUrl(lang, '/case')}
+          baseUrl={generateUrl(lang, MODEL_PATH)}
           i18n={t.common}
         />
       )}
@@ -97,7 +100,7 @@ title={categoryInfo.current.name || t.case.title}
     <EmptyState 
       title={t.case.empty_state.no_cases_title}
       description={t.case.empty_state.no_cases_description}
-      icon="case"
+      icon={MODEL}
       lang={lang}
   />
   )}
