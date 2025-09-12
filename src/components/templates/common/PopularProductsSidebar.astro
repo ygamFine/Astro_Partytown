@@ -4,12 +4,12 @@ import { generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 
 interface Props {
-  recommendedProductsDisplay: any[];
+  popularProducts: any[];
   lang: string;
   translations?: {
     product: {
       related: {
-        recommended: string;
+        popularProducts: string;
       };
       get_quote: string;
       contactNow: string;
@@ -20,11 +20,11 @@ interface Props {
   };
 }
 
-const { recommendedProductsDisplay, lang } = Astro.props;
+const { popularProducts, lang } = Astro.props;
 const t = await getDictionary(lang);
 ---
 
-<div class="space-y-6" id="recommendedProductsSidebar">
+<div class="space-y-6" id="popularProductsProductsSidebar">
   <div class="bg-white rounded-lg p-6 shadow-sm">
     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
       <div class="w-1 h-5 bg-red-600 mr-2"></div>
@@ -32,13 +32,13 @@ const t = await getDictionary(lang);
     </h3>
     
     <div class="space-y-4">
-      {recommendedProductsDisplay.map((recommended: any) => (
+      {popularProducts.map((popularProducts: any) => (
         <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
-          <a href={generateUrl(lang, '/products', recommended.url_slug)} class="block">
+          <a href={generateUrl(lang, '/products', popularProducts.url_slug)} class="block">
             <div class="aspect-[3/2] overflow-hidden">
               <Image 
-                src={recommended.displayImage && recommended.displayImage.length > 0 ? recommended.displayImage[0]?.url : ''} 
-                alt={recommended.displayImage && recommended.displayImage.length > 0 ? recommended.displayImage[0]?.name : ''}
+                src={popularProducts.displayImage && popularProducts.displayImage.length > 0 ? popularProducts.displayImage[0]?.url : ''} 
+                alt={popularProducts.displayImage && popularProducts.displayImage.length > 0 ? popularProducts.displayImage[0]?.name : ''}
                 width={400}
                 height={300}
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -49,11 +49,11 @@ const t = await getDictionary(lang);
             
             <div class="p-4 relative">
               <h4 class="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2 text-lg">
-                {recommended.title}
+                {popularProducts.title}
               </h4>
               
               <p class="text-gray-600 text-sm mb-2 line-clamp-2">
-                {recommended.excerpt}
+                {popularProducts.excerpt}
               </p>
               
               <!-- 费用占位区域 -->
@@ -67,7 +67,7 @@ const t = await getDictionary(lang);
               <!-- 从下往上滑出的联系信息 - 覆盖整个信息区域 -->
               <div class="absolute inset-0 bg-red-600 text-white px-4 py-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex items-center justify-between">
                 <div>
-                  <h5 class="font-bold text-base leading-tight">{recommended.title}</h5>
+                  <h5 class="font-bold text-base leading-tight">{popularProducts.title}</h5>
                   <p class="text-xs opacity-90">{t.product.get_quote}</p>
                 </div>
                 <div class="flex items-center space-x-1">

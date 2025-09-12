@@ -6,54 +6,67 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { getProducts } from '@apis/common.js';
-import { generatePaginationPaths, parsePageParam } from '@utils/paginationUtils.js';
-import { generateProductListBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { getCategoryInfo, generateProductStaticPaths } from '@utils/pageUtils.js';
+import { generateProductListBreadcrumbs, generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateUrl } from '@utils/tools.js';
 
-// 为分页生成静态路径，只为配置中启用的语言生成
-export async function getStaticPaths() {
-  const productsPerPage = 9; // 每页显示6个产品（2行x3列）
-  return generatePaginationPaths(getProducts, productsPerPage, 'productPage');
+
+// 定义 Props 类型
+interface PageProps {
+  lang: string;
+  categoryPath?: string;
+  page?: number;
+  totalPages?: number;
+  items?: any[];
 }
 
-const { lang, totalPages, items: gridItems } = Astro.props;
 
-// 解析页码参数
-const actualCurrentPage = parsePageParam(Astro.params.page, 'productPage');
+// 生成静态路径
+export async function getStaticPaths() {
+  const productsPerPage = 9;
+  return generateProductStaticPaths(productsPerPage, 'product');
+}
 
+const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
+
+// 将字符串形式的 categoryPath 转换为数组
+const categoryPathArray = categoryPath && categoryPath.length > 0 
+  ? categoryPath.split('/').filter(segment => segment !== '')
+  : [];
+
+const categoryInfo = await getCategoryInfo(lang, categoryPathArray, 'products');
 const t = await getDictionary(lang);
 
 // 面包屑导航
-const breadcrumbs = generateProductListBreadcrumbs(lang)
+const breadcrumbs = categoryPath && categoryPath.length > 0 
+  ? generateCategoryBreadcrumbs(lang, categoryPath, '/products', t.product.title)
+  : generateProductListBreadcrumbs(lang);
 
-// 生成分页基础URL
-const baseUrl = generateUrl(lang, '/products');
 ---
 
 <SecondaryPageLayout 
-  title={t.product.title}
+  title={categoryInfo.current.name || t.product.title}
   breadcrumbs={breadcrumbs}
   currentSection="products"
   pageType="products"
   contentType="grid"
   lang={lang}
 >
-  {gridItems ? (
+  {items && items.length > 0 ? (
     <>
       <!-- 视图切换控件 -->
       <ViewToggle 
         currentView="grid"
         translations={t.common}
         lang={lang}
-        totalItems={gridItems.length}
+        totalItems={items?.length || 0}
         showTotal={true}
       />
       
       <!-- 产品列表 -->
       <EnhancedGridList 
-        items={gridItems}
+        items={items || []}
         itemsPerRow={3}
         maxRows={3}
         mode="products"
@@ -61,13 +74,16 @@ const baseUrl = generateUrl(lang, '/products');
         lang={lang}
         viewMode="grid"
       />
-      <!-- 分页 -->
-      <Pagination 
-        currentPage={actualCurrentPage}
-        totalPages={totalPages}
-        baseUrl={baseUrl}
-        i18n={t.common}
-      />
+      
+      <!-- 分页控件 -->
+      {totalPages && totalPages > 1 && (
+        <Pagination
+          currentPage={page || 1}
+          totalPages={totalPages}
+          baseUrl={generateUrl(lang, '/products')}
+          i18n={t.common}
+        />
+      )}
     </>
   ) : (
     <EmptyState 

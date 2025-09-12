@@ -1,12 +1,11 @@
 ---
 import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
-import GridList from '../../../components/templates/common/GridList.astro';
 import EnhancedGridList from '@components/templates/common/EnhancedGridList.astro';
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { getCases } from '@apis/common.js';
-import { generatePaginationPaths, parsePageParam } from '@utils/paginationUtils.js';
+import { generatePaginationPaths, parsePageParam } from '@utils/pageUtils.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateCaseBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
@@ -15,7 +14,8 @@ import { generateUrl } from '@utils/tools.js';
 // 为分页生成静态路径，只为配置中启用的语言生成
 export async function getStaticPaths() {
   const casesPerPage = 9; // 每页显示9个新闻（3行x3列）
-  return generatePaginationPaths(getCases, casesPerPage, 'casesPage');
+  const paths = generatePaginationPaths(getCases, casesPerPage, 'casesPage')
+  return paths;
 }
 
 const { lang, totalPages, items: gridItems } = Astro.props;
@@ -35,10 +35,10 @@ const baseUrl = generateUrl(lang, '/cases');
 ---
 
 <SecondaryPageLayout 
-  title={t.case.title || "Cases"}
+  title={t.case.title || "Case"}
   breadcrumbs={breadcrumbs}
-  pageType="cases"
-  currentSection="cases"
+  pageType="case"
+  currentSection="case"
   contentType="grid"
   lang={lang}
 >

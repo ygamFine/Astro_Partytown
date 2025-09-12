@@ -165,7 +165,6 @@ export function generateUrl(lang: string, basePath: string, urlSlug?: string): s
   
   // 检查是否为开发环境
   const isDevelopment = import.meta.env.DEV;
-  
   if (isDevelopment) {
     // 本地开发模式：添加语言前缀
     return `/${lang}${fullPath}`;

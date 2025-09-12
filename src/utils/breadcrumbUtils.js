@@ -8,16 +8,18 @@ import { generateUrl } from '@utils/tools.js';
 /**
  * 生成产品页面的面包屑
  */
-export function generateProductBreadcrumbs(lang, productName, category) {
+export function generateProductBreadcrumbs(lang, productName, categorySlug) {
   const breadcrumbs = [
     { label: 'home', href: generateUrl(lang, '/') },
     { label: 'products', href: generateUrl(lang, '/products') }
   ];
 
-  if (category) {
+  if (categorySlug) {
+    // 去除 categorySlug 前后的所有斜杠
+    const cleanSlug = categorySlug.replace(/^\/+|\/+$/g, '');
     breadcrumbs.push({
-      label: 'category',
-      href: generateUrl(lang, `/products?category=${encodeURIComponent(category)}`)
+      label: cleanSlug,
+      href: generateUrl(lang, `/products/${cleanSlug}`)
     });
   }
 
@@ -120,6 +122,36 @@ export function generateSearchBreadcrumbs(lang, searchTerm) {
     { label: searchTerm || 'search' }
   ];
 }
+
+/**
+ * 生成分类页面的面包屑 - 支持多级分类
+ * @param {string} lang - 语言代码
+ * @param {Object} categoryPath - 分类信息对象
+ * @param {string} basePath - 基础路径，如 '/products', '/news', '/case' 等
+ * @param {string} baseLabel - 基础标签，如 'products', 'news', 'case' 等
+ * @returns {Array} 面包屑数组
+ */
+export function generateCategoryBreadcrumbs(lang, categoryPath, basePath = '/products', baseLabel = 'products') {
+  const breadcrumbs = [
+    { label: 'home', href: generateUrl(lang, '/') },
+    { label: baseLabel, href: generateUrl(lang, basePath) }
+  ];
+  
+  if (categoryPath && categoryPath.length > 0) {
+    const segments = categoryPath.split('/').filter(s => s);
+    segments.forEach((segment, index) => {
+      const path = segments.slice(0, index + 1).join('/');
+      breadcrumbs.push({
+        label: segment,
+        href: generateUrl(lang, `${basePath}/${path}`)
+      });
+    });
+  }
+  
+  return breadcrumbs;
+}
+
+
 
 /**
  * 生成自定义面包屑

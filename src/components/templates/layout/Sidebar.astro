@@ -10,7 +10,6 @@ interface Props {
 
 const { currentSection, lang } = Astro.props;
 const currentPath = Astro.url.pathname;
-console.log('获取到的 currentPath', currentPath, currentSection)
 
 // 导入主题配置
 import { themeConfig } from '@config/theme.js';
@@ -19,68 +18,6 @@ import { themeConfig } from '@config/theme.js';
 const sidebarConfig = themeConfig.layout.sidebar;
 
 const menus = await getMenus(lang);
-
-// console.log('获取到的 menus', menus)
-
-// 定义主要菜单项
-const menuItems = [
-  {
-    id: 'products',
-    title: '产品',
-    icon: '🏗️',
-    mainLink: '/products',
-    items: [
-      { label: '滑移装载机', href: '/products/category/skid-steer', count: 12 },
-      { label: '反铲装载机', href: '/products/category/backhoe', count: 8 },
-      { label: '伸缩臂装载机', href: '/products/category/telescopic', count: 6 },
-      { label: '电动机械', href: '/products/category/electric', count: 4 },
-      { label: '热门产品', href: '/products/category/hot-selling', count: 15 },
-      { label: '新品到货', href: '/products/category/new-arrivals', count: 5 },
-    ]
-  },
-  {
-    id: 'news',
-    title: '新闻',
-    icon: '📰',
-    mainLink: '/news',
-    items: [
-      { label: '公司新闻', href: '/news/category/company', count: 25 },
-      { label: '行业新闻', href: '/news/category/industry', count: 18 },
-      { label: '产品更新', href: '/news/category/product', count: 12 },
-      { label: '活动资讯', href: '/news/category/events', count: 8 },
-      { label: '2024年', href: '/news/archive/2024', count: 35 },
-      { label: '2023年', href: '/news/archive/2023', count: 42 },
-    ]
-  },
-  {
-    id: 'cases',
-    title: '案例',
-    icon: '📋',
-    mainLink: '/case',
-    items: [
-      { label: '建筑项目', href: '/case/category/construction', count: 20 },
-      { label: '矿业作业', href: '/case/category/mining', count: 15 },
-      { label: '农业应用', href: '/case/category/agriculture', count: 12 },
-      { label: '市政项目', href: '/case/category/municipal', count: 8 },
-      { label: '北美地区', href: '/case/region/north-america', count: 18 },
-      { label: '欧洲地区', href: '/case/region/europe', count: 22 },
-      { label: '亚太地区', href: '/case/region/asia-pacific', count: 15 },
-    ]
-  },
-  {
-    id: 'about',
-    title: '关于我们',
-    icon: '🏢',
-    mainLink: '/about',
-    items: [
-      { label: '公司介绍', href: '/about#company-intro', count: 1 },
-      { label: '核心优势', href: '/about#core-advantages', count: 4 },
-      { label: '发展历程', href: '/about#development-history', count: 5 },
-      { label: '企业文化', href: '/about#company-culture', count: 3 },
-      { label: '联系方式', href: '/about#contact-info', count: 4 },
-    ]
-  }
-];
 
 // 根据配置模式处理菜单项
 const getProcessedMenuItems = () => {
@@ -100,14 +37,18 @@ const getProcessedMenuItems = () => {
     defaultOpen: autoExpandCurrent && menu?.path?.indexOf(currentSection) > -1 || false
   }));
 
-  console.log('获取到的 allMenuItems', allMenuItems)
-
   switch (displayMode) {
     case 'current-top':
       // 当前菜单项置顶显示
       return [...allMenuItems].sort((a, b) => {
-        if (a.path?.indexOf(currentSection) !== -1) return -1;
-        if (b.path?.indexOf(currentSection) !== -1) return 1;
+        const aContainsCurrent = a.path?.indexOf(currentSection) !== -1;
+        const bContainsCurrent = b.path?.indexOf(currentSection) !== -1;
+        
+        // 如果a包含currentSection但b不包含，a排在前面
+        if (aContainsCurrent && !bContainsCurrent) return -1;
+        // 如果b包含currentSection但a不包含，b排在前面
+        if (bContainsCurrent && !aContainsCurrent) return 1;
+        // 如果都包含或都不包含，保持原顺序
         return 0;
       });
 
@@ -149,7 +90,7 @@ const accordionMenus = getProcessedMenuItems();
         <div class={`accordion-header-wrapper ${menu.isActive ? 'active' : ''}`}>
           <!-- 可点击的标题链接区域 -->
           <a 
-            href={generateUrl(lang, menu.path)}
+            href={generateUrl(lang, menu.path) || '#'}
             class="accordion-title-link"
           >
             <div class="flex items-center flex-1">

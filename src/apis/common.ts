@@ -78,8 +78,7 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取产品列表
     if (slugOrId === undefined) {
-      const baseUrl = `${STRAPI_STATIC_URL}/api/product-manages?locale=${locale}&populate=all`;
-      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+      const json = await fetchJson(`${STRAPI_STATIC_URL}/api/product-manages?locale=${locale}&populate=all`);
       
       // 处理所有产品的图片，使用缓存的图片
       const products = json.data?.map((item: any) => ({
@@ -95,9 +94,7 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
     
     // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
     const isNumericId = (typeof slugOrId === 'number');
-    const url = isNumericId
-      ? `${STRAPI_STATIC_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=all`
-      : `${STRAPI_STATIC_URL}/api/product-manages?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+    const url = isNumericId && `${STRAPI_STATIC_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=all`
     
     const data = await fetchJson(url);
 
@@ -117,7 +114,50 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
     return slugOrId === undefined ? [] : null;
   }
 }
+/**
+ * 根据分类 slug 获取数据列表
+ */
+export async function getByCategory(locale = 'en', slug: string, model: string) {
+  try {
+    if(!model) {
+      console.warn('model is required');
+      return [];
+    }
+    
+    // 构建基础URL
+    const baseUrls: any = {
+      product: `/api/product-manages`,
+      news: `/api/news`,
+      cases: `/api/case`,
+    }
+    
+    if (!baseUrls[model]) {
+      console.warn('model is not supported');
+      return [];
+    }
+    
+    // 如果有slug，添加分类过滤条件；否则获取所有数据
+    const filterParams = slug 
+      ? `&filters[${model === 'product' ? 'product_category' : 'category'}][url_slug][$eq]=${slug}`
+      : '';
+    
+    const url = `${STRAPI_STATIC_URL}${baseUrls[model]}?locale=${locale}&populate=all${filterParams}`;
+    const json = await fetchJson(url);
+    // 处理所有产品的图片，使用缓存的图片
+    const datas = json.data?.map((item: any) => ({
+      ...item,
+      image: extractUrl(item.picture, true) || {
+        url: '/images/placeholder.webp',
+        name: 'placeholder',
+      },
+    })) || [];
 
+    return datas;
+  } catch (error) {
+    console.error(`获取${model}数据失败:`, error);
+    return [];
+  }
+}
 /**
  * 获取新闻列表以及详情
  */

@@ -5,7 +5,7 @@ import ContactButtons from '@components/common/contact/ContactButtons.astro';
 import RelatedNews from '@components/templates/common/RelatedNews.astro';
 import PageNavigation from '@components/templates/common/PageNavigation.astro';
 import RelatedProducts from '@components/templates/common/RelatedProducts.astro';
-import RecommendedProductsSidebar from '@components/templates/common/RecommendedProductsSidebar.astro';
+import PopularProductsSidebar from '@components/templates/common/PopularProductsSidebar.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
 import { getProducts, getNews } from '@apis/common.js';
@@ -17,14 +17,15 @@ import { themeConfig } from '@config/theme.js';
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
   const paths: any[] = [];
-  
   for (const lang of SUPPORTED_LANGUAGES) {
     const products = await getProducts(lang);
     for (const product of products) {
       // 仅为有有效 slug 的产品生成详情页
       if (product && typeof product.url_slug === 'string' && product.url_slug.trim().length > 0) {
+        const cleanSlug = product.url_slug.startsWith('/') ? product.url_slug.slice(1) : product.url_slug;
+    
         paths.push({
-          params: { lang, slug: product.url_slug },
+          params: { lang, slug: cleanSlug },
           props: { slug: product.url_slug, lang, products , product}
         });
       }
@@ -45,11 +46,10 @@ const hasProduct = product !== null;
 // 加载国际化翻译
 const t = await getDictionary(lang);
 
-// 获取相关产品（同类别的其他产品，最多显示3个）
-const relatedProducts = products
-  .filter((p: any) => p?.product_category?.id === product?.product_category?.id)
-  .slice(0, 3);
-  console.log('相关产品', relatedProducts)
+// 获取相关产品（随机选择3个其他产品）
+const otherProducts = products.filter((p: any) => p.url_slug !== product.url_slug);
+const shuffled = otherProducts.sort(() => 0.5 - Math.random());
+const relatedProducts = shuffled.slice(0, 3);
 
 
 // 获取相关新闻（最新的4篇）
@@ -69,13 +69,13 @@ const recommendedProducts = products
   .slice(0, 3);
 
 // 推荐产品：生成可展示的首图
-const recommendedProductsDisplay = recommendedProducts.map((p: any) => ({
+const popularProducts = recommendedProducts.map((p: any) => ({
   ...p,
   displayImage: extractUrl(p, true)
 }));
 
 // 面包屑导航
-const breadcrumbs = hasProduct ? generateProductBreadcrumbs(lang, product.title, product.category) : [];
+const breadcrumbs = hasProduct ? generateProductBreadcrumbs(lang, product.title, product.product_category?.url_slug) : [];
 ---
 <>
 { !hasProduct ? (
@@ -396,9 +396,9 @@ const breadcrumbs = hasProduct ? generateProductBreadcrumbs(lang, product.title,
             />
           </div>
 
-          {/* 右侧：推荐产品 */}
+          {/* 右侧：热门产品 */}
           {themeConfig.layout.productDetail.sidebar.showSidebar && (
-            <RecommendedProductsSidebar recommendedProductsDisplay={recommendedProductsDisplay} lang={lang} />
+            <PopularProductsSidebar popularProducts={popularProducts} lang={lang} />
           )}
         </div>
       </div>

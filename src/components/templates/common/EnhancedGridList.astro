@@ -63,7 +63,7 @@ const cardConfig = themeConfig.layout.productCard;
             
             <div class={mode === 'sidebar' ? 'p-3 relative' : 'p-4 relative flex flex-col justify-start'}>
               {/* 默认显示内容 - 根据模式区分 */}
-              {mode === 'product' ? (
+              {(mode === 'product' || mode === 'products') ? (
                 <>
                   {/* 产品卡片默认显示 */}
                   {cardConfig.defaultDisplay.showName && (
@@ -119,7 +119,7 @@ const cardConfig = themeConfig.layout.productCard;
               )}
               
               {/* 鼠标悬停弹出层 - 只对产品卡片生效 */}
-              {mode === 'product' && (
+              {(mode === 'product' || mode === 'products') && (
                 <div class="absolute inset-0 bg-red-600 text-white px-6 py-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out flex flex-col justify-between">
                   <div>
                     {cardConfig.hoverOverlay.showName && (
@@ -231,7 +231,7 @@ const cardConfig = themeConfig.layout.productCard;
                 </h3>
                 
                 <!-- 价格（仅产品模式） -->
-                {mode === 'product' && item.price && (
+                {(mode === 'product' || mode === 'products') && item.price && (
                   <div class="text-red-600 font-bold text-lg mb-3">
                     {item.price}
                   </div>
@@ -245,7 +245,7 @@ const cardConfig = themeConfig.layout.productCard;
                 )}
                 
                 <!-- 产品优势（仅产品模式） -->
-                {mode === 'product' && item.advantages && item.advantages.length > 0 && (
+                {(mode === 'product' || mode === 'products') && item.advantages && item.advantages.length > 0 && (
                   <div class="mb-4">
                     <p class="text-sm font-semibold text-gray-700 mb-2">产品优势：</p>
                     <ul class="text-sm text-gray-600 space-y-1">
@@ -265,7 +265,7 @@ const cardConfig = themeConfig.layout.productCard;
               <!-- 底部操作区域 -->
               <div class="flex justify-between items-end pt-4 border-t border-gray-100">
                 <div class="flex space-x-3">
-                  {mode === 'product' && (
+                  {(mode === 'product' || mode === 'products') && (
                     <button 
                       type="button"
                       class="contact-btn inline-block bg-red-600 text-white hover:bg-red-700 font-semibold px-6 py-2 rounded-md transition-colors text-sm"
@@ -276,7 +276,7 @@ const cardConfig = themeConfig.layout.productCard;
                     </button>
                   )}
                   
-                  {mode !== 'product' && (
+                  {mode !== 'product' && mode !== 'products' && (
                     <a href={item.href} class="inline-block bg-red-600 text-white hover:bg-red-700 font-semibold px-6 py-2 rounded-md transition-colors text-sm">
                       {t.actions?.view || '查看详情'}
                     </a>
