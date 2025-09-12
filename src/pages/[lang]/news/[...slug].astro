@@ -19,13 +19,10 @@ export async function getStaticPaths() {
     const news = await getNews(lang);
     for (const newsItem of news) {
       // 仅为有有效 slug 的产品生成详情页
-      if (
-        newsItem &&
-        typeof newsItem.url_slug === "string" &&
-        newsItem.url_slug.trim().length > 0
-      ) {
+      if (newsItem && typeof newsItem.url_slug === "string" && newsItem.url_slug.trim().length > 0 ) {
+        const cleanSlug = newsItem.url_slug.startsWith('/') ? newsItem.url_slug.slice(1) : newsItem.url_slug;
         paths.push({
-          params: { lang, slug: newsItem.url_slug },
+          params: { lang, slug: cleanSlug },
           props: { slug: newsItem.url_slug, lang, news, newsItem },
         });
       }
@@ -78,7 +75,7 @@ const popularArticles = allNews
   .slice(0, 5);
 
   // 面包屑导航
-const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title) : [];
+const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title, newsItem.news_category?.url_slug) : [];
 ---
 <>
 { !hasNews ? (

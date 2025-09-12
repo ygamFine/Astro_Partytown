@@ -6,24 +6,82 @@
 import { generateUrl } from '@utils/tools.js';
 
 /**
- * 生成产品页面的面包屑
+ * 生成详情页面的面包屑（产品、案例、新闻通用）
  */
-export function generateProductBreadcrumbs(lang, productName, categorySlug) {
+export function generateDetailBreadcrumbs(lang, itemName, categorySlug, type = 'products') {
+  const typeConfig = {
+    products: { label: 'products', path: '/products' },
+    case: { label: 'case', path: '/case' },
+    news: { label: 'news', path: '/news' }
+  };
+
+  const config = typeConfig[type] || typeConfig.products;
+  
   const breadcrumbs = [
     { label: 'home', href: generateUrl(lang, '/') },
-    { label: 'products', href: generateUrl(lang, '/products') }
+    { label: config.label, href: generateUrl(lang, config.path) }
   ];
 
   if (categorySlug) {
-    // 去除 categorySlug 前后的所有斜杠
     const cleanSlug = categorySlug.replace(/^\/+|\/+$/g, '');
     breadcrumbs.push({
       label: cleanSlug,
-      href: generateUrl(lang, `/products/${cleanSlug}`)
+      href: generateUrl(lang, `${config.path}/${cleanSlug}`)
     });
   }
 
-  breadcrumbs.push({ label: productName });
+  breadcrumbs.push({ label: itemName });
+
+  return breadcrumbs;
+}
+
+/**
+ * 生成产品页面的面包屑
+ */
+export function generateProductDetailBreadcrumbs(lang, productName, categorySlug) {
+  console.log('generateProductDetailBreadcrumbs', lang, productName, categorySlug)
+  return generateDetailBreadcrumbs(lang, productName, categorySlug, 'products');
+}
+
+/**
+ * 生成案例页面的面包屑
+ */
+export function generateCaseDetailBreadcrumbs(lang, caseName, categorySlug) {
+  console.log('generateCaseDetailBreadcrumbs', lang, caseName, categorySlug)
+  return generateDetailBreadcrumbs(lang, caseName, categorySlug, 'case');
+}
+
+/**
+ * 生成新闻页面的面包屑
+ */
+export function generateNewsDetailBreadcrumbs(lang, newsName, categorySlug) {
+  return generateDetailBreadcrumbs(lang, newsName, categorySlug, 'news');
+}
+
+/**
+ * 生成列表页面的面包屑（产品、案例、新闻通用）
+ */
+export function generateListBreadcrumbs(lang, type = 'products', category = null, page = null) {
+  const typeConfig = {
+    products: { label: 'products', path: '/products' },
+    case: { label: 'case', path: '/case' },
+    news: { label: 'news', path: '/news' }
+  };
+
+  const config = typeConfig[type] || typeConfig.products;
+  
+  const breadcrumbs = [
+    { label: 'home', href: generateUrl(lang, '/') }
+  ];
+
+  if (category) {
+    breadcrumbs.push({ label: config.label, href: generateUrl(lang, config.path) });
+    breadcrumbs.push({ label: category });
+  } else if (page && page > 1) {
+    breadcrumbs.push({ label: config.label, href: generateUrl(lang, `${config.path}/${page}`) });
+  } else {
+    breadcrumbs.push({ label: config.label });
+  }
 
   return breadcrumbs;
 }
@@ -32,65 +90,23 @@ export function generateProductBreadcrumbs(lang, productName, categorySlug) {
  * 生成产品列表页面的面包屑
  */
 export function generateProductListBreadcrumbs(lang, category) {
-  const breadcrumbs = [
-    { label: 'home', href: generateUrl(lang, '/') }
-  ];
-
-  if (category) {
-    breadcrumbs.push({ label: 'products', href: generateUrl(lang, '/products') });
-    breadcrumbs.push({ label: category });
-  } else {
-    breadcrumbs.push({ label: 'products' });
-  }
-
-  return breadcrumbs;
+  return generateListBreadcrumbs(lang, 'products', category);
 }
 
 /**
- * 生成新闻页面的面包屑
+ * 生成案例列表页面的面包屑
  */
-export function generateNewsBreadcrumbs(lang, page) {
-  const breadcrumbs = [
-    { label: 'home', href: generateUrl(lang, '/') },
-    { label: 'news', href: generateUrl(lang, page && page > 1 ? `/news/${page}` : `/news`) }
-  ];
-
-  return breadcrumbs;
+export function generateCaseListBreadcrumbs(lang, category) {
+  return generateListBreadcrumbs(lang, 'case', category);
 }
 
 /**
- * 生成新闻详情页面的面包屑
+ * 生成新闻列表页面的面包屑
  */
-export function generateNewsDetailBreadcrumbs(lang, newsTitle) {
-  return [
-    { label: 'home', href: generateUrl(lang, '/') },
-    { label: 'news', href: generateUrl(lang, '/news') },
-    { label: newsTitle }
-  ];
+export function generateNewsListBreadcrumbs(lang, page) {
+  return generateListBreadcrumbs(lang, 'news', null, page);
 }
 
-/**
- * 生成案例页面的面包屑
- */
-export function generateCaseBreadcrumbs(lang, page) {
-  const breadcrumbs = [
-    { label: 'home', href: generateUrl(lang, '/') },
-    { label: 'case', href: generateUrl(lang, page && page > 1 ? `/case/${page}` : `/case`) }
-  ];
-
-  return breadcrumbs;
-}
-
-/**
- * 生成案例详情页面的面包屑
- */
-export function generateCaseDetailBreadcrumbs(lang, caseTitle) {
-  return [
-    { label: 'home', href: generateUrl(lang, '/') },
-    { label: 'case', href: generateUrl(lang, '/case') },
-    { label: caseTitle }
-  ];
-}
 
 /**
  * 生成关于页面的面包屑

@@ -6,10 +6,11 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { getCategoryInfo, generateProductStaticPaths } from '@utils/pageUtils.js';
+import { getCategoryInfo, generateStaticPaths } from '@utils/pageUtils.js';
 import { generateProductListBreadcrumbs, generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateUrl } from '@utils/tools.js';
+import themeConfig from '@config/theme';
 
 
 // 定义 Props 类型
@@ -21,11 +22,10 @@ interface PageProps {
   items?: any[];
 }
 
-
 // 生成静态路径
 export async function getStaticPaths() {
   const productsPerPage = 9;
-  return generateProductStaticPaths(productsPerPage, 'product');
+  return generateStaticPaths(productsPerPage, 'product');
 }
 
 const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
@@ -74,6 +74,15 @@ const breadcrumbs = categoryPath && categoryPath.length > 0
         lang={lang}
         viewMode="grid"
       />
+
+      {/* 列表描述内容 - 分页上方模式 */}
+      {themeConfig.layout.listDescription.displayMode === 'above-pagination' && (
+        <div class="mt-8 mb-6">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            {/* TODO: 缺少描述字段 */}
+          </p>
+        </div>
+      )}
       
       <!-- 分页控件 -->
       {totalPages && totalPages > 1 && (

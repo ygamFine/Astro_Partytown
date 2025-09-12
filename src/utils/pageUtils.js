@@ -127,7 +127,7 @@ export async function getCategoryInfo(lang, categoryPath, mode = 'products') {
   }
 
   return {
-    current: current || { id: '', name: 'Products', path: '' },
+    current: current || { id: '', name: '', path: '' },
     children: children,
     parents: parents,
     level: categoryPath.length
@@ -218,7 +218,7 @@ export async function generateAllCategoryPaths(dataFetcher, itemsPerPage, mode) 
  * @param {string} contentType - 内容类型，如 'product'
  * @returns {Promise<Array>} 静态路径数组
  */
-export async function generateProductStaticPaths(perPage = 9, contentType = 'product') {
+export async function generateStaticPaths(perPage = 9, contentType = 'product') {
   const paths = [];
 
   try {
@@ -226,10 +226,9 @@ export async function generateProductStaticPaths(perPage = 9, contentType = 'pro
     const languagePromises = SUPPORTED_LANGUAGES.map(async (lang) => {
       const langPaths = [];
       try {
-        // 一次性获取所有产品数据，避免重复调用接口
+        // 一次性获取所有数据，避免重复调用接口
         const allData = await getByCategory(lang, '', contentType);
-
-        // 添加产品首页路径
+        // 添加路径
         const totalPages = Math.max(1, Math.ceil(allData.length / perPage));
         for (let page = 1; page <= totalPages; page++) {
           const startIndex = (page - 1) * perPage;
@@ -264,16 +263,15 @@ export async function generateProductStaticPaths(perPage = 9, contentType = 'pro
               : category.path;
             try {
               // 从已获取的所有产品中过滤出该分类的产品
-              const categoryData = allData.filter((product) => {
-                if (product.product_category) {
-                  const productCategoryPath = product.product_category.url_slug ||
-                    product.product_category.path ||
-                    product.product_category.name;
-                  return productCategoryPath === category.path;
+              const categoryData = allData.filter((item) => {
+                if (item[contentType + '_category']) {
+                  const itemCategoryPath = item[contentType + '_category'].url_slug ||
+                    item[contentType + '_category'].path ||
+                    item[contentType + '_category'].name;
+                  return itemCategoryPath === category.path;
                 }
                 return false;
               });
-
               const totalPages = Math.max(1, Math.ceil(categoryData.length / perPage));
 
               // 为每个分页生成路径
@@ -281,6 +279,7 @@ export async function generateProductStaticPaths(perPage = 9, contentType = 'pro
                 const startIndex = (page - 1) * perPage;
                 const endIndex = startIndex + perPage;
                 const currentPageItems = categoryData.slice(startIndex, endIndex);
+                console.log('currentPageItems', currentPageItems)
 
                 // 构建路径参数
                 const pathSegments = fullPath.split('/').filter((segment) => segment !== '');
@@ -288,7 +287,7 @@ export async function generateProductStaticPaths(perPage = 9, contentType = 'pro
                 const params = page === 1
                   ? { lang, page: pathString }
                   : { lang, page: `${pathString}/${page}` };
-
+                console.log('pathSegments', pathSegments)
                 langPaths.push({
                   params,
                   props: {
@@ -328,7 +327,6 @@ export async function generateProductStaticPaths(perPage = 9, contentType = 'pro
           }
         });
       }
-
       return langPaths;
     });
 

@@ -5,57 +5,67 @@ import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { getCases } from '@apis/common.js';
-import { generatePaginationPaths, parsePageParam } from '@utils/pageUtils.js';
 import { getDictionary } from '@i18n/dictionaries.js';
-import { generateCaseBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { getCategoryInfo, generateStaticPaths } from '@utils/pageUtils.js';
+import { generateCategoryBreadcrumbs, generateCaseListBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
 import { generateUrl } from '@utils/tools.js';
 
-// 为分页生成静态路径，只为配置中启用的语言生成
-export async function getStaticPaths() {
-  const casesPerPage = 9; // 每页显示9个新闻（3行x3列）
-  const paths = generatePaginationPaths(getCases, casesPerPage, 'casesPage')
-  return paths;
+// 定义 Props 类型
+interface PageProps {
+  lang: string;
+  categoryPath?: string;
+  page?: number;
+  totalPages?: number;
+  items?: any[];
 }
 
-const { lang, totalPages, items: gridItems } = Astro.props;
+// 生成静态路径
+export async function getStaticPaths() {
+  const productsPerPage = 9;
+  return generateStaticPaths(productsPerPage, 'case');
+}
 
+const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
+console.log(['categoryPath', categoryPath])
+// 将字符串形式的 categoryPath 转换为数组
+const categoryPathArray = categoryPath && categoryPath.length > 0 
+  ? categoryPath.split('/').filter(segment => segment !== '')
+  : [];
 
-
-// 解析页码参数
-const actualCurrentPage = parsePageParam(Astro.params.page, 'casesPage');
-
-// 加载翻译文件
+const categoryInfo = await getCategoryInfo(lang, categoryPathArray, 'case');
 const t = await getDictionary(lang);
 
 // 面包屑导航
-const breadcrumbs = generateCaseBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
-// 生成分页基础URL
-const baseUrl = generateUrl(lang, '/cases');
+console.log('参数打印', lang, categoryPath, t.case.title)
+const breadcrumbs = categoryPath && categoryPath.length > 0 
+  ? generateCategoryBreadcrumbs(lang, categoryPath, '/case', t.case.title)
+  : generateCaseListBreadcrumbs(lang);
+
 ---
 
 <SecondaryPageLayout 
-  title={t.case.title || "Case"}
+title={categoryInfo.current.name || t.case.title}
   breadcrumbs={breadcrumbs}
   pageType="case"
   currentSection="case"
   contentType="grid"
   lang={lang}
 >
-  {gridItems.length > 0 ? (
+  {items && items.length > 0 ? (
     <>
       <!-- 视图切换控件 -->
       <ViewToggle 
         currentView="grid"
         translations={t.common}
         lang={lang}
-        totalItems={gridItems.length}
+        totalItems={items?.length || 0}
         showTotal={true}
       />
       
       <!-- 案例列表 -->
       <EnhancedGridList 
-        items={gridItems}
+        items={items || []}
         itemsPerRow={3}
         maxRows={3}
         mode="case"
@@ -73,13 +83,15 @@ const baseUrl = generateUrl(lang, '/cases');
         </div>
       )}
       
-      <!-- 分页 -->
-      <Pagination 
-        currentPage={actualCurrentPage}
-        totalPages={totalPages}
-        baseUrl={baseUrl}
-        i18n={t.common}
-      />
+      <!-- 分页控件 -->
+      {totalPages && totalPages > 1 && (
+        <Pagination
+          currentPage={page || 1}
+          totalPages={totalPages}
+          baseUrl={generateUrl(lang, '/case')}
+          i18n={t.common}
+        />
+      )}
     </>
   ) : (
     <EmptyState 

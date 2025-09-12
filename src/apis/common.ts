@@ -126,9 +126,9 @@ export async function getByCategory(locale = 'en', slug: string, model: string) 
     
     // 构建基础URL
     const baseUrls: any = {
-      product: `/api/product-manages`,
+      products: `/api/product-manages`,
       news: `/api/news`,
-      cases: `/api/case`,
+      case: `/api/cases`,
     }
     
     if (!baseUrls[model]) {
@@ -165,8 +165,7 @@ export async function getNews(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取新闻列表
     if (slugOrId === undefined) {
-      const baseUrl = `${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=all`;
-      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+      const json = await fetchJson(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=all`);
 
       // 处理所有新闻的图片，使用缓存的图片
       const news = json.data?.map((item: any) => ({

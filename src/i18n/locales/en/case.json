@@ -1,10 +1,10 @@
 {
   "breadcrumb": {
     "home": "Home",
-    "cases": "Customer Cases"
+    "cases": "Cases"
   },
   "case": {
-    "title": "Customer Cases",
+    "title": "Cases",
     "description": "Discover how our machinery solutions have helped customers achieve success across various industries",
     "view_case": "View Case",
     "case_details": "Case Details",

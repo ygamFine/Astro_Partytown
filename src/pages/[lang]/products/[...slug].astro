@@ -11,7 +11,7 @@ import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
 import { getProducts, getNews } from '@apis/common.js';
 import { extractUrl, getFirstImage } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
-import { generateProductBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { generateProductDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
 
 export async function getStaticPaths() {
@@ -75,7 +75,7 @@ const popularProducts = recommendedProducts.map((p: any) => ({
 }));
 
 // 面包屑导航
-const breadcrumbs = hasProduct ? generateProductBreadcrumbs(lang, product.title, product.product_category?.url_slug) : [];
+const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.title, product.product_category?.url_slug) : [];
 ---
 <>
 { !hasProduct ? (

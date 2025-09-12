@@ -1,64 +1,78 @@
 ---
+export const prerender = true;
 
 import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
 import EnhancedGridList from '@components/templates/common/EnhancedGridList.astro';
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { getNews } from '@apis/common.js';
-import { generatePaginationPaths, parsePageParam } from '@utils/pageUtils.js';
+import { generateStaticPaths, getCategoryInfo } from '@utils/pageUtils.js';
 import { getDictionary } from '@i18n/dictionaries.js';
-import { generateNewsBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
-import { generateUrl } from '@utils/tools.js';
+import { generateCategoryBreadcrumbs, generateNewsListBreadcrumbs } from '@utils/breadcrumbUtils';
+import { generateUrl } from '@utils/tools';
 
-// 为分页生成静态路径，只为配置中启用的语言生成
-export async function getStaticPaths() {
-  const newsPerPage = 9; // 每页显示9个新闻（3行x3列）
-  return generatePaginationPaths(getNews, newsPerPage, 'newPage');
+// 定义 Props 类型
+interface PageProps {
+  lang: string;
+  categoryPath?: string;
+  page?: number;
+  totalPages?: number;
+  items?: any[];
 }
 
-const { lang, totalPages, items: gridItems } = Astro.props;
+const MODEL = 'news';
+const MODEL_PATH = '/news';
 
-// 解析页码参数
-const actualCurrentPage = parsePageParam(Astro.params.page, 'newPage');
 
-// 加载翻译文件
+// 生成静态路径
+export async function getStaticPaths() {
+  const productsPerPage = 9;
+  return generateStaticPaths(productsPerPage, 'news');
+}
+
+const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
+
+// 将字符串形式的 categoryPath 转换为数组
+const categoryPathArray = categoryPath && categoryPath.length > 0 
+  ? categoryPath.split('/').filter(segment => segment !== '')
+  : [];
+
+const categoryInfo = await getCategoryInfo(lang, categoryPathArray, MODEL);
 const t = await getDictionary(lang);
 
-
 // 面包屑导航
-const breadcrumbs = generateNewsBreadcrumbs(lang, actualCurrentPage > 1 ? actualCurrentPage : undefined);
+const breadcrumbs = categoryPath && categoryPath.length > 0 
+  ? generateCategoryBreadcrumbs(lang, categoryPath, MODEL_PATH, t.product.title)
+  : generateNewsListBreadcrumbs(lang);
 
-// 生成分页基础URL
-const baseUrl = generateUrl(lang, '/news');
 ---
 
 <SecondaryPageLayout 
-  title={t.news.title}
+  title={categoryInfo.current.name || t.news.title}
   breadcrumbs={breadcrumbs}
-  currentSection="news"
-  pageType="news"
+  currentSection={MODEL}
+  pageType={MODEL}
   contentType="grid"
   lang={lang}
 >
-  {gridItems.length > 0 ? (
+  {items && items.length > 0 ? (
     <>
       <!-- 视图切换控件 -->
       <ViewToggle 
         currentView="grid"
         translations={t.common}
         lang={lang}
-        totalItems={gridItems.length}
+        totalItems={items?.length || 0}
         showTotal={true}
       />
       
       <!-- 新闻列表 -->
       <EnhancedGridList 
-        items={gridItems}
+        items={items || []}
         itemsPerRow={3}
         maxRows={3}
-        mode="news"
+        mode={MODEL}
         translations={t.common}
         lang={lang}
         viewMode="grid"
@@ -73,19 +87,21 @@ const baseUrl = generateUrl(lang, '/news');
         </div>
       )}
       
-      <!-- 分页 -->
-      <Pagination 
-        currentPage={actualCurrentPage}
-        totalPages={totalPages}
-        baseUrl={baseUrl}
-        i18n={t.common}
-      />
+      <!-- 分页控件 -->
+      {totalPages && totalPages > 1 && (
+        <Pagination
+          currentPage={page || 1}
+          totalPages={totalPages}
+          baseUrl={generateUrl(lang, MODEL_PATH)}
+          i18n={t.common}
+        />
+      )}
     </>
   ) : (
     <EmptyState 
       title={t.news.empty_state.no_news_title}
       description={t.news.empty_state.no_news_description}
-      icon="news"
+      icon={MODEL}
       lang={lang}
   />
   )}

@@ -14,26 +14,22 @@ import { getDictionary } from '@i18n/dictionaries.js';
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
   const paths: any[] = [];
-
   for (const lang of SUPPORTED_LANGUAGES) {
     const cases = await getCases(lang);
     for (const casesItem of cases) {
       // 仅为有有效 slug 的产品生成详情页
-      if (
-        casesItem &&
-        typeof casesItem.url_slug === "string" &&
-        casesItem.url_slug.trim().length > 0
-      ) {
+      if (casesItem && typeof casesItem.url_slug === "string" && casesItem.url_slug.trim().length > 0) {
+        const cleanSlug = casesItem.url_slug.startsWith('/') ? casesItem.url_slug.slice(1) : casesItem.url_slug;
         paths.push({
-          params: { lang, slug: casesItem.url_slug },
+          params: { lang, slug: cleanSlug },
           props: { slug: casesItem.url_slug, lang, cases, casesItem },
         });
       }
     }
   }
-
   return paths;
 }
+
 const { lang, cases, casesItem } = Astro.props;
 
 // 如果产品不存在，返回404
@@ -64,7 +60,7 @@ const relatedCases = cases.filter((c: any) => c.case_category?.id == casesItem?.
 
 
 // 面包屑导航
-const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.title) : [];
+const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.title, casesItem.case_category?.url_slug) : [];
 ---
 <>
 {!hasCase ? (
