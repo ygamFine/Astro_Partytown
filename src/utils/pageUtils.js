@@ -279,7 +279,6 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
                 const startIndex = (page - 1) * perPage;
                 const endIndex = startIndex + perPage;
                 const currentPageItems = categoryData.slice(startIndex, endIndex);
-                console.log('currentPageItems', currentPageItems)
 
                 // 构建路径参数
                 const pathSegments = fullPath.split('/').filter((segment) => segment !== '');
@@ -287,7 +286,6 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
                 const params = page === 1
                   ? { lang, page: pathString }
                   : { lang, page: `${pathString}/${page}` };
-                console.log('pathSegments', pathSegments)
                 langPaths.push({
                   params,
                   props: {

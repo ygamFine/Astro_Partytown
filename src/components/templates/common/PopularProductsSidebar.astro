@@ -37,8 +37,8 @@ const t = await getDictionary(lang);
           <a href={generateUrl(lang, '/products', popularProducts.url_slug)} class="block">
             <div class="aspect-[3/2] overflow-hidden">
               <Image 
-                src={popularProducts.displayImage && popularProducts.displayImage.length > 0 ? popularProducts.displayImage[0]?.url : ''} 
-                alt={popularProducts.displayImage && popularProducts.displayImage.length > 0 ? popularProducts.displayImage[0]?.name : ''}
+                src={popularProducts.displayImage && popularProducts.displayImage.length > 0 ? popularProducts.displayImage[0]?.url : '/images/placeholder.webp'} 
+                alt={popularProducts.displayImage && popularProducts.displayImage.length > 0 ? popularProducts.displayImage[0]?.name : 'placeholder'}
                 width={400}
                 height={300}
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

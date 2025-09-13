@@ -39,7 +39,6 @@ export function generateDetailBreadcrumbs(lang, itemName, categorySlug, type = '
  * 生成产品页面的面包屑
  */
 export function generateProductDetailBreadcrumbs(lang, productName, categorySlug) {
-  console.log('generateProductDetailBreadcrumbs', lang, productName, categorySlug)
   return generateDetailBreadcrumbs(lang, productName, categorySlug, 'products');
 }
 
@@ -47,7 +46,6 @@ export function generateProductDetailBreadcrumbs(lang, productName, categorySlug
  * 生成案例页面的面包屑
  */
 export function generateCaseDetailBreadcrumbs(lang, caseName, categorySlug) {
-  console.log('generateCaseDetailBreadcrumbs', lang, caseName, categorySlug)
   return generateDetailBreadcrumbs(lang, caseName, categorySlug, 'case');
 }
 

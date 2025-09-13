@@ -127,7 +127,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
                   {/* 所有图片 */}
                   {product.image && product.image.length > 0 && product.image.map((img: any, index: any) => (
                     <Image 
-                      src={img.url} 
+                      src={img.url || '/images/placeholder.webp'} 
                       alt={`${img.name} ${index + 1}`}
                       width={800}
                       height={400}
@@ -166,7 +166,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
               >
                 {product.image && product.image.length > 0 && product.image.map((img: any, index: number) => (
                   <Image 
-                    src={img.url} 
+                    src={img.url || '/images/placeholder.webp'} 
                     alt={`${img.name} ${index + 1}`}
                     width={80}
                     height={80}
