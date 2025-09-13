@@ -126,7 +126,7 @@ export async function getByCategory(locale = 'en', slug: string, model: string) 
     
     // 构建基础URL
     const baseUrls: any = {
-      products: `/api/product-manages`,
+      product: `/api/product-manages`,
       news: `/api/news`,
       case: `/api/cases`,
     }

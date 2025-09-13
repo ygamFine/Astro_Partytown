@@ -4,7 +4,6 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { getCases } from '@apis/common.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { getCategoryInfo, generateStaticPaths } from '@utils/pageUtils.js';
 import { generateCategoryBreadcrumbs, generateCaseListBreadcrumbs } from '@utils/breadcrumbUtils.js';
@@ -26,7 +25,7 @@ const MODEL_PATH = '/case';
 // 生成静态路径
 export async function getStaticPaths() {
   const productsPerPage = 9;
-  return generateStaticPaths(productsPerPage, MODEL);
+  return generateStaticPaths(productsPerPage, 'case');
 }
 
 const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
