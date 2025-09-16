@@ -5,7 +5,7 @@ import partytown from '@astrojs/partytown';
 import vercel from '@astrojs/vercel';
 import critters from 'astro-critters';
 
-import { getSupportedLanguages } from './src/lib/languageConfig.js';
+import { getSupportedLanguages } from './src/utils/languageConfig';
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
 export default defineConfig({

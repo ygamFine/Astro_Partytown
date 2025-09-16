@@ -4,7 +4,7 @@
  * 支持多语言站点地图生成
  */
 
-import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes.js';
 import { getProducts } from './strapi.js';
 import { getNews } from './strapi.js';
 import { getCases } from './strapi.js';

@@ -1,5 +1,5 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from '@lib/strapiClient.js';
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
 
 // 验证环境变量
 if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {

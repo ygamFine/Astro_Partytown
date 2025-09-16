@@ -8,7 +8,7 @@ import EmptyState from "@components/templates/common/EmptyState.astro";
 import { getNews, getProducts } from "@apis/common";
 import { getDictionary } from "@i18n/dictionaries";
 import { getFirstImage, formatDate, generateUrl } from "@utils/tools.js";
-import { SUPPORTED_LANGUAGES } from "@utils/i18n-routes.js";
+import { SUPPORTED_LANGUAGES } from "@utils/i18n-routes";
 import { generateNewsDetailBreadcrumbs } from "@utils/breadcrumbUtils.js";
 
 export async function getStaticPaths() {

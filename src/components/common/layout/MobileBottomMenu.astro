@@ -1,109 +1,113 @@
 ---
-import { getMobileBottomMenu } from '../../../lib/strapi.js';
-import { getIconClass } from '../../../lib/iconUtils.js';
-import { generateUrl } from '@utils/tools.js';
-import { processImagesForAstro } from '../../../lib/imageProcessor.js';
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
+import { getMobileBottomMenu } from "@apis/common";
+import { getIconClass } from "@utils/iconUtils";
+import { generateUrl } from "@utils/tools";
 
 export interface Props {
   lang?: string;
   currentPath?: string;
 }
 
-const { lang = 'en', currentPath = '/' } = Astro.props;
+const { lang = "en", currentPath = "/" } = Astro.props;
 
 // 获取移动端底部菜单数据（按语言缓存）
-const rawMenuItems = await getMobileBottomMenu(lang);
-
-// 处理菜单项，使用和Banner相同的图片处理方式
-const menuItems = rawMenuItems.map((item: any) => {
-  if (item.iconType === 'image' && item.icon) {
-    // 使用 processImagesForAstro 处理图标，就像Banner组件一样
-    const processedImages = processImagesForAstro([item.icon].filter(Boolean));
-    return {
-      ...item,
-      processedIcon: processedImages.length > 0 ? processedImages[0] : null
-    };
-  }
-  return {
-    ...item,
-    processedIcon: null
-  };
-});
+const menuItems = await getMobileBottomMenu(lang);
 
 // 判断当前路径是否激活
 function isActive(path: string, currentPath: string): boolean {
   // 特殊链接（tel:, mailto:, #whatsapp, #contact-modal等）永远不激活
-  if (path.startsWith('tel:') || path.startsWith('mailto:') || path.startsWith('#')) {
+  if (
+    path.startsWith("tel:") ||
+    path.startsWith("mailto:") ||
+    path.startsWith("#")
+  ) {
     return false;
   }
-  
+
   // 外部链接不激活
-  if (path.startsWith('http://') || path.startsWith('https://')) {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
     return false;
   }
-  
+
   // 首页特殊处理 - 更精确的匹配
-  const isHomePath = path === '/' || !!path.match(/^\/[a-z]{2}(-[A-Z]{2,4})?\/$/);
+  const isHomePath =
+    path === "/" || !!path.match(/^\/[a-z]{2}(-[A-Z]{2,4})?\/$/);
   if (isHomePath) {
-    const isCurrentHome = currentPath === '/' || !!currentPath.match(/^\/[a-z]{2}(-[A-Z]{2,4})?\/$/);
+    const isCurrentHome =
+      currentPath === "/" ||
+      !!currentPath.match(/^\/[a-z]{2}(-[A-Z]{2,4})?\/$/);
     return isCurrentHome;
   }
-  
+
   // 其他内部链接的精确匹配逻辑
   // 移除语言前缀进行比较
-  const normalizedPath = path.replace(/^\/[a-z]{2}(-[A-Z]{2,4})?/, '') || '/';
-  const normalizedCurrentPath = currentPath.replace(/^\/[a-z]{2}(-[A-Z]{2,4})?/, '') || '/';
-  
+  const normalizedPath = path.replace(/^\/[a-z]{2}(-[A-Z]{2,4})?/, "") || "/";
+  const normalizedCurrentPath =
+    currentPath.replace(/^\/[a-z]{2}(-[A-Z]{2,4})?/, "") || "/";
+
   // 如果标准化后的路径是根路径，只有当前路径也是根路径时才匹配
-  if (normalizedPath === '/') {
-    return normalizedCurrentPath === '/';
+  if (normalizedPath === "/") {
+    return normalizedCurrentPath === "/";
   }
-  
+
   // 其他路径使用更严格的匹配：路径必须完全匹配或者是路径的子路径
   // 确保路径边界匹配，避免 /news 匹配到 /news-center
-  return normalizedCurrentPath === normalizedPath || 
-         normalizedCurrentPath.startsWith(normalizedPath + '/') ||
-         (normalizedCurrentPath.startsWith(normalizedPath) && normalizedPath.endsWith('/'));
+  return (
+    normalizedCurrentPath === normalizedPath ||
+    normalizedCurrentPath.startsWith(normalizedPath + "/") ||
+    (normalizedCurrentPath.startsWith(normalizedPath) &&
+      normalizedPath.endsWith("/"))
+  );
 }
 
 // 获取菜单链接
-function getMenuLink(item: { customLink?: string; inlineAddress?: string; externalLink?: string; type: string }, lang: string): string {
+function getMenuLink(
+  item: {
+    customLink?: string;
+    inlineAddress?: string;
+    externalLink?: string;
+    type: string;
+  },
+  lang: string,
+): string {
   // 特殊类型处理：phone、whatsapp、email（优先使用 field_zidingyilianjie）
-  if (item.type === 'phone' && (item.externalLink || item.customLink)) {
+  if (item.type === "phone" && (item.externalLink || item.customLink)) {
     const phoneNumber = item.externalLink || item.customLink;
     return `tel:${phoneNumber}`;
   }
-  
-  if (item.type === 'whatsapp' && (item.externalLink || item.customLink)) {
+
+  if (item.type === "whatsapp" && (item.externalLink || item.customLink)) {
     const phoneNumber = item.externalLink || item.customLink;
     return `#whatsapp-${phoneNumber}`;
   }
-  
-  if (item.type === 'email' && (item.externalLink || item.customLink)) {
+
+  if (item.type === "email" && (item.externalLink || item.customLink)) {
     const email = item.externalLink || item.customLink;
     return `mailto:${email}`;
   }
-  
+
   // 优先级：field_zidingyilianjie > Inline_address > 默认值
   if (item.externalLink) {
     // field_zidingyilianjie 字段，根据内容判断是内链还是外链
     const link = item.externalLink;
-    if (link.startsWith('/')) {
+    if (link.startsWith("/")) {
       // 内链地址，使用 buildUrl 根据环境自动处理语言前缀
       return generateUrl(lang, link);
-    } else if (link.startsWith('http://') || link.startsWith('https://')) {
+    } else if (link.startsWith("http://") || link.startsWith("https://")) {
       // 外链，直接使用
       return link;
     } else {
       // 相对路径，当作内链处理
-      const cleanPath = link.startsWith('/') ? link : `/${link}`;
+      const cleanPath = link.startsWith("/") ? link : `/${link}`;
       return generateUrl(lang, cleanPath);
     }
   }
   if (item.inlineAddress) {
     // Inline_address 字段，内链地址
-    const cleanPath = item.inlineAddress.startsWith('/') ? item.inlineAddress : `/${item.inlineAddress}`;
+    const cleanPath = item.inlineAddress.startsWith("/")
+      ? item.inlineAddress
+      : `/${item.inlineAddress}`;
     return generateUrl(lang, cleanPath);
   }
   if (item.customLink) {
@@ -111,69 +115,77 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
     return item.customLink;
   }
   // 默认值
-  return '#';
+  return "#";
 }
-
 // 注意：getIconClass 现在从 iconUtils 导入，提供全站统一的图标管理
 ---
 
 <!-- 移动端底部菜单 -->
-<nav 
+<nav
   class="mobile-bottom-menu fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg md:hidden"
   data-pagefind-ignore
 >
   <div class="flex items-center justify-around px-2 py-2">
-    {menuItems.map((item: { 
-      id: number; 
-      type: string; 
-      content: string; 
-      icon: string; 
-      iconType: string; 
-      customLink?: string;
-      inlineAddress?: string;
-      externalLink?: string;
-    }) => {
-      const link = getMenuLink(item, lang);
-      const active = isActive(link, currentPath);
-      
-      // 为WhatsApp类型保存原始号码（带格式）用于显示
-      const originalPhoneNumber = item.type === 'whatsapp' ? (item.externalLink || item.customLink) : null;
-      
-      return (
-        <a
-          href={link}
-          class={`flex flex-col items-center justify-center w-full py-1 px-2 transition-all duration-200 ${
-            active 
-              ? 'text-blue-600' 
-              : 'text-gray-600 hover:text-blue-500'
-          }`}
-          data-menu-type={item.type}
-          data-menu-id={item.id}
-          data-original-phone={originalPhoneNumber}
-        >
-                  <div class={`w-7 h-7 mb-1 transition-colors duration-200 flex items-center justify-center ${
-          active ? 'text-blue-600' : 'text-gray-500'
-        }`}>
-          {item.iconType === 'image' && (item as any).processedIcon ? (
-            <Image 
-              src={(item as any).processedIcon}
-              alt="menu icon" 
-              width={28}
-              height={28}
-              loading="lazy"
-              decoding="async"
-              class="w-7 h-7 object-contain"
-            />
-          ) : (
-            <i class={`${getIconClass(item.icon)} text-2xl`}></i>
-          )}
-        </div>
-          <span class="text-sm font-medium leading-tight text-center block">
-            {item.content}
-          </span>
-        </a>
-      );
-    })}
+    {
+      menuItems.map(
+        (item: {
+          id: number;
+          type: string;
+          content: string;
+          icon: string;
+          iconType: string;
+          customLink?: string;
+          inlineAddress?: string;
+          externalLink?: string;
+        }) => {
+          const link = getMenuLink(item, lang);
+          const active = isActive(link, currentPath);
+
+          // 为WhatsApp类型保存原始号码（带格式）用于显示
+          const originalPhoneNumber =
+            item.type === "whatsapp"
+              ? item.externalLink || item.customLink
+              : null;
+
+          return (
+            <a
+              href={link}
+              class={`flex flex-col items-center justify-center w-full py-1 px-2 transition-all duration-200 ${
+                active ? "text-blue-600" : "text-gray-600 hover:text-blue-500"
+              }`}
+              data-menu-type={item.type}
+              data-menu-id={item.id}
+              data-original-phone={originalPhoneNumber}
+            >
+              <div
+                class={`w-7 h-7 mb-1 transition-colors duration-200 flex items-center justify-center ${
+                  active ? "text-blue-600" : "text-gray-500"
+                }`}
+              >
+                {item.iconType === "image" && (item as any).icon?.url ? (
+                  <Image
+                    src={(item as any).icon.url}
+                    alt={(item as any).icon.name}
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-7 h-7 object-contain"
+                  />
+                ) : (
+                  <i
+                    class={`iconfont ${typeof item.icon === "object" && item.icon !== null ? (item.icon as any)?.url : item.icon} text-2xl`}
+                  />
+                )}
+              </div>
+              <span class="text-sm font-medium leading-tight text-center block">
+                {item.content}
+              </span>
+            </a>
+          );
+        },
+      )
+    }
   </div>
 </nav>
 
@@ -188,37 +200,37 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
     background-color: rgba(255, 255, 255, 0.95);
     min-height: 60px;
   }
-  
+
   /* 确保图标和文字有足够间距 */
   .mobile-bottom-menu a {
     min-height: 50px;
     gap: 2px;
   }
-  
+
   .mobile-bottom-menu .w-7 {
     flex-shrink: 0;
   }
-  
+
   .mobile-bottom-menu span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
   }
-  
+
   /* 激活状态动画 */
   .mobile-bottom-menu a[data-menu-type] {
     position: relative;
     overflow: hidden;
   }
-  
+
   .mobile-bottom-menu a[data-menu-type]:active {
     transform: scale(0.95);
   }
-  
+
   /* 激活状态指示器 */
   .mobile-bottom-menu a[data-menu-type].text-blue-600::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -2px;
     left: 50%;
@@ -228,42 +240,42 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
     background-color: #2563eb;
     border-radius: 50%;
   }
-  
+
   /* 响应式调整 */
   @media (max-width: 360px) {
     .mobile-bottom-menu .text-sm {
       font-size: 11px;
     }
-    
+
     .mobile-bottom-menu .w-7 {
       width: 22px;
       height: 22px;
     }
-    
+
     .mobile-bottom-menu .text-2xl {
       font-size: 18px;
     }
   }
-  
+
   /* 深色模式支持 */
   @media (prefers-color-scheme: dark) {
     .mobile-bottom-menu {
       background-color: rgba(17, 24, 39, 0.95);
       border-color: #374151;
     }
-    
+
     .mobile-bottom-menu a {
       color: #9ca3af;
     }
-    
+
     .mobile-bottom-menu a:hover {
       color: #60a5fa;
     }
-    
+
     .mobile-bottom-menu a.text-blue-600 {
       color: #60a5fa;
     }
-    
+
     .mobile-bottom-menu a.text-blue-600 .w-7 {
       color: #60a5fa;
     }
@@ -272,79 +284,85 @@ function getMenuLink(item: { customLink?: string; inlineAddress?: string; extern
 
 <script>
   // 移动端底部菜单交互逻辑
-  document.addEventListener('DOMContentLoaded', function() {
-    const menuItems = document.querySelectorAll('.mobile-bottom-menu a[data-menu-type]');
-    
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuItems = document.querySelectorAll(
+      ".mobile-bottom-menu a[data-menu-type]",
+    );
+
     // 菜单项处理
-    
+
     menuItems.forEach((item: Element) => {
-      item.addEventListener('click', function(this: HTMLElement, e: Event) {
-        const menuType = this.getAttribute('data-menu-type');
-        const href = this.getAttribute('href');
-        
+      item.addEventListener("click", function (this: HTMLElement, e: Event) {
+        const menuType = this.getAttribute("data-menu-type");
+        const href = this.getAttribute("href");
+
         // 处理特殊链接类型
         if (href) {
           // 电话号码 - 直接拨号
-          if (href.startsWith('tel:')) {
+          if (href.startsWith("tel:")) {
             // tel: 链接会自动被浏览器处理，不需要阻止默认行为
             return;
           }
-          
+
           // 邮件 - 直接打开邮件应用
-          if (href.startsWith('mailto:')) {
+          if (href.startsWith("mailto:")) {
             // mailto: 链接会自动被浏览器处理，不需要阻止默认行为
             return;
           }
-          
+
           // WhatsApp - 自定义处理
-          if (href.startsWith('#whatsapp-')) {
+          if (href.startsWith("#whatsapp-")) {
             e.preventDefault();
             // 获取原始格式的号码（用于显示），或从链接中提取
-            const originalPhone = this.getAttribute('data-original-phone');
-            const phoneNumber = originalPhone || href.replace('#whatsapp-', '');
-            
+            const originalPhone = this.getAttribute("data-original-phone");
+            const phoneNumber = originalPhone || href.replace("#whatsapp-", "");
+
             // 拨打时去除所有非数字和+号的字符（空格、短横线等）
-            const cleanedNumber = phoneNumber.replace(/[^\d+]/g, '');
-            const message = encodeURIComponent('您好，我想了解更多关于您的产品信息。');
-            window.open(`https://wa.me/${cleanedNumber}?text=${message}`, '_blank');
+            const cleanedNumber = phoneNumber.replace(/[^\d+]/g, "");
+            const message =
+              encodeURIComponent("您好，我想了解更多关于您的产品信息。");
+            window.open(
+              `https://wa.me/${cleanedNumber}?text=${message}`,
+              "_blank",
+            );
             return;
           }
-          
+
           // 其他特殊处理的链接
-          if (href === '#contact-modal') {
+          if (href === "#contact-modal") {
             // 这个会在后续的特殊菜单类型处理中被处理
-          } else if (href !== '#') {
+          } else if (href !== "#") {
             // 外部链接
-            if (href.startsWith('http://') || href.startsWith('https://')) {
+            if (href.startsWith("http://") || href.startsWith("https://")) {
               e.preventDefault();
-              window.open(href, '_blank');
+              window.open(href, "_blank");
               return;
             }
             // 内部链接正常跳转
             return;
           }
         }
-        
+
         // 处理特殊菜单类型
-        if (menuType === 'inquiry' && href === '#contact-modal') {
+        if (menuType === "inquiry" && href === "#contact-modal") {
           e.preventDefault();
           // 触发联系表单模态框
-          const contactModal = document.getElementById('contact-modal');
+          const contactModal = document.getElementById("contact-modal");
           if (contactModal) {
-            contactModal.classList.remove('hidden');
-            contactModal.classList.add('flex');
+            contactModal.classList.remove("hidden");
+            contactModal.classList.add("flex");
           }
           return;
         }
-        
+
         // 添加点击反馈
-        (this as HTMLElement).style.transform = 'scale(0.95)';
+        (this as HTMLElement).style.transform = "scale(0.95)";
         setTimeout(() => {
-          (this as HTMLElement).style.transform = '';
+          (this as HTMLElement).style.transform = "";
         }, 150);
       });
     });
-    
+
     // 移除滚动隐藏菜单功能，保持菜单始终可见
   });
 </script>

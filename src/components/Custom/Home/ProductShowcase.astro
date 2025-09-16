@@ -36,8 +36,6 @@ const {
 
 // 安全处理产品数据
 const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
-console.log('获取到的 title', title);
-console.log('获取到的 description', description);
 // 为每个产品生成唯一ID
 const productIds = safeProducts.map((_, index) => `product-${index}`);
 

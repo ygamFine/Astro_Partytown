@@ -25,7 +25,7 @@ const banners = await getBannerData('homepage');
 <section class="banner-container" id="homepage-banner">
   <!-- Banner轮播 -->
   <div class="banner-carousel">
-    {banners.map((banner, index) => (
+    {(banners && Array.isArray(banners)) ? banners.map((banner, index) => (
               <div class={`banner-slide ${index === 0 ? 'active' : ''}`}>
           {/* PC端图片/视频 */}
           <div class="desktop-banner-image">
@@ -100,7 +100,7 @@ const banners = await getBannerData('homepage');
             )}
           </div>
         </div>
-    )  )  }
+    )) : null}
   </div>
 
   <!-- Progress Bar Controller - 原始样式 -->
@@ -120,7 +120,7 @@ const banners = await getBannerData('homepage');
 
   <!-- 移动端滑动指示器 -->
   <div class="mobile-swipe-indicator">
-    {banners.length > 1 && banners.map((_, index) => (
+    {banners && Array.isArray(banners) && banners.length > 1 && banners.map((_, index) => (
       <div class={`swipe-dot ${index === 0 ? 'active' : ''}`} data-slide={index}></div>
     ))}
   </div>

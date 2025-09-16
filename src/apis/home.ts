@@ -1,5 +1,5 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from '@lib/strapiClient.js';
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
 import { extractUrl } from '@utils/tools';
 
 // 验证环境变量
@@ -25,14 +25,16 @@ export async function getHomepageContent(lang: string) {
       productShowcase: {
         title: homepageData.product_showcase.title,
         description: homepageData.product_showcase.description,
-        products: homepageData.product_showcase.products?.map((item: any) => {
-          return {
-            ...item,
-            image: extractUrl(item.picture, true),
-            url_text: item.url_text,
-            bigImage: extractUrl(item.product_big, true),
-          }
-        }) || [],
+        products: (homepageData.product_showcase.products && Array.isArray(homepageData.product_showcase.products)) 
+          ? homepageData.product_showcase.products.map((item: any) => {
+              return {
+                ...item,
+                image: extractUrl(item.picture, true),
+                url_text: item.url_text,
+                bigImage: extractUrl(item.product_big, true),
+              }
+            })
+          : [],
       },
       companyIntroduction: {
         title: homepageData.company_introduction.title,
