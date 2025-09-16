@@ -1,0 +1,52 @@
+---
+export const prerender = true;
+
+import SecondaryPageLayout from '@components/templates/layout/SecondaryPageLayout.astro';
+import { getDictionary } from '@i18n/dictionaries';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
+import { getAbout } from '@apis/common';
+// 使用 Astro 内置的 i18n 路由
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of SUPPORTED_LANGUAGES) {
+    const abouts = await getAbout(lang);
+    for (const about of abouts) {
+      paths.push({
+        params: {
+          lang,
+          about: about.url_slug.includes('/about') ? about.url_slug : '/about' + about.url_slug
+        },
+        props: {
+          lang,
+          title: about.title,
+          details: about.details,
+          url_slug: about.url_slug
+        }
+      })
+    }
+
+  }
+  return paths;
+}
+
+const { lang, title, details, url_slug } = Astro.props;
+const t = await getDictionary(lang);
+
+// 面包屑导航
+
+const breadcrumbs = url_slug === '/about' ? generateCategoryBreadcrumbs(lang, {path: '', name: ''}, '/about', t.about.title) : generateCategoryBreadcrumbs(lang, {path: url_slug, name: title || t.about.title}, '/about', t.about.title);
+
+---
+
+<SecondaryPageLayout 
+  title={title || t.about.title}
+breadcrumbs={breadcrumbs}
+  currentSection="about"
+  contentType="content"
+  lang={lang}
+  pageType="about"
+  showListDescription={true}
+>
+<div class="container mx-auto" set:html={details}></div>
+</SecondaryPageLayout> 

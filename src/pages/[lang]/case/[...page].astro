@@ -13,7 +13,10 @@ import { generateUrl } from '@utils/tools.js';
 // 定义 Props 类型
 interface PageProps {
   lang: string;
-  categoryPath?: string;
+  categoryPath?: {
+    path: string;
+    name: string;
+  };
   page?: number;
   totalPages?: number;
   items?: any[];
@@ -29,18 +32,17 @@ export async function getStaticPaths() {
 }
 
 const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
-console.log(['categoryPath', categoryPath])
+
 // 将字符串形式的 categoryPath 转换为数组
-const categoryPathArray = categoryPath && categoryPath.length > 0 
-  ? categoryPath.split('/').filter(segment => segment !== '')
+const categoryPathArray = categoryPath?.path && categoryPath?.path.length > 0 
+  ? categoryPath?.path.split('/').filter(segment => segment !== '')
   : [];
 
 const categoryInfo = await getCategoryInfo(lang, categoryPathArray, MODEL);
 const t = await getDictionary(lang);
 
 // 面包屑导航
-console.log('参数打印', lang, categoryPath, t.case.title)
-const breadcrumbs = categoryPath && categoryPath.length > 0 
+const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0 
   ? generateCategoryBreadcrumbs(lang, categoryPath, MODEL_PATH, t.case.title)
   : generateCaseListBreadcrumbs(lang);
 

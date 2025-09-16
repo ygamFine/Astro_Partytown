@@ -1,5 +1,5 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson, fetchAllPaginated } from '@lib/strapiClient.js';
+import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from '@lib/strapiClient.js';
 // 使用菜单工具函数
 import { buildMenuTree, extractUrl } from '@utils/tools.js';
 
@@ -63,7 +63,6 @@ export async function getMenus(locale = 'en') {
 
     // 使用工具函数构建树形结构
     const treeMenus = buildMenuTree(flatMenus, 'parent', 'id', 'children');
-    
     return treeMenus;
 
   } catch (error) {
@@ -254,5 +253,28 @@ export async function getCases(locale = 'en', slugOrId?: string | number) {
   } catch (error) {
     // 如果API调用失败，返回空数组（列表）或null（详情）
     return slugOrId === undefined ? [] : null;
+  }
+}
+/**
+ * 获取关于我们列表
+ */
+export async function getAbout(locale = 'en') {
+  try {
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/about-uses?locale=${locale}&populate=all`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * 获取联系我们
+ */
+export async function getContact(locale = 'en') {
+  try {
+    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/contact-us?locale=${locale}&populate=all`);
+    return data.data;
+  } catch (error) {
+    return null;
   }
 }

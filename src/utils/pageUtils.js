@@ -290,7 +290,10 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
                   params,
                   props: {
                     lang,
-                    categoryPath: fullPath,
+                    categoryPath: {
+                      path: fullPath,
+                      name: category.name
+                    },
                     page,
                     totalPages,
                     items: currentPageItems
@@ -337,4 +340,20 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
     console.error('生成静态路径失败:', error);
     return [];
   }
+}
+
+
+// 生成所有支持语言的静态路径
+export function generateCommonStaticPaths() {
+  if (!SUPPORTED_LANGUAGES.length) {
+    console.warn('[i18n] 未获取到任何语言，generateStaticPaths 将返回空列表');
+    return [];
+  }
+  
+  const paths = SUPPORTED_LANGUAGES.map((lang) => ({
+    params: { lang },
+    props: { lang }
+  }));
+  
+  return paths;
 }

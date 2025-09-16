@@ -139,9 +139,10 @@ export function formatDate(date: string | Date, format = 'YYYY-MM-DD'): string {
  * @param lang 语言代码
  * @param basePath 基础路径，如 '/products', '/news' 等
  * @param urlSlug URL slug（可选，如果不提供则只处理basePath）
+ * @param params 查询参数对象（可选）
  * @returns 完整的URL
  */
-export function generateUrl(lang: string, basePath: string, urlSlug?: string): string {
+export function generateUrl(lang: string, basePath: string, urlSlug?: string, params?: Record<string, string>): string {
   // 检查参数是否存在
   if (!lang || !basePath) {
     return '';
@@ -161,6 +162,12 @@ export function generateUrl(lang: string, basePath: string, urlSlug?: string): s
     // 确保 urlSlug 以 / 开头
     const normalizedSlug = urlSlug.startsWith('/') ? urlSlug : `/${urlSlug}`;
     fullPath = `${normalizedBasePath}${normalizedSlug}`;
+  }
+  
+  // 添加查询参数
+  if (params && Object.keys(params).length > 0) {
+    const searchParams = new URLSearchParams(params);
+    fullPath += `?${searchParams.toString()}`;
   }
   
   // 检查是否为开发环境

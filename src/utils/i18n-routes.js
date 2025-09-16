@@ -31,14 +31,3 @@ export function generateStaticPaths() {
   
   return paths;
 }
-
-// 获取语言名称（动态，尽量避免写死映射）
-export function getLanguageName(locale) {
-  try {
-    const displayNames = new Intl.DisplayNames([locale], { type: 'language' });
-    const name = displayNames.of(locale);
-    return name || locale;
-  } catch {
-    return locale;
-  }
-} 

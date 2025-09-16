@@ -66,8 +66,8 @@ const banners = await getBannerData('homepage');
                 autoplay
                 muted
                 playsinline
-                width={375}
-                height={600}
+                width={750}
+                height={300}
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
               >
@@ -77,8 +77,8 @@ const banners = await getBannerData('homepage');
               <Image
                 src={banner.field_shouji_url}
                 alt={banner.alt}
-                width={375}
-                height={600}
+                width={750}
+                height={300}
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
@@ -89,8 +89,8 @@ const banners = await getBannerData('homepage');
               <Image
                 src={banner.field_tupian_url}
                 alt={banner.alt}
-                width={375}
-                height={600}
+                width={750}
+                height={300}
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
