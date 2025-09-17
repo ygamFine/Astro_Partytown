@@ -11,11 +11,10 @@ import { getSupportedLanguages } from './src/utils/languageConfig';
 
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
-console.log('locales', locales)
 
 const localesObject = Object.assign({}, ...locales.map(k => ({[k]: k})))
 export default defineConfig({
-  site: process.env.SITEMAP_URL,
+  site: process.env.PUBLIC_SITE_URL,
   adapter: vercel({
     isr: true
   }),
