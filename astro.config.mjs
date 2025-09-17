@@ -4,11 +4,18 @@ import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
 import vercel from '@astrojs/vercel';
 import critters from 'astro-critters';
+import sitemap from '@astrojs/sitemap';
+
 
 import { getSupportedLanguages } from './src/utils/languageConfig';
+
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
+console.log('locales', locales)
+
+const localesObject = Object.assign({}, ...locales.map(k => ({[k]: k})))
 export default defineConfig({
+  site: process.env.SITEMAP_URL,
   adapter: vercel({
     isr: true
   }),
@@ -23,7 +30,7 @@ export default defineConfig({
 
   // 🌍 国际化配置
   i18n: {
-    locales,
+    locales: locales,
     defaultLocale: "en",
     routing: {
       prefixDefaultLocale: false
@@ -34,123 +41,6 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
     }),
-    partytown({
-      config: {
-        forward: [
-          // 'dataLayer.push', 
-          // 'gtag',
-          // 'fbq',
-          // 'ga',
-          // 'gtm',
-          // 'dataLayer',
-          // 'google_tag_manager',
-          // 'google_analytics',
-          // 'google_analytics_v4',
-          // 'gtag_v4',
-          // 'gtm_v4',
-          // 'fbq_v4',
-          // 'ga_v4',
-          // 'matomo',
-          // 'piwik',
-          // 'hotjar',
-          // 'mixpanel',
-          // 'amplitude',
-          // 'segment',
-          // 'intercom',
-          // 'zendesk',
-          // 'livechat',
-          // 'tawk',
-          // 'olark',
-          // 'drift',
-          // 'crisp',
-          // 'freshchat',
-          // 'helpcrunch',
-          // 'userlike',
-          // 'jivochat',
-          // 'livezilla',
-          // 'zopim',
-          // 'snapengage',
-          // 'purechat',
-          // 'clickdesk',
-          // 'comm100',
-          // 'liveperson',
-          // 'boldchat',
-          // 'websitealive',
-          // 'livechatinc',
-          // 'tidio',
-          // 'chatra',
-          // 'smartsupp',
-          // 'userecho',
-          // 'uservoice',
-          // 'helpscout',
-          // 'freshdesk',
-          // 'zendesk_chat',
-          // 'intercom_chat',
-          // 'drift_chat',
-          // 'crisp_chat',
-          // 'freshchat_chat',
-          // 'helpcrunch_chat',
-          // 'userlike_chat',
-          // 'jivochat_chat',
-          // 'livezilla_chat',
-          // 'zopim_chat',
-          // 'snapengage_chat',
-          // 'purechat_chat',
-          // 'clickdesk_chat',
-          // 'comm100_chat',
-          // 'liveperson_chat',
-          // 'boldchat_chat',
-          // 'websitealive_chat',
-          // 'livechatinc_chat',
-          // 'tidio_chat',
-          // 'chatra_chat',
-          // 'smartsupp_chat',
-          // 'userecho_chat',
-          // 'uservoice_chat',
-          // 'helpscout_chat',
-          // 'freshdesk_chat',
-          // 'zendesk_chat_chat',
-          // 'intercom_chat_chat',
-          // 'drift_chat_chat',
-          // 'crisp_chat_chat',
-          // 'freshchat_chat_chat',
-          // 'helpcrunch_chat_chat',
-          // 'userlike_chat_chat',
-          // 'jivochat_chat_chat',
-          // 'livezilla_chat_chat',
-          // 'zopim_chat_chat',
-          // 'snapengage_chat_chat',
-          // 'purechat_chat_chat',
-          // 'clickdesk_chat_chat',
-          // 'comm100_chat_chat',
-          // 'liveperson_chat_chat',
-          // 'boldchat_chat_chat',
-          // 'websitealive_chat_chat',
-          // 'livechatinc_chat_chat',
-          // 'tidio_chat_chat',
-          // 'chatra_chat_chat',
-          // 'smartsupp_chat_chat',
-          // 'userecho_chat_chat',
-          // 'uservoice_chat_chat',
-          // 'helpscout_chat_chat',
-          // 'freshdesk_chat_chat'
-        ],
-        debug: false,
-        // 🚀 Partytown 性能优化
-        lib: '/~partytown/',
-        swPath: 'partytown-sw.js',
-        // 允许第三方脚本在 Web Worker 中运行
-        allowThirdPartyScripts: true,
-        // 启用脚本预加载
-        preloadScripts: true,
-        // 内存管理优化
-        memoryManagement: {
-          enabled: true,
-          maxScripts: 50,
-          maxMemory: 50 * 1024 * 1024 // 50MB
-        }
-      }
-    }),
     // ⚡ 自动提取并内联首屏关键 CSS
     critters({
       Critters: {
@@ -158,6 +48,12 @@ export default defineConfig({
         inlineFonts: true,
         pruneSource: true
       }
+    }),
+    sitemap({
+      i18n: {
+        defaultLocale: 'en',
+        locales: localesObject,
+      },
     }),
   ],
 
