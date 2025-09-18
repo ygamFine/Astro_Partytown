@@ -12,6 +12,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 const DIST_DIR = path.resolve(process.cwd(), 'dist');
+const OUTPUT_DIR = path.resolve(process.cwd(), '.vercel/output/static');
+const ROBOTS_TEMPLATE_PATH = path.resolve(process.cwd(), 'config/robots.txt');
 
 function getProtocolAndApex() {
   const site = process.env.PUBLIC_SITE_URL;
@@ -26,7 +28,7 @@ function getProtocolAndApex() {
     url = new URL('');
   }
   const protocol = url.protocol.replace(':', '') || 'https';
-  const hostname = url.hostname || 'example.com';
+  const hostname = url.hostname || '';
   const apex = hostname.replace(/^www\./i, '');
   return { protocol, apex };
 }
@@ -51,7 +53,7 @@ async function loadLocaleSubdomainMap() {
       const hostConds = Array.isArray(r?.has) ? r.has : [];
       const host = hostConds.find((h) => h?.type === 'host' && typeof h?.value === 'string')?.value || '';
       // 解析正则：^en\..+$ -> en
-      const sub = host.replace(/^\^/, '') // 去掉正则起始符 ^
+      const sub = host.replace(/^\^/, '') // 去掉正则起始符 ^· 
                       .replace(/\\\./g, '.') // 转义的点 \. -> .
                       .replace(/\.\.\+\$$/, '') // 去掉 ..+$
                       .replace(/\.\*\$$/, '') // 去掉 .*$
@@ -136,6 +138,25 @@ async function main() {
     process.exit(1);
   }
 
+  // 加载 robots.txt 模板
+  let robotsTemplate;
+  try {
+    robotsTemplate = await fs.readFile(ROBOTS_TEMPLATE_PATH, 'utf8');
+    console.log('✅ 加载 robots.txt 模板成功');
+  } catch (error) {
+    console.error('❌ 无法加载 robots.txt 模板:', error.message);
+    process.exit(1);
+  }
+
+  // 确保 Vercel 输出目录存在
+  const useVercelOutput = await fs.access(OUTPUT_DIR).then(() => true).catch(() => false);
+  const targetDir = useVercelOutput ? OUTPUT_DIR : DIST_DIR;
+  console.log(`📁 目标输出目录: ${useVercelOutput ? 'Vercel 输出目录' : 'dist 目录'} (${targetDir})`);
+  
+  if (useVercelOutput) {
+    console.log('✅ 检测到 Vercel 构建环境，直接在输出目录生成 sitemap');
+  }
+
   const { protocol, apex } = getProtocolAndApex();
   console.log(`📍 使用站点配置: ${protocol}://${apex}`);
   
@@ -177,13 +198,18 @@ async function main() {
 
       // 写入该语言专属的 sitemap.xml
       const xml = buildSitemapXml(urls);
-      const sitemapPath = path.join(localeDir, 'sitemap.xml');
+      const targetLocaleDir = path.join(targetDir, locale);
+      
+      // 确保目标语言目录存在
+      await fs.mkdir(targetLocaleDir, { recursive: true });
+      
+      const sitemapPath = path.join(targetLocaleDir, 'sitemap.xml');
       await fs.writeFile(sitemapPath, xml, 'utf8');
       console.log(`  ✅ 生成: ${sitemapPath}`);
 
-      // 写入该语言专属 robots.txt（可选，便于按主机访问）
-      const robots = `User-agent: *\nAllow: /\nSitemap: ${protocol}://${host}/sitemap.xml\n`;
-      const robotsPath = path.join(localeDir, 'robots.txt');
+      // 写入该语言专属 robots.txt（使用模板）
+      const robots = robotsTemplate.replace('{{SITEMAP_URL}}', `${protocol}://${host}/sitemap.xml`);
+      const robotsPath = path.join(targetLocaleDir, 'robots.txt');
       await fs.writeFile(robotsPath, robots, 'utf8');
       console.log(`  ✅ 生成: ${robotsPath}`);
 
@@ -197,7 +223,8 @@ async function main() {
   // 生成 sitemap 索引，方便根域名查看整体
   if (indexEntries.length > 0) {
     const indexXml = buildSitemapIndexXml(indexEntries);
-    await fs.writeFile(path.join(DIST_DIR, 'sitemap-index.xml'), indexXml, 'utf8');
+    await fs.writeFile(path.join(targetDir, 'sitemap-index.xml'), indexXml, 'utf8');
+    console.log(`  ✅ 生成索引: ${path.join(targetDir, 'sitemap-index.xml')}`);
   }
 
   console.log(`✅ 已为 ${indexEntries.length} 种语言生成 sitemap.xml，并生成 sitemap-index.xml`);

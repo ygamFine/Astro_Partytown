@@ -4,15 +4,14 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --port 8888",
-    "build": "astro build && npm run generate:sitemap && npm run generate:pagefind && npm run copy:sitemap",
+    "build": "astro build && npm run generate:sitemap && npm run generate:pagefind",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images:node": "node scripts/optimize-images-node.js",
     "download:strapi-images": "node scripts/download-strapi-images.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "generate:pagefind": "sh -c 'if find dist -name \"*.html\" -print -quit | grep -q .; then pagefind --site dist --output-path dist/pagefind --glob \"**/{products,news,case}/**/*.html\"; else echo \"No HTML found; skipping Pagefind\"; fi'",
-    "copy:pagefind": "cp -r dist/pagefind .vercel/output/static/ 2>/dev/null || echo 'Pagefind files copied'",
-    "copy:sitemap": "find dist -name 'sitemap.xml' -o -name 'robots.txt' | while read file; do rel=${file#dist/}; mkdir -p .vercel/output/static/$(dirname $rel) 2>/dev/null; cp $file .vercel/output/static/$rel 2>/dev/null && echo \"Copied $rel\"; done || echo 'Sitemap files copied'"
+    "copy:pagefind": "cp -r dist/pagefind .vercel/output/static/ 2>/dev/null || echo 'Pagefind files copied'"
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",
