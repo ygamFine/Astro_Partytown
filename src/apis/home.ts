@@ -1,7 +1,6 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { map } from 'astro:schema';
 import { PUBLIC_API_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
-import { extractUrl } from '@utils/tools';
+import { extractUrl, getFirstImage } from '@utils/tools';
 
 // 验证环境变量
 if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
