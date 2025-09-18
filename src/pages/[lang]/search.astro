@@ -19,13 +19,6 @@ const { lang } = Astro.params;
 const searchQuery = '';
 const t = await getDictionary(lang);
 // 准备客户端使用的数据
-const uiData = t.search?.ui || {};
-const categoriesData = {
-  product: t.search?.categories?.product || '产品',
-  news: t.search?.categories?.news || '新闻',
-  case: t.search?.categories?.case || '案例',
-  other: t.search?.categories?.other || '其他'
-};
 const noResultsData = {
   noResultsText: t.search?.noResults || '没有找到结果',
   noResultsDescText: t.search?.noResultsDescription || '请尝试其他关键词'
@@ -42,7 +35,7 @@ const getPageWidth = () => {
 const pageWidth = getPageWidth();
 ---
 
-<Layout title={t.search?.title || '搜索'} description={t.search?.description || '全站搜索功能'} lang={lang} pageType="search">
+<Layout title={t.search?.title || ''} description={t.search?.description || ''} lang={lang} pageType="search">
   <div class="min-h-screen bg-gray-50">
     <!-- 面包屑导航 -->
     <div class="bg-white border-b">
@@ -56,10 +49,10 @@ const pageWidth = getPageWidth();
       <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8" style={`max-width: ${pageWidth}`}>
         <div class="text-center">
           <h1 class="text-3xl font-bold text-gray-900 mb-4">
-            {t.search?.title || '全站搜索'}
+            {t.search?.title || ''}
           </h1>
           <p class="text-lg text-gray-600 mb-8">
-            {t.search?.description || '搜索产品、新闻、案例等全站内容'}
+            {t.search?.description || ''}
           </p>
           
           <!-- Pagefind 搜索框 -->
@@ -76,7 +69,7 @@ const pageWidth = getPageWidth();
         <!-- 左侧分类导航 -->
         <div class="lg:col-span-1">
           <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.search?.categoriesTitle || '搜索分类'}</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.search?.categoriesTitle || ''}</h3>
             
             <!-- 分类列表 -->
             <div class="space-y-3">
@@ -89,7 +82,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">{t.search?.categories?.all || '全部内容'}</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.all || ''}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="total-count">0</span>
                 </button>
@@ -103,7 +96,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">{t.search?.categories?.product || '产品'}</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.product || ''}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="product-count">0</span>
                 </button>
@@ -118,7 +111,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">{t.search?.categories?.news || '新闻'}</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.news || ''}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="news-count">0</span>
                 </button>
@@ -133,7 +126,7 @@ const pageWidth = getPageWidth();
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <span class="font-medium text-gray-900">{t.search?.categories?.case || '案例'}</span>
+                    <span class="font-medium text-gray-900">{t.search?.categories?.case || ''}</span>
                   </div>
                   <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full" id="case-count">0</span>
                 </button>
