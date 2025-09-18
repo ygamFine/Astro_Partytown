@@ -10,7 +10,7 @@
     "optimize:images:node": "node scripts/optimize-images-node.js",
     "download:strapi-images": "node scripts/download-strapi-images.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
-    "generate:pagefind": "pagefind --site dist --output-path dist/pagefind --glob \"**/{products,news,case}/**/*.html\"",
+    "generate:pagefind": "sh -c 'if find dist -name \"*.html\" -print -quit | grep -q .; then pagefind --site dist --output-path dist/pagefind --glob \"**/{products,news,case}/**/*.html\"; else echo \"No HTML found; skipping Pagefind\"; fi'",
     "copy:pagefind": "cp -r dist/pagefind .vercel/output/static/ 2>/dev/null || echo 'Pagefind files copied'"
   },
   "dependencies": {

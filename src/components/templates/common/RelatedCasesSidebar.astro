@@ -27,7 +27,7 @@ const t = await getDictionary(lang);
     </h3>
     
     <div class="space-y-4">
-      {validRelatedCases.map(relatedCase => (
+      {validRelatedCases && Array.isArray(validRelatedCases) && validRelatedCases.map(relatedCase => (
         <article class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-1">
           <a href={generateUrl(lang, '/case', relatedCase.url_slug)} class="block">
             <div class="aspect-[5/3] overflow-hidden">

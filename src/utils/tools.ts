@@ -2,7 +2,7 @@
  * 工具函数集合
  * 用于处理菜单数据转换、递归分类等功能
  */
-const strapiStaticUrl = process.env.STRAPI_STATIC_URL || import.meta.env?.STRAPI_STATIC_URL;
+const strapiStaticUrl = process.env.PUBLIC_API_URL || import.meta.env?.PUBLIC_API_URL;
 /**
  * 处理图片url
  * @param imageUrl 图片url

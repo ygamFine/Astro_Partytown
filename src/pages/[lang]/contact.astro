@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 const { lang } = Astro.props;
 const t = await getDictionary(lang);
-const contact = await getContact(lang);
+const contact = (await getContact(lang)) || {};
 
 // 面包屑导航
 const breadcrumbs = generateContactBreadcrumbs(lang);

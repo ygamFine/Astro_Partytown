@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import { getMobileBottomMenu } from "@apis/common";
-import { getIconClass } from "@utils/iconUtils";
 import { generateUrl } from "@utils/tools";
 
 export interface Props {
@@ -12,7 +11,7 @@ export interface Props {
 const { lang = "en", currentPath = "/" } = Astro.props;
 
 // 获取移动端底部菜单数据（按语言缓存）
-const menuItems = await getMobileBottomMenu(lang);
+const menuItems = (await getMobileBottomMenu(lang)) || [];
 
 // 判断当前路径是否激活
 function isActive(path: string, currentPath: string): boolean {
@@ -128,16 +127,7 @@ function getMenuLink(
   <div class="flex items-center justify-around px-2 py-2">
     {
       menuItems.map(
-        (item: {
-          id: number;
-          type: string;
-          content: string;
-          icon: string;
-          iconType: string;
-          customLink?: string;
-          inlineAddress?: string;
-          externalLink?: string;
-        }) => {
+        (item: any) => {
           const link = getMenuLink(item, lang);
           const active = isActive(link, currentPath);
 

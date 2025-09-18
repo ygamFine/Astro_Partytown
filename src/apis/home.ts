@@ -1,9 +1,9 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
+import { PUBLIC_API_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
 import { extractUrl } from '@utils/tools';
 
 // 验证环境变量
-if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
+if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
   throw new Error('缺少必要的 Strapi 环境变量配置');
 }
 
@@ -12,7 +12,7 @@ if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
  */
 export async function getHomepageContent(lang: string) {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/homepage-content?populate=all&locale=${lang}`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/homepage-content?populate=all&locale=${lang}`);
 
     if (!data.data) {
       return null;
@@ -52,7 +52,7 @@ export async function getHomepageContent(lang: string) {
 
 export async function getMobileBottomMenu(lang: string) {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/shoujiduandibucaidan?populate=all&locale=${lang}`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/shoujiduandibucaidan?populate=all&locale=${lang}`);
     return data.data;
   } catch (error) {
     console.error('获取移动端底部菜单数据失败:', error);

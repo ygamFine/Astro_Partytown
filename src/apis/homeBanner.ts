@@ -1,8 +1,8 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
+import { PUBLIC_API_URL, STRAPI_TOKEN, fetchJson } from './apiClient.js';
 
 // 验证环境变量
-if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
+if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
   throw new Error('缺少必要的 Strapi 环境变量配置');
 }
 
@@ -38,27 +38,27 @@ function processBannerItem(banner: any, type: BannerFilterType, index: number): 
   if (Array.isArray(banner?.field_tupian)) {
     const firstTupian = banner.field_tupian.find(Boolean);
     const rawUrl = firstTupian?.media?.url ?? firstTupian?.url ?? null;
-    field_tupian_url = rawUrl ? `${STRAPI_STATIC_URL}${rawUrl}` : null;
+    field_tupian_url = rawUrl ? `${PUBLIC_API_URL}${rawUrl}` : null;
   } else if (banner?.field_tupian?.media?.url) {
-    field_tupian_url = `${STRAPI_STATIC_URL}${banner.field_tupian.media.url}`;
+    field_tupian_url = `${PUBLIC_API_URL}${banner.field_tupian.media.url}`;
   }
 
   // 处理 field_shouji.media.url (移动端图片)
   if (Array.isArray(banner?.field_shouji)) {
     const firstShouji = banner.field_shouji.find(Boolean);
     const rawUrl = firstShouji?.media?.url ?? firstShouji?.url ?? null;
-    field_shouji_url = rawUrl ? `${STRAPI_STATIC_URL}${rawUrl}` : null;
+    field_shouji_url = rawUrl ? `${PUBLIC_API_URL}${rawUrl}` : null;
   } else if (banner?.field_shouji?.media?.url) {
-    field_shouji_url = `${STRAPI_STATIC_URL}${banner.field_shouji.media.url}`;
+    field_shouji_url = `${PUBLIC_API_URL}${banner.field_shouji.media.url}`;
   }
 
   // 处理 field_bannershipin.media.url (视频)
   if (Array.isArray(banner?.field_bannershipin)) {
     const firstShipin = banner.field_bannershipin.find(Boolean);
     const rawUrl = firstShipin?.media?.url ?? firstShipin?.url ?? null;
-    field_bannershipin_url = rawUrl ? `${STRAPI_STATIC_URL}${rawUrl}` : null;
+    field_bannershipin_url = rawUrl ? `${PUBLIC_API_URL}${rawUrl}` : null;
   } else if (banner?.field_bannershipin?.media?.url) {
-    field_bannershipin_url = `${STRAPI_STATIC_URL}${banner.field_bannershipin.media.url}`;
+    field_bannershipin_url = `${PUBLIC_API_URL}${banner.field_bannershipin.media.url}`;
   }
 
   // 移动端优先使用视频，如果没有视频则使用移动端图片，最后使用桌面端图片
@@ -95,7 +95,7 @@ function processBannerItem(banner: any, type: BannerFilterType, index: number): 
 export async function getBannerData(filterType: BannerFilterType | undefined): Promise<ProcessedBannerItem[]> {
     try {
     
-      const data = await fetchJson(`${STRAPI_STATIC_URL}/api/banner-setting?populate=all`);
+      const data = await fetchJson(`${PUBLIC_API_URL}/api/banner-setting?populate=all`);
       
       if (!data || !data.data) {
         return [];

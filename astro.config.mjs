@@ -18,6 +18,7 @@ export default defineConfig({
   adapter: vercel({
     isr: true
   }),
+  trailingSlash: 'ignore',
   server: {
     port: 3000,
     host: true,
@@ -30,7 +31,7 @@ export default defineConfig({
   // 🌍 国际化配置
   i18n: {
     locales: locales,
-    defaultLocale: "en",
+    defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
     routing: {
       prefixDefaultLocale: false
     }
@@ -45,12 +46,18 @@ export default defineConfig({
       Critters: {
         preload: 'swap',
         inlineFonts: true,
-        pruneSource: true
+        pruneSource: true,
+        // 设置日志级别为 warn，减少错误输出
+        logLevel: 'warn',
+        // 设置外部文件阈值，避免处理有问题的文件
+        inlineThreshold: 0,
+        // 禁用压缩，避免处理错误
+        compress: false
       }
     }),
     sitemap({
       i18n: {
-        defaultLocale: 'en',
+        defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
         locales: localesObject,
       },
     }),
@@ -78,53 +85,53 @@ export default defineConfig({
   // 📤 输出配置
   output: 'static',
 
-  // ⚡ Vite 构建优化
-  vite: {
-    // 支持子目录中的资源文件
-    assetsInclude: ['**/*.webp', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
-    build: {
-      // 代码分割优化
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // 核心库分离
-            vendor: ['astro'],
-            // Pagefind 单独打包
-            pagefind: ['@pagefind/default-ui'],
-            // 工具库分离
-            utils: ['sharp'],
-          },
-          // 资源优化
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.name) {
-              const info = assetInfo.name.split('.');
-              const ext = info[info.length - 1];
-              if (/png|jpe?g|svg|gif|tiff|bmp|ico|mp4|webm|mov/i.test(ext)) {
-                return `images/[name]-[hash][extname]`;
-              }
-            }
-            return `assets/[name]-[hash][extname]`;
-          },
-        },
-      },
-      // 压缩优化
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: false, // 保留 console 用于调试
-          drop_debugger: true,
-        },
-      },
-    },
-    // 预构建优化
-    optimizeDeps: {
-      include: ['@pagefind/default-ui'],
-    },
-    // 开发服务器优化
-    server: {
-      hmr: {
-        overlay: false,
-      },
-    },
-  },
+  // // ⚡ Vite 构建优化
+  // vite: {
+  //   // 支持子目录中的资源文件
+  //   assetsInclude: ['**/*.webp', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+  //   build: {
+  //     // 代码分割优化
+  //     rollupOptions: {
+  //       output: {
+  //         manualChunks: {
+  //           // 核心库分离
+  //           vendor: ['astro'],
+  //           // Pagefind 单独打包
+  //           pagefind: ['@pagefind/default-ui'],
+  //           // 工具库分离
+  //           utils: ['sharp'],
+  //         },
+  //         // 资源优化
+  //         assetFileNames: (assetInfo) => {
+  //           if (assetInfo.name) {
+  //             const info = assetInfo.name.split('.');
+  //             const ext = info[info.length - 1];
+  //             if (/png|jpe?g|svg|gif|tiff|bmp|ico|mp4|webm|mov/i.test(ext)) {
+  //               return `images/[name]-[hash][extname]`;
+  //             }
+  //           }
+  //           return `assets/[name]-[hash][extname]`;
+  //         },
+  //       },
+  //     },
+  //     // 压缩优化
+  //     minify: 'terser',
+  //     terserOptions: {
+  //       compress: {
+  //         drop_console: false, // 保留 console 用于调试
+  //         drop_debugger: true,
+  //       },
+  //     },
+  //   },
+  //   // 预构建优化
+  //   optimizeDeps: {
+  //     include: ['@pagefind/default-ui'],
+  //   },
+  //   // 开发服务器优化
+  //   server: {
+  //     hmr: {
+  //       overlay: false,
+  //     },
+  //   },
+  // },
 });

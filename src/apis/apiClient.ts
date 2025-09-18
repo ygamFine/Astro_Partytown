@@ -3,6 +3,9 @@
 import { config } from 'dotenv';
 config();
 
+
+import { getSecret } from 'astro:env/server'
+
 // 类型定义
 interface StrapiResponse<T = any> {
   data: T | null;
@@ -14,8 +17,8 @@ interface RequestHeaders {
   [key: string]: string;
 }
 
-export const STRAPI_STATIC_URL: string | undefined = process.env.STRAPI_STATIC_URL;
-export const STRAPI_TOKEN: string | undefined = process.env.STRAPI_API_TOKEN;
+export const PUBLIC_API_URL: string | undefined = getSecret('PUBLIC_API_URL');
+export const STRAPI_TOKEN: string | undefined = getSecret('PUBLIC_API_TOKEN');
 
 function buildHeaders(): RequestHeaders {
   const headers: RequestHeaders = { 
@@ -43,7 +46,7 @@ export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>
   } catch (error) {
     // Strapi 网络请求失败
     // 在构建环境下，网络请求失败是常见的，不应该中断构建
-    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+    if (getSecret('NODE_ENV') === 'production' || getSecret('VERCEL')) {
       // 构建环境网络请求失败，返回空数据
       return { data: null };
     }

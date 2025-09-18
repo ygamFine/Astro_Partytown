@@ -1,12 +1,12 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from './apiClient.ts';
+import { PUBLIC_API_URL, STRAPI_TOKEN, fetchJson } from './apiClient.ts';
 // 使用菜单工具函数
 import { buildMenuTree, extractUrl, getFirstImage } from '@utils/tools.js';
 import { getMobileBottomMenuIcon } from '@utils/iconUtils.js';
 import { MENU_TYPE_MAPPING } from '@config/constant.js';
 
 // 验证环境变量
-if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
+if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
   throw new Error('缺少必要的 Strapi 环境变量配置');
 }
 
@@ -15,7 +15,7 @@ if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
  */
 export async function getSiteConfiguration(locale = 'en') {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/site-configuration?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/site-configuration?locale=${locale}&populate=all`);
 
     // 转换为标准格式，支持国际化字段
     const siteConfiguration = data.data || {};
@@ -32,7 +32,7 @@ export async function getSiteConfiguration(locale = 'en') {
  */
 export async function getSupportedLanguages() {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/huazhi-translation-plugin/language-settings`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/huazhi-translation-plugin/language-settings`);
     // 转换为标准格式，支持国际化字段
     const apiData = data.data
     const locales = (apiData?.languageSettings && Array.isArray(apiData.languageSettings)) 
@@ -51,7 +51,7 @@ export async function getSupportedLanguages() {
  */
 export async function getMenus(locale = 'en') {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/menu-manages?locale=${locale}&populate=all&sort=sort:ASC`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/menu-manages?locale=${locale}&populate=all&sort=sort:ASC`);
     
     // 转换为标准格式，支持国际化字段
     const flatMenus = (data.data && Array.isArray(data.data)) 
@@ -83,7 +83,7 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取产品列表
     if (slugOrId === undefined) {
-      const json = await fetchJson(`${STRAPI_STATIC_URL}/api/product-manages?locale=${locale}&populate=all`);
+      const json = await fetchJson(`${PUBLIC_API_URL}/api/product-manages?locale=${locale}&populate=all`);
       
       // 处理所有产品的图片，使用缓存的图片
       const products = (json.data && Array.isArray(json.data)) 
@@ -101,7 +101,7 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
     
     // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
     const isNumericId = (typeof slugOrId === 'number');
-    const url = isNumericId && `${STRAPI_STATIC_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=all`
+    const url = isNumericId && `${PUBLIC_API_URL}/api/product-manages/${slugOrId}?locale=${locale}&populate=all`
     if(!url) {
       return null;
     }
@@ -150,7 +150,7 @@ export async function getByCategory(locale = 'en', slug: string, model: string) 
       ? `&filters[${model === 'product' ? 'product_category' : 'category'}][url_slug][$eq]=${slug}`
       : '';
     
-    const url = `${STRAPI_STATIC_URL}${baseUrls[model]}?locale=${locale}&populate=all${filterParams}`;
+    const url = `${PUBLIC_API_URL}${baseUrls[model]}?locale=${locale}&populate=all${filterParams}`;
     const json = await fetchJson(url);
     // 处理所有产品的图片，使用缓存的图片
     const datas = (json.data && Array.isArray(json.data)) 
@@ -176,7 +176,7 @@ export async function getNews(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取新闻列表
     if (slugOrId === undefined) {
-      const json = await fetchJson(`${STRAPI_STATIC_URL}/api/news?locale=${locale}&populate=all`);
+      const json = await fetchJson(`${PUBLIC_API_URL}/api/news?locale=${locale}&populate=all`);
 
       // 处理所有新闻的图片，使用缓存的图片
       const news = (json.data && Array.isArray(json.data)) 
@@ -195,8 +195,8 @@ export async function getNews(locale = 'en', slugOrId?: string | number) {
     // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
     const isNumericId = (typeof slugOrId === 'number');
     const url = isNumericId
-      ? `${STRAPI_STATIC_URL}/api/news/${slugOrId}?locale=${locale}&populate=all`
-      : `${STRAPI_STATIC_URL}/api/news?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+      ? `${PUBLIC_API_URL}/api/news/${slugOrId}?locale=${locale}&populate=all`
+      : `${PUBLIC_API_URL}/api/news?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
     
     const data = await fetchJson(url);
 
@@ -227,7 +227,7 @@ export async function getCases(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取案例列表
     if (slugOrId === undefined) {
-      const baseUrl = `${STRAPI_STATIC_URL}/api/cases?locale=${locale}&populate=all`;
+      const baseUrl = `${PUBLIC_API_URL}/api/cases?locale=${locale}&populate=all`;
       const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
 
       // 处理所有新闻的图片，使用缓存的图片
@@ -247,8 +247,8 @@ export async function getCases(locale = 'en', slugOrId?: string | number) {
     // 仅当传入的是 number 类型时才按 ID 查询；字符串一律按 slug 查询（即使是纯数字字符串）
     const isNumericId = (typeof slugOrId === 'number');
     const url = isNumericId
-      ? `${STRAPI_STATIC_URL}/api/cases/${slugOrId}?locale=${locale}&populate=all`
-      : `${STRAPI_STATIC_URL}/api/cases?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
+      ? `${PUBLIC_API_URL}/api/cases/${slugOrId}?locale=${locale}&populate=all`
+      : `${PUBLIC_API_URL}/api/cases?filters[url_slug][$eq]=${slugOrId}&locale=${locale}&populate=all`;
     
     const data = await fetchJson(url);
 
@@ -276,7 +276,7 @@ export async function getCases(locale = 'en', slugOrId?: string | number) {
  */
 export async function getAbout(locale = 'en') {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/about-uses?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/about-uses?locale=${locale}&populate=all`);
     return data.data;
   } catch (error) {
     return null;
@@ -288,7 +288,7 @@ export async function getAbout(locale = 'en') {
  */
 export async function getContact(locale = 'en') {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/contact-us?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/contact-us?locale=${locale}&populate=all`);
     return data.data;
   } catch (error) {
     return null;
@@ -300,7 +300,7 @@ export async function getContact(locale = 'en') {
  */
 export async function getMobileBottomMenu(locale = 'en') {
   try {
-    const data = await fetchJson(`${STRAPI_STATIC_URL}/api/shoujiduandibucaidan?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/shoujiduandibucaidan?locale=${locale}&populate=all`);
     const menuItems = data?.data?.shoujiduandibucaidan;
     const getMenuType = (item: any) => {
       // 优先根据 field_liebiao 字段的唯一标识判断类型
@@ -313,7 +313,7 @@ export async function getMobileBottomMenu(locale = 'en') {
       return uniqueId;
     }
     // 转换为标准格式
-    const menus = menuItems.map((item: any) => {    
+    const menus = menuItems && Array.isArray(menuItems) ? menuItems.map((item: any) => {    
       return {
         id: item.id,
         content: item.field_neirong,
@@ -328,9 +328,10 @@ export async function getMobileBottomMenu(locale = 'en') {
         // 新增：区分是图片图标还是字体图标
         iconType: item.icon ? 'image' : 'font'
       };
-    });
+    }) : [];
     return menus;
   } catch (error) {
-    return null;
+    // dev/构建环境下失败时返回空数组，避免调用处 .map 报错
+    return [];
   }
 }

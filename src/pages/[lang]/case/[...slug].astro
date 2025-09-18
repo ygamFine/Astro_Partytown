@@ -43,19 +43,19 @@ const hasCase = casesItem !== null;
 const t = await getDictionary(lang);
 
 // 获取当前产品在列表中的位置，用于上一个/下一个导航
-const currentIndex = cases.findIndex(
+const currentIndex = cases && Array.isArray(cases) ? cases.findIndex(
   (p: any) => p.url_slug === casesItem.url_slug,
-);
-const previousCase = currentIndex > 0 ? cases[currentIndex - 1] : null;
-const nextCase = currentIndex < cases.length - 1 ? cases[currentIndex + 1] : null;
+) : -1;
+const previousCase = currentIndex > 0 && cases && Array.isArray(cases) ? cases[currentIndex - 1] : null;
+const nextCase = currentIndex < (cases?.length || 0) - 1 && cases && Array.isArray(cases) ? cases[currentIndex + 1] : null;
 
 
 // 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
 const allNews = await getNews(lang);
-const relatedNews = allNews.slice(0, 4);
+const relatedNews = allNews && Array.isArray(allNews) ? allNews.slice(0, 4) : [];
 
 // 获取相关案例（排除当前案例，取前3个）
-const relatedCases = cases.filter((c: any) => c.case_category?.id == casesItem?.case_category?.id).slice(0, 3);
+const relatedCases = cases && Array.isArray(cases) ? cases.filter((c: any) => c.case_category?.id == casesItem?.case_category?.id).slice(0, 3) : [];
 
 
 // 面包屑导航

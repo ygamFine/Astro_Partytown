@@ -25,7 +25,7 @@ const t = await getDictionary(lang);
   </h2>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
     {
-      relatedNews.map((newsItem: any) => (
+      relatedNews && Array.isArray(relatedNews) && relatedNews.map((newsItem: any) => (
         <div class="flex items-start space-x-4">
           <div class="flex-1">
             <a href={generateUrl(lang, '/news', newsItem.url_slug)} class="block">

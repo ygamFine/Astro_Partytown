@@ -125,7 +125,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
                   style="width: 100%;"
                 >
                   {/* 所有图片 */}
-                  {product.image && product.image.length > 0 && product.image.map((img: any, index: any) => (
+                  {product.image && Array.isArray(product.image) && product.image.length > 0 && product.image.map((img: any, index: any) => (
                     <Image 
                       src={img.url || '/images/placeholder.webp'} 
                       alt={`${img.name} ${index + 1}`}
@@ -164,7 +164,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
                 class="flex space-x-2 overflow-x-hidden flex-1 scroll-smooth"
                 style="scroll-behavior: smooth;"
               >
-                {product.image && product.image.length > 0 && product.image.map((img: any, index: number) => (
+                {product.image && Array.isArray(product.image) && product.image.length > 0 && product.image.map((img: any, index: number) => (
                   <Image 
                     src={img.url || '/images/placeholder.webp'} 
                     alt={`${img.name} ${index + 1}`}

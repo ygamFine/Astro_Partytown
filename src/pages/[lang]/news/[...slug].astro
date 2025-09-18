@@ -148,13 +148,13 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
               {t.related.products}
             </h2>
             <GridList
-              items={relatedProducts.map((p: any) => ({
+              items={relatedProducts && Array.isArray(relatedProducts) ? relatedProducts.map((p: any) => ({
                 id: p.id,
                 title: p.title, // 使用 name 字段作为 title
                 image: p.image,
                 excerpt: p.excerpt,
                 href: `/${lang}/products/${p.url_slug}`,
-              }))}
+              })) : []}
               itemsPerRow={3}
               translations={{ common: t.common }}
               lang={lang}
