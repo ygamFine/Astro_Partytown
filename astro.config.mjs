@@ -4,7 +4,6 @@ import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
 import vercel from '@astrojs/vercel';
 import critters from 'astro-critters';
-import sitemap from '@astrojs/sitemap';
 
 
 import { getSupportedLanguages } from './src/utils/languageConfig';
@@ -12,7 +11,7 @@ import { getSupportedLanguages } from './src/utils/languageConfig';
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
 
-const localesObject = Object.assign({}, ...locales.map(k => ({[k]: k})))
+// const localesObject = Object.assign({}, ...locales.map(k => ({[k]: k})))
 export default defineConfig({
   site: process.env.PUBLIC_SITE_URL,
   adapter: vercel({
@@ -55,12 +54,12 @@ export default defineConfig({
         compress: false
       }
     }),
-    sitemap({
-      i18n: {
-        defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
-        locales: localesObject,
-      },
-    }),
+    // sitemap({
+    //   i18n: {
+    //     defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
+    //     locales: localesObject,
+    //   },
+    // }),
   ],
 
   // 🖼️ 图片优化配置

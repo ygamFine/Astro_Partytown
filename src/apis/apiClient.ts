@@ -19,6 +19,18 @@ interface RequestHeaders {
 
 export const PUBLIC_API_URL: string | undefined = getSecret('PUBLIC_API_URL');
 export const STRAPI_TOKEN: string | undefined = getSecret('PUBLIC_API_TOKEN');
+const DISABLE_PNC_FETCH_RAW: string | undefined = getSecret('PUBLIC_DISABLE_PNC_FETCH');
+export const DISABLE_PNC_FETCH: boolean = DISABLE_PNC_FETCH_RAW === '1' || (DISABLE_PNC_FETCH_RAW || '').toLowerCase() === 'true';
+
+function shouldBypassBusinessData(url: string): boolean {
+  if (!DISABLE_PNC_FETCH) return false;
+  const lowerUrl = url.toLowerCase();
+  return (
+    lowerUrl.includes('/api/product-manages') ||
+    lowerUrl.includes('/api/news') ||
+    lowerUrl.includes('/api/cases')
+  );
+}
 
 function buildHeaders(): RequestHeaders {
   const headers: RequestHeaders = { 
@@ -30,6 +42,11 @@ function buildHeaders(): RequestHeaders {
 
 export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>> {
   try {
+    // 按开关跳过产品/新闻/案例数据请求，直接返回空数据
+    if (shouldBypassBusinessData(url)) {
+      return { data: null } as StrapiResponse<T>;
+    }
+
     // 创建 AbortController 用于超时控制
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
