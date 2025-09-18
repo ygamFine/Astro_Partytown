@@ -86,7 +86,7 @@ function normalizeToPrettyPath(relativeHtmlPath) {
   // 将 a/b.html -> /a/b.html（保留）
   let p = '/' + relativeHtmlPath.replace(/\\/g, '/');
   if (p.endsWith('/index.html')) {
-    p = p.slice(0, -('/index.html'.length)) + '/';
+    p = p.slice(0, -('/index.html'.length));
   }
   return p;
 }
