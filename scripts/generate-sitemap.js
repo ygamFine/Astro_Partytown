@@ -13,7 +13,7 @@ import path from 'path';
 
 const DIST_DIR = path.resolve(process.cwd(), 'dist');
 const OUTPUT_DIR = path.resolve(process.cwd(), '.vercel/output/static');
-const ROBOTS_TEMPLATE_PATH = path.resolve(process.cwd(), 'config/robots.txt');
+const ROBOTS_TEMPLATE_PATH = path.resolve(process.cwd(), 'src/config/robots.txt');
 
 function getProtocolAndApex() {
   const site = process.env.PUBLIC_SITE_URL;
