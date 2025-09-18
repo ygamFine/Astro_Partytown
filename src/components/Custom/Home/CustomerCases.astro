@@ -46,7 +46,7 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
       const { default: Swiper } = await import('swiper/bundle');
       
       // 初始化 Swiper
-      const swiper = new Swiper('.honor-swiper2', {
+      const swiper = new Swiper('.honor-swiper3', {
         // 基本配置
         slidesPerView: 1,
         spaceBetween: 37,
@@ -114,7 +114,7 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
         <div class="product-product-main">
             <h2 class="block-title">{title}</h2>
             <p class="block-desc">{description}</p>
-            <div class="swiper honor-swiper2">
+            <div class="swiper honor-swiper3">
                 <div class="swiper-wrapper">
                     {safeCases.map((product, index) => {
                         const productName = product.name || product.title || `Product ${index + 1}`;
