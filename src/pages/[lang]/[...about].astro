@@ -10,18 +10,21 @@ import { getAbout } from '@apis/common';
 export async function getStaticPaths() {
   const paths = [];
   for (const lang of SUPPORTED_LANGUAGES) {
-    const abouts = await getAbout(lang);
+    const res = await getAbout(lang);
+    const abouts = Array.isArray(res) ? res : [];
     for (const about of abouts) {
+      const rawSlug = (about?.url_slug || '').toString();
+      const slug = rawSlug.includes('/about') ? rawSlug : `/about${rawSlug}`;
       paths.push({
         params: {
           lang,
-          about: about.url_slug.includes('/about') ? about.url_slug : '/about' + about.url_slug
+          about: slug
         },
         props: {
           lang,
-          title: about.title,
-          details: about.details,
-          url_slug: about.url_slug
+          title: about?.title || '',
+          details: about?.details || '',
+          url_slug: slug
         }
       })
     }

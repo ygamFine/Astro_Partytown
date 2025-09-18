@@ -1,5 +1,5 @@
 // 动态导入翻译文件
-import { getSupportedLanguages } from '../lib/languageConfig.js';
+import { getSupportedLanguages } from '@utils/languageConfig';
 
 // 翻译命名空间
 const TRANSLATION_NAMESPACES = [

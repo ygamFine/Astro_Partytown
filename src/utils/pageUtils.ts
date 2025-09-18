@@ -3,13 +3,80 @@
  * 用于处理分页逻辑、分类路径解析、产品筛选等功能
  */
 
-import { SUPPORTED_LANGUAGES } from './i18n-routes.js';
-import { getMenus, getProducts, getByCategory } from '@apis/common.js';
-import { filterCategories } from './categories.js';
+import { SUPPORTED_LANGUAGES } from './i18n-routes';
+import { getMenus, getProducts, getByCategory } from '@apis/common';
+import { filterCategories } from './categories';
+
+// 类型定义
+export interface MenuItem {
+  id: string | number;
+  name: string;
+  path: string;
+  locale?: string;
+  publishedAt?: string;
+  parent?: string | number | null;
+  sort?: number;
+  children?: MenuItem[];
+}
+
+export interface Product {
+  id: string | number;
+  name: string;
+  slug?: string;
+  description?: string;
+  picture?: any;
+  image?: { url: string; name: string };
+  product_category?: {
+    id: string | number;
+    name: string;
+    path?: string;
+    url_slug?: string;
+  };
+  category_path?: string[];
+  [key: string]: any;
+}
+
+export interface CategoryInfo {
+  current: {
+    id: string | number;
+    name: string;
+    path: string;
+  };
+  children: MenuItem[];
+  parents: Array<{
+    id: string | number;
+    name: string;
+    path: string;
+    level: number;
+  }>;
+  level: number;
+}
+
+export interface PaginationProps {
+  lang: string;
+  currentPage: number;
+  totalPages: number;
+  items: any[];
+}
+
+export interface CategoryPaginationProps extends PaginationProps {
+  categoryPath: string[] | { path: string; name: string };
+}
+
+export interface StaticPath {
+  params: {
+    lang: string;
+    page?: string;
+  };
+  props: PaginationProps | CategoryPaginationProps;
+}
+
+export type DataFetcher = (lang: string, categoryPath?: string[]) => Promise<any[]>;
+export type ContentType = 'product' | 'news' | 'case';
 
 // 生成分页路径
-export async function generatePaginationPaths(dataFetcher, itemsPerPage) {
-  const paths = [];
+export async function generatePaginationPaths(dataFetcher: DataFetcher, itemsPerPage: number): Promise<StaticPath[]> {
+  const paths: StaticPath[] = [];
 
   for (const lang of SUPPORTED_LANGUAGES) {
     try {
@@ -61,7 +128,7 @@ export async function generatePaginationPaths(dataFetcher, itemsPerPage) {
 }
 
 // 解析页码参数
-export function parsePageParam(pageParam, pagePrefix = '') {
+export function parsePageParam(pageParam: string | undefined, pagePrefix = ''): number {
   if (!pageParam) return 1;
 
   const pageNumber = parseInt(pageParam);
@@ -69,8 +136,8 @@ export function parsePageParam(pageParam, pagePrefix = '') {
 }
 
 // 根据分类路径获取产品
-export async function getProductsByCategoryPath(lang, categoryPath) {
-  const allProducts = await getProducts(lang);
+export async function getProductsByCategoryPath(lang: string, categoryPath: string[]): Promise<Product[]> {
+  const allProducts: Product[] = await getProducts(lang);
 
   if (categoryPath.length === 0) {
     return allProducts;
@@ -79,7 +146,7 @@ export async function getProductsByCategoryPath(lang, categoryPath) {
   return allProducts.filter(product => {
     if (product.category_path && Array.isArray(product.category_path)) {
       return categoryPath.every((segment, index) =>
-        product.category_path[index] === segment
+        product.category_path![index] === segment
       );
     }
 
@@ -87,7 +154,6 @@ export async function getProductsByCategoryPath(lang, categoryPath) {
       const productCategoryPath = product.product_category.url_slug ||
         product.product_category.path ||
         product.product_category.name;
-      // console.log('排查分类下的产品', categoryPath.includes(productCategoryPath))
       return categoryPath.includes(productCategoryPath);
     }
 
@@ -96,11 +162,16 @@ export async function getProductsByCategoryPath(lang, categoryPath) {
 }
 
 // 获取分类信息
-export async function getCategoryInfo(lang, categoryPath, mode = 'products') {
-  const menus = await getMenus(lang);
-  let current = null;
-  let children = [];
-  let parents = [];
+export async function getCategoryInfo(lang: string, categoryPath: string[], mode = 'products'): Promise<CategoryInfo> {
+  const menus: MenuItem[] = await getMenus(lang);
+  let current: MenuItem | null = null;
+  let children: MenuItem[] = [];
+  let parents: Array<{
+    id: string | number;
+    name: string;
+    path: string;
+    level: number;
+  }> = [];
 
   const filterMenus = menus.filter(menu =>
     menu.path?.includes(mode)
@@ -136,22 +207,22 @@ export async function getCategoryInfo(lang, categoryPath, mode = 'products') {
 
 
 // 生成所有分类的分页路径（支持多语言，优化性能）
-export async function generateAllCategoryPaths(dataFetcher, itemsPerPage, mode) {
+export async function generateAllCategoryPaths(dataFetcher: DataFetcher, itemsPerPage: number, mode: string): Promise<StaticPath[]> {
   // 并行处理所有语言
-  const languagePromises = SUPPORTED_LANGUAGES.map(async (lang) => {
-    const menus = await getMenus(lang);
+  const languagePromises = SUPPORTED_LANGUAGES.map(async (lang: string) => {
+    const menus: MenuItem[] = await getMenus(lang);
     const productMenus = menus.filter(menu =>
       menu.path?.includes(mode)
     );
 
     // 收集所有分类路径
-    const allCategoryPaths = [];
-    function collectCategoryPaths(categories, currentPath = []) {
+    const allCategoryPaths: string[][] = [];
+    function collectCategoryPaths(categories: MenuItem[] | undefined, currentPath: string[] = []): void {
       categories?.forEach(category => {
         const newPath = [...currentPath, category.path];
         allCategoryPaths.push(newPath);
 
-        if (category.children?.length > 0 && newPath.length < 3) {
+        if (category.children && category.children.length > 0 && newPath.length < 3) {
           collectCategoryPaths(category.children, newPath);
         }
       });
@@ -162,7 +233,7 @@ export async function generateAllCategoryPaths(dataFetcher, itemsPerPage, mode) 
     });
 
     // 并行获取所有分类的数据
-    const dataPromises = allCategoryPaths.map(async (categoryPath) => {
+    const dataPromises = allCategoryPaths.map(async (categoryPath: string[]) => {
       try {
         const datas = await dataFetcher(lang, categoryPath);
         return { categoryPath, datas };
@@ -176,7 +247,7 @@ export async function generateAllCategoryPaths(dataFetcher, itemsPerPage, mode) 
     const categoryData = await Promise.all(dataPromises);
 
     // 生成路径
-    const langPaths = [];
+    const langPaths: StaticPath[] = [];
     categoryData.forEach(({ categoryPath, datas }) => {
       const totalPages = Math.max(1, Math.ceil(datas.length / itemsPerPage)); // 至少生成1页
 
@@ -212,19 +283,19 @@ export async function generateAllCategoryPaths(dataFetcher, itemsPerPage, mode) 
 }
 
 /**
- * 生成产品页面的静态路径（包含分类和分页）
+ * 生成页面的静态路径（包含分类和分页）
  * 这是从 [...path].astro 中提取的通用逻辑
  * @param {number} productsPerPage - 每页产品数量
  * @param {string} contentType - 内容类型，如 'product'
  * @returns {Promise<Array>} 静态路径数组
  */
-export async function generateStaticPaths(perPage = 9, contentType = 'product') {
-  const paths = [];
+export async function generateStaticPaths(perPage = 9, contentType: ContentType = 'product'): Promise<StaticPath[]> {
+  const paths: StaticPath[] = [];
 
   try {
     // 并行处理所有语言，提高性能
-    const languagePromises = SUPPORTED_LANGUAGES.map(async (lang) => {
-      const langPaths = [];
+    const languagePromises = SUPPORTED_LANGUAGES.map(async (lang: string) => {
+      const langPaths: StaticPath[] = [];
       try {
         // 一次性获取所有数据，避免重复调用接口
         const allData = await getByCategory(lang, '', contentType);
@@ -243,8 +314,8 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
             params,
             props: {
               lang,
-              categoryPath: '',
-              page,
+              categoryPath: [],
+              currentPage: page,
               totalPages,
               items: currentPageItems
             }
@@ -256,14 +327,14 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
         const filteredCategories = filterCategories(allCategories);
 
         // 递归收集所有分类及其分页路径
-        const collectPaths = async (categories, parentPath = '') => {
-          const categoryPromises = categories.map(async (category) => {
+        const collectPaths = async (categories: MenuItem[], parentPath = ''): Promise<void> => {
+          const categoryPromises = categories.map(async (category: MenuItem) => {
             const fullPath = parentPath
               ? `${parentPath}/${category.path}`
               : category.path;
             try {
               // 从已获取的所有产品中过滤出该分类的产品
-              const categoryData = allData.filter((item) => {
+              const categoryData = allData.filter((item: any) => {
                 if (item[contentType + '_category']) {
                   const itemCategoryPath = item[contentType + '_category'].url_slug ||
                     item[contentType + '_category'].path ||
@@ -294,7 +365,7 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
                       path: fullPath,
                       name: category.name
                     },
-                    page,
+                    currentPage: page,
                     totalPages,
                     items: currentPageItems
                   }
@@ -321,8 +392,8 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
           params: { lang, page: undefined },
           props: {
             lang,
-            categoryPath: '',
-            page: 1,
+            categoryPath: [],
+            currentPage: 1,
             totalPages: 1,
             items: []
           }
@@ -344,15 +415,20 @@ export async function generateStaticPaths(perPage = 9, contentType = 'product') 
 
 
 // 生成所有支持语言的静态路径
-export function generateCommonStaticPaths() {
+export function generateCommonStaticPaths(): StaticPath[] {
   if (!SUPPORTED_LANGUAGES.length) {
     console.warn('[i18n] 未获取到任何语言，generateStaticPaths 将返回空列表');
     return [];
   }
   
-  const paths = SUPPORTED_LANGUAGES.map((lang) => ({
+  const paths: StaticPath[] = SUPPORTED_LANGUAGES.map((lang: string) => ({
     params: { lang },
-    props: { lang }
+    props: { 
+      lang,
+      currentPage: 1,
+      totalPages: 1,
+      items: []
+    }
   }));
   
   return paths;

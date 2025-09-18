@@ -2,7 +2,7 @@
  * 工具函数集合
  * 用于处理菜单数据转换、递归分类等功能
  */
-const strapiStaticUrl = process.env.STRAPI_STATIC_URL || import.meta.env?.STRAPI_STATIC_URL;
+const strapiStaticUrl = process.env.PUBLIC_API_URL || import.meta.env?.PUBLIC_API_URL;
 /**
  * 处理图片url
  * @param imageUrl 图片url
@@ -186,7 +186,7 @@ export function generateUrl(lang: string, basePath: string, urlSlug?: string, pa
  * @param images extractUrl方法的返回值数组
  * @returns 第一个图片对象，如果没有则返回null
  */
-export function getFirstImage(images: Array<{url: string, name: string}>): {url: string, name: string} | null {
+export function getFirstImage(images: Array<{url: string, name: string}> | null | undefined): {url: string, name: string} | null {
   if (!images || !Array.isArray(images) || images.length === 0) {
     return null;
   }

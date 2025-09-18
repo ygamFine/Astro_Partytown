@@ -30,9 +30,9 @@ try {
 
 // 从网站配置中提取联系信息
 const contactInfo = siteConfiguration.contact_info || [];
-const phone1 = contactInfo[0]?.field_lianxidianhua || "";
-const phone2 = contactInfo[1]?.field_lianxidianhua || "";
-const email = siteConfiguration.field_zhandiandingbuyouxiang || "";
+const phone1 = siteConfiguration.field_zhandiandingbu || "Not yet configured";
+const phone2 = contactInfo[0]?.field_lianxidianhua || "Not yet configured";
+const email = siteConfiguration.field_zhandiandingbuyouxiang || "Not yet configured";
 let logoImage
 try{
   const logoUrl = siteConfiguration?.field_logo && siteConfiguration?.field_logo.length > 0 && siteConfiguration?.field_logo[0]?.media?.url
