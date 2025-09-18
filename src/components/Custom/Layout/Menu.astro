@@ -178,6 +178,7 @@ try {
         id="header-search-button"
         class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg"
       >
+        <i class="iconfont icon-common_icon_search text-xl"></i>
       </button>
 
       <!-- Pagefind 搜索结果下拉框 -->
@@ -363,3 +364,79 @@ try {
     }
   }
 </style>
+
+<script>
+  // 头部搜索功能
+  document.addEventListener('DOMContentLoaded', async function() {
+    const searchInput = document.getElementById('header-search-input') as HTMLInputElement;
+    const searchButton = document.getElementById('header-search-button');
+    const resultsContainer = document.getElementById('header-search-results');
+    const resultsContent = document.getElementById('header-search-results-content');
+    
+    if (!searchInput || !searchButton || !resultsContainer || !resultsContent) return;
+    
+    let pagefind: any = null;
+    let searchTimeout: NodeJS.Timeout | null = null;
+    
+    // 尝试初始化Pagefind
+    try {
+      const { PagefindUI } = await import('@pagefind/default-ui');
+      pagefind = new PagefindUI({
+        element: resultsContent,
+        showImages: false,
+        translations: {}
+      });
+    } catch (error) {
+      console.warn('Pagefind未能加载，使用备用搜索');
+    }
+    
+    // 搜索输入处理
+    searchInput.addEventListener('input', function(e) {
+      const target = e.target as HTMLInputElement;
+      const query = target.value.trim();
+      
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+      
+      searchTimeout = setTimeout(() => {
+        if (query.length > 0) {
+          if (pagefind) {
+            pagefind.triggerSearch(query);
+            resultsContainer.classList.remove('hidden');
+          }
+        } else {
+          resultsContainer.classList.add('hidden');
+        }
+      }, 300);
+    });
+    
+    // 回车键和按钮点击搜索
+    const performSearch = () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        const currentLang = document.documentElement.lang || 'en';
+        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+      }
+    };
+    
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performSearch();
+      }
+    });
+    
+    searchButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      performSearch();
+    });
+    
+    // 点击外部关闭搜索结果
+    document.addEventListener('click', function(e) {
+      if (e.target && (e.target as Element).closest && !(e.target as Element).closest('#header-search-container')) {
+        resultsContainer.classList.add('hidden');
+      }
+    });
+  });
+</script>
