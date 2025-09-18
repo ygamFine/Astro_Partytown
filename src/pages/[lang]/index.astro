@@ -6,10 +6,12 @@ import Layout from '@layouts/Layout.astro';
 import FullScreenBanner from '@components/Custom/Home/FullScreenBanner.astro';
 import ProductShowcase from '@components/Custom/Home/ProductShowcase.astro';
 import StatsSection from '@components/Custom/Home/StatsSection.astro';
+import HotRecommendedProducts from '@components/Custom/Home/HotRecommendedProduct.astro';
+import FrontContactUs from '@components/Custom/Home/FrontContactUs.astro';
 import CustomerNeeds from '../../components/CustomerNeeds.astro';
-import CustomerCases from '../../components/CustomerCases.astro';
+import CustomerCases from '@components/Custom/Home/CustomerCases.astro';
 import NewsCenter from '../../components/NewsCenter.astro';
-import HotRecommendedProducts from '../../components/HotRecommendedProducts.astro';
+
 
 import { themeConfig } from '../../config/theme.js';
 import { generateStaticPaths } from '../../lib/i18n-routes.js';
@@ -31,25 +33,28 @@ const getPageWidth = () => {
   return themeConfig.layout.dynamicWidth.getPageWidth('home');
 };
 const pageWidth = getPageWidth();
+console.log('获取到的首页数据:', homepageData);
 ---
+
 
 <Layout title={t.nav.home} lang={lang} pageType="home">
 	<FullScreenBanner />
-	<div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}>
+	<!-- <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}> -->
+	<div class="mx-auto px-4">		
 		<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
-		<StatsSection />
+		<StatsSection companyData={homepageData?.companyIntroduction} corporateAdvantages={homepageData?.corporateAdvantages} />
+		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} />
+		<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
+		<CustomerCases customerCases={homepageData?.customerCases} lang={lang}  />
 		<!-- 
 		<StatsSection 
 			companyData={homepageData?.companyIntroduction}
 		/>
-		<HotRecommendedProducts 
-			title={homepageData?.hotRecommendedProducts?.title}
-			description={homepageData?.hotRecommendedProducts?.description}
-		/>
+		
 		<CustomerNeeds 
 			contactData={homepageData?.contactUs}
 		/>
-		<CustomerCases />
+		
 		<NewsCenter /> -->
 	</div>
 </Layout>

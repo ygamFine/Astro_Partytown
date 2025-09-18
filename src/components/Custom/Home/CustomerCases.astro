@@ -1,0 +1,361 @@
+---
+import { Image } from 'astro:assets';
+import { getFirstImage, generateUrl } from '@utils/tools';
+// 导入 Swiper CSS
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+// 定义组件props接口
+export interface Props {
+    customerCases?: {
+    title?: string;
+    description?: string;
+    url_text?: string;
+    products?: Array<{
+      image?: {
+        url: string;
+        name: string;
+      };
+    
+      name?: string;
+      title?: string;
+      url?: string;
+      url_text?: string;
+    }>;
+  };
+  lang: string;
+}
+// 获取props，提供默认值
+const { customerCases = {}, lang } = Astro.props;
+const { 
+  title = '', 
+  description = '', 
+  products = [] 
+} = customerCases;
+
+const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
+// console.log('获取到的案例', safeCases);
+
+---
+
+<!-- Swiper 初始化 -->
+<script>
+  document.addEventListener('DOMContentLoaded', async function() {
+    try {
+      // 动态导入 Swiper
+      const { default: Swiper } = await import('swiper/bundle');
+      
+      // 初始化 Swiper
+      const swiper = new Swiper('.honor-swiper2', {
+        // 基本配置
+        slidesPerView: 1,
+        spaceBetween: 37,
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+        },
+        
+        // 响应式断点
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 15,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 20,
+          },
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 21,
+          },
+        },
+        
+        // 分页器
+        pagination: false,
+        
+        // 导航按钮
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        
+        // 效果
+        effect: 'slide',
+        speed: 600,
+        
+        // 鼠标悬停暂停自动播放
+        on: {
+          init: function(swiper) {
+            swiper.el.addEventListener('mouseenter', () => {
+              if (swiper.autoplay) {
+                swiper.autoplay.stop();
+              }
+            });
+            swiper.el.addEventListener('mouseleave', () => {
+              if (swiper.autoplay) {
+                swiper.autoplay.start();
+              }
+            });
+          }
+        }
+      });
+     
+      
+    } catch (error) {
+      console.error('Swiper 加载失败:', error);
+    }
+  });
+</script>
+
+<section class="customer-cases">
+    <div class="container">
+        <div class="product-product-main">
+            <h2 class="block-title">{title}</h2>
+            <p class="block-desc">{description}</p>
+            <div class="swiper honor-swiper2">
+                <div class="swiper-wrapper">
+                    {safeCases.map((product, index) => {
+                        const productName = product.name || product.title || `Product ${index + 1}`;
+                        // 直接使用 product.image，因为它已经是一个对象
+                        const productImage = product.image;
+                        return (
+                          <div class="swiper-slide">
+                            <div class="product-item">
+                                <div class="product-item-img">
+                                    <Image 
+                                        src={productImage?.url || '/images/placeholder.webp'}
+                                        alt={productImage?.name || productName}
+                                        width={506}
+                                        height={380}
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="thumbnail-image transition-transform duration-300 hover:scale-105" 
+                                    />
+                               </div>
+                              <p class="product-name">{productName}</p>
+                              <a href={product.url} class="product-url">{product.url_text}</a>
+                            </div>
+                          </div>
+                        );
+                    })}
+                </div>
+                <!-- 导航按钮 -->
+                <div class="swiper-button-prev swiper-button-custom"></div>
+                <!-- 导航按钮 -->
+                <div class="swiper-button-next swiper-button-custom"></div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<style>
+    .product-hot-product {
+       padding-bottom: 8rem; 
+    }
+    .block-title{
+        font-family: Antonio-Bold;
+        font-size: 6rem;
+        color: #18181F;
+        text-align: center;
+    }
+    .block-desc{
+        font-weight: 400;
+        font-size: 1.6rem;
+        color: #18181F;
+        line-height: 2.4rem;
+        text-align: center;
+        width: 50%;
+        margin: 0 auto;
+    }
+    .product-hot-product .container{
+        width: 100%;
+        padding: 0 6rem;
+    }
+    .product-hot-product .product-item{
+        cursor: pointer;
+        text-align: center;
+    }
+    .product-hot-product .product-item .product-item-img{
+        overflow: hidden;
+    }
+    .product-hot-product .product-item img{
+        width: 100%;
+        height: auto;
+        transition: all 1s ease;
+    }
+    .product-hot-product .product-item:hover img{
+        transform: scale(1.1);
+    }
+    .product-hot-product .product-item .product-name{
+        font-weight: 400;
+        font-size: 1.8rem;
+        color: #18181F;
+        line-height: 2.4rem;
+        height: 4.8rem;
+        padding: 0 1rem;
+        margin-top: 1.6rem;
+        text-align: center;
+    }
+    .product-hot-product .product-item .product-url{
+        display: inline-block;
+        width: auto;
+        padding: 0 0.5rem;
+        height: 3rem;
+        line-height: 3rem;
+        position: relative;
+        z-index: 3;
+        overflow: hidden;
+        font-family: Poppins-Medium;
+        font-weight: 500;
+        font-size: 2rem;
+        color: #18181F;
+        transition: all .3s linear;
+    }
+    .product-hot-product .product-item .product-url:hover{
+        color: #FEFEFE;
+    }
+    .product-hot-product .product-item .product-url::before{
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+        width: 100%;
+        height: 3px;
+        background: #E81A1A;
+        transition: all .3s linear;
+    }
+    .product-hot-product .product-item .product-url:hover:before{
+        height: 100%;
+    }
+    
+    /* Swiper 样式 */
+    .honor-swiper2 {
+       margin-top: 6rem;
+    }
+    
+    .honor-swiper2 .swiper-slide {
+        height: auto;
+    }
+    .honor-swiper2 .swiper-bottom-box{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding-bottom: 5px;
+        margin-top: 7rem;
+    }
+    
+    .honor-swiper2 .swiper-button-next,
+    .honor-swiper2 .swiper-button-prev {
+        color: #dc2626;
+        border-radius: 50%;
+        width: 16px;
+        height: 14px;
+        transition: all 0.3s ease;
+        position: static !important;
+    }
+    
+    .honor-swiper2 .swiper-button-next:hover,
+    .honor-swiper2 .swiper-button-prev:hover {
+        background: #dc2626;
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .honor-swiper2 .swiper-button-next:after,
+    .honor-swiper2 .swiper-button-prev:after {
+        content: '';
+        font-size: 18px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .honor-swiper2 .swiper-pagination {
+        position: relative;
+        width: auto !important;
+    }
+    
+    /* 分页点样式 - 使用 CSS 变量和最高优先级 */
+    .product-hot-product .honor-swiper2 .swiper-pagination {
+        --swiper-pagination-bullet-size: 1.2rem;
+        --swiper-pagination-bullet-horizontal-gap: 0.5rem;
+    }
+    .product-hot-product .honor-swiper2 .swiper-pagination::after{
+        content: '';
+        width: 113%;
+        height: 2px;
+        background: #DDDDDD;
+        position: absolute;
+        bottom:-5px;
+        left: -1rem;
+    }
+    
+    .product-hot-product .honor-swiper2 .swiper-pagination .swiper-pagination-bullet,
+    .product-hot-product .honor-swiper2 .swiper-pagination-bullet {
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        background: #18181F !important;
+        border-radius: 50% !important;
+        opacity: 1 !important;
+        transition: all 0.3s ease !important;
+        margin: 0 0.5rem !important;
+        border: none !important;
+        outline: none !important;
+        box-sizing: border-box !important;
+        display: inline-block !important;
+    }
+    
+    .product-hot-product .honor-swiper2 .swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active,
+    .product-hot-product .honor-swiper2 .swiper-pagination-bullet-active {
+        opacity: 1 !important;
+        background: #E81A1A !important;
+    }
+   
+    
+    /* 全局覆盖 - 作为备用 */
+    .swiper-pagination-bullet {
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        background: #18181F !important;
+        border-radius: 50% !important;
+        opacity: 1 !important;
+        transition: all 0.3s ease !important;
+        margin: 0 0.5rem !important;
+        border: none !important;
+        outline: none !important;
+        display: inline-block !important;
+    }
+    
+    .swiper-pagination-bullet-active {
+        opacity: 1 !important;
+        background: #E81A1A !important;
+        transform: scale(1.2) !important;
+    }
+ 
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .honor-swiper2 {
+            padding: 0 20px;
+        }
+        
+        .honor-swiper2 .swiper-button-next,
+        .honor-swiper2 .swiper-button-prev {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .honor-swiper2 .swiper-button-next:after,
+        .honor-swiper2 .swiper-button-prev:after {
+            font-size: 14px;
+        }
+    }
+    
+</style>
+</style>

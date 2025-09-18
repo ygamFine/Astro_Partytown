@@ -21,7 +21,8 @@
     "@pagefind/default-ui": "^1.3.0",
     "astro": "^5.9.3",
     "pagefind": "^1.3.0",
-    "sharp": "^0.34.3"
+    "sharp": "^0.34.3",
+    "swiper": "^12.0.1"
   },
   "devDependencies": {
     "astro-critters": "^2.2.1",

@@ -12,53 +12,108 @@ export interface Props {
       exportingCountry?: string;
     };
     buttonText?: string;
+    imgBg?: {
+      url: string;
+      name: string;
+    } | null;
+    fuTitle?: string;
+    desc?: string;
+  
+    companyInfo?: Array<{
+      c_num?: string;
+      c_title?: string;
+      c_unit?: string;
+    }>;
   };
+  corporateAdvantages?: Array<{
+    adv_img?: {
+        url: string;
+        name: string;
+      } | null;
+    adv_title?: string;
+    adv_desc?: string;
+  }>;
 }
 
 // 获取props，提供默认值
+const { companyData = {}, corporateAdvantages = [] } = Astro.props;
 const { 
-  companyData
-} = Astro.props;
+  title = '', 
+  fuTitle = '', 
+  desc = '', 
+  companyInfo = [],
+} = companyData;
+
+
+console.log('获取到的 companyData', companyData);
+console.log('获取到的 corporateAdvantages', corporateAdvantages);
+
+const safecompanyInfo = Array.isArray(companyInfo) ? companyInfo.slice(0, 4) : [];
+const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAdvantages.slice(0, 4) : [];
+
+
 
 // StatsSection - 公司概览与核心数据展示
 ---
 
-<section class="stats-section animate-fade-up">
-  <div class="overlay"></div>
+<section class="stats-section aboutSection" style={`background-image: url(${companyData?.imgBg?.url || '/images/placeholder.webp'})`}>
+
   <div class="container">
-    <h2 class="animate-fade-up animate-delay-100">{companyData?.title}</h2>
-    <p class="intro animate-fade-up animate-delay-200">{companyData?.introduction}</p>
-
-    <div class="stats-row animate-fade-up animate-delay-400">
-      <div class="stat-item animate-scale-up animate-delay-500">
-        <div class="stat-value counter-number" data-count={companyData?.stats?.incorporation}>{companyData?.stats?.incorporation}</div>
-        <div class="stat-label">Incorporation</div>
+    <h2 class="aboutTitle">{companyData?.title}</h2>
+    <p class="aboutFuTitle">{companyData?.fuTitle}</p>
+    <p class="aboutDesc">{companyData?.desc}</p>
+    <!-- 公司概览与核心数据展示 -->
+    <div class="stats-row companyInfo">
+    {safecompanyInfo.map((info, index) => (
+      <div class="stat-item">
+        <div class="stat-value counter-number" data-count={info.c_num}>
+          <span class="stat-value-num">{info.c_num}</span>
+          <span class="stat-value-unit">{info.c_unit}</span>
+        </div>
+        <div class="stat-value-desc">{info.c_title}</div>
       </div>
-      <div class="stat-item animate-scale-up animate-delay-600">
-        <div class="stat-value counter-number" data-count={companyData?.stats?.floorSpace}>{companyData?.stats?.floorSpace}</div>
-        <div class="stat-label">Floor space</div>
-      </div>
-      <div class="stat-item animate-scale-up animate-delay-700">
-        <div class="stat-value counter-number" data-count={companyData?.stats?.exportingCountry}>{companyData?.stats?.exportingCountry}</div>
-        <div class="stat-label">Exporting country</div>
-      </div>
-      <div class="stat-item animate-scale-up animate-delay-800">
-        <div class="stat-value counter-number" data-count="500">500+</div>
-        <div class="stat-label">Have employees</div>
-      </div>
+      
+    ))}
+    
+      
     </div>
-
+    <!-- 查看更多按钮 -->
     <a href="/about" class="view-all-btn animate-fade-up animate-delay-900">{companyData?.buttonText} →</a>
+    <!-- 企业优势 -->
+    <div class="CorporateAdvantages stats-row">
+      {safecorporateAdvantages.map((advantage, index) => (
+        <div class="stat-item">
+           <div class="adv-img">
+             {advantage.adv_img && advantage.adv_img.url && (
+               <Image 
+                 src={advantage.adv_img.url || '/images/placeholder.webp'}
+                 alt={advantage.adv_img.name || advantage.adv_title || '优势图片'}
+                 width={75}
+                 height={60}
+                 loading="lazy"
+                 decoding="async"
+                 class="thumbnail-image transition-transform duration-300 hover:scale-105" 
+               />
+             )}
+           </div>
+          
+          <div class="adv-title">{advantage.adv_title}</div>
+          <div class="adv-desc">{advantage.adv_desc}</div>
+        </div>
+      ))}
+      
+    </div>
 
   </div>
 </section>
 
 <style>
+
 .stats-section {
   position: relative;
   color: #fff;
-  padding: 8rem 1rem;
-  margin-bottom: 20rem;
+  padding: 8rem 0 0 0;
+
 }
 .stats-section .overlay {
   position: absolute;
@@ -70,7 +125,7 @@ const {
   max-width: 1460px;
   margin: 0 auto;
   text-align: center;
-  padding-bottom: 10rem;
+  padding-bottom: 4rem;
 }
 .stats-section h2 {
   font-size: 3rem;
@@ -125,6 +180,148 @@ const {
   align-items: center;
   font-size: 2rem;
 }
+.aboutSection{
+  background-size: 100% 67%;
+  background-repeat: no-repeat;
+  background-position: top center;
+}
+.aboutSection .aboutTitle {
+  font-family: Antonio-Bold;
+  font-weight: bold;
+  font-size: 6rem;
+  color: #FFFFFF;
+  line-height: 7.5rem;
+  margin-bottom: 3rem;
+}
+.aboutSection .aboutFuTitle{
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: #FFFFFF;
+  line-height: 2.4rem;
+  width: 77%;
+  margin: 0 auto;
+}
+.aboutSection .aboutDesc{
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: #FFFFFF;
+  line-height: 2.4rem;
+  width:78%;
+  margin: 1rem auto;
+}
+.aboutSection .companyInfo{
+  margin-top: 5rem;
+}
+.aboutSection .stat-value-num{
+  font-family: Antonio-Bold;
+  font-size: 7.2rem;
+  color: #FFFFFF;
+  line-height: 7.5rem;
+}
+.aboutSection .stat-value-unit{
+  font-family: Antonio-Bold;
+  font-weight: 400;
+  font-size: 6rem;
+  color: #FFFFFF;
+  line-height: 6rem;
+}
+.aboutSection .stat-value-desc{
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: #FFFFFF;
+}
+.aboutSection .view-all-btn{
+    min-width: 20rem;
+    height: 6rem;
+    line-height: 4.4rem;
+    background: transparent;
+    border: 1px solid #FFFFFF;
+     font-family: 'Antonio', sans-serif;
+    font-weight: 400;
+    font-size: 2rem;
+    color: #FFFFFF;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    position: relative;
+    -webkit-transition-property: color;
+    transition-property: color;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    transition: border-color .3s;
+}
+.aboutSection .view-all-btn:hover{
+    color: #FFFFFF;
+    border-color: #E81A1A;
+}
+.aboutSection .view-all-btn::before{
+  content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #E81A1A;
+    -webkit-transform: scaleY(0);
+    transform: scaleY(0);
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+    -webkit-transition-property: transform;
+    transition-property: transform;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+}
+.aboutSection .view-all-btn:hover::before{
+  -webkit-transform: scaleY(1);
+    transform: scaleY(1);
+}
+.aboutSection .stats-row{
+  display: grid; /* 启用Grid布局 */
+  gap: 4rem; /* 网格项之间的间距（水平+垂直），可自定义 */
+  grid-template-columns: repeat(4, 1fr); 
+}
+.aboutSection .CorporateAdvantages{
+  margin-top: 6rem;
+}
+.aboutSection .CorporateAdvantages .stat-item{
+  padding: 8rem 5rem 5.6rem;
+    background: #E81A1A;
+    margin-top: 2rem;
+}
+.aboutSection .adv-img img{
+  height: 6rem !important;
+  width: auto !important;
+  margin: 0 auto;
+  transition: all .5s ease;
+}
+.aboutSection .adv-img:hover img{
+  transform: scale(1.1);
+}
+.aboutSection .adv-title{
+  font-weight: 400;
+    font-size: 2.4rem;
+    color: #FFFFFF;
+    line-height: 3rem;
+    margin-top: 3.3rem;
+
+}
+.aboutSection .stat-item:hover .adv-title{
+  text-decoration: underline;
+}
+.aboutSection .adv-desc{
+  font-weight: 400;
+    font-size: 1.6rem;
+    color: #FFFFFF;
+    line-height: 2.4rem;
+    -webkit-line-clamp: 4;
+    height: 9.6rem;
+    margin-top: 1.6rem;
+}
+
 @media (max-width: 1023px) {
   .stats-section {
     padding: 4rem 1rem;

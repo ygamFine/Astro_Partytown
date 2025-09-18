@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'antonio': ['Antonio', 'sans-serif'],
+      },
       colors: {
         primary: {
           600: '#dc2626', // 主品牌色

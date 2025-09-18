@@ -1,6 +1,7 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
 import { STRAPI_STATIC_URL, STRAPI_TOKEN, fetchJson } from '@lib/strapiClient.js';
-import { extractUrl } from '@utils/tools';
+import { extractUrl, getFirstImage } from '@utils/tools';
+import { map } from 'astro:schema';
 
 // 验证环境变量
 if (!STRAPI_STATIC_URL || !STRAPI_TOKEN) {
@@ -19,7 +20,6 @@ export async function getHomepageContent(lang: string) {
     }
 
     const homepageData = data.data;
-    // console.log('获取到的首页数据:', homepageData.company_introduction);
 
     return {
       productShowcase: {
@@ -37,9 +37,61 @@ export async function getHomepageContent(lang: string) {
       companyIntroduction: {
         title: homepageData.company_introduction.title,
         introduction: homepageData.company_introduction.introduction,
+        fuTitle: homepageData.company_introduction.field_fubiaoti,
+        desc: homepageData.company_introduction.field_xiangqing,
+        imgBg: getFirstImage(extractUrl(homepageData.company_introduction.field_tupian, true)),
         stats: homepageData.company_introduction.stats,
-        buttonText: homepageData.company_introduction.button_text,
+        buttonText: homepageData.company_introduction.btn_text,
+        companyInfo: homepageData.company_introduction.field_youshi?.map((item: any) => {
+          return {
+            ...item,
+            c_num: item.field_description,
+            c_title: item.field_biaoti,
+            c_unit: item.field_danwei,
+          }
+        }) || [],
+        
       },
+      corporateAdvantages: homepageData.company_advantage.field_youshilist?.map((item: any) => {
+        return {
+          ...item,
+          adv_img: getFirstImage(extractUrl(item.field_tubiao, true) || []),
+          adv_title: item.field_biaoti,
+          adv_desc: item.field_description,
+        }
+      }) || [],
+      
+      hotRecommendedProducts:{
+        title: homepageData.hot_recommended_products.title,
+        description: homepageData.hot_recommended_products.description,
+        products: homepageData.hot_recommended_products.products?.map((item: any) => {
+          return {
+            ...item,
+            image: getFirstImage(extractUrl(item.picture, true) || []),
+          }
+        }) || [],
+      },
+      frontContactUs:{
+        title: homepageData.contact_us.title,
+        fu_title: homepageData.contact_us.fu_title,
+        description: homepageData.contact_us.description,
+        buttonText: homepageData.contact_us.button_text,
+        buttonUrl: homepageData.contact_us.url,
+        panoramaText: homepageData.contact_us.panoramic_title,
+        panortitle: homepageData.contact_us.panoramic_introduction,
+        contactImgBg: getFirstImage(extractUrl(homepageData.contact_us.panorama_img, true)),
+      },
+      customerCases:{
+        title: homepageData.customer_cases.title,
+        description: homepageData.customer_cases.description,
+        products: homepageData.customer_cases.products?.map((item: any) => {
+          return {
+            ...item,
+            image: getFirstImage(extractUrl(item.picture, true) || []),
+          }
+        }) || [],
+      },
+    
     };
 
   } catch (error) {

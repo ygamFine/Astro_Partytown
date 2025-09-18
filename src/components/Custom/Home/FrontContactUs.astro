@@ -1,0 +1,172 @@
+---
+import { Image } from 'astro:assets';
+
+export interface Props {
+    frontContactUs?: {
+        title?: string;
+        fu_title?: string;
+        description?: string;
+        buttonText?: string;
+        buttonUrl?: string;
+        panoramaText?: string;
+        panortitle?: string;
+        panordescription?: string;
+        contactImgBg?: {
+            url: string;
+            name: string;
+        } | null;
+    }
+}
+
+// 获取props，提供默认值
+const { frontContactUs = {} } = Astro.props;
+const { 
+  title = '', 
+  fu_title = '',
+  description = '', 
+  buttonText = '', 
+  buttonUrl = '', 
+  panoramaText = '', 
+  panortitle = '', 
+  panordescription = '', 
+
+} = frontContactUs;
+console.log('获取到的 frontContactUs', frontContactUs);
+---
+
+
+
+<section class="stats-section contactUsSection" style={`background-image: url(${frontContactUs?.contactImgBg?.url || '/images/placeholder.webp'})`}>
+    <div class="container">
+        <div class="contact-content">
+            <div class="grid-2 grid-left">
+                <h2 class="contact-title">{title}</h2>
+                <p class="contact-fu-title">{fu_title}</h2>
+                <p class="contact-description">{description}</p>
+                <a href={buttonUrl} class="contact-button">{buttonText} →</a>
+            </div>
+            <div class="grid-2 grid-right">
+                <i class="iconfont icon-whatsapp"></i>
+                <p class="panortitle">{panortitle}</p>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<style>
+    .contactUsSection{
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 7.5rem 0;
+      
+    }
+    .contactUsSection .contact-content{
+        display: grid;
+        grid-template-columns: 1.3fr 2fr;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
+    }
+    .contactUsSection .grid-left{
+        background: #fff;
+        padding: 7rem 8rem;
+        text-align: center;
+    }
+    .contactUsSection .contact-title{
+        font-family: Antonio-Bold;
+        font-weight: bold;
+        font-size: 4.8rem;
+        color: #E81A1A;
+        line-height: 5.5rem;
+        text-align: center;
+    }
+    .contactUsSection .contact-fu-title{
+        font-family: Antonio-Bold;
+        font-weight: bold;
+        font-size: 4.8rem;
+        color: #18181F;
+        line-height: 5.5rem;
+        text-align: center;
+        padding: 0 3rem;
+    }
+    .contactUsSection .contact-description{
+        font-weight: 400;
+        font-size: 1.6rem;
+        color: #18181F;
+        line-height: 2.4rem;
+        text-align: center;
+        padding: 0 2rem;
+        margin-top: 1rem;
+    }
+    .contactUsSection .contact-button{
+        display: inline-block;
+        width: auto;
+        padding: 0 3.7rem;
+        height: 6rem;
+        line-height: 5.5rem;
+        background: transparent;
+        border: 2px solid #E81A1A;
+        font-family: Poppins-Regular;
+        font-weight: 400;
+        font-size: 2rem;
+        color: #18181F;
+        vertical-align: middle;
+        -webkit-transform: perspective(1px) translateZ(0);
+        transform: perspective(1px) translateZ(0);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+        position: relative;
+        -webkit-transition-property: color;
+        transition-property: color;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        transition: border-color .3s;
+        vertical-align: middle;
+        margin-top: 3rem;
+        &:hover{    
+            color: #FFFFFF;
+            border-color: #E81A1A;
+        }
+        &:before{
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #E81A1A;
+            -webkit-transform: scaleY(0);
+            transform: scaleY(0);
+            -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+            -webkit-transition-property: transform;
+            transition-property: transform;
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            -webkit-transition-timing-function: ease-out;
+            transition-timing-function: ease-out;
+        }
+        &:hover:before{
+            -webkit-transform: scaleY(1);
+            transform: scaleY(1);
+        }
+    }
+    .contactUsSection .grid-right{
+        text-align: center;
+        i{
+            font-size: 13rem;
+            line-height: 10rem;
+            color: #FFFFFF;
+        }
+        .panortitle{
+            font-weight: 400;
+            font-size: 2.4rem;
+            color: #FFFFFF;
+            line-height: 3rem;
+            width: 24%;
+            margin: 1rem auto;
+        }
+    }
+</style>

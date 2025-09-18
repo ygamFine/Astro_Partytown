@@ -3,6 +3,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 自定义字体定义 */
+@font-face {
+  font-family: 'Antonio';
+  src: url('/my_font/Antonio-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap; /* 优化字体加载性能 */
+}
+@font-face {
+  font-family: 'Antonio-Bold';
+  src: url('/my_font/Antonio-SemiBold.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap; /* 优化字体加载性能 */
+}
+
 /* 自定义全局样式 */
 @layer base {
   html {
@@ -35,6 +49,23 @@ html {
   scroll-behavior: smooth;
   font-size: 10px;
   overflow-x: hidden;
+}
+
+
+@media (min-width: 1025px) {
+    html {
+        font-size: 7px;
+    }
+}
+@media (min-width: 1200px) {
+  html {
+      font-size: 8px;
+  }
+}
+@media (min-width: 1500px) {
+  html {
+      font-size: 10px;
+  }
 }
 
 body {
@@ -531,4 +562,11 @@ img[loading="lazy"]:not([src]) {
 /* 数字计数器 */
 .counter-number {
   font-variant-numeric: tabular-nums;
+}
+@media (min-width: 1650px){
+  body .container{
+    max-width: initial !important;
+    width: 1600px;
+
+  }
 }
