@@ -50,9 +50,12 @@ async function loadLocaleSubdomainMap() {
       const locale = m[1];
       const hostConds = Array.isArray(r?.has) ? r.has : [];
       const host = hostConds.find((h) => h?.type === 'host' && typeof h?.value === 'string')?.value || '';
-      const sub = host.replace(/\.\*$/, '') // 去掉 .*
-                      .replace(/^\^/, '') // 兼容可能的正则起始符
-                      .replace(/\$$/, ''); // 兼容可能的正则结束符
+      // 解析正则：^en\..+$ -> en
+      const sub = host.replace(/^\^/, '') // 去掉正则起始符 ^
+                      .replace(/\\\./g, '.') // 转义的点 \. -> .
+                      .replace(/\.\.\+\$$/, '') // 去掉 ..+$
+                      .replace(/\.\*\$$/, '') // 去掉 .*$
+                      .replace(/\$$/, ''); // 去掉结束符 $
       if (sub) map.set(locale, sub);
     }
     return map;
@@ -121,42 +124,74 @@ function buildSitemapIndexXml(entries) {
 }
 
 async function main() {
+  console.log('🚀 开始生成多语言 sitemap...');
+  
   // 确保 dist 存在
   try {
     await fs.access(DIST_DIR);
-  } catch {
-    console.error('dist 目录不存在，请先运行构建。');
+    console.log('✅ dist 目录存在');
+  } catch (error) {
+    console.error('❌ dist 目录不存在，请先运行构建。');
+    console.error('错误详情:', error.message);
     process.exit(1);
   }
 
   const { protocol, apex } = getProtocolAndApex();
-  const distEntries = await fs.readdir(DIST_DIR, { withFileTypes: true });
+  console.log(`📍 使用站点配置: ${protocol}://${apex}`);
+  
+  let distEntries;
+  try {
+    distEntries = await fs.readdir(DIST_DIR, { withFileTypes: true });
+  } catch (error) {
+    console.error('❌ 无法读取 dist 目录:', error.message);
+    process.exit(1);
+  }
+  
   const locales = distEntries
     .filter((e) => e.isDirectory() && !shouldSkipDir(e.name))
     .map((e) => e.name);
+  
+  console.log(`🌍 发现语言目录: ${locales.join(', ')}`);
 
   const localeSubMap = await loadLocaleSubdomainMap();
   const indexEntries = [];
 
   for (const locale of locales) {
+    console.log(`🔄 处理语言: ${locale}`);
     const localeDir = path.join(DIST_DIR, locale);
-    // 收集该语言目录下的 HTML 页面
-    const htmlFiles = await collectHtmlFiles(localeDir, localeDir);
-    if (htmlFiles.length === 0) continue;
+    
+    try {
+      // 收集该语言目录下的 HTML 页面
+      const htmlFiles = await collectHtmlFiles(localeDir, localeDir);
+      console.log(`  📄 找到 ${htmlFiles.length} 个 HTML 文件`);
+      
+      if (htmlFiles.length === 0) {
+        console.log(`  ⚠️  跳过 ${locale}（无 HTML 文件）`);
+        continue;
+      }
 
-    const sub = localeSubMap.get(locale) || locale;
-    const host = `${sub}.${apex}`;
-    const urls = htmlFiles.map((rel) => `${protocol}://${host}${normalizeToPrettyPath(rel)}`);
+      const sub = localeSubMap.get(locale) || locale;
+      const host = `${sub}.${apex}`;
+      const urls = htmlFiles.map((rel) => `${protocol}://${host}${normalizeToPrettyPath(rel)}`);
+      console.log(`  🌐 子域名: ${host}`);
 
-    // 写入该语言专属的 sitemap.xml
-    const xml = buildSitemapXml(urls);
-    await fs.writeFile(path.join(localeDir, 'sitemap.xml'), xml, 'utf8');
+      // 写入该语言专属的 sitemap.xml
+      const xml = buildSitemapXml(urls);
+      const sitemapPath = path.join(localeDir, 'sitemap.xml');
+      await fs.writeFile(sitemapPath, xml, 'utf8');
+      console.log(`  ✅ 生成: ${sitemapPath}`);
 
-    // 写入该语言专属 robots.txt（可选，便于按主机访问）
-    const robots = `User-agent: *\nAllow: /\nSitemap: ${protocol}://${host}/sitemap.xml\n`;
-    await fs.writeFile(path.join(localeDir, 'robots.txt'), robots, 'utf8');
+      // 写入该语言专属 robots.txt（可选，便于按主机访问）
+      const robots = `User-agent: *\nAllow: /\nSitemap: ${protocol}://${host}/sitemap.xml\n`;
+      const robotsPath = path.join(localeDir, 'robots.txt');
+      await fs.writeFile(robotsPath, robots, 'utf8');
+      console.log(`  ✅ 生成: ${robotsPath}`);
 
-    indexEntries.push(`${protocol}://${host}/sitemap.xml`);
+      indexEntries.push(`${protocol}://${host}/sitemap.xml`);
+    } catch (error) {
+      console.error(`❌ 处理 ${locale} 时出错:`, error.message);
+      // 继续处理其他语言，不要因为一个语言失败就全部失败
+    }
   }
 
   // 生成 sitemap 索引，方便根域名查看整体

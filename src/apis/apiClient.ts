@@ -21,7 +21,7 @@ export const PUBLIC_API_URL: string | undefined = getSecret('PUBLIC_API_URL');
 export const STRAPI_TOKEN: string | undefined = getSecret('PUBLIC_API_TOKEN');
 const DISABLE_PNC_FETCH_RAW: string | undefined = getSecret('PUBLIC_DISABLE_PNC_FETCH');
 export const DISABLE_PNC_FETCH: boolean = DISABLE_PNC_FETCH_RAW === '1' || (DISABLE_PNC_FETCH_RAW || '').toLowerCase() === 'true';
-
+console.log('DISABLE_PNC_FETCH 环境变量', DISABLE_PNC_FETCH);
 function shouldBypassBusinessData(url: string): boolean {
   if (!DISABLE_PNC_FETCH) return false;
   const lowerUrl = url.toLowerCase();
@@ -44,7 +44,7 @@ export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>
   try {
     // 按开关跳过产品/新闻/案例数据请求，直接返回空数据
     if (shouldBypassBusinessData(url)) {
-      return { data: null } as StrapiResponse<T>;
+      return { data: [] } as StrapiResponse<T>;
     }
 
     // 创建 AbortController 用于超时控制
@@ -55,7 +55,7 @@ export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>
       headers: buildHeaders(),
       signal: controller.signal
     });
-    
+    console.log('执行了实际的数据获取', url)
     clearTimeout(timeoutId);
     
     if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
