@@ -11,7 +11,6 @@ import { getSupportedLanguages } from './src/utils/languageConfig';
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
 
-// const localesObject = Object.assign({}, ...locales.map(k => ({[k]: k})))
 export default defineConfig({
   site: process.env.PUBLIC_SITE_URL,
   adapter: vercel({
@@ -46,20 +45,18 @@ export default defineConfig({
         preload: 'swap',
         inlineFonts: true,
         pruneSource: true,
-        // 设置日志级别为 warn，减少错误输出
-        logLevel: 'warn',
+        // 设置日志级别为 silent，减少警告输出
+        logLevel: 'silent',
         // 设置外部文件阈值，避免处理有问题的文件
         inlineThreshold: 0,
         // 禁用压缩，避免处理错误
-        compress: false
+        compress: false,
+        // 忽略错误继续处理
+        mergeStylesheets: false,
+        // 减少对复杂选择器的处理
+        reduceInlineStyles: false
       }
     }),
-    // sitemap({
-    //   i18n: {
-    //     defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
-    //     locales: localesObject,
-    //   },
-    // }),
   ],
 
   // 🖼️ 图片优化配置
@@ -68,14 +65,21 @@ export default defineConfig({
     remotePatterns: [{ protocol: "http" }],
     service: {
       entrypoint: 'astro/assets/services/sharp'
-    },
+    }
   },
-
+  experimental: {
+    // 只保留 5.13.8 版本中明确存在的实验性特性
+    contentIntellisense: true, // 内容集合的智能提示支持
+    liveContentCollections: true, // 内容集合的实时更新
+    staticImportMetaEnv: true, // 静态导入环境变量
+  },
   // 🏗️ 构建优化配置
   build: {
     assets: '_astro',
     // 内联小资源
     inlineStylesheets: 'auto',
+    format: 'directory', // 输出格式
+    concurrency: 4, // 控制构建并发数，根据CPU核心数调整
   },
 
   // 📁 静态资源配置
@@ -83,54 +87,4 @@ export default defineConfig({
 
   // 📤 输出配置
   output: 'static',
-
-  // // ⚡ Vite 构建优化
-  // vite: {
-  //   // 支持子目录中的资源文件
-  //   assetsInclude: ['**/*.webp', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
-  //   build: {
-  //     // 代码分割优化
-  //     rollupOptions: {
-  //       output: {
-  //         manualChunks: {
-  //           // 核心库分离
-  //           vendor: ['astro'],
-  //           // Pagefind 单独打包
-  //           pagefind: ['@pagefind/default-ui'],
-  //           // 工具库分离
-  //           utils: ['sharp'],
-  //         },
-  //         // 资源优化
-  //         assetFileNames: (assetInfo) => {
-  //           if (assetInfo.name) {
-  //             const info = assetInfo.name.split('.');
-  //             const ext = info[info.length - 1];
-  //             if (/png|jpe?g|svg|gif|tiff|bmp|ico|mp4|webm|mov/i.test(ext)) {
-  //               return `images/[name]-[hash][extname]`;
-  //             }
-  //           }
-  //           return `assets/[name]-[hash][extname]`;
-  //         },
-  //       },
-  //     },
-  //     // 压缩优化
-  //     minify: 'terser',
-  //     terserOptions: {
-  //       compress: {
-  //         drop_console: false, // 保留 console 用于调试
-  //         drop_debugger: true,
-  //       },
-  //     },
-  //   },
-  //   // 预构建优化
-  //   optimizeDeps: {
-  //     include: ['@pagefind/default-ui'],
-  //   },
-  //   // 开发服务器优化
-  //   server: {
-  //     hmr: {
-  //       overlay: false,
-  //     },
-  //   },
-  // },
 });

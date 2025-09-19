@@ -76,7 +76,10 @@ function shouldSkipDir(name) {
       'pagefind',
       'fontIcons',
       'scripts',
-      '_astro'
+      '_astro',
+      'fonts',
+      'public',
+      'plugins'
     ].includes(name)
   );
 }
