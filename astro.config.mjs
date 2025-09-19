@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
 import vercel from '@astrojs/vercel';
-import critters from 'astro-critters';
+// import critters from 'astro-critters';
 
 
 import { getSupportedLanguages } from './src/utils/languageConfig';
@@ -39,7 +39,7 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
     }),
-    // ⚡ 自动提取并内联首屏关键 CSS
+    /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
       Critters: {
         preload: 'swap',
@@ -56,7 +56,7 @@ export default defineConfig({
         // 减少对复杂选择器的处理
         reduceInlineStyles: false
       }
-    }),
+    }), */
   ],
 
   // 🖼️ 图片优化配置
@@ -79,7 +79,6 @@ export default defineConfig({
     // 内联小资源
     inlineStylesheets: 'auto',
     format: 'directory', // 输出格式
-    concurrency: 4, // 控制构建并发数，根据CPU核心数调整
   },
 
   // 📁 静态资源配置
