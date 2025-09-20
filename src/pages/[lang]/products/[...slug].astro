@@ -13,6 +13,7 @@ import { extractUrl, getFirstImage, generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateProductDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
+import RichText from '@components/common/layout/RichText.astro';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
