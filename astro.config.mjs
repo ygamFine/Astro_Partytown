@@ -62,7 +62,10 @@ export default defineConfig({
   // 🖼️ 图片优化配置
   image: {
     domains: ["astro.build"],
-    remotePatterns: [{ protocol: "http" }],
+    remotePatterns: [
+      { protocol: "http" },
+      { protocol: "https" }
+    ],
     service: {
       entrypoint: 'astro/assets/services/sharp'
     }

@@ -1,0 +1,67 @@
+---
+import { Image } from "astro:assets";
+import * as cheerio from "cheerio";
+
+interface Props {
+    content: string; // 富文本内容（HTML格式）
+}
+
+const { content } = Astro.props;
+
+// 解析富文本并用占位符替换 img，以便在模板中插入 <Image /> 组件
+const $ = cheerio.load(content || "");
+
+interface ParsedImage {
+    src: string;
+    alt: string;
+    widthNum?: number;
+    heightNum?: number;
+    index: number;
+}
+
+const parsedImages: ParsedImage[] = [];
+
+$("img").each((i, el) => {
+    const src = ($(el).attr("src") || "").trim();
+    if (!src) return;
+    const isRemote = src.startsWith("http://") || src.startsWith("https://");
+    if (!isRemote) return; // 仅处理远程图片，避免本地静态资源无法 import 的问题
+    const alt = ($(el).attr("alt") || "").trim();
+    const widthAttr = ($(el).attr("width") || "").trim();
+    const heightAttr = ($(el).attr("height") || "").trim();
+    const widthNum = widthAttr ? parseInt(widthAttr, 10) : undefined;
+    const heightNum = heightAttr ? parseInt(heightAttr, 10) : undefined;
+
+    // 用不会与正文冲突的占位符替换当前 img
+    const token = `__ASTRO_IMG_${i}__`;
+    parsedImages.push({ src, alt, widthNum, heightNum, index: i });
+    $(el).replaceWith(token);
+});
+
+// 带占位符的 HTML，用于后续分段渲染
+const htmlWithTokens = $.root().html() || (content || "");
+const parts = htmlWithTokens.split(/(__ASTRO_IMG_\d+__)/g).filter(Boolean);
+---
+<div class="prose max-w-none">
+    {parts.map((part) => {
+        const match = part.match(/^__ASTRO_IMG_(\d+)__$/);
+        if (match) {
+            const index = Number(match[1]);
+            const img = parsedImages.find((x) => x.index === index);
+            if (!img) return null;
+            const width = img.widthNum ?? 800;
+            const height = img.heightNum ?? 600;
+            return (
+                <Image
+                    src={img.src}
+                    alt={img.alt || ""}
+                    width={width}
+                    height={height}
+                    loading="lazy"
+                    decoding="async"
+                />
+            );
+        }
+        return <div class="contents" set:html={part} />;
+    })}
+</div>

@@ -10,6 +10,7 @@ import { getDictionary } from "@i18n/dictionaries";
 import { getFirstImage, formatDate, generateUrl } from "@utils/tools.js";
 import { SUPPORTED_LANGUAGES } from "@utils/i18n-routes";
 import { generateNewsDetailBreadcrumbs } from "@utils/breadcrumbUtils.js";
+import RichText from "@components/common/layout/RichText.astro";
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -134,7 +135,8 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
                 >
               </header>
               <!-- Article Content -->
-              <div class="prose max-w-none" set:html={newsItem.news_detail} />
+              <RichText content={newsItem.news_detail} />
+              {/* <div class="prose max-w-none" set:html={newsItem.news_detail} /> */}
             </article>
           </div>
 
