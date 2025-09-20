@@ -59,7 +59,7 @@ const t = await getDictionary(lang);
     
     <!-- 查看更多相关案例 -->
     <div class="mt-4 text-center">
-      <a href={`/${lang}/case`} class="text-sm text-red-600 hover:text-red-700 font-medium">
+      <a href={generateUrl(lang, '/case')} class="text-sm text-red-600 hover:text-red-700 font-medium">
         {t.case.view_more} →
       </a>
     </div>

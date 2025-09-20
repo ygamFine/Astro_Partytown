@@ -7,7 +7,7 @@ import RelatedCasesSidebar from '@components/templates/common/RelatedCasesSideba
 import { getCases, getNews } from '@apis/common.js';
 import { generateCaseDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
-import { formatDate } from '@utils/tools.js';
+import { formatDate, generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 
 export async function getStaticPaths() {
@@ -77,7 +77,7 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.titl
           lang={lang}
           actions={[{
             label: t.case.empty_state.back_to_case_list,
-            href: `/${lang}/case`,
+            href: generateUrl(lang, '/case'),
             variant: 'secondary'
           }]}
         />

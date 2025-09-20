@@ -91,9 +91,9 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
           description={t.news.empty_state.no_news_description}
           icon="news"
           lang={lang}
-          actions={[{
+        actions={[{
             label: t.news.empty_state.back_to_news_list,
-            href: `/${lang}/news`,
+            href: generateUrl(lang, '/news'),
             variant: 'secondary'
           }]}
         />
@@ -153,7 +153,7 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
                 title: p.title, // 使用 name 字段作为 title
                 image: p.image,
                 excerpt: p.excerpt,
-                href: `/${lang}/products/${p.url_slug}`,
+                href: generateUrl(lang, '/products', p.url_slug),
               })) : []}
               itemsPerRow={3}
               translations={{ common: t.common }}

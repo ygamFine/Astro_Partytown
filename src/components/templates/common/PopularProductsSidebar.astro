@@ -86,7 +86,7 @@ const t = await getDictionary(lang);
     
     <!-- 查看更多推荐产品 -->
     <div class="mt-4 text-center">
-      <a href={`/${lang}/products`} class="text-sm text-red-600 hover:text-red-700 font-medium">
+      <a href={generateUrl(lang, '/products')} class="text-sm text-red-600 hover:text-red-700 font-medium">
         {t.related.view_more} →
       </a>
     </div>

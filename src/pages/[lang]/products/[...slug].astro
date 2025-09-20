@@ -9,7 +9,7 @@ import PopularProductsSidebar from '@components/templates/common/PopularProducts
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
 import { getProducts, getNews } from '@apis/common.js';
-import { extractUrl, getFirstImage } from '@utils/tools.js';
+import { extractUrl, getFirstImage, generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateProductDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
@@ -93,7 +93,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
         lang={lang}
         actions={[{
           label: t.product.empty_state.back_to_products_list,
-          href: `/${lang}/products`,
+          href: generateUrl(lang, '/products'),
           variant: 'secondary'
         }]}
       />

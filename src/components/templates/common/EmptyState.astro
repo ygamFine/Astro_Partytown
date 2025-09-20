@@ -43,9 +43,11 @@ const defaultIcons = {
 const selectedIcon = defaultIcons[icon as keyof typeof defaultIcons] || defaultIcons.default;
 
 // 默认操作按钮
+import { generateUrl } from '@utils/tools.js';
+
 const defaultActions = actions.length > 0 ? actions : [{
   label: t.empty_state.back_to_home,
-  href: `/${lang}/`,
+  href: generateUrl(lang, '/'),
   variant: 'secondary'
 }];
 ---
@@ -62,7 +64,6 @@ const defaultActions = actions.length > 0 ? actions : [{
             href={action.href}
             class={`empty-state-button ${action.variant || 'secondary'}`}
           >
-            {action.icon && <span set:html={action.icon}></span>}
             {action.label}
           </a>
         ))}
