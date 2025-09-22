@@ -17,7 +17,7 @@ const { siteConfiguration = {} } = Astro.props;
 // 获取当前语言：使用工具函数
 const currentLang = getCurrentLanguage(Astro.url.pathname, Astro.url.hostname);
 
-// 生成带语言的首页链接
+// 生成首页链接（生产环境使用子域名，无语言后缀）
 const homeUrl = buildLanguageUrl(currentLang, "/");
 
 // 获取支持的语言列表（从 Strapi API，不做硬编码回退）

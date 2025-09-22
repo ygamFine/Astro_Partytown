@@ -55,7 +55,6 @@ export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>
       headers: buildHeaders(),
       signal: controller.signal
     });
-    console.log('执行了实际的数据获取', url)
     clearTimeout(timeoutId);
     
     if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);

@@ -7,8 +7,9 @@ import RelatedCasesSidebar from '@components/templates/common/RelatedCasesSideba
 import { getCases, getNews } from '@apis/common.js';
 import { generateCaseDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
-import { formatDate } from '@utils/tools.js';
+import { formatDate, generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
+import RichText from '@components/common/layout/RichText.astro';
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -77,7 +78,7 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.titl
           lang={lang}
           actions={[{
             label: t.case.empty_state.back_to_case_list,
-            href: `/${lang}/case`,
+            href: generateUrl(lang, '/case'),
             variant: 'secondary'
           }]}
         />
@@ -104,7 +105,8 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.titl
 
             <!-- 案例详细内容 -->
             {casesItem.details && (
-              <div class="mb-8" data-pagefind-content set:html={casesItem.details}></div>
+              <RichText content={casesItem.details} />
+              // <div class="mb-8" data-pagefind-content set:html={casesItem.details}></div>
             )}
             
             <!-- 案例元数据 -->

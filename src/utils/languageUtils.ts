@@ -50,9 +50,14 @@ export function buildLanguageUrl(lang: LanguageCode, path: string | null | undef
   
   // 确保路径以/开头
   const normalizedPath: string = path.startsWith('/') ? path : `/${path}`;
-  
-  // 所有语言都添加语言前缀，保持一致性
-  return baseUrl + `/${lang}${normalizedPath}`;
+
+  // 开发环境：使用路径前缀 /{lang}
+  if (import.meta.env.DEV) {
+    return baseUrl + `/${lang}${normalizedPath}`;
+  }
+
+  // 生产环境：二级域名承载语言，不再拼接语言后缀
+  return baseUrl + normalizedPath;
 }
 
 /**
