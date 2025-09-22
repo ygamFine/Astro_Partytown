@@ -11,6 +11,8 @@ export interface Props {
     title?: string;
     description?: string;
     url_text?: string;
+    caseUrl?: string;
+    caseUrlText?: string;
     products?: Array<{
       image?: {
         url: string;
@@ -30,17 +32,26 @@ const { customerCases = {}, lang } = Astro.props;
 const { 
   title = '', 
   description = '', 
-  products = [] 
+  products = [] ,
+  caseUrl = '',
+  caseUrlText = '',
+
 } = customerCases;
 
 const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
-// console.log('获取到的案例', safeCases);
+console.log('获取到的案例', safeCases);
 
 ---
 
 <!-- Swiper 初始化 -->
 <script>
   document.addEventListener('DOMContentLoaded', async function() {
+    const swiperContainer = document.querySelector('.honor-swiper3');
+    if (!swiperContainer) return;
+    
+    // 添加加载状态类
+    swiperContainer.classList.add('swiper-loading');
+    
     try {
       // 动态导入 Swiper
       const { default: Swiper } = await import('swiper/bundle');
@@ -49,7 +60,7 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
       const swiper = new Swiper('.honor-swiper3', {
         // 基本配置
         slidesPerView: 1,
-        spaceBetween: 37,
+        spaceBetween: 21,
         loop: true,
         autoplay: {
           delay: 5000,
@@ -88,6 +99,10 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
         // 鼠标悬停暂停自动播放
         on: {
           init: function(swiper) {
+            // 移除加载状态类
+            swiperContainer.classList.remove('swiper-loading');
+            swiperContainer.classList.add('swiper-loaded');
+            
             swiper.el.addEventListener('mouseenter', () => {
               if (swiper.autoplay) {
                 swiper.autoplay.stop();
@@ -105,13 +120,16 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
       
     } catch (error) {
       console.error('Swiper 加载失败:', error);
+      // 即使加载失败也要移除加载状态
+      swiperContainer.classList.remove('swiper-loading');
+      swiperContainer.classList.add('swiper-error');
     }
   });
 </script>
 
 <section class="customer-cases">
     <div class="container">
-        <div class="product-product-main">
+        <div class="case-main">
             <h2 class="block-title">{title}</h2>
             <p class="block-desc">{description}</p>
             <div class="swiper honor-swiper3">
@@ -122,8 +140,8 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
                         const productImage = product.image;
                         return (
                           <div class="swiper-slide">
-                            <div class="product-item">
-                                <div class="product-item-img">
+                            <div class="case-item">
+                                <div class="case-item-img">
                                     <Image 
                                         src={productImage?.url || '/images/placeholder.webp'}
                                         alt={productImage?.name || productName}
@@ -134,8 +152,8 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
                                         class="thumbnail-image transition-transform duration-300 hover:scale-105" 
                                     />
                                </div>
-                              <p class="product-name">{productName}</p>
-                              <a href={product.url} class="product-url">{product.url_text}</a>
+                              <a class="case-name elli0" href="{product.url_text}">{productName}</p>
+                            
                             </div>
                           </div>
                         );
@@ -147,13 +165,16 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
                 <div class="swiper-button-next swiper-button-custom"></div>
             </div>
         </div>
+        <a href={caseUrl} class="case-more">{caseUrlText} →</a>
     </div>
 
 </section>
 
 <style>
-    .product-hot-product {
-       padding-bottom: 8rem; 
+    .customer-cases{
+      text-align: center;
+      padding-top: 6rem;
+      padding-bottom: 8rem;
     }
     .block-title{
         font-family: Antonio-Bold;
@@ -170,87 +191,150 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
         width: 50%;
         margin: 0 auto;
     }
-    .product-hot-product .container{
-        width: 100%;
-        padding: 0 6rem;
+
+    .customer-cases .honor-swiper3{
+        margin-top: 6rem;
     }
-    .product-hot-product .product-item{
+    .customer-cases .case-item{
         cursor: pointer;
         text-align: center;
     }
-    .product-hot-product .product-item .product-item-img{
+    .customer-cases .case-item .case-item-img{
         overflow: hidden;
     }
-    .product-hot-product .product-item img{
+    .customer-cases .case-item img{
         width: 100%;
         height: auto;
         transition: all 1s ease;
     }
-    .product-hot-product .product-item:hover img{
+    .customer-cases .case-item:hover img{
         transform: scale(1.1);
     }
-    .product-hot-product .product-item .product-name{
-        font-weight: 400;
-        font-size: 1.8rem;
-        color: #18181F;
-        line-height: 2.4rem;
-        height: 4.8rem;
-        padding: 0 1rem;
-        margin-top: 1.6rem;
-        text-align: center;
+    .customer-cases .case-item .case-name{
+      font-weight: 400;
+      font-size: 1.8rem;
+      color: #FFFFFF;
+      background: #18181F;
+      height: 5.5rem;
+      line-height: 5.5rem;
+      display: block;
+      margin-top: 1px;
     }
-    .product-hot-product .product-item .product-url{
+    .customer-cases .case-item:hover .case-name{
+      background: #E81A1A;
+    }
+    .customer-cases .case-more{
         display: inline-block;
         width: auto;
-        padding: 0 0.5rem;
-        height: 3rem;
-        line-height: 3rem;
-        position: relative;
-        z-index: 3;
-        overflow: hidden;
-        font-family: Poppins-Medium;
-        font-weight: 500;
+        padding: 0 4.5rem;
+        height: 6rem;
+        line-height: 5.5rem;
+        background: transparent;
+        border: 2px solid #E81A1A;
+        font-family: Poppins-Regular;
+        font-weight: 400;
         font-size: 2rem;
         color: #18181F;
-        transition: all .3s linear;
+        vertical-align: middle;
+        -webkit-transform: perspective(1px) translateZ(0);
+        transform: perspective(1px) translateZ(0);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+        position: relative;
+        -webkit-transition-property: color;
+        transition-property: color;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        transition: border-color .3s;
+        vertical-align: middle;
+        margin-top: 6rem;
+        &:hover{    
+            color: #FFFFFF;
+            border-color: #E81A1A;
+        }
+        &:before{
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #E81A1A;
+            -webkit-transform: scaleY(0);
+            transform: scaleY(0);
+            -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+            -webkit-transition-property: transform;
+            transition-property: transform;
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            -webkit-transition-timing-function: ease-out;
+            transition-timing-function: ease-out;
+        }
+        &:hover:before{
+            -webkit-transform: scaleY(1);
+            transform: scaleY(1);
+        }
     }
-    .product-hot-product .product-item .product-url:hover{
-        color: #FEFEFE;
-    }
-    .product-hot-product .product-item .product-url::before{
-        content: '';
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: -1;
-        width: 100%;
-        height: 3px;
-        background: #E81A1A;
-        transition: all .3s linear;
-    }
-    .product-hot-product .product-item .product-url:hover:before{
-        height: 100%;
-    }
+  
     
     /* Swiper 样式 */
-    .honor-swiper2 {
-       margin-top: 6rem;
+    
+    /* 预加载状态样式 - 防止偏移 */
+    .honor-swiper3.swiper-loading {
+        overflow: hidden;
     }
     
-    .honor-swiper2 .swiper-slide {
-        height: auto;
-    }
-    .honor-swiper2 .swiper-bottom-box{
+    .honor-swiper3.swiper-loading .swiper-wrapper {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        padding-bottom: 5px;
-        margin-top: 7rem;
+        flex-wrap: nowrap;
+        transform: translate3d(0, 0, 0);
     }
     
+    .honor-swiper3.swiper-loading .swiper-slide {
+        flex-shrink: 0;
+        width: 100%;
+        margin-right: 21px;
+    }
+    
+    /* 加载完成后的样式 */
+    .honor-swiper3.swiper-loaded {
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+    
+    /* 错误状态样式 */
+    .honor-swiper3.swiper-error {
+        opacity: 0.7;
+    }
+    
+    /* 导航按钮样式 */
+    .honor-swiper3 .swiper-button-next,
+    .honor-swiper3 .swiper-button-prev {
+        color: #dc2626;
+        border-radius: 50%;
+        width: 16px;
+        height: 14px;
+        transition: all 0.3s ease;
+        position: static !important;
+    }
+    
+    .honor-swiper3 .swiper-button-next:hover,
+    .honor-swiper3 .swiper-button-prev:hover {
+        background: #dc2626;
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .honor-swiper3 .swiper-button-next:after,
+    .honor-swiper3 .swiper-button-prev:after {
+        content: '';
+        font-size: 18px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    /* 兼容旧版本样式 */
     .honor-swiper2 .swiper-button-next,
     .honor-swiper2 .swiper-button-prev {
         color: #dc2626;
@@ -276,71 +360,29 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
         display: inline-block;
     }
     
-    .honor-swiper2 .swiper-pagination {
-        position: relative;
-        width: auto !important;
-    }
-    
-    /* 分页点样式 - 使用 CSS 变量和最高优先级 */
-    .product-hot-product .honor-swiper2 .swiper-pagination {
-        --swiper-pagination-bullet-size: 1.2rem;
-        --swiper-pagination-bullet-horizontal-gap: 0.5rem;
-    }
-    .product-hot-product .honor-swiper2 .swiper-pagination::after{
-        content: '';
-        width: 113%;
-        height: 2px;
-        background: #DDDDDD;
-        position: absolute;
-        bottom:-5px;
-        left: -1rem;
-    }
-    
-    .product-hot-product .honor-swiper2 .swiper-pagination .swiper-pagination-bullet,
-    .product-hot-product .honor-swiper2 .swiper-pagination-bullet {
-        width: 1.2rem !important;
-        height: 1.2rem !important;
-        background: #18181F !important;
-        border-radius: 50% !important;
-        opacity: 1 !important;
-        transition: all 0.3s ease !important;
-        margin: 0 0.5rem !important;
-        border: none !important;
-        outline: none !important;
-        box-sizing: border-box !important;
-        display: inline-block !important;
-    }
-    
-    .product-hot-product .honor-swiper2 .swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active,
-    .product-hot-product .honor-swiper2 .swiper-pagination-bullet-active {
-        opacity: 1 !important;
-        background: #E81A1A !important;
-    }
-   
-    
-    /* 全局覆盖 - 作为备用 */
-    .swiper-pagination-bullet {
-        width: 1.2rem !important;
-        height: 1.2rem !important;
-        background: #18181F !important;
-        border-radius: 50% !important;
-        opacity: 1 !important;
-        transition: all 0.3s ease !important;
-        margin: 0 0.5rem !important;
-        border: none !important;
-        outline: none !important;
-        display: inline-block !important;
-    }
-    
-    .swiper-pagination-bullet-active {
-        opacity: 1 !important;
-        background: #E81A1A !important;
-        transform: scale(1.2) !important;
-    }
- 
     
     /* 响应式调整 */
     @media (max-width: 768px) {
+        .honor-swiper3 {
+            padding: 0 20px;
+        }
+        
+        .honor-swiper3.swiper-loading .swiper-slide {
+            margin-right: 15px;
+        }
+        
+        .honor-swiper3 .swiper-button-next,
+        .honor-swiper3 .swiper-button-prev {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .honor-swiper3 .swiper-button-next:after,
+        .honor-swiper3 .swiper-button-prev:after {
+            font-size: 14px;
+        }
+        
+        /* 兼容旧版本 */
         .honor-swiper2 {
             padding: 0 20px;
         }
@@ -357,5 +399,10 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
         }
     }
     
-</style>
+    @media (max-width: 640px) {
+        .honor-swiper3.swiper-loading .swiper-slide {
+            margin-right: 15px;
+        }
+    }
+    
 </style>

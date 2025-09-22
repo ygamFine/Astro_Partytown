@@ -56,8 +56,16 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
 // StatsSection - 公司概览与核心数据展示
 ---
 
-<section class="stats-section aboutSection" style={`background-image: url(${companyData?.imgBg?.url || '/images/placeholder.webp'})`}>
-
+<section class="stats-section aboutSection">
+  <Image 
+    src={companyData?.imgBg?.url || '/images/placeholder.webp'}
+    alt={companyData?.imgBg?.name || companyData?.imgBg?.name || '优势图片'}
+    width={1920}
+    height={892}
+    loading="lazy"
+    decoding="async"
+    class="aboutSection-img" 
+  />
   <div class="container">
     <h2 class="aboutTitle">{companyData?.title}</h2>
     <p class="aboutFuTitle">{companyData?.fuTitle}</p>
@@ -184,6 +192,13 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
   background-size: 100% 67%;
   background-repeat: no-repeat;
   background-position: top center;
+}
+.aboutSection .aboutSection-img{
+  width: 100%;
+  height: 75%;
+  object-fit: fill;
+  position: absolute;
+  top:0;
 }
 .aboutSection .aboutTitle {
   font-family: Antonio-Bold;

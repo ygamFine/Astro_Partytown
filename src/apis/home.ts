@@ -91,6 +91,8 @@ export async function getHomepageContent(lang: string) {
             image: getFirstImage(extractUrl(item.picture, true) || []),
           }
         }) || [],
+        caseUrl: homepageData.customer_cases.more_url,
+        caseUrlText: homepageData.customer_cases.more_text,
       },
 
     };
