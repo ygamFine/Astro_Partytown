@@ -86,7 +86,10 @@ export function extractUrl(input: any, isFullUrl = false): Array<{url: string, n
     if (obj.url) {
       const url = isFullUrl ? strapiStaticUrl + obj.url : obj.url;
       const name = obj.name || 'image';
-      result.push({ url, name });
+      const alt = obj.alt || '';
+      const width = obj.width || '';
+      const height = obj.height || '';
+      result.push({ url, name, alt, width, height });
       return;
     }
 
@@ -189,7 +192,7 @@ export function generateUrl(lang: string, basePath: string, urlSlug?: string, pa
  * @param images extractUrl方法的返回值数组
  * @returns 第一个图片对象，如果没有则返回null
  */
-export function getFirstImage(images: Array<{url: string, name: string}> | null | undefined): {url: string, name: string} | null {
+export function getFirstImage(images: Array<{url: string, name: string, alt: string, width: string, height: string}> | null | undefined): {url: string, name: string, alt: string, width: string, height: string} | null {
   if (!images || !Array.isArray(images) || images.length === 0) {
     return null;
   }
