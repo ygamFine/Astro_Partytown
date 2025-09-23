@@ -64,8 +64,8 @@ export function buildMenuTree(flatMenus: any[], parentIdField = 'parent', idFiel
  * @param {boolean} isFullUrl - 是否返回完整URL
  * @returns {Array<{url: string, name: string}>} 图片信息对象数组
  */
-export function extractUrl(input: any, isFullUrl = false): Array<{url: string, name: string}> {
-  const result: Array<{url: string, name: string}> = [];
+export function extractUrl(input: any, isFullUrl = false): Array<{url: string, name: string, alt: string, width: string, height: string}> {
+  const result: Array<{url: string, name: string, alt: string, width: string, height: string}> = [];
 
   // 递归提取单个对象中的图片信息
   function extractFromObject(obj: any): void {
@@ -75,7 +75,10 @@ export function extractUrl(input: any, isFullUrl = false): Array<{url: string, n
     if (obj.media?.url) {
       const url = isFullUrl ? strapiStaticUrl + obj.media.url : obj.media.url;
       const name = obj.media.name || obj.name || 'image';
-      result.push({ url, name });
+      const alt = obj.alt || obj.media.alt || '';
+      const width = obj.media.width || '';
+      const height = obj.media.height || '';
+      result.push({ url, name, alt, width, height });
       return;
     }
 
