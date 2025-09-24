@@ -43,7 +43,16 @@ const {
         height={700}
         loading="lazy"
         decoding="async"
-        class="contactUsSection-img" 
+        class="contactUsSection-img pcImg" 
+    />
+    <Image 
+        src={frontContactUs?.contactImgBg?.url || '/images/placeholder.webp'}
+        alt={frontContactUs?.contactImgBg?.name || frontContactUs?.contactImgBg?.name || '优势图片'}
+        width={750}
+        height={400}
+        loading="lazy"
+        decoding="async"
+        class="contactUsSection-img mobileImg" 
     />
     <div class="container">
         <div class="contact-content">
@@ -76,6 +85,10 @@ const {
         object-fit: fill;
         position: absolute;
         top:0;
+    }
+    
+    .contactUsSection .mobileImg {
+        display: none;
     }
     .contactUsSection .container{
         position: relative;
@@ -196,7 +209,13 @@ const {
             }
            .contact-content{
             grid-template-columns: 1fr;
-           }     
+           }
+           .pcImg {
+                display: none !important;
+            }
+            .mobileImg {
+                display: block !important;
+            }     
            .grid-left{
             padding: 2rem;
             .contact-title,.contact-fu-title{

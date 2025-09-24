@@ -58,7 +58,16 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
     height={892}
     loading="lazy"
     decoding="async"
-    class="aboutSection-img" 
+    class="aboutSection-img pcImg" 
+  />
+  <Image 
+    src={companyData?.imgBg?.url || '/images/placeholder.webp'}
+    alt={companyData?.imgBg?.name || companyData?.imgBg?.name || '优势图片'}
+    width={750}
+    height={400}
+    loading="lazy"
+    decoding="async"
+    class="aboutSection-img mobileImg" 
   />
   <div class="container">
     <h2 class="aboutTitle">{companyData?.title}</h2>
