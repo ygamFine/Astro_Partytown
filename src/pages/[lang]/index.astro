@@ -41,7 +41,7 @@ const pageWidth = getPageWidth();
 	<FullScreenBanner client:idle/>
 	<!-- <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}> -->
 	<div class="mx-auto">		
-		<ProductShowcase data={homepageData?.productShowcase} lang={lang} client:idle />
+		<ProductShowcase data={homepageData?.productShowcase} lang={lang} client:visible />
 		<StatsSection companyData={homepageData?.companyIntroduction} corporateAdvantages={homepageData?.corporateAdvantages} />
 		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} client:visible />
 		<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
