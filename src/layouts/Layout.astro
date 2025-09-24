@@ -35,7 +35,6 @@ try {
 } catch (error) {
   siteConfiguration = {};
 }
-
 // 页面宽度配置 - 由各页面组件自行管理
 // 每个页面组件应在其自己的文件中定义 pageWidth
 
@@ -145,7 +144,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
 
-    <FooterSection />
+    <FooterSection siteConfiguration={siteConfiguration}/>
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
     <!-- <DynamicScriptLoader 
       position="body-bottom" 

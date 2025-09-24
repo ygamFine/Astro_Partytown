@@ -34,7 +34,6 @@ const {
 } = data;
 
 const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
-// console.log('获取到的热门产品', safeProducts);
 
 ---
 
@@ -48,8 +47,8 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
       // 初始化 Swiper
       const swiper = new Swiper('.honor-swiper2', {
         // 基本配置
-        slidesPerView: 1,
-        spaceBetween: 37,
+        slidesPerView: 2,
+        spaceBetween: 15,
         loop: true,
         autoplay: {
           delay: 5000,
@@ -392,21 +391,22 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
     
     /* 响应式调整 */
     @media (max-width: 768px) {
-        .honor-swiper2 {
-            padding: 0 20px;
+      section.product-hot-product {
+        padding:0 1rem;
+        .container{
+          padding:0 1rem !important;
         }
-        
-        .honor-swiper2 .swiper-button-next,
-        .honor-swiper2 .swiper-button-prev {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .honor-swiper2 .swiper-button-next:after,
-        .honor-swiper2 .swiper-button-prev:after {
-            font-size: 14px;
+          .block-title{
+            font-size: 3rem;
+            line-height: 4rem;
+          }
+          .block-desc{
+            width: 96%;
+          }
+          .honor-swiper2{
+            margin-top: 4rem;
+          }
         }
     }
     
-</style>
 </style>

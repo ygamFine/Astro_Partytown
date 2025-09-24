@@ -31,7 +31,6 @@ const {
   panordescription = '', 
 
 } = frontContactUs;
-// console.log('获取到的 frontContactUs', frontContactUs);
 ---
 
 
@@ -186,6 +185,37 @@ const {
             line-height: 3rem;
             width: 24%;
             margin: 1rem auto;
+        }
+    }
+    @media (max-width: 768px) {
+        .stats-section.contactUsSection{
+            padding: 4rem 0;
+            margin-top: 4rem;
+            .contactUsSection-img{
+                object-fit: cover;
+            }
+           .contact-content{
+            grid-template-columns: 1fr;
+           }     
+           .grid-left{
+            padding: 2rem;
+            .contact-title,.contact-fu-title{
+                font-size: 3rem;
+                line-height: 4rem;
+            }
+            .contact-description{
+                padding:0;
+            }
+           }
+           .grid-right{
+            i{
+                font-size: 8rem;
+            }
+            .panortitle{
+                width: 95%;
+            }
+           }
+          
         }
     }
 </style>

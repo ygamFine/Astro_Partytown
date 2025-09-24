@@ -1,0 +1,346 @@
+---
+import { Image } from 'astro:assets';
+import { getFirstImage, generateUrl } from '@utils/tools';
+// 导入 Swiper CSS
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+// 定义组件props接口
+export interface Props {
+  customerNews?: {
+    title?: string;
+    description?: string;
+    url_text?: string;
+    newsUrl?: string;
+    newsUrlText?: string;
+    products?: Array<{
+      image?: {
+        url: string;
+        name: string;
+      };
+    
+      name?: string;
+      title?: string;
+      url?: string;
+      url_text?: string;
+    }>;
+  };
+  lang: string;
+}
+// 获取props，提供默认值
+const { customerNews = {}, lang } = Astro.props;
+const { 
+  title = '', 
+  description = '', 
+  products = [],
+  newsUrl = '',
+  newsUrlText = '',
+} = customerNews;
+
+const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
+
+---
+
+<!-- Swiper 初始化 -->
+<script>
+  document.addEventListener('DOMContentLoaded', async function() {
+    try {
+      // 动态导入 Swiper
+      const { default: Swiper } = await import('swiper/bundle');
+      
+      // 初始化 Swiper
+      const swiper = new Swiper('.honor-swiper4', {
+        // 基本配置
+        slidesPerView: 2,
+        spaceBetween: 15,
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+        },
+        
+        // 响应式断点
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 30,
+          },
+          1024: {
+            slidesPerView: 2,
+            spaceBetween: 40,
+          },
+        },
+        
+        // 分页器
+        pagination: {
+          el: '.swiper-pages-nation',
+          clickable: true,
+          dynamicBullets: false,
+        
+        },
+        
+        // 导航按钮
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        
+        // 效果
+        effect: 'slide',
+        speed: 600,
+        
+        // 鼠标悬停暂停自动播放
+        on: {
+          init: function(swiper) {
+            swiper.el.addEventListener('mouseenter', () => {
+              if (swiper.autoplay) {
+                swiper.autoplay.stop();
+              }
+            });
+            swiper.el.addEventListener('mouseleave', () => {
+              if (swiper.autoplay) {
+                swiper.autoplay.start();
+              }
+            });
+          }
+        }
+      });
+      
+    } catch (error) {
+      console.error('Swiper 加载失败:', error);
+    }
+  });
+</script>
+
+<section class="customer-news">
+    <div class="container">
+        <div class="news-main">
+            <h2 class="block-title">{title}</h2>
+            <p class="block-desc">{description}</p>
+            <a href={newsUrl} class="news-more">{newsUrlText} →</a>
+            <div class="swiper honor-swiper4">
+                <div class="swiper-wrapper">
+                    {safeNews.map((product, index) => {
+                        const productName = product.name || product.title || `Product ${index + 1}`;
+                        // 直接使用 product.image，因为它已经是一个对象
+                        const productImage = product.image;
+                        return (
+                          <div class="swiper-slide">
+                            <div class="news-item">
+                                <div class="news-item-img">
+                                    <Image 
+                                        src={productImage?.url || '/images/placeholder.webp'}
+                                        alt={productImage?.name || productName}
+                                        width={780}
+                                        height={400}
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="thumbnail-image transition-transform duration-300 hover:scale-105" 
+                                    />
+                               </div>
+                              <p class="news-name elli1">{productName}</p>
+                              <a href={product.url} class="news-url">{product.url_text}</a>
+                            </div>
+                          </div>
+                        );
+                    })}
+                </div>
+                <div class="swiper-bottom-box">
+                    <!-- 分页器 -->
+                    <div class="swiper-pages-nation"></div>
+               
+                </div>
+                 
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<style>
+    .customer-news{
+        .container{
+            position: relative;
+        }
+        .block-title{
+            font-family: Antonio-Bold;
+            font-size: 6rem;
+            color: #18181F;
+            text-align: left;
+        }
+        .block-desc{
+            font-weight: 400;
+            font-size: 1.6rem;
+            color: #18181F;
+            line-height: 2.4rem;
+            text-align: left;
+            width: 40%;
+            
+        }
+        .news-more{
+            display: inline-block;
+            width: auto;
+            padding: 0 4.1rem;
+            height: 6rem;
+            line-height: 5.5rem;
+            background: transparent;
+            border: 2px solid #E81A1A;
+            font-family: Poppins-Regular;
+            font-weight: 400;
+            font-size: 2rem;
+            color: #18181F;
+            vertical-align: middle;
+            -webkit-transform: perspective(1px) translateZ(0);
+            transform: perspective(1px) translateZ(0);
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+            position: relative;
+            -webkit-transition-property: color;
+            transition-property: color;
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            transition: border-color .3s;
+            vertical-align: middle;
+            position: absolute;
+            right: 0;
+            top: 5rem;
+            &:hover{    
+                color: #FFFFFF;
+                border-color: #E81A1A;
+            }
+            &:before{
+                content: "";
+                position: absolute;
+                z-index: -1;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #E81A1A;
+                -webkit-transform: scaleY(0);
+                transform: scaleY(0);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                -webkit-transition-property: transform;
+                transition-property: transform;
+                -webkit-transition-duration: 0.3s;
+                transition-duration: 0.3s;
+                -webkit-transition-timing-function: ease-out;
+                transition-timing-function: ease-out;
+            }
+            &:hover:before{
+                -webkit-transform: scaleY(1);
+                transform: scaleY(1);
+            }
+        }
+        .honor-swiper4{
+            margin-top: 6rem;
+        }
+        
+        
+    }
+    
+     
+   .customer-news .news-item{
+        text-align: left;
+        .news-item-img{
+            overflow: hidden;
+                img{
+                    width: 100%;
+                    height: auto;
+                    transition: all 1s ease;
+                    &:hover{
+                        transform: scale(1.1);
+                    }
+                }
+        }
+        .news-name{
+            font-weight: 500;
+            font-size: 2.4rem;
+            color: #18181F;
+            line-height: 3rem;
+            text-align: left;
+            -webkit-line-clamp: 2;
+            height: 6rem;
+        }
+        .news-url{
+            display: inline-block;
+            width: auto;
+            padding: 0 0.5rem;
+            height: 3rem;
+            line-height: 3rem;
+            position: relative;
+            z-index: 3;
+            overflow: hidden;
+            font-weight: 500;
+            font-size: 2rem;
+            color: #18181F;
+            transition: all .3s linear;
+            margin-top: 4rem;
+            &:hover{
+                color: #FEFEFE;
+            }
+            &::before{
+                content: '';
+                display: inline-block;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: -1;
+                width: 100%;
+                height: 3px;
+                background: #E81A1A;
+                transition: all .3s linear;
+            }
+            &:hover:before{
+                height: 100%;
+            }
+        }
+    }
+  
+    .customer-news .swiper-pages-nation{
+        margin-top: 6rem;
+    }
+
+    /* 全局覆盖Swiper分页器样式 */
+    :global(.swiper-pages-nation .swiper-pagination-bullet) {
+        background: #18181F !important;
+        opacity: 1 !important;
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        margin: 0 1rem !important;
+    }
+    
+    :global(.swiper-pages-nation .swiper-pagination-bullet.swiper-pagination-bullet-active) {
+        background: #E81A1A !important;
+        opacity: 1 !important;
+    }
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      section.customer-news{
+        text-align: center;
+        .block-title{
+          font-size: 3rem;
+          line-height: 4rem;
+          text-align: center;
+        }
+        .block-desc{
+          width: 95%;
+          text-align: center;
+        }
+        .news-more{
+          position: static;
+          margin: 2rem auto;
+          display: inline-block;
+        }
+        .honor-swiper4{
+          margin-top: 3rem;
+        }
+      }
+    }
+    
+</style>

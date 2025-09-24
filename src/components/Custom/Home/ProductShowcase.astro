@@ -1,6 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import { getFirstImage, generateUrl } from '@utils/tools';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 // 定义组件props接口
 export interface Props {
@@ -22,6 +25,13 @@ export interface Props {
       url?: string;
       url_text?: string;
     }>;
+    bigImgBg?: {
+      url: string;
+      name: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null;
   };
   lang: string;
 }
@@ -31,113 +41,114 @@ const { data = {}, lang } = Astro.props;
 const { 
   title = '', 
   description = '', 
-  products = [] 
+  products = [] ,
+  bigImgBg = null
 } = data;
 
 // 安全处理产品数据
-const safeProducts = Array.isArray(products) ? products.slice(0, 3) : [];
+const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
 // 为每个产品生成唯一ID
 const productIds = safeProducts.map((_, index) => `product-${index}`);
 
 ---
 
+
 <section class="product-showcase">
   <div class="container">
-    <div class="product-showcase-main">
+    <div class="product-showcase-content">
       <!-- 左侧区域：标题 + 描述文字 + 进度条 + 三张图片 -->
-      <div class="product-left-section">
+      <div class="product-left-box">
         <!-- 标题居左对齐 -->
-        <h2 class="animate-fade-up">{title}</h2>
+        <h2 class="animate-fade-up block-title">{title}</h2>
         
         <!-- 描述文字在黑点灰线顶上 -->
-        <p class="description animate-fade-up animate-delay-200">{description}</p>
+        <p class="description animate-fade-up animate-delay-200 block-desc">{description}</p>
         
         <!-- 进度条在左侧三张图头顶上 -->
-        <div class="progress-container animate-fade-up animate-delay-300">
-          <div class="progress-bar">
-            <div class="progress-line"></div>
-            {safeProducts.map((_, index) => (
-              <div 
-                class={`progress-dot ${index === 0 ? 'active' : ''}`} 
-                data-index={index}
-                data-product-id={productIds[index]}
-                style={index === 0 ? 'left: 15%;' : index === 2 ? 'right: 15%;' : ''}
-              ></div>
-            ))}
-          </div>
-        </div>
+    
         
         <!-- 左侧小图片 -->
-        <div class="product-thumbnails">
-          {safeProducts.length > 0 ? (
-            safeProducts.map((product, index) => {
-              const productName = product.name || product.title || `Product ${index + 1}`;
-              const productImage = getFirstImage(product.image || []);
-              const productSlug = product.url || `product-${index + 1}`;
-              const urlText = product.url_text || '';
-              
-              return (
-                <div 
-                  class={`product-item ${index === 0 ? 'active' : ''} animate-fade-left animate-delay-${400 + index * 100}`} 
-                  data-index={index}
-                  data-product-id={productIds[index]}
-                  role="button"
-                  tabindex="0"
-                  aria-label={`View ${productName}`}
-                >
-                  <div class="overflow-hidden">
-                    <Image 
-                      src={productImage?.url || '/images/placeholder.webp'}
-                      alt={productImage?.name || productName}
-                      width={200}
-                      height={150}
-                      loading="lazy"
-                      decoding="async"
-                      class="thumbnail-image transition-transform duration-300 hover:scale-105" 
-                    />
-                  </div>
-                  <h3>{productName}</h3>
-                  <a 
-                    href={generateUrl(lang, '/products', productSlug)} 
-                    class="view-details-btn btn-hover-animate"
-                    aria-label={`View details for ${productName}`}
+        <div class="swiper honor-swiper0">
+          <div class="swiper-wrapper">
+            {safeProducts.length > 0 ? (
+              safeProducts.map((product, index) => {
+                const productName = product.name || product.title || `Product ${index + 1}`;
+                const productImage = getFirstImage(product.image || []);
+                const productSlug = product.url || `product-${index + 1}`;
+                const urlText = product.url_text || '';
+                
+                return (
+                  <div 
+                    class="swiper-slide" 
+                    data-index={index}
+                    data-product-id={[index]}
+                    role="button"
+                    tabindex="0"
+                    aria-label={`View ${productName}`}
                   >
-                    {urlText}
-                  </a>
+                    <div class="product-item">
+                      <Image 
+                        src={productImage?.url || '/images/placeholder.webp'}
+                        alt={productImage?.name || productName}
+                        width={227}
+                        height={193}
+                        loading="lazy"
+                        decoding="async"
+                        class="product-thumbnail" 
+                      />
+                    </div>
+                    <h3 class="product-name">{productName}</h3>
+                    <a 
+                      href={generateUrl(lang, '/products', productSlug)} 
+                      class="view-details-btn btn-hover-animate"
+                      aria-label={`View details for ${productName}`}
+                    >
+                      {urlText}
+                    </a>
+                  </div>
+                );
+              })
+            ) : (
+              // 如果没有产品数据，显示默认的占位符
+              <div class="product-item active animate-fade-left animate-delay-400" data-index="0">
+                <div class="overflow-hidden">
+                  <Image 
+                    src="/images/placeholder.webp"
+                    alt="No products available" 
+                    width={227}
+                    height={193}
+                    loading="lazy"
+                    decoding="async"
+                    class="thumbnail-image transition-transform duration-300 hover:scale-105" 
+                  />
                 </div>
-              );
-            })
-          ) : (
-            // 如果没有产品数据，显示默认的占位符
-            <div class="product-item active animate-fade-left animate-delay-400" data-index="0">
-              <div class="overflow-hidden">
-                <Image 
-                  src="/images/placeholder.webp"
-                  alt="No products available" 
-                  width={200}
-                  height={150}
-                  loading="lazy"
-                  decoding="async"
-                  class="thumbnail-image transition-transform duration-300 hover:scale-105" 
-                />
+                <h3>No products available</h3>
+                <a href="/products" class="view-details-btn btn-hover-animate">View All Products</a>
               </div>
-              <h3>No products available</h3>
-              <a href="/products" class="view-details-btn btn-hover-animate">View All Products</a>
-            </div>
-          )}
+            )}
+          
+            
+          </div>
         </div>
       </div>
       
       <!-- 右侧大图显示 -->
-      <div class="product-main-display animate-fade-right animate-delay-400">
-        <div class="main-image-container overflow-hidden">
-          <div class="tevis-watermark" aria-hidden="true">TEVIS</div>
-          {safeProducts.length > 0 ? (
-            safeProducts.map((product, index) => {
-              const productName = product.name || product.title || `Product ${index + 1}`;
-              const bigImage = getFirstImage(product.bigImage || [])
-              
-              return (
+      <div class="product-right-box">
+        <Image 
+          src={bigImgBg?.url || '/images/placeholder.webp'}
+          alt={bigImgBg?.name || 'loading...'} 
+          width={590}
+          height={356}
+          loading="lazy"
+          decoding="async"
+          class="big-img-bg" 
+        />
+        {safeProducts.length > 0 ? (
+          safeProducts.map((product, index) => {
+            const productName = product.name || product.title || `Product ${index + 1}`;
+            const bigImage = getFirstImage(product.bigImage || [])
+            return (
+              <div class="product-item" data-product-id={[index]}>
                 <Image 
                   id={`mainProductImage-${index}`}
                   src={bigImage?.url || '/images/placeholder.webp'}
@@ -149,20 +160,10 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                   class={`main-product-image transition-all duration-500 ease-in-out hover:scale-105 ${index === 0 ? 'active' : 'hidden'}`}
                   data-product-id={productIds[index]}
                 />
-              );
-            })
-          ) : (
-            <Image 
-              src="/images/placeholder.webp"
-              alt="No products available"
-              width={600}
-              height={400}
-              loading="eager"
-              decoding="async"
-              class="main-product-image transition-all duration-500 ease-in-out hover:scale-105 active"
-            />
-          )}
-        </div>
+              </div>
+            );
+          })
+        ) : null}
       </div>
     </div>
   </div>
@@ -172,345 +173,352 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
 <style>
   .product-showcase {
     background: #fff;
-    padding: 4rem 0;
-  }
-  .container {
-    max-width: 1460px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-  h2 {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    color: #181a1d;
-    text-align: left;
-  }
-  .description {
-    font-size: 1.375rem;
-    color: #333;
-    margin-bottom: 2.5rem;
-    line-height: 1.7;
-    font-weight: 500;
-    text-align: left;
-  }
-  .product-showcase-main {
-    display: flex;
-    gap: 4rem;
-    align-items: center;
-    /* max-width: 1200px; */
-    margin: 0 auto;
-  }
-  .product-left-section {
-    flex: 1.5;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    /* max-width: 600px; */
-  }
-  .progress-container {
-    margin-bottom: 1rem;
-  }
-  .progress-bar {
-    position: relative;
-    width: 100%;
-    height: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .progress-line {
-    position: absolute;
-    top: 50%;
-    left: 8px;
-    right: 8px;
-    height: 3px;
-    background: #d1d5db;
-    transform: translateY(-50%);
-    z-index: 1;
-  }
-  .progress-dot {
-    position: relative;
-    width: 1.5rem;
-    height: 1.5rem;
-    background: #181a1d;
-    border-radius: 50%;
-    z-index: 2;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: transform;
-  }
-  
-  .progress-dot:hover {
-    transform: scale(1.1);
-  }
-  
-  .progress-dot.active {
-    background: #dc2626;
-    width: 3.5rem;
-    height: 3.5rem;
-    background-size: 50%;
-    background-repeat: no-repeat;
-    background-position: center;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-  
-  .product-thumbnails {
-    display: flex;
-    flex-direction: row;
-    gap: 3rem;
-    flex: 1;
-    justify-content: space-around;
-  }
-  .product-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform-origin: center;
-    will-change: transform, opacity;
-  }
-  .product-item:not(.active) {
-    opacity: 0.6;
-  }
-  .product-item:hover {
-    opacity: 1;
-    transform: translateY(-5px);
-  }
-  
-  .product-item.active {
-    transform: translateY(-3px);
-  }
-  
-  .thumbnail-image {
-    width: 240px;
-    height: 180px;
-    object-fit: contain;
-    background: transparent;
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-  }
-  
-  .product-item h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #181a1d;
-    margin: 0;
-    text-align: center;
-    transition: color 0.3s ease;
-  }
-  
-  .product-item:hover h3 {
-    color: #dc2626;
-  }
-  
-  .view-details-btn {
-    font-weight: bold;
-    font-size: 1.125rem;
-    color: #181a1d;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    border-bottom: 3px solid #dc2626;
-    padding-bottom: 3px;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: color, transform;
-  }
-  .view-details-btn:hover {
-    color: #dc2626;
-    transform: translateY(-2px);
-  }
-  .product-main-display {
-    flex: 1.5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .main-image-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    height: 600px;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: box-shadow 0.3s ease;
-    will-change: box-shadow;
-  }
-  
-  .main-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: opacity, transform;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  
-  .main-product-image.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-  
-  .main-product-image.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-  .tevis-watermark {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 2rem;
-    font-weight: bold;
-    color: rgba(0,0,0,0.1);
-    z-index: 1;
-    letter-spacing: 0.2em;
-    transition: opacity 0.3s ease;
-  }
-  
-  .main-image-container:hover .tevis-watermark {
-    opacity: 0.5;
-  }
-  
-  @media (max-width: 768px) {
-    .product-showcase-main {
-      flex-direction: column;
-      gap: 2rem;
+    padding: 2rem 0 8rem 0;
+    .block-title{
+      font-family: Antonio-Bold;
+      font-weight: bold;
+      font-size: 6rem;
+      color: #18181F;
+      line-height: 7rem;
     }
-    .product-left-section {
-      width: 100%;
+    .block-desc{
+      font-weight: 400;
+      font-size: 1.6rem;
+      color: #18181F;
+      line-height: 2.4rem;
+      padding: 0;
+      width: 80%;
+      margin-top: 1rem;
     }
-    .product-thumbnails {
-      justify-content: center;
-    }
-    .thumbnail-image {
-      width: 120px;
-      height: 100px;
-    }
-    .main-image-container {
-      height: 300px;
-    }
-    .description {
-      font-size: 1rem;
-    }
-    
-    /* 移动端减少动画效果 */
-    .product-item:hover {
-      transform: none;
-    }
+     .product-showcase-content{
+       /* display: grid;
+       grid-template-columns: 2.5fr 1fr;
+       gap: 4rem;
+       align-items: start; */
+       
+       .product-left-box{
+         /* 确保 Swiper 容器有正确的宽度 */
+         width: 60%;
+         display: inline-block;
+         padding-right: 8rem;
+         vertical-align: top;
+         
+         .honor-swiper0{
+            margin-top: 8rem;
+            padding-top: 8rem;
+            &::before{
+              content: '';
+              display: inline-block;
+              position: absolute;
+              left: 0;
+              top: 3rem;
+              width: 100%;
+              height: 4px;
+              background: #DDDDDD;
+            }
+             .swiper-slide{
+               position: relative;
+               cursor: pointer;
+               transition: all 0.3s ease;
+               
+               &::before{
+                 content: '';
+                 display: inline-block;
+                 position: absolute;
+                 left: 50%;
+                 margin-left: -0.8rem;
+                 top: -5.7rem;
+                 width: 1.6rem;
+                 height: 1.6rem;
+                 background: #18181F;
+                 border-radius: 50%;
+                 transition: all 0.3s ease;
+               }
+              
+             }
+            .swiper-slide.dianActive{
+              &::before{
+                content: '';
+                display: inline-block;
+                width: 4rem;
+                height: 4rem;
+                background-color: #E81A1A;
+                border-radius: 50%;            
+                background-size: 24px 14px;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-image: url('/images/img-icon.png');
+                position: absolute;
+                left: 50%;
+                margin-left: -2rem;
+                top: -7rem;
+              }
+            }
+         }
+         .product-name{
+          font-weight: 400;
+          font-size: 1.8rem;
+          color: #18181F;
+          line-height: 2.4rem;
+          margin-top: 1rem;
+         }
+         .view-details-btn{
+          display: inline-block;
+          width: auto;
+          padding: 0 0.5rem;
+          height: 3rem;
+          line-height: 3rem;
+          position: relative;
+          z-index: 3;
+          overflow: hidden;
+          font-family: Poppins-Medium;
+          font-weight: 500;
+          font-size: 2rem;
+          color: #18181F;
+          transition: all .3s linear;
+          margin-top: 1rem;
+          &:hover{
+            color: #FEFEFE;
+          }
+          &::before{
+            content: '';
+            display: inline-block;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            width: 100%;
+            height: 3px;
+            background: #E81A1A;
+            transition: all .3s linear;
+          }
+          &:hover::before{
+            height: 100%;
+          }
+         }
+       }
+       
+         .product-right-box{
+           width: 39%;
+           display: inline-block;
+           overflow: hidden;
+           position: relative;
+           height: 51rem;
+           margin-top: 8rem;
+           .big-img-bg{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+           }
+            .product-item {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              left: 0;
+              top: 0;
+            }
+            
+            .main-product-image {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: all 0.8s ease-in-out;
+              opacity: 0;
+              visibility: hidden;
+              transform: scale(0.95);
+            }
+            
+            .main-product-image.active {
+              opacity: 1;
+              visibility: visible;
+              transform: scale(1);
+            }
+            
+            .main-product-image.hidden {
+              opacity: 0;
+              visibility: hidden;
+              transform: scale(0.95);
+            }
+         }
+     }
+  }
+ 
+   @media (max-width: 768px) {
+     .product-showcase{
+      .product-showcase-content {
+        .product-left-box{
+          width: 100%;
+          padding-right: 0;
+        }
+        .product-right-box {
+          width: 100%;
+          margin-top: 1rem;
+        }
+      }
+     }
+     
+  
     
   }
-  
-  /* 减动画模式 */
-  @media (prefers-reduced-motion: reduce) {
-    .progress-dot,
-    .product-item,
-    .thumbnail-image,
-    .main-product-image,
-    .view-details-btn {
-      transition: none !important;
-      animation: none !important;
-    }
-  }
+
   </style>
 
 <!-- 使用 Astro 官方推荐的客户端脚本方法 -->
-<script client:load>
-  class ProductShowcase {
-    constructor() {
-      this.currentIndex = 0;
-      this.productItems = [];
-      this.progressDots = [];
-      this.mainImages = [];
-      this.init();
-    }
-
-    init() {
-      // 等待 DOM 完全加载
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => this.setup());
-      } else {
-        this.setup();
-      }
-    }
-
-    setup() {
-      this.productItems = Array.from(document.querySelectorAll('.product-item'));
-      this.progressDots = Array.from(document.querySelectorAll('.progress-dot'));
-      this.mainImages = Array.from(document.querySelectorAll('.main-product-image'));
-      
-      if (this.productItems.length === 0) return;
-
-      this.bindEvents();
-    }
-
-    bindEvents() {
-      // 绑定产品项点击事件
-      this.productItems.forEach((item, index) => {
-        item.addEventListener('click', () => this.updateDisplay(index));
-        item.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            this.updateDisplay(index);
-          }
-        });
-      });
-
-      // 绑定进度点点击事件
-      this.progressDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => this.updateDisplay(index));
-        dot.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            this.updateDisplay(index);
-          }
-        });
-      });
-
-      // 键盘导航
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' && this.currentIndex > 0) {
-          this.updateDisplay(this.currentIndex - 1);
-        } else if (e.key === 'ArrowRight' && this.currentIndex < this.productItems.length - 1) {
-          this.updateDisplay(this.currentIndex + 1);
-        }
-      });
-    }
-
-    updateDisplay(index) {
-      if (index === this.currentIndex || index < 0 || index >= this.productItems.length) {
+<script>
+  document.addEventListener('DOMContentLoaded', async function() {
+    try {
+      // 检查是否存在轮播容器
+      const swiperContainer = document.querySelector('.honor-swiper0');
+      if (!swiperContainer) {
+        console.warn('轮播容器 .honor-swiper0 未找到');
         return;
       }
-
-      this.currentIndex = index;
-
-      // 更新产品项状态
-      this.productItems.forEach((item, i) => {
-        item.classList.toggle('active', i === index);
+      
+      // 动态导入 Swiper
+      const { default: Swiper } = await import('swiper/bundle');
+      console.log('Swiper 加载成功');
+      
+      // 初始化 Swiper
+      const swiper = new Swiper('.honor-swiper0', {
+        // 基本配置
+        slidesPerView: 3,
+        spaceBetween: 20,
+        loop: false,
+        centeredSlides: false,
+        autoplay: false,
+        
+        // 响应式断点
+        breakpoints: {
+          320: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 90,
+          },
+        },
+        
+        // 分页器
+        pagination: {
+          el: '.swiper-pages-nation',
+          clickable: true,
+          dynamicBullets: false,
+        
+        },
+        
+        // 导航按钮
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        
+        // 效果
+        effect: 'slide',
+        speed: 600,
+        
+        // 鼠标悬停暂停自动播放和滑动事件
+        on: {
+          
+          slideChange: function(swiper) {
+            // 当 Swiper 滑动时，同步更新大图显示
+            const mainImages = document.querySelectorAll('.product-right-box .main-product-image');
+            const slides = document.querySelectorAll('.honor-swiper0 .swiper-slide');
+            const activeIndex = swiper.activeIndex;
+            
+            // 移除所有 slide 的 dianActive 类
+            slides.forEach(slide => {
+              slide.classList.remove('dianActive');
+            });
+            
+            // 给当前活动的 slide 添加 dianActive 类
+            if (slides[activeIndex]) {
+              slides[activeIndex].classList.add('dianActive');
+            }
+            
+            // 移除所有图片的 active 类，添加 hidden 类
+            mainImages.forEach(img => {
+              img.classList.remove('active');
+              img.classList.add('hidden');
+            });
+            
+            // 显示对应的大图
+            if (mainImages[activeIndex]) {
+              mainImages[activeIndex].classList.remove('hidden');
+              mainImages[activeIndex].classList.add('active');
+            }
+          }
+        }
       });
-
-      // 更新进度点状态
-      this.progressDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === index);
-      });
-
-      // 更新主图显示
-      this.mainImages.forEach((img, i) => {
-        img.classList.toggle('active', i === index);
-        img.classList.toggle('hidden', i !== index);
-      });
+      
+      console.log('Swiper 初始化成功:', swiper);
+      
+      // 添加点击事件监听器
+      const slides = document.querySelectorAll('.honor-swiper0 .swiper-slide');
+      const mainImages = document.querySelectorAll('.product-right-box .main-product-image');
+      
+      // 初始化：设置第一个 slide 和图片为活动状态
+      console.log('找到的 slides 数量:', slides.length);
+      console.log('找到的 mainImages 数量:', mainImages.length);
+      
+      if (slides.length > 0) {
+        slides[0].classList.add('dianActive');
+        console.log('设置第一个 slide 为 dianActive');
+      }
+      if (mainImages.length > 0) {
+        mainImages[0].classList.add('active');
+        mainImages[0].classList.remove('hidden');
+        console.log('设置第一个图片为 active');
+      }
+      
+        slides.forEach((slide, index) => {
+          slide.addEventListener('click', function() {
+            console.log('点击了第', index, '个 slide');
+            
+            // 先移除所有 slide 的 dianActive 类
+            slides.forEach(s => {
+              s.classList.remove('dianActive');
+            });
+            
+            // 然后给当前点击的 slide 添加 dianActive 类
+            slide.classList.add('dianActive');
+            console.log('设置 slide', index, '为 dianActive');
+            
+            // 移除所有图片的 active 类，添加 hidden 类
+            mainImages.forEach(img => {
+              img.classList.remove('active');
+              img.classList.add('hidden');
+            });
+            
+            // 显示对应的大图
+            if (mainImages[index]) {
+              mainImages[index].classList.remove('hidden');
+              mainImages[index].classList.add('active');
+              console.log('显示第', index, '个大图');
+            } else {
+              console.log('没有找到第', index, '个大图');
+            }
+            
+            // 更新 Swiper 到对应的 slide
+            swiper.slideTo(index);
+          });
+        });
+      
+    } catch (error) {
+      console.error('Swiper 加载失败:', error);
     }
-  }
-
-  // 初始化组件
-  new ProductShowcase();
+  });
 </script> 

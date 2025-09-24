@@ -44,14 +44,8 @@ const {
   companyInfo = [],
 } = companyData;
 
-
-// console.log('获取到的 companyData', companyData);
-// console.log('获取到的 corporateAdvantages', corporateAdvantages);
-
 const safecompanyInfo = Array.isArray(companyInfo) ? companyInfo.slice(0, 4) : [];
 const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAdvantages.slice(0, 4) : [];
-
-
 
 // StatsSection - 公司概览与核心数据展示
 ---
@@ -105,8 +99,8 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
              )}
            </div>
           
-          <div class="adv-title">{advantage.adv_title}</div>
-          <div class="adv-desc">{advantage.adv_desc}</div>
+          <div class="adv-title elli0">{advantage.adv_title}</div>
+          <div class="adv-desc elli1">{advantage.adv_desc}</div>
         </div>
       ))}
       
@@ -199,6 +193,7 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
   object-fit: fill;
   position: absolute;
   top:0;
+  left: 0;
 }
 .aboutSection .aboutTitle {
   font-family: Antonio-Bold;
@@ -370,5 +365,66 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
     margin: 1rem auto;
     font-size: 1.5rem !important;
   }
+}
+@media (max-width: 768px) {
+  .stats-section.aboutSection{
+    
+    .aboutSection-img{
+      object-fit: cover;
+      height: 65%;
+    }
+    .aboutTitle {
+      font-size: 3rem !important;
+      line-height: 4rem!important;
+    }
+    .aboutFuTitle{
+      width: 100%;
+    }
+    .aboutDesc{
+      width: 100%;
+    }
+    .view-all-btn{
+      margin-top: 0;
+    }
+    .stats-row.companyInfo{
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+      .stat-value-num{
+        font-size: 3.5rem;
+        line-height: 4rem;
+      }
+      .stat-value-unit{
+        font-size: 3rem;
+        line-height: 3rem;
+      }
+      .stat-value-desc{
+        line-height: 2rem;
+      }
+    }
+    .stats-row.CorporateAdvantages{
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+      .stat-item{
+        padding: 2rem 1rem;
+        margin-top: 0;
+      }
+      .adv-img{
+        img{
+          height: 4rem !important;
+        }
+      }
+      .adv-title{
+        font-size: 2rem;
+        line-height: 2rem;
+        margin-top: 1rem;
+      }
+      .adv-desc{
+        height: 12rem;
+        -webkit-line-clamp: 5;
+      }
+    }
+  } 
 }
 </style> 
