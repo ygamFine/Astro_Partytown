@@ -19,7 +19,7 @@ interface PageProps {
     path: string;
     name: string;
   };
-  page?: number;
+  currentPage?: number;
   totalPages?: number;
   items?: any[];
 }
@@ -34,7 +34,7 @@ export async function getStaticPaths() {
   return generateStaticPaths(productsPerPage, 'news');
 }
 
-const { lang, categoryPath, page, totalPages, items } = Astro.props as PageProps;
+const { lang, categoryPath, currentPage, totalPages, items } = Astro.props as PageProps;
 
 // 将字符串形式的 categoryPath 转换为数组
 const categoryPathArray = categoryPath?.path && categoryPath?.path.length > 0 
@@ -93,7 +93,7 @@ const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0
       <!-- 分页控件 -->
       {totalPages && totalPages > 1 && (
         <Pagination
-          currentPage={page || 1}
+          currentPage={currentPage || 1}
           totalPages={totalPages}
           baseUrl={generateUrl(lang, MODEL_PATH)}
           i18n={t.common}

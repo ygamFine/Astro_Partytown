@@ -213,7 +213,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
             {themeConfig.layout.productDetail.pricing.showPricing && 
             !themeConfig.restrictions.languageRestrictions[lang as keyof typeof themeConfig.restrictions.languageRestrictions]?.hidePricing && (
               <div class="bg-gray-50 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">产品价格</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{t.product.price || "Product Price"}</h3>
                 
                 {/* 多币种价格展示 */}
                 {themeConfig.layout.productDetail.pricing.showMultiplePrices && (
@@ -240,7 +240,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
                       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
                       </svg>
-                      加入购物车
+                      {t.product.add_to_cart || "Add to Cart"}
                     </button>
                   </div>
                 )}
@@ -300,7 +300,7 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
 
             <!-- Leave your messages 表单 -->
             <div class="bg-white rounded-lg p-8 shadow-sm">
-              <ItalkinForm id="product-detail-form" showDescription={false} successMode="modal" transitions={t} />
+              <ItalkinForm id="product-detail-form" showDescription={false} successMode="toast" transitions={t} />
             </div>
 
             <!-- Related Products -->
@@ -323,7 +323,13 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
   </SecondaryPageLayout>
 )}
 </>
-  <script is:inline>
+  <script is:inline define:vars={{ 
+    formMessages: {
+      sending: t?.form?.messages?.sending || "Sending...",
+      sendSuccess: t?.form?.messages?.submit_success_toast_text || "Success!",
+      addedToCart: t?.product?.added_to_cart || "Added to Cart"
+    }
+  }}>
     // 图片画廊和放大镜功能
     document.addEventListener('DOMContentLoaded', () => {
       console.log('脚本开始执行');
@@ -644,35 +650,13 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
         }
       }, { passive: true });
 
-      // 表单处理
-    const form = document.querySelector('form');
-      form?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const button = form.querySelector('button[type="submit"]');
-        if (!button) return;
-        
-        const originalText = button.textContent;
-        button.textContent = '发送中...';
-        button.disabled = true;
-        
-        setTimeout(() => {
-          button.textContent = '发送成功！';
-          button.style.backgroundColor = '#10b981';
-          setTimeout(() => {
-            button.textContent = originalText;
-            button.disabled = false;
-            button.style.backgroundColor = '';
-            form.reset();
-          }, 2000);
-        }, 1000);
-      });
       
       // 购物车按钮
       window.addToCart = () => {
         const button = event?.target;
         if (button && button.style) {
         const originalText = button.innerHTML;
-        button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>已加入购物车';
+        button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>' + formMessages.addedToCart;
         button.style.backgroundColor = '#10b981';
         setTimeout(() => {
           button.innerHTML = originalText;
