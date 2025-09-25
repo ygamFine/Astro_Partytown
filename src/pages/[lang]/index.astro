@@ -10,7 +10,7 @@ import HotRecommendedProducts from '@components/Custom/Home/HotRecommendedProduc
 import FrontContactUs from '@components/Custom/Home/FrontContactUs.astro';
 import CustomerNeeds from '../../components/CustomerNeeds.astro';
 import CustomerCases from '@components/Custom/Home/CustomerCases.astro';
-import NewsCenter from '../../components/NewsCenter.astro';
+import CustomerNews from '@components/Custom/Home/CustomerNews.astro';
 
 
 import { themeConfig } from '../../config/theme.js';
@@ -33,19 +33,19 @@ const getPageWidth = () => {
   return themeConfig.layout.dynamicWidth.getPageWidth('home');
 };
 const pageWidth = getPageWidth();
-// console.log('获取到的首页数据:', homepageData);
 ---
 
 
 <Layout title={t.nav.home} lang={lang} pageType="home">
-	<FullScreenBanner />
+	<FullScreenBanner client:idle/>
 	<!-- <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}> -->
-	<div class="mx-auto px-4">		
-		<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
+	<div class="mx-auto">		
+		<ProductShowcase data={homepageData?.productShowcase} lang={lang} client:visible />
 		<StatsSection companyData={homepageData?.companyIntroduction} corporateAdvantages={homepageData?.corporateAdvantages} />
-		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} />
+		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} client:visible />
 		<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
-		<CustomerCases customerCases={homepageData?.customerCases} lang={lang}  />
+		<CustomerCases customerCases={homepageData?.customerCases} lang={lang} client:visible  />
+		<CustomerNews customerNews={homepageData?.customerNews} lang={lang} client:visible  />
 		<!-- 
 		<StatsSection 
 			companyData={homepageData?.companyIntroduction}

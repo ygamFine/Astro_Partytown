@@ -19,7 +19,6 @@ export async function getHomepageContent(lang: string) {
     }
 
     const homepageData = data.data;
-
     return {
       productShowcase: {
         title: homepageData.product_showcase.title,
@@ -34,6 +33,7 @@ export async function getHomepageContent(lang: string) {
               }
             })
           : [],
+        bigImgBg: getFirstImage(extractUrl(homepageData.product_showcase.field_bigimgbg, true)),
       },
       companyIntroduction: {
         title: homepageData.company_introduction.title,
@@ -93,6 +93,18 @@ export async function getHomepageContent(lang: string) {
         }) || [],
         caseUrl: homepageData.customer_cases.more_url,
         caseUrlText: homepageData.customer_cases.more_text,
+      },
+      customerNews:{
+        title: homepageData.news_center.title,
+        description: homepageData.news_center.description,
+        products: homepageData.news_center.products?.map((item: any) => {
+          return {
+            ...item,
+            image: getFirstImage(extractUrl(item.picture, true) || []),
+          }
+        }) || [],
+        newsUrl: homepageData.news_center.more_url,
+        newsUrlText: homepageData.news_center.more_text,
       },
 
     };

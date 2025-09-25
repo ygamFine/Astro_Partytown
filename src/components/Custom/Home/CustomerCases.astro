@@ -39,93 +39,7 @@ const {
 } = customerCases;
 
 const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
-// console.log('获取到的案例', safeCases);
-
 ---
-
-<!-- Swiper 初始化 -->
-<script>
-  document.addEventListener('DOMContentLoaded', async function() {
-    const swiperContainer = document.querySelector('.honor-swiper3');
-    if (!swiperContainer) return;
-    
-    // 添加加载状态类
-    swiperContainer.classList.add('swiper-loading');
-    
-    try {
-      // 动态导入 Swiper
-      const { default: Swiper } = await import('swiper/bundle');
-      
-      // 初始化 Swiper
-      const swiper = new Swiper('.honor-swiper3', {
-        // 基本配置
-        slidesPerView: 1,
-        spaceBetween: 21,
-        loop: true,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false,
-        },
-        
-        // 响应式断点
-        breakpoints: {
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 15,
-          },
-          768: {
-            slidesPerView: 3,
-            spaceBetween: 20,
-          },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 21,
-          },
-        },
-        
-        // 分页器
-        pagination: false,
-        
-        // 导航按钮
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        
-        // 效果
-        effect: 'slide',
-        speed: 600,
-        
-        // 鼠标悬停暂停自动播放
-        on: {
-          init: function(swiper) {
-            // 移除加载状态类
-            swiperContainer.classList.remove('swiper-loading');
-            swiperContainer.classList.add('swiper-loaded');
-            
-            swiper.el.addEventListener('mouseenter', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.stop();
-              }
-            });
-            swiper.el.addEventListener('mouseleave', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.start();
-              }
-            });
-          }
-        }
-      });
-     
-      
-    } catch (error) {
-      console.error('Swiper 加载失败:', error);
-      // 即使加载失败也要移除加载状态
-      swiperContainer.classList.remove('swiper-loading');
-      swiperContainer.classList.add('swiper-error');
-    }
-  });
-</script>
 
 <section class="customer-cases">
     <div class="container">
@@ -152,22 +66,28 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
                                         class="thumbnail-image transition-transform duration-300 hover:scale-105" 
                                     />
                                </div>
-                              <a class="case-name elli0" href="{product.url_text}">{productName}</p>
+                              <a class="case-name elli0" href={product.url_text}>{productName}</p>
                             
                             </div>
                           </div>
                         );
                     })}
                 </div>
-                <!-- 导航按钮 -->
-                <div class="swiper-button-prev swiper-button-custom"></div>
-                <!-- 导航按钮 -->
-                <div class="swiper-button-next swiper-button-custom"></div>
+                
             </div>
         </div>
+        <!-- 导航按钮 -->
+        <div class="swiper-button-left swiper-btns">
+          <i class="iconfont icon-arrowleft"></i>
+        </div>
+        <!-- 导航按钮 -->
+        <div class="swiper-button-right swiper-btns">
+          <i class="iconfont icon-arrowright"></i>
+        </div>
         <a href={caseUrl} class="case-more">{caseUrlText} →</a>
+        
     </div>
-
+    
 </section>
 
 <style>
@@ -175,6 +95,9 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
       text-align: center;
       padding-top: 6rem;
       padding-bottom: 8rem;
+    }
+    .customer-cases .container{
+      position: relative;
     }
     .block-title{
         font-family: Antonio-Bold;
@@ -194,6 +117,7 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
 
     .customer-cases .honor-swiper3{
         margin-top: 6rem;
+        padding-bottom: 2rem;
     }
     .customer-cases .case-item{
         cursor: pointer;
@@ -215,10 +139,9 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
       font-size: 1.8rem;
       color: #FFFFFF;
       background: #18181F;
-      height: 5.5rem;
-      line-height: 5.5rem;
       display: block;
       margin-top: 1px;
+      padding: 1.5rem 0;
     }
     .customer-cases .case-item:hover .case-name{
       background: #E81A1A;
@@ -293,8 +216,31 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
     
     .honor-swiper3.swiper-loading .swiper-slide {
         flex-shrink: 0;
-        width: 100%;
         margin-right: 21px;
+    }
+    .honor-swiper3 .swiper-slide{
+      width: 33.33%;
+      flex-shrink: 0;
+      margin-right: 21px;
+    }
+    .customer-cases .swiper-btns{
+      width: 4rem;
+      height: 4rem;
+      text-align: center;
+      line-height: 4rem;
+      background: #F4F4F4;
+      border-radius: 50%;
+      color: #18181F;
+      font-size: 1.6rem;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      left: -5rem;
+    }
+    .customer-cases .swiper-btns.swiper-button-right{
+      right: -5rem;
+      left: auto;
     }
     
     /* 加载完成后的样式 */
@@ -309,100 +255,111 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
     }
     
     /* 导航按钮样式 */
-    .honor-swiper3 .swiper-button-next,
-    .honor-swiper3 .swiper-button-prev {
-        color: #dc2626;
-        border-radius: 50%;
-        width: 16px;
-        height: 14px;
-        transition: all 0.3s ease;
-        position: static !important;
-    }
-    
-    .honor-swiper3 .swiper-button-next:hover,
-    .honor-swiper3 .swiper-button-prev:hover {
-        background: #dc2626;
-        color: white;
-        transform: scale(1.1);
-    }
-    
-    .honor-swiper3 .swiper-button-next:after,
-    .honor-swiper3 .swiper-button-prev:after {
-        content: '';
-        font-size: 18px;
-        font-weight: bold;
-        display: inline-block;
-    }
-    
-    /* 兼容旧版本样式 */
-    .honor-swiper2 .swiper-button-next,
-    .honor-swiper2 .swiper-button-prev {
-        color: #dc2626;
-        border-radius: 50%;
-        width: 16px;
-        height: 14px;
-        transition: all 0.3s ease;
-        position: static !important;
-    }
-    
-    .honor-swiper2 .swiper-button-next:hover,
-    .honor-swiper2 .swiper-button-prev:hover {
-        background: #dc2626;
-        color: white;
-        transform: scale(1.1);
-    }
-    
-    .honor-swiper2 .swiper-button-next:after,
-    .honor-swiper2 .swiper-button-prev:after {
-        content: '';
-        font-size: 18px;
-        font-weight: bold;
-        display: inline-block;
-    }
-    
+ 
     
     /* 响应式调整 */
     @media (max-width: 768px) {
-        .honor-swiper3 {
-            padding: 0 20px;
-        }
-        
-        .honor-swiper3.swiper-loading .swiper-slide {
-            margin-right: 15px;
-        }
-        
-        .honor-swiper3 .swiper-button-next,
-        .honor-swiper3 .swiper-button-prev {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .honor-swiper3 .swiper-button-next:after,
-        .honor-swiper3 .swiper-button-prev:after {
-            font-size: 14px;
-        }
-        
-        /* 兼容旧版本 */
-        .honor-swiper2 {
-            padding: 0 20px;
-        }
-        
-        .honor-swiper2 .swiper-button-next,
-        .honor-swiper2 .swiper-button-prev {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .honor-swiper2 .swiper-button-next:after,
-        .honor-swiper2 .swiper-button-prev:after {
-            font-size: 14px;
+        section.customer-cases{
+          .block-title{
+            font-size: 3rem;
+            line-height: 4rem;
+          }
+          .block-desc{
+            width: 95%;
+          }
+          .case-more{
+            margin-top: 2rem !important;
+          } 
+          .honor-swiper3{
+            margin-top: 3rem !important;
+          } 
+          
         }
     }
-    
-    @media (max-width: 640px) {
-        .honor-swiper3.swiper-loading .swiper-slide {
-            margin-right: 15px;
-        }
-    }
+  
     
 </style>
+
+<!-- 使用共享的 Swiper 加载器 -->
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        const swiperContainer = document.querySelector('.honor-swiper3');
+        if (!swiperContainer) return;
+
+        // 添加加载状态类
+        swiperContainer.classList.add('swiper-loading');
+
+        try {
+            // 使用共享的 Swiper 加载器
+            const { initSwiper } = await import('@utils/swiperLoader');
+
+            // 初始化 Swiper
+            const swiper = await initSwiper('.honor-swiper3', {
+                // 基本配置
+                slidesPerView: 2,
+                spaceBetween: 15,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+
+                // 响应式断点
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 15,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 21,
+                    },
+                },
+
+                // 分页器
+                pagination: false,
+
+                // 导航按钮
+                navigation: {
+                    nextEl: '.swiper-button-right',
+                    prevEl: '.swiper-button-left',
+                },
+
+                // 效果
+                effect: 'slide',
+                speed: 600,
+
+                // 鼠标悬停暂停自动播放
+                on: {
+                    init: function(swiper: any) {
+                        // 移除加载状态类
+                        swiperContainer.classList.remove('swiper-loading');
+                        swiperContainer.classList.add('swiper-loaded');
+
+                        swiper.el.addEventListener('mouseenter', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.stop();
+                            }
+                        });
+                        swiper.el.addEventListener('mouseleave', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.start();
+                            }
+                        });
+                    }
+                }
+            });
+
+
+        } catch (error) {
+            console.error('Swiper 加载失败:', error);
+            // 即使加载失败也要移除加载状态
+            swiperContainer.classList.remove('swiper-loading');
+            swiperContainer.classList.add('swiper-error');
+        }
+    });
+</script>

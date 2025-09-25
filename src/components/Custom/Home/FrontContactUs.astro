@@ -31,7 +31,6 @@ const {
   panordescription = '', 
 
 } = frontContactUs;
-// console.log('获取到的 frontContactUs', frontContactUs);
 ---
 
 
@@ -44,7 +43,16 @@ const {
         height={700}
         loading="lazy"
         decoding="async"
-        class="contactUsSection-img" 
+        class="contactUsSection-img pcImg" 
+    />
+    <Image 
+        src={frontContactUs?.contactImgBg?.url || '/images/placeholder.webp'}
+        alt={frontContactUs?.contactImgBg?.name || frontContactUs?.contactImgBg?.name || '优势图片'}
+        width={750}
+        height={400}
+        loading="lazy"
+        decoding="async"
+        class="contactUsSection-img mobileImg" 
     />
     <div class="container">
         <div class="contact-content">
@@ -77,6 +85,10 @@ const {
         object-fit: fill;
         position: absolute;
         top:0;
+    }
+    
+    .contactUsSection .mobileImg {
+        display: none;
     }
     .contactUsSection .container{
         position: relative;
@@ -186,6 +198,43 @@ const {
             line-height: 3rem;
             width: 24%;
             margin: 1rem auto;
+        }
+    }
+    @media (max-width: 768px) {
+        .stats-section.contactUsSection{
+            padding: 4rem 0;
+            margin-top: 4rem;
+            .contactUsSection-img{
+                object-fit: cover;
+            }
+           .contact-content{
+            grid-template-columns: 1fr;
+           }
+           .pcImg {
+                display: none !important;
+            }
+            .mobileImg {
+                display: block !important;
+            }     
+           .grid-left{
+            padding: 2rem;
+            .contact-title,.contact-fu-title{
+                font-size: 3rem;
+                line-height: 4rem;
+            }
+            .contact-description{
+                padding:0;
+            }
+           }
+           .grid-right{
+            i{
+                font-size: 8rem;
+            }
+            .panortitle{
+                width: 95%;
+            }
+           }
+          
         }
     }
 </style>

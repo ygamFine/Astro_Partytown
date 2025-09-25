@@ -2,117 +2,152 @@
 import { Image } from 'astro:assets';
 import SocialIcons from '../social/SocialIcons.astro';
 import { themeConfig } from '../../../config/theme.js';
+import { getMenus, getSupportedLanguages } from "@apis/common";
+import { getCurrentLanguage } from '@utils/languageUtils';
+import { getDictionary } from "@i18n/dictionaries.js";
+import { generateUrl,extractUrl, getFirstImage } from '@utils/tools.js';
 // 使用public目录中的图片
 const logoImage = '/images/logo.png.webp';
+// 接收网站配置参数
+export interface Props {
+  siteConfiguration?: any;
+}
+
+const { siteConfiguration = {} } = Astro.props;
+
+// 获取当前页面路径，用于服务端渲染时设置选中状态
+const currentPath = Astro.url.pathname;
+// 使用工具函数获取当前语言
+const currentLang = getCurrentLanguage(currentPath, Astro.url.hostname);
+
+// 加载翻译数据
+const t = await getDictionary(currentLang);
+
+
+// 在构建时获取菜单数据
+interface MenuItem {
+  name: string;
+  path: string;
+  children?: MenuItem[];
+}
+let menuItems: MenuItem[] = [];
+try {
+  menuItems = await getMenus(currentLang);
+} catch (error) {
+  // 如果接口失败，不显示任何菜单
+  menuItems = [];
+}
+
+// 联系信息接口定义
+interface ContactInfo {
+  field_mingchengb?: string;  // 名称/标签
+  field_gongsixinxi?: string; // 公司信息/值
+  field_dibu?: string; // 底部信息/值
+}
+const contactInfo: ContactInfo[] = siteConfiguration.field_footercompany || [];
+
+// 获取公司社交媒体
+interface companySocial {
+  field_url?: string;  // url
+  field_pingtai?: string; // 名称
+  field_picture?: {
+    url: string;
+    name: string;
+    alt: string;
+    width: number;
+    height: number;
+  };
+}
+const companySocial: companySocial[] = siteConfiguration.field_socialplatform || [];
+
+// 获取公司logo
+const companyImage = siteConfiguration.field_logo || [];
+const companyImageFirst = getFirstImage(extractUrl(companyImage, true));
+const companyName = siteConfiguration.title || '';
+
+const copyright_settings = siteConfiguration.copyright_settings || [];
+
 ---
-<footer class="bg-gray-800 text-gray-300 pt-16 pb-8" data-pagefind-ignore>
+<footer class="bg-gray-800 text-gray-300 pb-8 footer-section" data-pagefind-ignore>
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 footer-section-content">
       
       <!-- About Section -->
-      <div class="space-y-6">
-        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">About</h3>
-        <div class="space-y-4">
-          <a href="/about" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Advantages</a>
-        </div>
-        
-        <!-- Company Logo -->
-        <div class="mt-8">
-          <Image 
-            src={logoImage}
-            alt="TEVIS Logo" 
-            width={120}
-            height={64}
-            loading="lazy"
-            decoding="async"
-            class="h-16 w-auto"
-          />
-          <p class="text-gray-400 text-sm leading-relaxed">
-            山东永安建设机械集团有限公司致力于为全球客户提供高品质的工程机械设备和完善的售后服务。
-          </p>
-        </div>
-      </div>
+      {menuItems.map((item, index) => (
+        index > 0 && index < 3 && (
+          <div class="space-y-6 footer-menu-item">
+            <a href={generateUrl(currentLang, item.path)} class="menu-first-item footer-section-title" title={item.name}>{item.name}</a>
+            {item.children && (
+              <div class="menu-second-item-list">
+                {item.children.map((child, childIndex) => (
+                  <a href={generateUrl(currentLang, child.path)} class="block menu-second-item" title={child.name}>{child.name}</a>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      ))}
 
-      <!-- Products Section -->
-      <div class="space-y-6">
-        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">Products</h3>
-        <div class="space-y-4">
-          <a href="/products?category=挖掘装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Backhoe Loader</a>
-                  <a href="/products?category=伸缩臂叉装车" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Telehandler</a>
-        <a href="/products?category=滑移装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Skid Steer Loader</a>
-        <a href="/products?category=挖掘装载机" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Backhoe Loader</a>
-        <a href="/products?category=电动工程机械" class="block text-gray-300 hover:text-white transition-colors duration-200 text-3xl">Electric Machinery</a>
-        </div>
-      </div>
 
       <!-- Contact Us Section -->
-      <div class="space-y-6">
-        <h3 class="text-4xl font-bold text-white uppercase tracking-wide">Contact Us</h3>
-        <div class="space-y-4">
-          <div class="text-3xl">
-            <p class="text-gray-300">Contact: <span class="text-white">Mr. Lei</span></p>
-          </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">Phone: <span class="text-white">+8615069038877</span></p>
-          </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">WhatsApp: <span class="text-white">+8618353161619</span></p>
-          </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">Email: <span class="text-white">leiyang0501@163.com</span></p>
-          </div>
-          <div class="text-3xl">
-            <p class="text-gray-300">Address: <span class="text-white">No.12300 Longquan Road,</span></p>
-            <p class="text-white ml-0">Zaoyuan Street, Zhangqiu District, Jinan</p>
-            <p class="text-white ml-0">City, Shandong Province, China</p>
-          </div>
+      <div class="space-y-6 footer-section-contact">
+        <h3 class="footer-section-title">Contact Us</h3>
+        <div class="footer-section-contact-list">
+          {contactInfo.map((item: ContactInfo, index: number) => (
+              <div class="footer-section-contact-item">
+                 {item?.field_dibu?.split('|')[0] === 'A1' && (
+                 <a href={`tel:${item?.field_gongsixinxi}`} class="footer-section-contact-item-text"> {item?.field_mingchengb} <span class="text-white">{item?.field_gongsixinxi}</span></a>
+                )}
+                {item?.field_dibu?.split('|')[0] === 'A2' && (
+                 <a href={`tel:${item?.field_gongsixinxi}`} class="footer-section-contact-item-text"> {item?.field_mingchengb} <span class="text-white">{item?.field_gongsixinxi}</span></a>
+                )}
+                {item?.field_dibu?.split('|')[0] === 'A3' && (
+                 <a href={`mailto:${item?.field_gongsixinxi}`} class="footer-section-contact-item-text"> {item?.field_mingchengb} <span class="text-white">{item?.field_gongsixinxi}</span></a>
+               )}
+               {item?.field_dibu?.split('|')[0] === 'A6' && (
+                 <a href={`https://api.whatsapp.com/send?phone=${item?.field_gongsixinxi}&text=Hello:`} class="footer-section-contact-item-text"> {item?.field_mingchengb}: <span class="text-white">{item?.field_gongsixinxi}</span></a>
+                )}
+                {!['A1', 'A2', 'A3', 'A6'].includes(item?.field_dibu?.split('|')[0] || '') && item?.field_dibu && (
+                 <p class="footer-section-contact-item-text"> {item?.field_mingchengb}: <span class="text-white">{item?.field_gongsixinxi}</span></p>
+                )}
+              </div>
+          ))}
+          
         </div>
 
-        <!-- Social Icons -->
-        <div class="flex space-x-4 mt-6">
-          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-            </svg>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-          </a>
-        </div>
+        
       </div>
 
       <!-- Request a Quote Form -->
       <div class="space-y-6">
-        <div class="bg-gray-700 p-6 rounded-lg">
-          <h3 class="text-4xl font-bold text-white uppercase tracking-wide mb-6 text-center">Request a Quote</h3>
+        <div class="bg-gray-700 rounded-lg footer-section-webform">
+          <h3 class="text-4xl font-bold text-white uppercase tracking-wide mb-6 text-center footer-section-webform-title">Request a Quote</h3>
           <form class="space-y-4" id="quote-form">
             <input 
               type="text" 
               name="name" 
               placeholder="Name" 
               required
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              class="w-full px-4 py-3 bg-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
             />
             <input 
               type="email" 
               name="email" 
               placeholder="Email" 
               required
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              class="w-full px-4 py-3 bg-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
             />
             <input 
               type="tel" 
               name="phone" 
               placeholder="Telephone" 
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              class="w-full px-4 py-3 bg-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
             />
             <textarea 
               name="message" 
               placeholder="Message" 
               rows="4"
-              class="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+              class="w-full px-4 py-3 bg-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
             ></textarea>
             <button 
               type="submit"
@@ -124,14 +159,52 @@ const logoImage = '/images/logo.png.webp';
         </div>
       </div>
     </div>
-
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 footer-section-content2">
+      <div class="footer-section-img">
+        <Image 
+            src={companyImageFirst?.url || '/images/placeholder.webp'}
+             alt={companyImageFirst?.name || companyName}
+              width={348}
+              height={84}
+            loading="lazy"
+            decoding="async"
+            class="thumbnail-image transition-transform duration-300 hover:scale-105" 
+        />
+      </div>
+      <!-- Social Icons -->
+      <div class="flex space-x-4 mt-6 footer-section-social">
+        {companySocial && companySocial.length > 0 ? (
+          companySocial.map((item: companySocial, index: number) => (
+            <a href={item.field_url || '#'} class="text-gray-400 hover:text-white transition-colors duration-200 footer-section-social-item">
+              {getFirstImage(extractUrl(item.field_picture, true)) && (
+                 <Image 
+                   src={getFirstImage(extractUrl(item.field_picture, true))?.url || '/images/placeholder.webp'}
+                   alt={getFirstImage(extractUrl(item.field_picture, true))?.name || item.field_pingtai || 'Social Media Icon'}
+                   width={32}
+                   height={32}
+                   loading="lazy"
+                   decoding="async"
+                   class="thumbnail-image transition-transform duration-300 hover:scale-105" 
+                 />
+              )}
+              <i class={`iconfont icon-${item?.field_pingtai?.split('|')[1] || item?.field_pingtai}`}></i>
+            </a>
+          ))
+        ) : (
+          <p class="text-gray-400">暂无社交媒体信息</p>
+        )}
+        
+      </div>
+    </div>
+    
     <!-- Footer Bottom -->
-    <div class="mt-16 pt-8 border-t border-gray-700">
+    <div class="mt-16 pt-8 border-t border-gray-700 footer-section-bottom">
+      <div class="text-center">
+        <p class="text-gray-400 text-2xl footer-section-bottom-title">{copyright_settings?.title || ''}</p>
+        <a class="text-gray-400 mt-1 text-2xl footer-section-bottom-link" href={copyright_settings?.technical_support_url || ''}>{copyright_settings?.technical_support_link_text || ''}</p>
+      </div>
       <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <div class="text-center md:text-left">
-          <p class="text-gray-400 text-2xl">© {new Date().getFullYear()} All rights reserved.</p>
-          <p class="text-gray-400 mt-1 text-2xl">Technical Support: Huazhi</p>
-        </div>
+       
         
         <!-- Language Selector -->
         {themeConfig.languageSelector.showLanguageSelector && 
@@ -194,7 +267,140 @@ const logoImage = '/images/logo.png.webp';
 </script>
 
 <style>
-
+  .footer-section {
+    background: #2B313C;
+    margin-top: 7rem;
+    padding-top: 7rem;
+    .footer-section-content {
+      display: grid;
+      grid-template-columns: 1.2fr 1.2fr 1.5fr 3fr;
+      gap: 2rem;
+    }
+  
+    .menu-first-item,.footer-section-title {
+      font-family: Antonio-Bold;
+      font-weight: bold;
+      font-size: 3rem;
+      color: #FFFFFF;
+      line-height: 3.4rem;
+      margin-bottom: 2rem;
+      
+    }
+    .menu-second-item {
+      font-weight: 400;
+      font-size: 1.8rem;
+      color: #FFFFFF;
+      line-height: 3.5rem;
+      &:hover {
+        color: #E81A1A;
+      }
+    }
+    .footer-section-contact-item {
+     
+      .footer-section-contact-item-text {
+        font-weight: 400;
+        font-size: 1.8rem;
+        color: #FFFFFF;
+        line-height: 3.5rem;
+      }
+    }
+    .footer-section-webform {
+      width: 84%;
+      background: #202734;
+      margin-right: 0;
+      margin-left: auto;
+      border-radius: 0;
+      position: relative;
+      margin-top: -16.7rem;
+      .footer-section-webform-title {
+        font-family: Antonio-Bold;
+        font-weight: bold;
+        font-size: 6rem;
+        color: #FFFFFF;
+        height: 10rem;
+        line-height: 10rem;
+        background: #18181F;
+        text-align: center;
+      }
+      form{
+        padding: 3.2rem 4.2rem 3.6rem;
+        input{
+          width: 100%;
+          height: 5.5rem;
+          line-height: 5.5rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+          padding: 0 2rem;
+          font-weight: 400;
+          font-size: 1.6rem;
+          color: #999999;
+          margin-bottom: 2rem;
+        }
+        textarea{
+          width: 100%;
+          height: 13rem;
+          line-height: 2.4rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+          padding: 1.8rem 2rem;
+          font-family: Poppins-Regular;
+          font-weight: 400;
+          font-size: 1.6rem;
+          color: #999999;
+        }
+        button{
+          width: 100%;
+          height: 5.5rem;
+          line-height: 5.5rem;
+          margin: 0;
+          border-radius: 3px;
+          text-align: center;
+          padding: 0 2rem;
+          font-weight: bold;
+          font-size: 1.8rem;
+          color: #FFFFFF;
+          margin-top: 3rem;
+        }
+      }
+    }
+    .footer-section-social {
+      
+      .footer-section-social-item {
+        font-size: 3rem;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 4rem;
+        &:hover {
+          color: #E81A1A;
+        }
+        i.icon-twitter:before {
+          content: "\e7e2";
+        }
+      }
+    }
+    .footer-section-bottom{
+      text-align: center;
+      border-top: 1px solid #ffffff;
+      .footer-section-bottom-title{
+        font-weight: 200;
+        font-size: 1.6rem;
+        color: #FFFFFF;
+        line-height: 2.4rem;
+        text-align: center;
+        margin: 0 auto;
+      }
+      .footer-section-bottom-link{
+        font-weight: 200;
+        font-size: 1.6rem;
+        color: #FFFFFF;
+        line-height: 2.4rem;
+        text-align: center;
+      }
+    }
+   
+  }
   
   /* Form styling improvements */
   #quote-form input:focus,
@@ -218,5 +424,32 @@ const logoImage = '/images/logo.png.webp';
   
   #chat-button:hover {
     animation: none;
+  }
+  @media (max-width: 768px) {
+    footer.footer-section{
+      .footer-section-content{
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      margin-top: 2rem;
+      .footer-menu-item{
+        display: none;
+      }
+      .footer-section-webform{
+        width: 100%;
+        margin-top: 0;
+        .footer-section-webform-title{
+          font-size: 3rem;
+          line-height: 7rem;
+          height: 7rem;
+        }
+      }
+      .footer-section-content2{
+        margin-top: 2rem;
+      }
+      .footer-section-bottom{
+        line-height: 7rem;
+      }
+    }
   }
 </style> 

@@ -34,123 +34,8 @@ const {
 } = data;
 
 const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
-// console.log('获取到的热门产品', safeProducts);
 
 ---
-
-<!-- Swiper 初始化 -->
-<script>
-  document.addEventListener('DOMContentLoaded', async function() {
-    try {
-      // 动态导入 Swiper
-      const { default: Swiper } = await import('swiper/bundle');
-      
-      // 初始化 Swiper
-      const swiper = new Swiper('.honor-swiper2', {
-        // 基本配置
-        slidesPerView: 1,
-        spaceBetween: 37,
-        loop: true,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false,
-        },
-        
-        // 响应式断点
-        breakpoints: {
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 3,
-            spaceBetween: 30,
-          },
-          1024: {
-            slidesPerView: 5,
-            spaceBetween: 37,
-          },
-        },
-        
-        // 分页器
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-          dynamicBullets: false,
-          renderBullet: function (index, className) {
-            return '<span class="' + className + '" style="width: 1.2rem; height: 1.2rem; background: #18181F; opacity: 1; border-radius: 50%; margin: 0 0.5rem; transition: all 0.3s ease;"></span>';
-          },
-        },
-        
-        // 导航按钮
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        
-        // 效果
-        effect: 'slide',
-        speed: 600,
-        
-        // 鼠标悬停暂停自动播放
-        on: {
-          init: function(swiper) {
-            swiper.el.addEventListener('mouseenter', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.stop();
-              }
-            });
-            swiper.el.addEventListener('mouseleave', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.start();
-              }
-            });
-          }
-        }
-      });
-      
-      
-      // 强制应用分页点样式
-      const applyBulletStyles = () => {
-        const bullets = document.querySelectorAll('.honor-swiper2 .swiper-pagination-bullet');
-        bullets.forEach(bullet => {
-          const bulletElement = bullet as HTMLElement;
-          bulletElement.style.setProperty('width', '1.2rem', 'important');
-          bulletElement.style.setProperty('height', '1.2rem', 'important');
-          bulletElement.style.setProperty('background', '#18181F', 'important');
-          bulletElement.style.setProperty('opacity', '1', 'important');
-          bulletElement.style.setProperty('border-radius', '50%', 'important');
-          bulletElement.style.setProperty('margin', '0 1rem', 'important');
-          bulletElement.style.setProperty('transition', 'all 0.3s ease', 'important');
-          bulletElement.style.setProperty('border', 'none', 'important');
-          bulletElement.style.setProperty('outline', 'none', 'important');
-        });
-        
-        // 设置激活状态
-        const activeBullet = document.querySelector('.honor-swiper2 .swiper-pagination-bullet-active') as HTMLElement;
-        if (activeBullet) {
-    
-          activeBullet.style.setProperty('background', '#E81A1A', 'important');
-        }
-      };
-      
-      // 立即应用样式
-      applyBulletStyles();
-      
-      // 延迟再次应用，确保覆盖
-      setTimeout(applyBulletStyles, 100);
-      setTimeout(applyBulletStyles, 500);
-      
-      // 监听分页点变化
-      swiper.on('slideChange', function () {
-        setTimeout(applyBulletStyles, 50);
-      });
-      
-    } catch (error) {
-      console.error('Swiper 加载失败:', error);
-    }
-  });
-</script>
 
 <section class="product-hot-product">
     <div class="container">
@@ -392,21 +277,136 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
     
     /* 响应式调整 */
     @media (max-width: 768px) {
-        .honor-swiper2 {
-            padding: 0 20px;
+      section.product-hot-product {
+        padding:0 1rem;
+        .container{
+          padding:0 1rem !important;
         }
-        
-        .honor-swiper2 .swiper-button-next,
-        .honor-swiper2 .swiper-button-prev {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .honor-swiper2 .swiper-button-next:after,
-        .honor-swiper2 .swiper-button-prev:after {
-            font-size: 14px;
+          .block-title{
+            font-size: 3rem;
+            line-height: 4rem;
+          }
+          .block-desc{
+            width: 96%;
+          }
+          .honor-swiper2{
+            margin-top: 4rem;
+          }
         }
     }
     
 </style>
-</style>
+
+<!-- 使用共享的 Swiper 加载器 -->
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            // 使用共享的 Swiper 加载器
+            const { initSwiper } = await import('@utils/swiperLoader');
+
+            // 初始化 Swiper
+            const swiper = await initSwiper('.honor-swiper2', {
+                // 基本配置
+                slidesPerView: 2,
+                spaceBetween: 15,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+
+                // 响应式断点
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 5,
+                        spaceBetween: 37,
+                    },
+                },
+
+                // 分页器
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                    dynamicBullets: false,
+                    renderBullet: function (index: number, className: string) {
+                        return '<span class="' + className + '" style="width: 1.2rem; height: 1.2rem; background: #18181F; opacity: 1; border-radius: 50%; margin: 0 0.5rem; transition: all 0.3s ease;"></span>';
+                    },
+                },
+
+                // 导航按钮
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+
+                // 效果
+                effect: 'slide',
+                speed: 600,
+
+                // 鼠标悬停暂停自动播放
+                on: {
+                    init: function(swiper: any) {
+                        swiper.el.addEventListener('mouseenter', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.stop();
+                            }
+                        });
+                        swiper.el.addEventListener('mouseleave', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.start();
+                            }
+                        });
+                    }
+                }
+            });
+
+
+            // 强制应用分页点样式
+            const applyBulletStyles = () => {
+                const bullets = document.querySelectorAll('.honor-swiper2 .swiper-pagination-bullet');
+                bullets.forEach(bullet => {
+                    const bulletElement = bullet as HTMLElement;
+                    bulletElement.style.setProperty('width', '1.2rem', 'important');
+                    bulletElement.style.setProperty('height', '1.2rem', 'important');
+                    bulletElement.style.setProperty('background', '#18181F', 'important');
+                    bulletElement.style.setProperty('opacity', '1', 'important');
+                    bulletElement.style.setProperty('border-radius', '50%', 'important');
+                    bulletElement.style.setProperty('margin', '0 1rem', 'important');
+                    bulletElement.style.setProperty('transition', 'all 0.3s ease', 'important');
+                    bulletElement.style.setProperty('border', 'none', 'important');
+                    bulletElement.style.setProperty('outline', 'none', 'important');
+                });
+
+                // 设置激活状态
+                const activeBullet = document.querySelector('.honor-swiper2 .swiper-pagination-bullet-active') as HTMLElement;
+                if (activeBullet) {
+
+                    activeBullet.style.setProperty('background', '#E81A1A', 'important');
+                }
+            };
+
+            // 立即应用样式
+            applyBulletStyles();
+
+            // 延迟再次应用，确保覆盖
+            setTimeout(applyBulletStyles, 100);
+            setTimeout(applyBulletStyles, 500);
+
+            // 监听分页点变化
+            swiper.on('slideChange', function () {
+                setTimeout(applyBulletStyles, 50);
+            });
+
+        } catch (error) {
+            console.error('Swiper 加载失败:', error);
+        }
+    });
+</script>
