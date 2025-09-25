@@ -368,7 +368,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
 
   </style>
 
-<!-- 使用 Astro 官方推荐的客户端脚本方法 -->
+<!-- 使用共享的 Swiper 加载器 -->
 <script>
   document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -379,12 +379,11 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
         return;
       }
       
-      // 动态导入 Swiper
-      const { default: Swiper } = await import('swiper/bundle');
-      console.log('Swiper 加载成功');
+      // 使用共享的 Swiper 加载器
+      const { initSwiper } = await import('@utils/swiperLoader');
       
       // 初始化 Swiper
-      const swiper = new Swiper('.honor-swiper0', {
+      const swiper = await initSwiper('.honor-swiper0', {
         // 基本配置
         slidesPerView: 3,
         spaceBetween: 20,
@@ -433,7 +432,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
         // 鼠标悬停暂停自动播放和滑动事件
         on: {
           
-          slideChange: function(swiper) {
+          slideChange: function(swiper: any) {
             // 当 Swiper 滑动时，同步更新大图显示
             const mainImages = document.querySelectorAll('.product-right-box .main-product-image');
             const slides = document.querySelectorAll('.honor-swiper0 .swiper-slide');

@@ -41,81 +41,6 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
 
 ---
 
-<!-- Swiper 初始化 -->
-<script>
-  document.addEventListener('DOMContentLoaded', async function() {
-    try {
-      // 动态导入 Swiper
-      const { default: Swiper } = await import('swiper/bundle');
-      
-      // 初始化 Swiper
-      const swiper = new Swiper('.honor-swiper4', {
-        // 基本配置
-        slidesPerView: 2,
-        spaceBetween: 15,
-        loop: true,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false,
-        },
-        
-        // 响应式断点
-        breakpoints: {
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 2,
-            spaceBetween: 30,
-          },
-          1024: {
-            slidesPerView: 2,
-            spaceBetween: 40,
-          },
-        },
-        
-        // 分页器
-        pagination: {
-          el: '.swiper-pages-nation',
-          clickable: true,
-          dynamicBullets: false,
-        
-        },
-        
-        // 导航按钮
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        
-        // 效果
-        effect: 'slide',
-        speed: 600,
-        
-        // 鼠标悬停暂停自动播放
-        on: {
-          init: function(swiper) {
-            swiper.el.addEventListener('mouseenter', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.stop();
-              }
-            });
-            swiper.el.addEventListener('mouseleave', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.start();
-              }
-            });
-          }
-        }
-      });
-      
-    } catch (error) {
-      console.error('Swiper 加载失败:', error);
-    }
-  });
-</script>
-
 <section class="customer-news">
     <div class="container">
         <div class="news-main">
@@ -344,3 +269,78 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
     }
     
 </style>
+
+<!-- 使用共享的 Swiper 加载器 -->
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            // 使用共享的 Swiper 加载器
+            const { initSwiper } = await import('@utils/swiperLoader');
+
+            // 初始化 Swiper
+            const swiper = await initSwiper('.honor-swiper4', {
+                // 基本配置
+                slidesPerView: 2,
+                spaceBetween: 15,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+
+                // 响应式断点
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 2,
+                        spaceBetween: 40,
+                    },
+                },
+
+                // 分页器
+                pagination: {
+                    el: '.swiper-pages-nation',
+                    clickable: true,
+                    dynamicBullets: false,
+
+                },
+
+                // 导航按钮
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+
+                // 效果
+                effect: 'slide',
+                speed: 600,
+
+                // 鼠标悬停暂停自动播放
+                on: {
+                    init: function(swiper: any) {
+                        swiper.el.addEventListener('mouseenter', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.stop();
+                            }
+                        });
+                        swiper.el.addEventListener('mouseleave', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.start();
+                            }
+                        });
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Swiper 加载失败:', error);
+        }
+    });
+</script>

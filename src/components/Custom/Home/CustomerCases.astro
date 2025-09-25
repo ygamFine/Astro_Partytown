@@ -42,90 +42,6 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
 
 ---
 
-<!-- Swiper 初始化 -->
-<script>
-  document.addEventListener('DOMContentLoaded', async function() {
-    const swiperContainer = document.querySelector('.honor-swiper3');
-    if (!swiperContainer) return;
-    
-    // 添加加载状态类
-    swiperContainer.classList.add('swiper-loading');
-    
-    try {
-      // 动态导入 Swiper
-      const { default: Swiper } = await import('swiper/bundle');
-      
-      // 初始化 Swiper
-      const swiper = new Swiper('.honor-swiper3', {
-        // 基本配置
-        slidesPerView: 2,
-        spaceBetween: 15,
-        loop: true,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false,
-        },
-        
-        // 响应式断点
-        breakpoints: {
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 15,
-          },
-          768: {
-            slidesPerView: 3,
-            spaceBetween: 20,
-          },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 21,
-          },
-        },
-        
-        // 分页器
-        pagination: false,
-        
-        // 导航按钮
-        navigation: {
-          nextEl: '.swiper-button-right',
-          prevEl: '.swiper-button-left',
-        },
-        
-        // 效果
-        effect: 'slide',
-        speed: 600,
-        
-        // 鼠标悬停暂停自动播放
-        on: {
-          init: function(swiper) {
-            // 移除加载状态类
-            swiperContainer.classList.remove('swiper-loading');
-            swiperContainer.classList.add('swiper-loaded');
-            
-            swiper.el.addEventListener('mouseenter', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.stop();
-              }
-            });
-            swiper.el.addEventListener('mouseleave', () => {
-              if (swiper.autoplay) {
-                swiper.autoplay.start();
-              }
-            });
-          }
-        }
-      });
-     
-      
-    } catch (error) {
-      console.error('Swiper 加载失败:', error);
-      // 即使加载失败也要移除加载状态
-      swiperContainer.classList.remove('swiper-loading');
-      swiperContainer.classList.add('swiper-error');
-    }
-  });
-</script>
-
 <section class="customer-cases">
     <div class="container">
         <div class="case-main">
@@ -364,3 +280,87 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
   
     
 </style>
+
+<!-- 使用共享的 Swiper 加载器 -->
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        const swiperContainer = document.querySelector('.honor-swiper3');
+        if (!swiperContainer) return;
+
+        // 添加加载状态类
+        swiperContainer.classList.add('swiper-loading');
+
+        try {
+            // 使用共享的 Swiper 加载器
+            const { initSwiper } = await import('@utils/swiperLoader');
+
+            // 初始化 Swiper
+            const swiper = await initSwiper('.honor-swiper3', {
+                // 基本配置
+                slidesPerView: 2,
+                spaceBetween: 15,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+
+                // 响应式断点
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 15,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 21,
+                    },
+                },
+
+                // 分页器
+                pagination: false,
+
+                // 导航按钮
+                navigation: {
+                    nextEl: '.swiper-button-right',
+                    prevEl: '.swiper-button-left',
+                },
+
+                // 效果
+                effect: 'slide',
+                speed: 600,
+
+                // 鼠标悬停暂停自动播放
+                on: {
+                    init: function(swiper: any) {
+                        // 移除加载状态类
+                        swiperContainer.classList.remove('swiper-loading');
+                        swiperContainer.classList.add('swiper-loaded');
+
+                        swiper.el.addEventListener('mouseenter', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.stop();
+                            }
+                        });
+                        swiper.el.addEventListener('mouseleave', () => {
+                            if (swiper.autoplay) {
+                                swiper.autoplay.start();
+                            }
+                        });
+                    }
+                }
+            });
+
+
+        } catch (error) {
+            console.error('Swiper 加载失败:', error);
+            // 即使加载失败也要移除加载状态
+            swiperContainer.classList.remove('swiper-loading');
+            swiperContainer.classList.add('swiper-error');
+        }
+    });
+</script>
