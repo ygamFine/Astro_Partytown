@@ -65,11 +65,21 @@
     "required": "This field is required",
     "email_invalid": "Please enter a valid email address",
     "phone_invalid": "Please enter a valid phone number",
+    "whatsapp_invalid": "Please enter a valid WhatsApp number",
     "min_length": "Minimum {min} characters required",
     "max_length": "Maximum {max} characters allowed",
     "password_mismatch": "Passwords do not match",
     "captcha_invalid": "Invalid verification code",
     "invalid_format": "Invalid format"
+  },
+  "messages": {
+    "sending": "Sending...",
+    "submit_success_toast_text": "Your inquiry has been sent successfully!",
+    "submit_success_toast_subtitle": "The Suppliers' reply will be sent to you. Please check your e-mail later!",
+    "submit_success_toast_button": "Return",
+    "submit_success_model_text": "Submited succesfully",
+    "submit_success_model_subtitle": "We will contact you soon as possible",
+    "submit_success_model_button": "Close"
   },
   "buttons": {
     "submit": "Submit",

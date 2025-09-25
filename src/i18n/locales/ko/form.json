@@ -65,6 +65,7 @@
     "required": "이 필드는 필수입니다",
     "email_invalid": "유효한 이메일 주소를 입력하세요",
     "phone_invalid": "유효한 전화번호를 입력하세요",
+    "whatsapp_invalid": "유효한 WhatsApp 번호를 입력하세요",
     "min_length": "최소 {min}자 필요합니다",
     "max_length": "최대 {max}자까지 입력 가능합니다",
     "password_mismatch": "비밀번호가 일치하지 않습니다",
@@ -72,6 +73,19 @@
     "invalid_format": "형식이 유효하지 않습니다",
     "no_results": "검색 결과를 찾을 수 없습니다",
     "search_error": "검색에 실패했습니다"
+  },
+  "messages": {
+    "sending": "전송 중...",
+    "submit_success": "제출이 완료되었습니다! 곧 연락드리겠습니다.",
+    "submit_error": "제출에 실패했습니다. 나중에 다시 시도해 주세요.",
+    "min_length_error": "최소 {min}자 필요합니다",
+    "max_length_error": "최대 {max}자까지 입력 가능합니다",
+    "submit_success_toast_text": "문의가 성공적으로 전송되었습니다!",
+    "submit_success_toast_subtitle": "공급업체의 답변이 전송됩니다. 나중에 이메일을 확인해 주세요!",
+    "submit_success_toast_button": "돌아가기",
+    "submit_success_model_text": "제출 완료",
+    "submit_success_model_subtitle": "가능한 한 빨리 연락드리겠습니다",
+    "submit_success_model_button": "닫기"
   },
   "buttons": {
     "submit": "제출",

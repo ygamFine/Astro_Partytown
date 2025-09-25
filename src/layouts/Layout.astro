@@ -120,7 +120,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <RightSidebar lang={lang} data-pagefind-ignore />
 
     <!-- 联系表单模态 -->
-    <ContactModal translations={{ common: {} }} data-pagefind-ignore />
+    <ContactModal lang={lang} id="contactModal" data-pagefind-ignore />
 
     <!-- 移动端底部菜单 -->
     <MobileBottomMenu lang={lang} currentPath={Astro.url.pathname} />

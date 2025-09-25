@@ -65,6 +65,7 @@
     "required": "Este campo é obrigatório",
     "email_invalid": "Por favor introduza um endereço de e-mail válido",
     "phone_invalid": "Por favor introduza um número de telefone válido",
+    "whatsapp_invalid": "Por favor introduza um número WhatsApp válido",
     "min_length": "Mínimo {min} caracteres necessários",
     "max_length": "Máximo {max} caracteres permitidos",
     "password_mismatch": "As palavras-passe não coincidem",
@@ -72,6 +73,19 @@
     "invalid_format": "Formato inválido",
     "no_results": "Nenhum resultado encontrado para",
     "search_error": "Pesquisa falhou"
+  },
+  "messages": {
+    "sending": "Enviando...",
+    "submit_success": "Enviado com sucesso! Entraremos em contacto consigo em breve.",
+    "submit_error": "Falha no envio, tente novamente mais tarde.",
+    "min_length_error": "Mínimo {min} caracteres necessários",
+    "max_length_error": "Máximo {max} caracteres permitidos",
+    "submit_success_toast_text": "A sua consulta foi enviada com sucesso!",
+    "submit_success_toast_subtitle": "A resposta do fornecedor será enviada para si. Por favor, verifique o seu e-mail mais tarde!",
+    "submit_success_toast_button": "Voltar",
+    "submit_success_model_text": "Enviado com sucesso",
+    "submit_success_model_subtitle": "Entraremos em contacto consigo o mais rapidamente possível",
+    "submit_success_model_button": "Fechar"
   },
   "buttons": {
     "submit": "Submeter",

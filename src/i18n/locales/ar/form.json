@@ -65,6 +65,7 @@
     "required": "هذا الحقل مطلوب",
     "email_invalid": "يرجى إدخال عنوان بريد إلكتروني صحيح",
     "phone_invalid": "يرجى إدخال رقم هاتف صحيح",
+    "whatsapp_invalid": "يرجى إدخال رقم WhatsApp صحيح",
     "min_length": "الحد الأدنى {min} أحرف مطلوبة",
     "max_length": "الحد الأقصى {max} أحرف مسموح بها",
     "password_mismatch": "كلمات المرور غير متطابقة",
@@ -72,6 +73,19 @@
     "invalid_format": "التنسيق غير صحيح",
     "no_results": "لم يتم العثور على نتائج لـ",
     "search_error": "فشل البحث"
+  },
+  "messages": {
+    "sending": "جاري الإرسال...",
+    "submit_success": "تم الإرسال بنجاح! سنتواصل معك قريباً.",
+    "submit_error": "فشل الإرسال، يرجى المحاولة مرة أخرى لاحقاً.",
+    "min_length_error": "الحد الأدنى {min} أحرف مطلوبة",
+    "max_length_error": "الحد الأقصى {max} أحرف مسموح بها",
+    "submit_success_toast_text": "تم إرسال استفسارك بنجاح!",
+    "submit_success_toast_subtitle": "سيتم إرسال رد المورد إليك. يرجى التحقق من بريدك الإلكتروني لاحقاً!",
+    "submit_success_toast_button": "عودة",
+    "submit_success_model_text": "تم الإرسال بنجاح",
+    "submit_success_model_subtitle": "سنتواصل معك في أقرب وقت ممكن",
+    "submit_success_model_button": "إغلاق"
   },
   "buttons": {
     "submit": "إرسال",

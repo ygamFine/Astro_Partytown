@@ -65,6 +65,7 @@
     "required": "Dieses Feld ist erforderlich",
     "email_invalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
     "phone_invalid": "Bitte geben Sie eine gültige Telefonnummer ein",
+    "whatsapp_invalid": "Bitte geben Sie eine gültige WhatsApp-Nummer ein",
     "min_length": "Mindestens {min} Zeichen erforderlich",
     "max_length": "Maximal {max} Zeichen erlaubt",
     "password_mismatch": "Passwörter stimmen nicht überein",
@@ -72,6 +73,19 @@
     "invalid_format": "Ungültiges Format",
     "no_results": "Keine Ergebnisse gefunden für",
     "search_error": "Suche fehlgeschlagen"
+  },
+  "messages": {
+    "sending": "Wird gesendet...",
+    "submit_success": "Erfolgreich übermittelt! Wir werden uns bald bei Ihnen melden.",
+    "submit_error": "Übermittlung fehlgeschlagen, bitte versuchen Sie es später erneut.",
+    "min_length_error": "Mindestens {min} Zeichen erforderlich",
+    "max_length_error": "Maximal {max} Zeichen erlaubt",
+    "submit_success_toast_text": "Ihre Anfrage wurde erfolgreich gesendet!",
+    "submit_success_toast_subtitle": "Die Antwort des Lieferanten wird an Sie gesendet. Bitte überprüfen Sie später Ihre E-Mail!",
+    "submit_success_toast_button": "Zurück",
+    "submit_success_model_text": "Erfolgreich übermittelt",
+    "submit_success_model_subtitle": "Wir werden uns so schnell wie möglich bei Ihnen melden",
+    "submit_success_model_button": "Schließen"
   },
   "buttons": {
     "submit": "Absenden",

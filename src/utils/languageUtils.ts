@@ -17,20 +17,20 @@ export type BaseUrl = string;
  * @returns 当前语言代码
  */
 export function getCurrentLanguage(pathname: Pathname, hostname: Hostname = ''): LanguageCode {
-  // 优先从路径中获取语言
-  const pathLangMatch: RegExpMatchArray | null = pathname.match(/^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/);
+  // 优先从路径中获取语言（支持 zh-Hans / zh-CHS / en 等，保留原大小写）
+  const pathLangMatch: RegExpMatchArray | null = pathname.match(/^\/([a-z]{2}(?:-[a-zA-Z]{2,8})?)(?:\/|$)/);
   if (pathLangMatch) {
     return pathLangMatch[1];
   }
-  
-  // 其次从子域名获取语言
+
+  // 其次从子域名获取语言（保留原大小写）
   if (hostname) {
-    const subdomainLangMatch: RegExpMatchArray | null = hostname.match(/^([a-z]{2}(-[A-Z]{2,4})?)\./);
+    const subdomainLangMatch: RegExpMatchArray | null = hostname.match(/^([a-z]{2}(?:-[a-zA-Z]{2,8})?)\./);
     if (subdomainLangMatch) {
       return subdomainLangMatch[1];
     }
   }
-  
+
   // 默认返回英语
   return 'en';
 }

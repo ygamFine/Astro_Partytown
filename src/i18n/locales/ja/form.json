@@ -65,6 +65,7 @@
     "required": "この項目は必須です",
     "email_invalid": "有効なメールアドレスを入力してください",
     "phone_invalid": "有効な電話番号を入力してください",
+    "whatsapp_invalid": "有効なWhatsApp番号を入力してください",
     "min_length": "最低{min}文字必要です",
     "max_length": "最大{max}文字まで入力可能です",
     "password_mismatch": "パスワードが一致しません",
@@ -72,6 +73,19 @@
     "invalid_format": "形式が無効です",
     "no_results": "検索結果が見つかりません",
     "search_error": "検索に失敗しました"
+  },
+  "messages": {
+    "sending": "送信中...",
+    "submit_success": "送信が完了しました！すぐにご連絡いたします。",
+    "submit_error": "送信に失敗しました。後でもう一度お試しください。",
+    "min_length_error": "最低{min}文字必要です",
+    "max_length_error": "最大{max}文字まで入力可能です",
+    "submit_success_toast_text": "お問い合わせが正常に送信されました！",
+    "submit_success_toast_subtitle": "サプライヤーからの返信が送信されます。後でメールをご確認ください！",
+    "submit_success_toast_button": "戻る",
+    "submit_success_model_text": "送信完了",
+    "submit_success_model_subtitle": "できるだけ早くご連絡いたします",
+    "submit_success_model_button": "閉じる"
   },
   "buttons": {
     "submit": "送信",

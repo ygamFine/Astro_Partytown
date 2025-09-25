@@ -65,11 +65,25 @@
     "required": "此字段为必填项",
     "email_invalid": "请输入有效的邮箱地址",
     "phone_invalid": "请输入有效的手机号码",
+    "whatsapp_invalid": "请输入有效的WhatsApp号码",
     "min_length": "最少需要{min}个字符",
     "max_length": "最多允许{max}个字符",
     "password_mismatch": "密码不匹配",
     "captcha_invalid": "验证码无效",
     "invalid_format": "格式无效"
+  },
+  "messages": {
+    "sending": "发送中...",
+    "submit_success": "提交成功！我们会尽快与您联系。",
+    "submit_error": "提交失败，请稍后重试。",
+    "min_length_error": "至少输入{min}个字符",
+    "max_length_error": "最多输入{max}个字符",
+    "submit_success_toast_text": "您的咨询已成功发送！",
+    "submit_success_toast_subtitle": "供应商的回复将发送给您。请稍后查看您的电子邮件！",
+    "submit_success_toast_button": "返回",
+    "submit_success_model_text": "提交成功",
+    "submit_success_model_subtitle": "我们将尽快与您联系",
+    "submit_success_model_button": "关闭"
   },
   "buttons": {
     "submit": "提交",

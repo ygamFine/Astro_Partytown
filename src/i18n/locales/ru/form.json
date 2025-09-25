@@ -65,6 +65,7 @@
     "required": "Это поле обязательно для заполнения",
     "email_invalid": "Пожалуйста, введите действительный адрес электронной почты",
     "phone_invalid": "Пожалуйста, введите действительный номер телефона",
+    "whatsapp_invalid": "Пожалуйста, введите действительный номер WhatsApp",
     "min_length": "Минимум {min} символов требуется",
     "max_length": "Максимум {max} символов разрешено",
     "password_mismatch": "Пароли не совпадают",
@@ -72,6 +73,19 @@
     "invalid_format": "Недействительный формат",
     "no_results": "Результаты не найдены для",
     "search_error": "Поиск не удался"
+  },
+  "messages": {
+    "sending": "Отправка...",
+    "submit_success": "Успешно отправлено! Мы свяжемся с вами в ближайшее время.",
+    "submit_error": "Ошибка отправки, попробуйте позже.",
+    "min_length_error": "Минимум {min} символов требуется",
+    "max_length_error": "Максимум {max} символов разрешено",
+    "submit_success_toast_text": "Ваш запрос был успешно отправлен!",
+    "submit_success_toast_subtitle": "Ответ поставщика будет отправлен вам. Пожалуйста, проверьте вашу электронную почту позже!",
+    "submit_success_toast_button": "Вернуться",
+    "submit_success_model_text": "Успешно отправлено",
+    "submit_success_model_subtitle": "Мы свяжемся с вами как можно скорее",
+    "submit_success_model_button": "Закрыть"
   },
   "buttons": {
     "submit": "Отправить",

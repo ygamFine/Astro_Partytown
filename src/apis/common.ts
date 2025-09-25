@@ -1,9 +1,10 @@
 // 统一复用轻客户端的 HTTP 能力，避免重复请求代码
-import { PUBLIC_API_URL, STRAPI_TOKEN, fetchJson } from './apiClient.ts';
+import { PUBLIC_API_URL, STRAPI_TOKEN, ITALKIN_API, fetchJson } from './apiClient.ts';
 // 使用菜单工具函数
 import { buildMenuTree, extractUrl, getFirstImage } from '@utils/tools.js';
 import { getMobileBottomMenuIcon } from '@utils/iconUtils.js';
 import { MENU_TYPE_MAPPING } from '@config/constant.js';
+import { getSupportedLanguages as languageConfig } from '@utils/languageConfig';
 
 // 验证环境变量
 if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
@@ -333,5 +334,31 @@ export async function getMobileBottomMenu(locale = 'en') {
   } catch (error) {
     // dev/构建环境下失败时返回空数组，避免调用处 .map 报错
     return [];
+  }
+}
+
+
+export async function getItalkinForm(locale = 'en') {
+  try {
+    const language = await languageConfig();
+    console.log(language)
+    var raw = JSON.stringify({
+      "companyId":1280,
+      "siteId":91,
+      "platform":"website",
+      "codes": language
+   });
+    const res = await fetch(`${ITALKIN_API}/biz/form/field/getOnlineAndOfflineFormAndTrans`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+       },
+      body: raw
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for `);
+    return res.json();
+  } catch (error) {
+    console.error(error)
+    return null;
   }
 }

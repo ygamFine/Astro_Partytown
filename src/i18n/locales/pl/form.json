@@ -65,6 +65,7 @@
     "required": "To pole jest wymagane",
     "email_invalid": "Wprowadź prawidłowy adres e-mail",
     "phone_invalid": "Wprowadź prawidłowy numer telefonu",
+    "whatsapp_invalid": "Wprowadź prawidłowy numer WhatsApp",
     "min_length": "Wymagane minimum {min} znaków",
     "max_length": "Maksymalnie {max} znaków dozwolonych",
     "password_mismatch": "Hasła nie pasują",
@@ -72,6 +73,19 @@
     "invalid_format": "Nieprawidłowy format",
     "no_results": "Nie znaleziono wyników dla",
     "search_error": "Wyszukiwanie nie powiodło się"
+  },
+  "messages": {
+    "sending": "Wysyłanie...",
+    "submit_success": "Wysłano pomyślnie! Skontaktujemy się z Tobą wkrótce.",
+    "submit_error": "Wysyłanie nie powiodło się, spróbuj ponownie później.",
+    "min_length_error": "Wymagane minimum {min} znaków",
+    "max_length_error": "Maksymalnie {max} znaków dozwolonych",
+    "submit_success_toast_text": "Twoje zapytanie zostało pomyślnie wysłane!",
+    "submit_success_toast_subtitle": "Odpowiedź dostawcy zostanie do Ciebie wysłana. Sprawdź później swoją pocztę e-mail!",
+    "submit_success_toast_button": "Powrót",
+    "submit_success_model_text": "Wysłano pomyślnie",
+    "submit_success_model_subtitle": "Skontaktujemy się z Tobą tak szybko, jak to możliwe",
+    "submit_success_model_button": "Zamknij"
   },
   "buttons": {
     "submit": "Wyślij",

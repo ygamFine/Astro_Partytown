@@ -65,11 +65,25 @@
     "required": "此欄位為必填項",
     "email_invalid": "請輸入有效的郵箱地址",
     "phone_invalid": "請輸入有效的手機號碼",
+    "whatsapp_invalid": "請輸入有效的WhatsApp號碼",
     "min_length": "最少需要{min}個字符",
     "max_length": "最多允許{max}個字符",
     "password_mismatch": "密碼不匹配",
     "captcha_invalid": "驗證碼無效",
     "invalid_format": "格式無效"
+  },
+  "messages": {
+    "sending": "發送中...",
+    "submit_success": "提交成功！我們會盡快與您聯繫。",
+    "submit_error": "提交失敗，請稍後重試。",
+    "min_length_error": "至少輸入{min}個字符",
+    "max_length_error": "最多輸入{max}個字符",
+    "submit_success_toast_text": "您的諮詢已成功發送！",
+    "submit_success_toast_subtitle": "供應商的回覆將發送給您。請稍後查看您的電子郵件！",
+    "submit_success_toast_button": "返回",
+    "submit_success_model_text": "提交成功",
+    "submit_success_model_subtitle": "我們將盡快與您聯繫",
+    "submit_success_model_button": "關閉"
   },
   "buttons": {
     "submit": "提交",

@@ -65,11 +65,25 @@
     "required": "Ce champ est obligatoire",
     "email_invalid": "Veuillez entrer une adresse e-mail valide",
     "phone_invalid": "Veuillez entrer un numéro de téléphone valide",
+    "whatsapp_invalid": "Veuillez entrer un numéro WhatsApp valide",
     "min_length": "Minimum {min} caractères requis",
     "max_length": "Maximum {max} caractères autorisés",
     "password_mismatch": "Les mots de passe ne correspondent pas",
     "captcha_invalid": "Code de vérification invalide",
     "invalid_format": "Format invalide"
+  },
+  "messages": {
+    "sending": "Envoi en cours...",
+    "submit_success": "Soumis avec succès ! Nous vous contacterons bientôt.",
+    "submit_error": "Échec de la soumission, veuillez réessayer plus tard.",
+    "min_length_error": "Minimum {min} caractères requis",
+    "max_length_error": "Maximum {max} caractères autorisés",
+    "submit_success_toast_text": "Votre demande a été envoyée avec succès !",
+    "submit_success_toast_subtitle": "La réponse du fournisseur vous sera envoyée. Veuillez vérifier votre e-mail plus tard !",
+    "submit_success_toast_button": "Retour",
+    "submit_success_model_text": "Soumis avec succès",
+    "submit_success_model_subtitle": "Nous vous contacterons dès que possible",
+    "submit_success_model_button": "Fermer"
   },
   "buttons": {
     "submit": "Soumettre",

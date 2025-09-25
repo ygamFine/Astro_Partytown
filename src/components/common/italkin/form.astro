@@ -1,0 +1,954 @@
+---
+import { getItalkinForm } from "@apis/common";
+import { getCurrentLanguage } from "@utils/languageUtils";
+import { getFieldValidationType, getInputMode } from "@config/fieldTypes";
+
+interface Props {
+    id: string;
+    transitions: any;
+    showTitle?: boolean;
+    showDescription?: boolean;
+    successMode?: "toast" | "modal";
+}
+
+const {
+    id = "contact-page-form",
+    transitions,
+    showTitle = true,
+    showDescription = true,
+    successMode = "toast",
+} = Astro.props;
+
+// 获取翻译文本
+const t = transitions;
+const currentLang = getCurrentLanguage(
+    Astro.url?.pathname || "/",
+    Astro.url?.hostname || "",
+);
+
+const formResp = await getItalkinForm();
+const formStructure: any[] = Array.isArray(formResp?.data?.formStructure)
+    ? formResp.data.formStructure
+    : Array.isArray(formResp?.formStructure)
+      ? formResp.formStructure
+      : [];
+// 来自接口的表单翻译与语言映射，优先覆盖
+let formTrans: any = formResp?.data?.formTrans;
+let formCodes: any = formResp?.data?.codes;
+
+// 基于 formCodes 的通用语言映射：站点语种 -> formTrans 语种键
+const mapSiteLangToFormLang = (
+    siteLang: string,
+    codes: Record<string, string>,
+): string => {
+    if (!codes || typeof codes !== "object") return "";
+    if (Object.prototype.hasOwnProperty.call(codes, siteLang)) {
+        const mapped = (codes as any)[siteLang];
+        return typeof mapped === "string" ? mapped : "";
+    }
+    return "";
+};
+
+// 仅计算一次映射到 formTrans 的语种键
+const formTransLangKey = mapSiteLangToFormLang(currentLang, formCodes);
+
+const i18nFormText = (raw: any): string => {
+    const key = String(raw ?? "").trim();
+    if (!key) return "";
+    const entry =
+        formTrans && typeof formTrans === "object"
+            ? (formTrans as any)[key]
+            : undefined;
+    if (entry && typeof entry === "object") {
+        const targetLangKey = formTransLangKey;
+        if (targetLangKey) {
+            const val = (entry as any)[targetLangKey];
+            if (typeof val === "string" && val.trim())
+                return String(val).trim();
+        }
+        // 未匹配到映射语言键时，返回原始 key（不做任意语言回退）
+    }
+    return key;
+};
+// Helpers
+const toSlug = (val: any) =>
+    String(val ?? "")
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+const normalizeType = (raw: any, item?: any) => {
+    const t = String(raw ?? "").toLowerCase();
+    const hasOptions = (arr: any) => Array.isArray(arr) && arr.length > 0;
+    const itemHasOptions =
+        hasOptions(item?.options) ||
+        hasOptions(item?.choices) ||
+        hasOptions(item?.items) ||
+        hasOptions(item?.list);
+
+    if (t === "dropdown") return "select";
+    if (t === "radiogroup" || t === "radio-group") return "radio";
+    if (t === "checkboxgroup" || t === "checkbox-group")
+        return "checkbox-group";
+    if (t === "checkbox" && itemHasOptions) return "checkbox-group"; // 带选项的checkbox按多选组处理
+    if (t === "phone") return "tel";
+    if (t === "number") return "number";
+    if (t === "date") return "date";
+    if (t === "datetime" || t === "datetime-local") return "datetime-local";
+    if (
+        t === "email" ||
+        t === "url" ||
+        t === "file" ||
+        t === "textarea" ||
+        t === "select" ||
+        t === "radio" ||
+        t === "checkbox" ||
+        t === "tel" ||
+        t === "text"
+    )
+        return t;
+    // 如果没有明确类型但存在选项，默认按下拉选择处理
+    if (itemHasOptions) {
+        return "select";
+    }
+    return "text";
+};
+
+const getOptions = (item: any) => {
+    const opts =
+        item?.options ?? item?.choices ?? item?.items ?? item?.list ?? [];
+    return Array.isArray(opts) ? opts : [];
+};
+
+const getFieldName = (item: any, index: number) => {
+    return String(
+        item?.name ?? item?.key ?? item?.code ?? item?.id ?? `field_${index}`,
+    );
+};
+---
+
+<form
+    id={`${id}-form`}
+    class={`contact-form space-y-6`}
+    novalidate
+    data-success-mode={successMode}
+    data-messages={JSON.stringify({
+        validation: t?.form?.validation || {},
+        messages: t?.form?.messages || {},
+    })}
+>
+    {
+        showTitle && (
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-2 flex items-center">
+                    <div class="w-1 h-6 bg-red-600 mr-3" />
+                    {t.form.title}
+                </h2>
+                {showDescription && t.form.description && (
+                    <p class="text-gray-600">{t.form.description}</p>
+                )}
+            </div>
+        )
+    }
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {
+            Array.isArray(formStructure) &&
+                formStructure.length > 0 &&
+                formStructure.map((item: any, index: number) => {
+                    const rawType =
+                        item?.type ?? item?.componentType ?? item?.inputType;
+                    const type = normalizeType(rawType, item);
+                    const fieldName = getFieldName(item, index);
+                    const preferredKeySource =
+                        item?.key ?? item?.code ?? item?.id ?? fieldName;
+                    const slugFromPreferred = toSlug(preferredKeySource);
+                    const slugFromName = toSlug(fieldName);
+                    const fieldKey = slugFromPreferred || slugFromName || `field_${index}`;
+                    const fieldId = `${fieldKey}`;
+                    const required = Boolean(
+                        item?.required ??
+                            item?.isRequired ??
+                            item?.require ??
+                            item?.must ??
+                            item?.requiredFlag,
+                    );
+                    const rawLabel = item?.label ?? item?.name ?? "";
+                    const label = i18nFormText(rawLabel);
+                    const rawPlaceholder =
+                        item?.prompt ??
+                        (t.form.placeholders
+                            ? t.form.placeholders[fieldName]
+                            : "") ??
+                        "";
+                    const placeholder = i18nFormText(rawPlaceholder);
+                    const options = getOptions(item);
+                    const fullWidth = type === "textarea";
+                    const defaultRadioKey = String(item?.defaultStatus ?? "");
+                    const validateMessageText = i18nFormText(
+                        item?.validateMessage,
+                    );
+                    // 使用统一入口函数，且仅依赖后端与输入类型，不做名称猜测
+                    const validateType = getFieldValidationType(
+                        fieldName,
+                        type,
+                        typeof item?.validateType === "string"
+                            ? String(item.validateType)
+                            : "",
+                    );
+                    const effectiveValidateType = validateType;
+
+                    return (
+                        <div class={fullWidth ? "md:col-span-2" : ""}>
+                            {label && (
+                                <label
+                                    id={`${fieldId}-${label}`}
+                                    for={`${fieldId}-${fieldName}`}
+                                    class="block text-2xl font-medium text-gray-700 mb-2"
+                                >
+                                    {label}
+                                    {required ? <span class="text-red-600"> *</span> : ""}
+                                </label>
+                            )}
+                            {type === "textarea" ? (
+                                <textarea
+                                    id={`${fieldId}-${fieldName}`}
+                                    name={fieldName}
+                                    data-field-key={fieldKey}
+                                    rows={item?.rows ?? 6}
+                                    required={required}
+                                    placeholder={placeholder}
+                                    data-validate-message={validateMessageText}
+                                    minlength={item?.minLength}
+                                    maxlength={item?.maxLength}
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+                                />
+                            ) : type === "select" ? (
+                                <select
+                                    id={`${fieldId}-${fieldName}`}
+                                    name={fieldName}
+                                    data-field-key={fieldKey}
+                                    required={required}
+                                    data-placeholder={placeholder}
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                                >
+                                    <option value="">{placeholder}</option>
+                                    {options.map((opt: any, idx: number) => {
+                                        const optValue = String(
+                                            opt?.value ??
+                                                opt?.id ??
+                                                opt?.dicId ??
+                                                opt?.key ??
+                                                opt?.code ??
+                                                opt?.dicValue ??
+                                                opt,
+                                        );
+                                        const optRawLabel = String(
+                                            opt?.label ??
+                                                opt?.name ??
+                                                opt?.dicValue ??
+                                                opt?.text ??
+                                                optValue,
+                                        );
+                                        const optLabel =
+                                            i18nFormText(optRawLabel);
+                                        return (
+                                            <option value={optValue}>
+                                                {optLabel}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            ) : type === "radio" ? (
+                                <div
+                                    class="flex flex-wrap gap-2 sm:gap-3"
+                                    data-field-type="radio"
+                                    data-field-key={fieldKey}
+                                    data-required={required ? "true" : "false"}
+                                    data-placeholder={placeholder}
+                                >
+                                    {options.map((opt: any, idx: number) => {
+                                        const optId = `${fieldId}-${idx}`;
+                                        const optValue = String(
+                                            opt?.value ??
+                                                opt?.id ??
+                                                opt?.dicId ??
+                                                opt?.key ??
+                                                opt?.code ??
+                                                opt?.dicValue ??
+                                                opt,
+                                        );
+                                        const optRawLabel = String(
+                                            opt?.label ??
+                                                opt?.name ??
+                                                opt?.dicValue ??
+                                                opt?.text ??
+                                                optValue,
+                                        );
+                                        const optLabel =
+                                            i18nFormText(optRawLabel);
+                                        const optKey = String(opt?.key ?? "");
+                                        const isDefault =
+                                            defaultRadioKey !== "" &&
+                                            optKey === defaultRadioKey;
+                                        return (
+                                            <label
+                                                id={`${fieldId}-${fieldName}-${optId}`}
+                                                for={optId}
+                                                class="group inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 cursor-pointer hover:border-red-500 transition-colors"
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    id={`${fieldId}-${fieldName}-${optId}`}
+                                                    name={fieldName}
+                                                    data-field-key={fieldKey}
+                                                    value={optValue}
+                                                    required={
+                                                        required && idx === 0
+                                                    }
+                                                    checked={isDefault}
+                                                    class="h-4 w-4 accent-red-600 border-gray-300 focus:ring-red-500 focus:outline-none"
+                                                />
+                                                <span class="text-gray-700">
+                                                    {optLabel}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            ) : type === "checkbox-group" ? (
+                                <div
+                                    class="flex flex-wrap gap-2 sm:gap-3"
+                                    data-field-type="checkbox-group"
+                                    data-field-key={fieldKey}
+                                    data-required={required ? "true" : "false"}
+                                    data-placeholder={placeholder}
+                                >
+                                    {options.map((opt: any, idx: number) => {
+                                        const optId = `${fieldId}-${idx}`;
+                                        const optValue = String(
+                                            opt?.value ??
+                                                opt?.id ??
+                                                opt?.dicId ??
+                                                opt?.key ??
+                                                opt?.code ??
+                                                opt?.dicValue ??
+                                                opt,
+                                        );
+                                        const optRawLabel = String(
+                                            opt?.label ??
+                                                opt?.name ??
+                                                opt?.dicValue ??
+                                                opt?.text ??
+                                                optValue,
+                                        );
+                                        const optLabel =
+                                            i18nFormText(optRawLabel);
+                                        return (
+                                            <label
+                                                id={`${fieldId}-${fieldName}-${optId}`}
+                                                for={optId}
+                                                class="group inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 cursor-pointer hover:border-red-500 transition-colors"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    id={`${fieldId}-${fieldName}-${optId}`}
+                                                    name={fieldName}
+                                                    data-field-key={fieldKey}
+                                                    value={optValue}
+                                                    class="h-4 w-4 accent-red-600 border-gray-300 focus:ring-red-500 focus:outline-none"
+                                                />
+                                                <span class="text-gray-700">
+                                                    {optLabel}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            ) : type === "checkbox" ? (
+                                <input
+                                    type="checkbox"
+                                    id={`${fieldId}-${fieldName}`}
+                                    name={fieldName}
+                                    data-field-key={fieldKey}
+                                    required={required}
+                                    data-validate-message={validateMessageText}
+                                    class="h-4 w-4 accent-red-600 border-gray-300 focus:ring-red-500 focus:outline-none"
+                                />
+                            ) : (
+                                <input
+                                    type={type}
+                                    id={`${fieldId}-${fieldName}`}
+                                    name={fieldName}
+                                    data-field-key={fieldKey}
+                                    required={required}
+                                    data-placeholder={placeholder}
+                                    data-validate-message={validateMessageText}
+                                    data-validate-type={
+                                        effectiveValidateType || undefined
+                                    }
+                                    placeholder={placeholder}
+                                    pattern={item?.pattern}
+                                    minlength={item?.minLength}
+                                    maxlength={item?.maxLength}
+                                    min={item?.min}
+                                    max={item?.max}
+                                    inputmode={
+                                        getInputMode(effectiveValidateType) as any
+                                    }
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                                />
+                            )}
+                            <p
+                                class="mt-1 text-xl text-red-600 hidden"
+                                data-error-for={fieldKey}
+                            />
+                        </div>
+                    );
+                })
+        }
+    </div>
+
+    <!-- 提交按钮 -->
+    <div class="flex gap-4">
+        <button
+            type="submit"
+            class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-base"
+        >
+            {t?.form?.send}
+        </button>
+    </div>
+</form>
+
+<!-- 成功提交模态框 -->
+<div
+    id={`${id}-modal`}
+    class="fixed inset-0 bg-diy bg-opacity-50 z-50 hidden flex items-center justify-center p-4"
+>
+    <div
+        class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0"
+        id={`${id}-modal-content`}
+    >
+        <div class="p-6 text-center">
+            <!-- 成功图标 -->
+            <div
+                class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4"
+            >
+                <svg
+                    class="h-8 w-8 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <!-- 成功标题 -->
+            <h3
+                class="text-lg font-semibold text-gray-900 mb-2"
+                id={`${id}-modal-title`}
+            >
+                {t?.form?.messages?.submit_success_model_text}
+            </h3>
+
+            <!-- 成功描述 -->
+            <p class="text-gray-600 mb-6" id={`${id}-modal-description`}>
+                {
+                    t?.form?.messages?.submit_success_model_subtitle
+                }
+            </p>
+
+            <!-- 操作按钮 -->
+            <div class="flex gap-3 justify-center">
+                <button
+                    type="button"
+                    id={`${id}-modal-close`}
+                    class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                >
+                    {t?.form?.messages?.submit_success_model_button}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // 联系表单功能
+    class ContactForm {
+        constructor(formId) {
+            this.form = document.getElementById(formId);
+            this.submitBtn = this.form
+                ? this.form.querySelector('button[type="submit"]')
+                : null;
+            this.errorMap = new Map();
+
+            // 获取成功展示模式
+            this.successMode = this.form?.getAttribute("data-success-mode") || "toast";
+
+            // 获取模态框元素 - 统一ID命名规范
+            // formId 是完整的表单ID（如 contact-page-form-form），需要提取基础ID
+            const baseId = formId.replace('-form', '');
+            this.baseId = baseId;
+            this.modal = document.getElementById(`${baseId}-modal`);
+            this.modalContent = document.getElementById(
+                `${baseId}-modal-content`,
+            );
+            this.modalCloseBtn = document.getElementById(
+                `${baseId}-modal-close`,
+            );
+            this.modalContinueBtn = document.getElementById(
+                `${baseId}-modal-continue`,
+            );
+            
+            // 获取测试按钮
+            this.testBtn = document.getElementById(`${baseId}-test-success`);
+
+            if (this.form) {
+                this.init();
+            }
+        }
+
+        init() {
+            this.form.addEventListener("submit", (e) => this.handleSubmit(e));
+            this.wireRealtimeValidation();
+            this.initModalEvents();
+            this.initTestButton();
+        }
+
+        initTestButton() {
+            if (this.testBtn) {
+                this.testBtn.addEventListener("click", () => {
+                    this.testSuccessMessage();
+                });
+            }
+        }
+
+        testSuccessMessage() {
+            if (this.successMode === "modal") {
+                this.showModal();
+            } else {
+                this.showMessage("测试成功消息！", "success");
+            }
+        }
+
+
+        initModalEvents() {
+            if (this.modal && this.successMode === "modal") {
+                // 关闭按钮事件
+                if (this.modalCloseBtn) {
+                    this.modalCloseBtn.addEventListener("click", () => {
+                        this.hideModal();
+                        // 向父层上报点击成功提示按钮的事件
+                        document.dispatchEvent(
+                            new CustomEvent("contactFormSuccessAction", {
+                                detail: {
+                                    action: "close",
+                                    formId: this.form?.id || "",
+                                    baseId: this.baseId || "",
+                                },
+                            }),
+                        );
+                    });
+                }
+
+                // 继续咨询按钮事件
+                if (this.modalContinueBtn) {
+                    this.modalContinueBtn.addEventListener("click", () => {
+                        this.hideModal();
+                        // 可以在这里添加继续咨询的逻辑，比如滚动到表单顶部
+                        this.form.scrollIntoView({ behavior: "smooth" });
+                        // 向父层上报继续咨询的事件
+                        document.dispatchEvent(
+                            new CustomEvent("contactFormSuccessAction", {
+                                detail: {
+                                    action: "continue",
+                                    formId: this.form?.id || "",
+                                    baseId: this.baseId || "",
+                                },
+                            }),
+                        );
+                    });
+                }
+
+                // 点击背景关闭模态框
+                this.modal.addEventListener("click", (e) => {
+                    if (e.target === this.modal) {
+                        this.hideModal();
+                    }
+                });
+
+                // ESC键关闭模态框
+                document.addEventListener("keydown", (e) => {
+                    if (
+                        e.key === "Escape" &&
+                        !this.modal.classList.contains("hidden")
+                    ) {
+                        this.hideModal();
+                    }
+                });
+            }
+        }
+
+        wireRealtimeValidation() {
+            const inputs = this.form.querySelectorAll("[data-field-key]"); 
+            inputs.forEach((el) => {
+                const key = el.getAttribute("data-field-key") || "";
+                const errEl = this.form.querySelector(
+                    `[data-error-for="${key}"]`,
+                );
+                if (errEl) this.errorMap.set(key, errEl);
+                const handler = () => this.clearError(key);
+                el.addEventListener("input", handler);
+                el.addEventListener("change", handler);
+                el.addEventListener("blur", handler);
+            });
+        }
+
+        setError(key, message) {
+            const el = this.errorMap.get(key);
+            if (!el) return;
+            el.textContent = message;
+            el.classList.remove("hidden");
+        }
+
+        getDefaultValidationMessage(validateType) {
+            const messages = this.getFormMessages();
+            switch (validateType) {
+                case "email":
+                    return messages.validation?.email_invalid;
+                case "phone":
+                    return messages.validation?.phone_invalid;
+                case "whatsapp":
+                    return messages.validation?.whatsapp_invalid;
+                default:
+                    return messages.validation?.invalid_format;
+            }
+        }
+
+        getFormMessages() {
+            // 从全局变量或数据属性获取翻译文本
+            const formElement = this.form;
+            const messages = formElement?.dataset?.messages;
+            if (messages) {
+                try {
+                    return JSON.parse(messages);
+                } catch (e) {
+                    console.warn("Failed to parse form messages:", e);
+                }
+            }
+            return {};
+        }
+
+        clearError(key) {
+            const el = this.errorMap.get(key);
+            if (!el) return;
+            el.textContent = "";
+            el.classList.add("hidden");
+        }
+
+        showModal() {
+            if (!this.modal || this.successMode !== "modal") return;
+            this.modal.classList.remove("hidden");
+            // 添加动画效果
+            setTimeout(() => {
+                if (this.modalContent) {
+                    this.modalContent.classList.remove("scale-95", "opacity-0");
+                    this.modalContent.classList.add("scale-100", "opacity-100");
+                }
+            }, 10);
+
+            // 防止背景滚动
+            document.body.style.overflow = "hidden";
+        }
+
+        hideModal() {
+            if (!this.modal || this.successMode !== "modal") return;
+
+            // 添加关闭动画
+            if (this.modalContent) {
+                this.modalContent.classList.remove("scale-100", "opacity-100");
+                this.modalContent.classList.add("scale-95", "opacity-0");
+            }
+
+            setTimeout(() => {
+                this.modal.classList.add("hidden");
+                // 恢复背景滚动
+                document.body.style.overflow = "";
+            }, 300);
+        }
+
+        async handleSubmit(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this.form);
+            const entries = Array.from(formData.entries());
+            const data = {};
+            for (const [key, value] of entries) {
+                if (Object.prototype.hasOwnProperty.call(data, key)) {
+                    const current = data[key];
+                    if (Array.isArray(current)) {
+                        current.push(value);
+                    } else {
+                        data[key] = [current, value];
+                    }
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            // Validation
+            const invalid = this.validate();
+            if (invalid) {
+                // 校验失败时的提示文案可由调用方自定义传入
+                const toastMsg =
+                    this.form.getAttribute("data-invalid-toast") || "";
+                this.showMessage(toastMsg || "", "error");
+                return;
+            }
+
+            // 显示加载状态
+            if (this.submitBtn) {
+                const messages = this.getFormMessages();
+                const originalText = this.submitBtn.textContent;
+                this.submitBtn.textContent = messages.messages?.sending;
+                this.submitBtn.disabled = true;
+
+                try {
+                    // 模拟API调用
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    
+                    // 根据successMode显示成功消息
+                    if (this.successMode === "modal") {
+                        this.showModal();
+                    } else {
+                        // toast 模式下直接跳转，不改变 DOM
+                        const currentPath = window.location.pathname;
+                        const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2})?)\//);
+                        const lang = langMatch ? langMatch[1] : '';
+                        const contactSuccessPath = lang ? `/${lang}/contact/success` : '/contact/success';
+                        window.location.href = contactSuccessPath;
+                    }
+
+                    // 触发自定义事件，通知其他组件表单提交成功
+                    document.dispatchEvent(
+                        new CustomEvent("contactFormSubmitted", {
+                            detail: { success: true, data: data },
+                        }),
+                    );
+
+                    // 重置表单
+                    this.form.reset();
+                } catch (error) {
+                    console.error("表单提交错误:", error);
+                    this.showMessage(
+                        messages.messages?.submit_error,
+                        "error",
+                    );
+                } finally {
+                    // 恢复按钮状态
+                    this.submitBtn.textContent = originalText;
+                    this.submitBtn.disabled = false;
+                }
+            }
+        }
+
+        validate() {
+            let hasError = false;
+            // Built-in constraint validation for simple inputs
+            const controls = this.form.querySelectorAll(
+                "[data-field-key]:not([type='radio']):not([type='checkbox'])",
+            );
+            controls.forEach((el) => {
+                const key = el.getAttribute("data-field-key") || "";
+                const isRequired = el.hasAttribute("required");
+                const rawVal = el && "value" in el ? el.value : "";
+                const value = typeof rawVal === "string" ? rawVal.trim() : "";
+                if (isRequired && !value) {
+                    const placeholder = (
+                        el.getAttribute("data-placeholder") ||
+                        el.placeholder ||
+                        ""
+                    ).trim();
+                    this.setError(key, placeholder);
+                    hasError = true;
+                    return;
+                }
+                // pattern/length & custom typed validation
+                if (el instanceof HTMLInputElement) {
+                    const validateType =
+                        el.getAttribute("data-validate-type") || "";
+                    const customMsg = (
+                        el.getAttribute("data-validate-message") || ""
+                    ).trim();
+                    let invalidByType = false;
+                    if (validateType === "email") {
+                        // RFC5322相对宽松匹配
+                        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        invalidByType = !!value && !emailRe.test(value);
+                    } else if (validateType === "phone") {
+                        // 国际手机号：允许+、空格、括号、短横线，最少8位数字
+                        const digits = value.replace(/\D/g, "");
+                        invalidByType = !!value && digits.length < 8;
+                    } else if (validateType === "whatsapp") {
+                        // WhatsApp 通常为手机号：建议10-15位数字
+                        const digits = value.replace(/\D/g, "");
+                        invalidByType =
+                            !!value &&
+                            (digits.length < 10 || digits.length > 15);
+                    }
+
+                    if (invalidByType) {
+                        // 如果没有自定义错误消息，使用默认消息
+                        const errorMsg =
+                            customMsg ||
+                            this.getDefaultValidationMessage(validateType);
+                        this.setError(key, errorMsg);
+                        hasError = true;
+                        return;
+                    }
+
+                    if (el.pattern) {
+                        const re = new RegExp(el.pattern);
+                        if (value && !re.test(value)) {
+                            this.setError(key, customMsg);
+                            hasError = true;
+                            return;
+                        }
+                    }
+                }
+                const minLength = el.minLength;
+                if (
+                    typeof minLength === "number" &&
+                    minLength > 0 &&
+                    value.length < minLength
+                ) {
+                    const messages = this.getFormMessages();
+                    const errorMsg =
+                        messages.messages?.min_length_error?.replace(
+                            "{min}",
+                            minLength,
+                        ) || `至少输入 ${minLength} 个字符`;
+                    this.setError(key, errorMsg);
+                    hasError = true;
+                    return;
+                }
+                const maxLength = el.maxLength;
+                if (
+                    typeof maxLength === "number" &&
+                    maxLength > -1 &&
+                    value.length > maxLength
+                ) {
+                    const messages = this.getFormMessages();
+                    const errorMsg =
+                        messages.messages?.max_length_error?.replace(
+                            "{max}",
+                            maxLength,
+                        ) || `最多输入 ${maxLength} 个字符`;
+                    this.setError(key, errorMsg);
+                    hasError = true;
+                    return;
+                }
+                this.clearError(key);
+            });
+
+            // Radio groups
+            const radioGroups = this.form.querySelectorAll(
+                "[data-field-type='radio']",
+            );
+            radioGroups.forEach((group) => {
+                const required = group.getAttribute("data-required") === "true";
+                const key = group.getAttribute("data-field-key") || "";
+                const placeholder = (
+                    group.getAttribute("data-placeholder") || ""
+                ).trim();
+                if (!required) {
+                    this.clearError(key);
+                    return;
+                }
+                const checked = group.querySelector(
+                    "input[type='radio']:checked",
+                );
+                if (!checked) {
+                    this.setError(key, placeholder);
+                    hasError = true;
+                } else {
+                    this.clearError(key);
+                }
+            });
+
+            // Checkbox groups
+            const checkboxGroups = this.form.querySelectorAll(
+                "[data-field-type='checkbox-group']",
+            );
+            checkboxGroups.forEach((group) => {
+                const required = group.getAttribute("data-required") === "true";
+                const key = group.getAttribute("data-field-key") || "";
+                const placeholder = (
+                    group.getAttribute("data-placeholder") || ""
+                ).trim();
+                const checked = group.querySelector(
+                    "input[type='checkbox']:checked",
+                );
+                if (required && !checked) {
+                    this.setError(key, placeholder);
+                    hasError = true;
+                } else {
+                    this.clearError(key);
+                }
+            });
+
+            return hasError;
+        }
+
+
+        showMessage(message, type = "info") {
+            // 创建消息提示
+            const messageDiv = document.createElement("div");
+            const bgColor = type === "success" ? "#10b981" : type === "error" ? "#ef4444" : "#3b82f6";
+            
+            messageDiv.style.cssText = `
+                position: fixed !important;
+                top: 1rem !important;
+                right: 1rem !important;
+                z-index: 9999 !important;
+                padding: 0.5rem 1rem !important;
+                border-radius: 0.375rem !important;
+                color: white !important;
+                font-size: 14px !important;
+                font-weight: 500 !important;
+                background-color: ${bgColor} !important;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            `;
+            messageDiv.textContent = message;
+
+            document.body.appendChild(messageDiv);
+
+            // 3秒后自动移除
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+    }
+
+    // 初始化所有联系表单，兼容脚本晚于 DOMContentLoaded 注入的情况
+
+    function initContactForms() {
+        const contactForms = document.querySelectorAll(".contact-form");
+        contactForms.forEach((form) => {
+            const formId = form.id;
+            if (formId) {
+                new ContactForm(formId);
+            }
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initContactForms, {
+            once: true,
+        });
+    } else {
+        initContactForms();
+    }
+</script>

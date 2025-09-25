@@ -65,6 +65,7 @@
     "required": "Este campo es obligatorio",
     "email_invalid": "Por favor ingrese una dirección de correo electrónico válida",
     "phone_invalid": "Por favor ingrese un número de teléfono válido",
+    "whatsapp_invalid": "Por favor ingrese un número de WhatsApp válido",
     "min_length": "Mínimo {min} caracteres requeridos",
     "max_length": "Máximo {max} caracteres permitidos",
     "password_mismatch": "Las contraseñas no coinciden",
@@ -72,6 +73,19 @@
     "invalid_format": "Formato inválido",
     "no_results": "No se encontraron resultados para",
     "search_error": "Error en la búsqueda"
+  },
+  "messages": {
+    "sending": "Enviando...",
+    "submit_success": "¡Enviado con éxito! Nos pondremos en contacto contigo pronto.",
+    "submit_error": "Error al enviar, por favor inténtalo de nuevo más tarde.",
+    "min_length_error": "Mínimo {min} caracteres requeridos",
+    "max_length_error": "Máximo {max} caracteres permitidos",
+    "submit_success_toast_text": "¡Tu consulta ha sido enviada con éxito!",
+    "submit_success_toast_subtitle": "La respuesta del proveedor te será enviada. ¡Por favor revisa tu correo electrónico más tarde!",
+    "submit_success_toast_button": "Volver",
+    "submit_success_model_text": "Enviado con éxito",
+    "submit_success_model_subtitle": "Nos pondremos en contacto contigo lo antes posible",
+    "submit_success_model_button": "Cerrar"
   },
   "buttons": {
     "submit": "Enviar",

@@ -65,6 +65,7 @@
     "required": "Dit veld is verplicht",
     "email_invalid": "Voer een geldig e-mailadres in",
     "phone_invalid": "Voer een geldig telefoonnummer in",
+    "whatsapp_invalid": "Voer een geldig WhatsApp-nummer in",
     "min_length": "Minimaal {min} tekens vereist",
     "max_length": "Maximaal {max} tekens toegestaan",
     "password_mismatch": "Wachtwoorden komen niet overeen",
@@ -72,6 +73,19 @@
     "invalid_format": "Ongeldig formaat",
     "no_results": "Geen resultaten gevonden voor",
     "search_error": "Zoeken mislukt"
+  },
+  "messages": {
+    "sending": "Verzenden...",
+    "submit_success": "Succesvol verzonden! We nemen snel contact met je op.",
+    "submit_error": "Verzenden mislukt, probeer het later opnieuw.",
+    "min_length_error": "Minimaal {min} tekens vereist",
+    "max_length_error": "Maximaal {max} tekens toegestaan",
+    "submit_success_toast_text": "Uw aanvraag is succesvol verzonden!",
+    "submit_success_toast_subtitle": "Het antwoord van de leverancier wordt naar u verzonden. Controleer later uw e-mail!",
+    "submit_success_toast_button": "Terug",
+    "submit_success_model_text": "Succesvol verzonden",
+    "submit_success_model_subtitle": "We nemen zo snel mogelijk contact met u op",
+    "submit_success_model_button": "Sluiten"
   },
   "buttons": {
     "submit": "Versturen",
