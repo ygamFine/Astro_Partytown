@@ -3,8 +3,9 @@
 import { config } from 'dotenv';
 config();
 
-
 import { getSecret } from 'astro:env/server'
+
+const ITALKIN_API_URL: string = 'https://api.italkin.com';
 
 // 类型定义
 interface StrapiResponse<T = any> {
@@ -19,7 +20,7 @@ interface RequestHeaders {
 
 export const PUBLIC_API_URL: string | undefined = getSecret('PUBLIC_API_URL');
 export const STRAPI_TOKEN: string | undefined = getSecret('PUBLIC_API_TOKEN');
-export const ITALKIN_API: string | undefined = getSecret('ITALKIN_API');
+export const ITALKIN_API: string | undefined = getSecret('ITALKIN_API') || ITALKIN_API_URL;
 const DISABLE_PNC_FETCH_RAW: string | undefined = getSecret('PUBLIC_DISABLE_PNC_FETCH');
 export const DISABLE_PNC_FETCH: boolean = DISABLE_PNC_FETCH_RAW === '1' || (DISABLE_PNC_FETCH_RAW || '').toLowerCase() === 'true';
 console.log('DISABLE_PNC_FETCH 环境变量', DISABLE_PNC_FETCH);
