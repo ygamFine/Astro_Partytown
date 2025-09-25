@@ -204,6 +204,9 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
   top:0;
   left: 0;
 }
+.aboutSection .aboutSection-img.mobileImg{
+  display: none;
+}
 .aboutSection .aboutTitle {
   font-family: Antonio-Bold;
   font-weight: bold;
@@ -381,6 +384,12 @@ const safecorporateAdvantages = Array.isArray(corporateAdvantages) ? corporateAd
     .aboutSection-img{
       object-fit: cover;
       height: 65%;
+    }
+    .mobileImg{
+      display: block !important;
+    }
+    .pcImg{
+      display: none !important;
     }
     .aboutTitle {
       font-size: 3rem !important;
