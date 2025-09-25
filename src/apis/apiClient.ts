@@ -5,7 +5,7 @@ config();
 
 import { getSecret } from 'astro:env/server'
 
-const ITALKIN_API_URL: string = 'https://api.italkin.com';
+const ITALKIN_API_URL: string = 'https://test.italkin.com';
 
 // 类型定义
 interface StrapiResponse<T = any> {

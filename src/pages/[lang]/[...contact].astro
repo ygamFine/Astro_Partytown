@@ -70,7 +70,7 @@ const breadcrumbs = generateContactBreadcrumbs(lang);
       <ItalkinForm id="contact-page-form" successMode="toast" transitions={t} />
     </div>
   </div>}
-  {type === 'success' && <div class="success-page-container flex items-center justify-center bg-gray-50 py-12 px-4">
+  {type === 'success' && <div class="success-page-container flex items-center justify-center bg-gray-50 py-12 px-4 min-h-[50vh]">
     <div class="max-w-md w-full space-y-8 text-center">
         <!-- 成功图标 -->
         <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100">
@@ -95,6 +95,7 @@ const breadcrumbs = generateContactBreadcrumbs(lang);
                 type="button" 
                 id="success-page-return-btn"
                 class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors duration-200"
+                onclick="window.location.href='/'"
             >
                 {t.form?.messages?.submit_success_toast_button}
             </button>
