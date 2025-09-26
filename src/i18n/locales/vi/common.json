@@ -234,5 +234,13 @@
     "get_quote": "Nhận báo giá chi tiết và thông số kỹ thuật",
     "contact_now": "Liên hệ ngay",
     "add_to_cart": "Thêm vào giỏ hàng"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Tư vấn qua điện thoại",
+    "email_consultation": "Tư vấn qua email",
+    "qq_consultation": "Tư vấn QQ",
+    "back_to_top": "Về đầu trang",
+    "whatsapp_message": "Xin chào, tôi muốn tìm hiểu thông tin về sản phẩm"
   }
 }

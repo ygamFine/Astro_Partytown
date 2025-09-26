@@ -234,5 +234,13 @@
     "get_quote": "Dapatkan penawaran detail dan parameter teknis",
     "contact_now": "Hubungi sekarang",
     "add_to_cart": "Tambah ke keranjang"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Konsultasi telepon",
+    "email_consultation": "Konsultasi email",
+    "qq_consultation": "Konsultasi QQ",
+    "back_to_top": "Kembali ke atas",
+    "whatsapp_message": "Halo, saya ingin menanyakan informasi produk"
   }
 }

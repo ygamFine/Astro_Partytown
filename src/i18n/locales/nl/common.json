@@ -234,5 +234,13 @@
     "get_quote": "Ontvang gedetailleerde offerte en technische parameters",
     "contact_now": "Nu contact opnemen",
     "add_to_cart": "Toevoegen aan winkelwagen"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Telefoonconsultatie",
+    "email_consultation": "E-mailconsultatie",
+    "qq_consultation": "QQ-consultatie",
+    "back_to_top": "Terug naar boven",
+    "whatsapp_message": "Hallo, ik zou graag informatie over het product willen opvragen"
   }
 }

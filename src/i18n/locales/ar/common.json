@@ -234,5 +234,13 @@
     "get_quote": "احصل على عرض أسعار مفصل والمعايير التقنية",
     "contact_now": "تواصل الآن",
     "add_to_cart": "أضف إلى السلة"
+  },
+  "sidebar": {
+    "whatsapp": "واتساب",
+    "phone_consultation": "استشارة هاتفية",
+    "email_consultation": "استشارة بريد إلكتروني",
+    "qq_consultation": "استشارة QQ",
+    "back_to_top": "العودة إلى الأعلى",
+    "whatsapp_message": "مرحباً، أود الاستفسار عن معلومات المنتج"
   }
 }

@@ -234,5 +234,13 @@
     "get_quote": "詳細な見積もりと技術仕様を取得",
     "contact_now": "今すぐ連絡",
     "add_to_cart": "カートに追加"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "電話相談",
+    "email_consultation": "メール相談",
+    "qq_consultation": "QQ相談",
+    "back_to_top": "トップに戻る",
+    "whatsapp_message": "こんにちは、製品情報についてお問い合わせしたいです"
   }
 }

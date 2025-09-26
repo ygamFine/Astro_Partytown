@@ -297,6 +297,19 @@ export async function getContact(locale = 'en') {
 }
 
 /**
+ * 获取联系方式侧边栏
+ */
+export async function getContactSidebar(locale = 'en') {
+  try {
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/sidebar?locale=${locale}&populate=all`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+
+/**
  * 获取移动端底部菜单
  */
 export async function getMobileBottomMenu(locale = 'en') {

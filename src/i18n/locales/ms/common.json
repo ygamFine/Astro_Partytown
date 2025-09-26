@@ -234,5 +234,13 @@
     "get_quote": "Dapatkan sebut harga terperinci dan parameter teknikal",
     "contact_now": "Hubungi sekarang",
     "add_to_cart": "Tambah ke troli"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Perundingan telefon",
+    "email_consultation": "Perundingan e-mel",
+    "qq_consultation": "Perundingan QQ",
+    "back_to_top": "Kembali ke atas",
+    "whatsapp_message": "Halo, saya ingin bertanya tentang maklumat produk"
   }
 }

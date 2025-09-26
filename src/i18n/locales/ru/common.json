@@ -234,5 +234,13 @@
     "get_quote": "Получить подробную смету и технические параметры",
     "contact_now": "Связаться сейчас",
     "add_to_cart": "Добавить в корзину"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Телефонная консультация",
+    "email_consultation": "Консультация по электронной почте",
+    "qq_consultation": "Консультация QQ",
+    "back_to_top": "Вернуться наверх",
+    "whatsapp_message": "Привет, я хотел бы узнать информацию о продукте"
   }
 }

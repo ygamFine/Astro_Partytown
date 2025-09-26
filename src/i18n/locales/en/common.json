@@ -237,5 +237,13 @@
     "contact_now": "Contact Now",
     "download_pdf": "Download Catalog",
     "add_to_cart": "Add to Cart"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Phone Consultation",
+    "email_consultation": "Email Consultation",
+    "qq_consultation": "QQ Consultation",
+    "back_to_top": "Back to Top",
+    "whatsapp_message": "Hello, I would like to inquire about product information"
   }
 }

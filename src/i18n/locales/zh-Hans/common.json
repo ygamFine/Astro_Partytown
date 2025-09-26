@@ -237,5 +237,13 @@
     "contact_now": "立即联系",
     "download_pdf": "下载产品目录",
     "add_to_cart": "加入购物车"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "电话咨询",
+    "email_consultation": "邮件咨询",
+    "qq_consultation": "QQ咨询",
+    "back_to_top": "返回顶部",
+    "whatsapp_message": "您好，我想咨询产品信息"
   }
 }

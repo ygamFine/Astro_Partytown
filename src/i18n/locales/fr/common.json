@@ -234,5 +234,13 @@
     "get_quote": "Obtenir un devis détaillé et les paramètres techniques",
     "contact_now": "Contactez maintenant",
     "add_to_cart": "Ajouter au panier"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Consultation téléphonique",
+    "email_consultation": "Consultation par e-mail",
+    "qq_consultation": "Consultation QQ",
+    "back_to_top": "Retour en haut",
+    "whatsapp_message": "Bonjour, je souhaiterais consulter des informations sur le produit"
   }
 }

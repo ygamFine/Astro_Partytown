@@ -234,5 +234,13 @@
     "get_quote": "獲取詳細報價和技術參數",
     "contact_now": "立即聯繫",
     "add_to_cart": "加入購物車"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "電話諮詢",
+    "email_consultation": "郵件諮詢",
+    "qq_consultation": "QQ諮詢",
+    "back_to_top": "返回頂部",
+    "whatsapp_message": "您好，我想諮詢產品信息"
   }
 }

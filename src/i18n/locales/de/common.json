@@ -234,5 +234,13 @@
     "get_quote": "Detailliertes Angebot und technische Parameter erhalten",
     "contact_now": "Jetzt kontaktieren",
     "add_to_cart": "In den Warenkorb"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Telefonberatung",
+    "email_consultation": "E-Mail-Beratung",
+    "qq_consultation": "QQ-Beratung",
+    "back_to_top": "Nach oben",
+    "whatsapp_message": "Hallo, ich möchte mich über Produktinformationen erkundigen"
   }
 }

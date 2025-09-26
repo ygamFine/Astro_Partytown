@@ -234,5 +234,13 @@
     "get_quote": "Otrzymaj szczegółową wycenę i parametry techniczne",
     "contact_now": "Skontaktuj się teraz",
     "add_to_cart": "Dodaj do koszyka"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Konsultacja telefoniczna",
+    "email_consultation": "Konsultacja e-mail",
+    "qq_consultation": "Konsultacja QQ",
+    "back_to_top": "Powrót do góry",
+    "whatsapp_message": "Cześć, chciałbym zapytać o informacje o produkcie"
   }
 }

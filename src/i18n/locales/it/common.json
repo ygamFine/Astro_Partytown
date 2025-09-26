@@ -234,5 +234,13 @@
     "get_quote": "Ottieni preventivo dettagliato e parametri tecnici",
     "contact_now": "Contatta ora",
     "add_to_cart": "Aggiungi al carrello"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Consulenza telefonica",
+    "email_consultation": "Consulenza email",
+    "qq_consultation": "Consulenza QQ",
+    "back_to_top": "Torna in cima",
+    "whatsapp_message": "Ciao, vorrei chiedere informazioni sul prodotto"
   }
 }

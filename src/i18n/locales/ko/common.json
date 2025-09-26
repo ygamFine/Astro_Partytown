@@ -234,5 +234,13 @@
     "get_quote": "상세 견적 및 기술 매개변수 받기",
     "contact_now": "지금 연락하기",
     "add_to_cart": "장바구니에 추가"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "전화 상담",
+    "email_consultation": "이메일 상담",
+    "qq_consultation": "QQ 상담",
+    "back_to_top": "맨 위로",
+    "whatsapp_message": "안녕하세요, 제품 정보에 대해 문의하고 싶습니다"
   }
 }

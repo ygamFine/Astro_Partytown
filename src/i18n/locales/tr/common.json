@@ -234,5 +234,13 @@
     "get_quote": "Detaylı teklif ve teknik parametreler alın",
     "contact_now": "Şimdi iletişime geçin",
     "add_to_cart": "Sepete ekle"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "Telefon danışmanlığı",
+    "email_consultation": "E-posta danışmanlığı",
+    "qq_consultation": "QQ danışmanlığı",
+    "back_to_top": "Yukarı dön",
+    "whatsapp_message": "Merhaba, ürün bilgileri hakkında bilgi almak istiyorum"
   }
 }

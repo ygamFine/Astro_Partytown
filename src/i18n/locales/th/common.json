@@ -234,5 +234,13 @@
     "get_quote": "รับใบเสนอราคารายละเอียดและพารามิเตอร์ทางเทคนิค",
     "contact_now": "ติดต่อตอนนี้",
     "add_to_cart": "เพิ่มลงตะกร้า"
+  },
+  "sidebar": {
+    "whatsapp": "WhatsApp",
+    "phone_consultation": "ปรึกษาทางโทรศัพท์",
+    "email_consultation": "ปรึกษาทางอีเมล",
+    "qq_consultation": "ปรึกษา QQ",
+    "back_to_top": "กลับด้านบน",
+    "whatsapp_message": "สวัสดี ฉันต้องการสอบถามข้อมูลผลิตภัณฑ์"
   }
 }

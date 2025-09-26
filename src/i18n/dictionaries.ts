@@ -96,6 +96,14 @@ const TRANSLATION_CONFIG = {
       contact_now: 'common.product_card.contact_now',
       add_to_cart: 'common.product_card.add_to_cart',
     },
+    sidebar: {
+      whatsapp: 'common.sidebar.whatsapp',
+      phone_consultation: 'common.sidebar.phone_consultation',
+      email_consultation: 'common.sidebar.email_consultation',
+      qq_consultation: 'common.sidebar.qq_consultation',
+      back_to_top: 'common.sidebar.back_to_top',
+      whatsapp_message: 'common.sidebar.whatsapp_message',
+    },
   },
   empty_state: { back_to_home: 'case.empty_state.back_to_home' },
   breadcrumb: {

@@ -234,5 +234,13 @@
     "get_quote": "विस्तृत कोटेशन और तकनीकी मापदंड प्राप्त करें",
     "contact_now": "अभी संपर्क करें",
     "add_to_cart": "कार्ट में जोड़ें"
+  },
+  "sidebar": {
+    "whatsapp": "व्हाट्सऐप",
+    "phone_consultation": "फोन परामर्श",
+    "email_consultation": "ईमेल परामर्श",
+    "qq_consultation": "QQ परामर्श",
+    "back_to_top": "शीर्ष पर वापस जाएं",
+    "whatsapp_message": "नमस्ते, मैं उत्पाद की जानकारी के बारे में पूछताछ करना चाहूंगा"
   }
 }
