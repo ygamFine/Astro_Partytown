@@ -1,5 +1,6 @@
 ---
-import { getItalkinForm } from "@apis/common";
+import { getItalkinForm, getCompaniesSite } from "@apis/common";
+import { ITALKIN_API } from "@apis/apiClient.ts";
 import { getCurrentLanguage } from "@utils/languageUtils";
 import { getFieldValidationType, getInputMode } from "@config/fieldTypes";
 
@@ -25,8 +26,11 @@ const currentLang = getCurrentLanguage(
     Astro.url?.pathname || "/",
     Astro.url?.hostname || "",
 );
+const companiesResp = await getCompaniesSite(currentLang);
+const derivedCompanyId = companiesResp?.company?.hz_company_id ?? "";
+const derivedSiteId = companiesResp?.website?.hz_website_id ?? "";
+const formResp = await getItalkinForm(derivedCompanyId, derivedSiteId);
 
-const formResp = await getItalkinForm();
 const formStructure: any[] = Array.isArray(formResp?.data?.formStructure)
     ? formResp.data.formStructure
     : Array.isArray(formResp?.formStructure)
@@ -125,6 +129,10 @@ const getFieldName = (item: any, index: number) => {
         item?.name ?? item?.key ?? item?.code ?? item?.id ?? `field_${index}`,
     );
 };
+// 直接取第一项的 formId 字段
+const derivedFormId = Array.isArray(formStructure) && formStructure.length
+    ? (formStructure[0]?.formId ?? "")
+    : "";
 ---
 
 <form
@@ -132,6 +140,9 @@ const getFieldName = (item: any, index: number) => {
     class={`contact-form space-y-6`}
     novalidate
     data-success-mode={successMode}
+    data-form-id={String(derivedFormId ?? "")}
+    data-company-id={String(derivedCompanyId ?? "")}
+    data-inquiry-api={String(ITALKIN_API || "https://test.italkin.com")}
     data-messages={JSON.stringify({
         validation: t?.form?.validation || {},
         messages: t?.form?.messages || {},
@@ -631,6 +642,43 @@ const getFieldName = (item: any, index: number) => {
             return {};
         }
 
+        getCookieValue(name) {
+            if (typeof document === "undefined" || !name) return "";
+            const encodedName = encodeURIComponent(name) + "=";
+            const parts = document.cookie ? document.cookie.split("; ") : [];
+            const match = parts.find((row) => row.startsWith(encodedName));
+            if (!match) return "";
+            const value = match.substring(encodedName.length);
+            try {
+                return decodeURIComponent(value);
+            } catch {
+                return value;
+            }
+        }
+
+        getFormIdFromDataset() {
+            const raw = this.form?.getAttribute("data-form-id") || "";
+            if (!raw) return "";
+            const trimmed = String(raw).trim();
+            if (!trimmed) return "";
+            const asNumber = Number(trimmed);
+            return Number.isNaN(asNumber) ? trimmed : asNumber;
+        }
+
+        getCompanyIdFromDataset() {
+            const raw = this.form?.getAttribute("data-company-id") || "";
+            if (!raw) return "";
+            const trimmed = String(raw).trim();
+            if (!trimmed) return "";
+            const asNumber = Number(trimmed);
+            return Number.isNaN(asNumber) ? trimmed : asNumber;
+        }
+
+        getInquiryApiBase() {
+            const raw = this.form?.getAttribute("data-inquiry-api") || "";
+            return String(raw || "https://test.italkin.com");
+        }
+
         clearError(key) {
             const el = this.errorMap.get(key);
             if (!el) return;
@@ -672,21 +720,50 @@ const getFieldName = (item: any, index: number) => {
         async handleSubmit(e) {
             e.preventDefault();
 
-            const formData = new FormData(this.form);
-            const entries = Array.from(formData.entries());
-            const data = {};
-            for (const [key, value] of entries) {
-                if (Object.prototype.hasOwnProperty.call(data, key)) {
-                    const current = data[key];
-                    if (Array.isArray(current)) {
-                        current.push(value);
-                    } else {
-                        data[key] = [current, value];
-                    }
-                } else {
-                    data[key] = value;
-                }
-            }
+            // 汇总表单字段（以 data-field-key 为准）
+            const fieldValues = {};
+            // 普通控件（排除单选/多选组）
+            const basicControls = this.form.querySelectorAll(
+                "[data-field-key]:not([type='radio']):not([type='checkbox'])",
+            );
+            basicControls.forEach((el) => {
+                const key = el.getAttribute("data-field-key");
+                if (!key) return;
+                const rawVal = "value" in el ? el.value : "";
+                const value = typeof rawVal === "string" ? rawVal.trim() : rawVal;
+                fieldValues[key] = value;
+            });
+            // 单选组
+            const radioGroups = this.form.querySelectorAll("[data-field-type='radio']");
+            radioGroups.forEach((group) => {
+                const key = group.getAttribute("data-field-key");
+                if (!key) return;
+                const checked = group.querySelector("input[type='radio']:checked");
+                if (checked) fieldValues[key] = checked.value;
+            });
+            // 多选组
+            const checkboxGroups = this.form.querySelectorAll(
+                "[data-field-type='checkbox-group']",
+            );
+            checkboxGroups.forEach((group) => {
+                const key = group.getAttribute("data-field-key");
+                if (!key) return;
+                const checked = Array.from(
+                    group.querySelectorAll("input[type='checkbox']:checked"),
+                ).map((el) => el.value);
+                if (checked.length === 1) fieldValues[key] = checked[0];
+                else if (checked.length > 0) fieldValues[key] = checked;
+            });
+            // 独立复选框（不在多选组内）
+            const singleCheckboxes = this.form.querySelectorAll(
+                "input[type='checkbox'][data-field-key]",
+            );
+            singleCheckboxes.forEach((el) => {
+                if (el.closest("[data-field-type='checkbox-group']")) return;
+                const key = el.getAttribute("data-field-key");
+                if (!key) return;
+                if (el.checked) fieldValues[key] = el.value || true;
+            });
 
             // Validation
             const invalid = this.validate();
@@ -701,13 +778,27 @@ const getFieldName = (item: any, index: number) => {
             // 显示加载状态
             if (this.submitBtn) {
                 const messages = this.getFormMessages();
-                const originalText = this.submitBtn.textContent;
                 this.submitBtn.textContent = messages.messages?.sending;
                 this.submitBtn.disabled = true;
 
                 try {
-                    // 模拟API调用
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    // 组装最终提交数据（固定字段 + 表单字段）
+                    const payload = {
+                        formId: this.getFormIdFromDataset(),
+                        companyId: this.getCompanyIdFromDataset(),
+                        visitorSource: 1,
+                        serverId: '',
+                        messagePage: window.location.href,
+                        ...fieldValues,
+                    };
+                    const visitorId = this.getCookieValue("_hzVisitorid") || "";
+                    const apiBase = this.getInquiryApiBase();
+                    const res = await fetch(`${apiBase}/biz/inquiry/${encodeURIComponent(visitorId)}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                    });
+                    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
 
                     // 根据successMode显示成功消息
                     if (this.successMode === "modal") {
@@ -728,7 +819,7 @@ const getFieldName = (item: any, index: number) => {
                     // 触发自定义事件，通知其他组件表单提交成功
                     document.dispatchEvent(
                         new CustomEvent("contactFormSubmitted", {
-                            detail: { success: true, data: data },
+                            detail: { success: true, data: payload },
                         }),
                     );
 
