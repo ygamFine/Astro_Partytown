@@ -350,14 +350,15 @@ export async function getMobileBottomMenu(locale = 'en') {
   }
 }
 
-
-export async function getItalkinForm(locale = 'en') {
+/**
+ * 获取询盘表单
+ */
+export async function getItalkinForm(companyId: string | number, siteId: string | number) {
   try {
     const language = await languageConfig();
-    console.log(language)
     var raw = JSON.stringify({
-      "companyId":1280,
-      "siteId":91,
+      companyId,
+      siteId,
       "platform":"website",
       "codes": language
    });
@@ -373,5 +374,40 @@ export async function getItalkinForm(locale = 'en') {
   } catch (error) {
     console.error(error)
     return null;
+  }
+}
+
+// 简写封装：提交询盘
+export async function submitInquiry(visitorId: string | number, payload: any) {
+  try {
+    const vid = encodeURIComponent(String(visitorId ?? ''));
+    if (!vid) throw new Error('Missing visitorId');
+    const res = await fetch(`${ITALKIN_API}/biz/inquiry/${vid}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    return res.json();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+/**
+ * 获取公司信息以及网站信息（合并版：各取第一条）
+ */
+export async function getCompaniesSite(locale = 'en') {
+  try {
+    const [companiesRes, websitesRes] = await Promise.all([
+      fetchJson(`${PUBLIC_API_URL}/api/companies?populate=all&locale=${locale}`),
+      fetchJson(`${PUBLIC_API_URL}/api/websites?populate=all&locale=${locale}`)
+    ]);
+
+    const company = Array.isArray(companiesRes?.data) && companiesRes.data.length > 0 ? companiesRes.data[0] : null;
+    const website = Array.isArray(websitesRes?.data) && websitesRes.data.length > 0 ? websitesRes.data[0] : null;
+    return { company, website };
+  } catch (error) {
+    return { company: null, website: null };
   }
 }
