@@ -88,5 +88,5 @@ export default defineConfig({
   publicDir: 'public',
 
   // 📤 输出配置
-  output: 'static',
+  // output: 'static',
 });
