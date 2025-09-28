@@ -1,10 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { getFirstImage, generateUrl } from '@utils/tools';
-// 导入 Swiper CSS
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 // 定义组件props接口
 export interface Props {
     customerCases?: {
@@ -219,9 +215,10 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
         margin-right: 21px;
     }
     .honor-swiper3 .swiper-slide{
-      width: 33.33%;
+      width: 512px;
       flex-shrink: 0;
       margin-right: 21px;
+      word-break: normal;
     }
     .customer-cases .swiper-btns{
       width: 4rem;
@@ -272,6 +269,10 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
           } 
           .honor-swiper3{
             margin-top: 3rem !important;
+            .swiper-slide{
+                width: 197px;
+                margin-right: 15px;
+            }
           } 
           
         }
@@ -280,21 +281,26 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
     
 </style>
 
-<!-- 使用共享的 Swiper 加载器 -->
+<!-- 使用 Intersection Observer 实现懒加载 -->
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
         const swiperContainer = document.querySelector('.honor-swiper3');
         if (!swiperContainer) return;
 
-        // 添加加载状态类
-        swiperContainer.classList.add('swiper-loading');
+        // 创建 Intersection Observer
+        const observer = new IntersectionObserver(async (entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) {
+                    // 元素进入视口时初始化 Swiper
+                    // 添加加载状态类
+                    swiperContainer.classList.add('swiper-loading');
 
-        try {
-            // 使用共享的 Swiper 加载器
-            const { initSwiper } = await import('@utils/swiperLoader');
+                    try {
+                        // 使用共享的 Swiper 加载器
+                        const { initSwiper } = await import('@utils/swiperLoader');
 
-            // 初始化 Swiper
-            const swiper = await initSwiper('.honor-swiper3', {
+                        // 初始化 Swiper
+                        const swiper = await initSwiper('.honor-swiper3', {
                 // 基本配置
                 slidesPerView: 2,
                 spaceBetween: 15,
@@ -355,11 +361,25 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
             });
 
 
-        } catch (error) {
-            console.error('Swiper 加载失败:', error);
-            // 即使加载失败也要移除加载状态
-            swiperContainer.classList.remove('swiper-loading');
-            swiperContainer.classList.add('swiper-error');
-        }
+                    } catch (error) {
+                        console.error('Swiper 加载失败:', error);
+                        // 即使加载失败也要移除加载状态
+                        swiperContainer.classList.remove('swiper-loading');
+                        swiperContainer.classList.add('swiper-error');
+                    }
+                    
+                    // 停止观察，避免重复初始化
+                    observer.unobserve(entry.target);
+                }
+            }
+        }, {
+            // 当元素 10% 可见时触发
+            threshold: 0.1,
+            // 提前 50px 开始加载
+            rootMargin: '50px'
+        });
+
+        // 开始观察轮播容器
+        observer.observe(swiperContainer);
     });
 </script>
