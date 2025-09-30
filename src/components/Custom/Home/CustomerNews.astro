@@ -1,10 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { getFirstImage, generateUrl } from '@utils/tools';
-// 导入 Swiper CSS
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 // 定义组件props接口
 export interface Props {
   customerNews?: {
@@ -164,6 +160,12 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
         .honor-swiper4{
             margin-top: 6rem;
         }
+        .swiper-slide{
+          width: 770px;
+          flex-shrink: 0;
+          margin-right: 40px;
+          word-break: normal;
+        }
         
         
     }
@@ -264,21 +266,37 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
         }
         .honor-swiper4{
           margin-top: 3rem;
+          .swiper-slide{
+            width:197px;
+            margin-right: 15px;
+          }
         }
       }
     }
     
 </style>
 
-<!-- 使用共享的 Swiper 加载器 -->
+<!-- 使用 Intersection Observer 实现懒加载 -->
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        try {
-            // 使用共享的 Swiper 加载器
-            const { initSwiper } = await import('@utils/swiperLoader');
+        // 检查是否存在轮播容器
+        const swiperContainer = document.querySelector('.honor-swiper4');
+        if (!swiperContainer) {
+            console.warn('轮播容器 .honor-swiper4 未找到');
+            return;
+        }
 
-            // 初始化 Swiper
-            const swiper = await initSwiper('.honor-swiper4', {
+        // 创建 Intersection Observer
+        const observer = new IntersectionObserver(async (entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) {
+                    // 元素进入视口时初始化 Swiper
+                    try {
+                        // 使用共享的 Swiper 加载器
+                        const { initSwiper } = await import('@utils/swiperLoader');
+
+                        // 初始化 Swiper
+                        const swiper = await initSwiper('.honor-swiper4', {
                 // 基本配置
                 slidesPerView: 2,
                 spaceBetween: 15,
@@ -339,8 +357,22 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
                 }
             });
 
-        } catch (error) {
-            console.error('Swiper 加载失败:', error);
-        }
+                    } catch (error) {
+                        console.error('Swiper 加载失败:', error);
+                    }
+                    
+                    // 停止观察，避免重复初始化
+                    observer.unobserve(entry.target);
+                }
+            }
+        }, {
+            // 当元素 10% 可见时触发
+            threshold: 0.1,
+            // 提前 50px 开始加载
+            rootMargin: '50px'
+        });
+
+        // 开始观察轮播容器
+        observer.observe(swiperContainer);
     });
 </script>

@@ -1,10 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { getFirstImage, generateUrl } from '@utils/tools';
-// 导入 Swiper CSS
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 // 定义组件props接口
 export interface Props {
   data?: {
@@ -71,11 +67,15 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
                 </div>
                 <div class="swiper-bottom-box">
                     <!-- 导航按钮 -->
-                    <div class="swiper-button-prev swiper-button-custom"></div>
+                    <div class="swiper-btn-prev swiper-btns">
+                        <i class="iconfont icon-arrowleft"></i>
+                    </div>
                     <!-- 分页器 -->
                     <div class="swiper-pagination"></div>
                     <!-- 导航按钮 -->
-                    <div class="swiper-button-next swiper-button-custom"></div>
+                    <div class="swiper-btn-next swiper-btns">
+                        <i class="iconfont icon-arrowright"></i>
+                    </div>
                 </div>
                  
                
@@ -177,6 +177,9 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
     
     .honor-swiper2 .swiper-slide {
         height: auto;
+        width: 382.6px;
+        margin-right: 37px;
+        word-break: normal;
     }
     .honor-swiper2 .swiper-bottom-box{
         display: flex;
@@ -187,18 +190,22 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
         margin-top: 7rem;
     }
     
-    .honor-swiper2 .swiper-button-next,
-    .honor-swiper2 .swiper-button-prev {
+    .honor-swiper2 .swiper-btns{
+        position: relative;
+        top:-5px;
+    }
+    .honor-swiper2 .swiper-btns i {
         color: #dc2626;
         border-radius: 50%;
         width: 16px;
         height: 14px;
         transition: all 0.3s ease;
-        position: static !important;
+        width: 2rem;
+        height: 2rem;
+        font-size: 2rem;
     }
     
-    .honor-swiper2 .swiper-button-next:hover,
-    .honor-swiper2 .swiper-button-prev:hover {
+    .honor-swiper2 .swiper-btns i:hover {
         background: #dc2626;
         color: white;
         transform: scale(1.1);
@@ -291,21 +298,37 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
           }
           .honor-swiper2{
             margin-top: 4rem;
+            .swiper-slide{
+                width: 189px;
+                margin-right: 15px;
+            }
           }
         }
     }
     
 </style>
 
-<!-- 使用共享的 Swiper 加载器 -->
+<!-- 使用 Intersection Observer 实现懒加载 -->
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        try {
-            // 使用共享的 Swiper 加载器
-            const { initSwiper } = await import('@utils/swiperLoader');
+        // 检查是否存在轮播容器
+        const swiperContainer = document.querySelector('.honor-swiper2');
+        if (!swiperContainer) {
+            console.warn('轮播容器 .honor-swiper2 未找到');
+            return;
+        }
 
-            // 初始化 Swiper
-            const swiper = await initSwiper('.honor-swiper2', {
+        // 创建 Intersection Observer
+        const observer = new IntersectionObserver(async (entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) {
+                    // 元素进入视口时初始化 Swiper
+                    try {
+                        // 使用共享的 Swiper 加载器
+                        const { initSwiper } = await import('@utils/swiperLoader');
+
+                        // 初始化 Swiper
+                        const swiper = await initSwiper('.honor-swiper2', {
                 // 基本配置
                 slidesPerView: 2,
                 spaceBetween: 15,
@@ -405,8 +428,22 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
                 setTimeout(applyBulletStyles, 50);
             });
 
-        } catch (error) {
-            console.error('Swiper 加载失败:', error);
-        }
+                    } catch (error) {
+                        console.error('Swiper 加载失败:', error);
+                    }
+                    
+                    // 停止观察，避免重复初始化
+                    observer.unobserve(entry.target);
+                }
+            }
+        }, {
+            // 当元素 10% 可见时触发
+            threshold: 0.1,
+            // 提前 50px 开始加载
+            rootMargin: '50px'
+        });
+
+        // 开始观察轮播容器
+        observer.observe(swiperContainer);
     });
 </script>

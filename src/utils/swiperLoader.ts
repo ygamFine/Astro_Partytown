@@ -47,26 +47,38 @@ export async function loadSwiperCSS(): Promise<void> {
   }
 
   try {
-    // 动态加载 CSS - 使用动态导入避免类型错误
-    const cssImports = [
-      'swiper/css',
-      'swiper/css/pagination', 
-      'swiper/css/navigation'
+    // 动态创建link标签加载CSS，避免阻塞渲染
+    const cssUrls = [
+      '/node_modules/swiper/swiper-bundle.min.css'
     ];
     
-    await Promise.all(
-      cssImports.map(cssPath => 
-        import(/* @vite-ignore */ cssPath).catch(() => {
-          console.warn(`CSS 文件 ${cssPath} 加载失败，跳过`);
-        })
-      )
-    );
+    const loadPromises = cssUrls.map(cssUrl => {
+      return new Promise<void>((resolve, reject) => {
+        // 检查是否已经存在
+        if (document.querySelector(`link[href="${cssUrl}"]`)) {
+          resolve();
+          return;
+        }
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = cssUrl;
+        link.onload = () => resolve();
+        link.onerror = () => {
+          console.warn(`CSS 文件 ${cssUrl} 加载失败，跳过`);
+          resolve(); // 即使失败也继续
+        };
+        document.head.appendChild(link);
+      });
+    });
     
+    await Promise.all(loadPromises);
     swiperCSSLoaded = true;
-    console.log('Swiper CSS 加载成功');
+    console.log('Swiper CSS 动态加载成功');
   } catch (error) {
     console.error('Swiper CSS 加载失败:', error);
-    throw error;
+    // 即使CSS加载失败，也不阻止Swiper初始化
+    swiperCSSLoaded = true;
   }
 }
 
@@ -78,7 +90,12 @@ export async function loadSwiperCSS(): Promise<void> {
  */
 export async function initSwiper(selector: string, config: any): Promise<any> {
   try {
-    // 确保 Swiper 库已加载
+    // 确保 CSS 和 Swiper 库都已加载
+    await Promise.all([
+      loadSwiperCSS(),
+      getSwiper()
+    ]);
+    
     const Swiper = await getSwiper();
     
     // 检查容器是否存在

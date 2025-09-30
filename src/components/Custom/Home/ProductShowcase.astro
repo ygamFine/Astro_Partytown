@@ -1,9 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import { getFirstImage, generateUrl } from '@utils/tools';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 
 // 定义组件props接口
 export interface Props {
@@ -220,6 +217,9 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                position: relative;
                cursor: pointer;
                transition: all 0.3s ease;
+               width: 229px;
+               margin-right: 90px;
+               word-break: normal;
                
                &::before{
                  content: '';
@@ -349,7 +349,14 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
   }
  
    @media (max-width: 768px) {
-     .product-showcase{
+     section.product-showcase{
+       .block-title{
+         font-size: 3rem;
+         line-height: 5rem;
+       }
+       .block-desc{
+         width: 96%;
+       }
       .product-showcase-content {
         .product-left-box{
           width: 100%;
@@ -359,6 +366,13 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
           width: 100%;
           margin-top: 1rem;
         }
+        .product-left-box{
+          .honor-swiper0 .swiper-slide{
+            width: 194.5px;
+            margin-right: 20px;
+          }
+        }
+        
       }
      }
      
@@ -368,22 +382,27 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
 
   </style>
 
-<!-- 使用共享的 Swiper 加载器 -->
+<!-- 使用 Intersection Observer 实现懒加载 -->
 <script>
   document.addEventListener('DOMContentLoaded', async function() {
-    try {
-      // 检查是否存在轮播容器
-      const swiperContainer = document.querySelector('.honor-swiper0');
-      if (!swiperContainer) {
-        console.warn('轮播容器 .honor-swiper0 未找到');
-        return;
-      }
-      
-      // 使用共享的 Swiper 加载器
-      const { initSwiper } = await import('@utils/swiperLoader');
-      
-      // 初始化 Swiper
-      const swiper = await initSwiper('.honor-swiper0', {
+    // 检查是否存在轮播容器
+    const swiperContainer = document.querySelector('.honor-swiper0');
+    if (!swiperContainer) {
+      console.warn('轮播容器 .honor-swiper0 未找到');
+      return;
+    }
+
+    // 创建 Intersection Observer
+    const observer = new IntersectionObserver(async (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          // 元素进入视口时初始化 Swiper
+          try {
+            // 使用共享的 Swiper 加载器
+            const { initSwiper } = await import('@utils/swiperLoader');
+            
+            // 初始化 Swiper
+            const swiper = await initSwiper('.honor-swiper0', {
         // 基本配置
         slidesPerView: 3,
         spaceBetween: 20,
@@ -516,8 +535,22 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
           });
         });
       
-    } catch (error) {
-      console.error('Swiper 加载失败:', error);
-    }
+          } catch (error) {
+            console.error('Swiper 加载失败:', error);
+          }
+          
+          // 停止观察，避免重复初始化
+          observer.unobserve(entry.target);
+        }
+      }
+    }, {
+      // 当元素 10% 可见时触发
+      threshold: 0.1,
+      // 提前 50px 开始加载
+      rootMargin: '50px'
+    });
+
+    // 开始观察轮播容器
+    observer.observe(swiperContainer);
   });
 </script> 
