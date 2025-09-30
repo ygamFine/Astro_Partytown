@@ -33,7 +33,6 @@
         { "source": "/pagefind/:path*", "destination": "/pagefind/:path*" },
         { "source": "/images/:path*", "destination": "/images/:path*" },
         { "source": "/_astro/:path*", "destination": "/_astro/:path*" },
-        { "source": "/api/:path*", "destination": "/api/:path*" },
         { "source": "/robots.txt", "destination": "/en/robots.txt", "has": [{ "type": "host", "value": "^en\\..+$" }] },
         { "source": "/robots.txt", "destination": "/zh-Hans/robots.txt", "has": [{ "type": "host", "value": "^zh\\..+$" }] },
         { "source": "/robots.txt", "destination": "/zh-Hant/robots.txt", "has": [{ "type": "host", "value": "^zh-hant\\..+$" }] },

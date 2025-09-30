@@ -89,6 +89,6 @@ export default defineConfig({
   // 📁 静态资源配置
   publicDir: 'public',
 
-  // 📤 输出配置
-  output: 'static',
+  // 📤 输出配置 - 服务端模式支持API路由
+  output: 'server',
 });
