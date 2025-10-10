@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildLanguageUrl } from '@utils/languageUtils';
 console.log('加载 React Form 组件')
 interface InquiryFormProps {
   lang: string;
@@ -295,7 +296,12 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         ...payload,
       };
       
-      const response = await fetch(`/api/inquiry`, {
+      // 使用通用多语言 URL 构建：
+      // - 生产（域名模式）：返回不带语言前缀的路径
+      // - 开发/本地（路径前缀模式）：返回带 `/{lang}` 前缀的路径
+      const apiEndpoint = buildLanguageUrl(lang, '/api/inquiry');
+
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -316,14 +322,9 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       if (successMode === "modal") {
         setShowModal(true);
       } else {
-        // // toast 模式下直接跳转
-        // const currentPath = window.location.pathname;
-        // const langMatch = currentPath.match(/^\/([a-z]{2}(-[A-Z]{2})?)\//);
-        // const lang = langMatch ? langMatch[1] : "";
-        // const contactSuccessPath = lang
-        //   ? `/${lang}/contact/success`
-        //   : "/contact/success";
-        // window.location.href = contactSuccessPath;
+        // toast 模式下直接跳转：使用通用多语言 URL 构建
+        const contactSuccessPath = buildLanguageUrl(lang, '/contact/success');
+        window.location.href = contactSuccessPath;
       }
 
       // 触发自定义事件，通知其他组件表单提交成功
@@ -560,7 +561,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
 
       {/* 成功提交模态框 */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all duration-300">
             <div className="p-6 text-center">
               {/* 成功图标 */}

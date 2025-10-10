@@ -84,12 +84,12 @@ const breadcrumbs = generateContactBreadcrumbs(lang);
     <InquiryForm 
       client:load
       id="contact-page-form"
+      lang={lang}
       transitions={t}
       showTitle={true}
       showDescription={true}
-      successMode="modal"
+      successMode="toast"
       companyId={companyId}
-      lang={lang}
       formId={formResp?.data?.formStructure?.[0]?.formId}
       formStructure={formStructure}
       formTrans={formTrans}
