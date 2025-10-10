@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState } from 'react';
+console.log('加载 React Form 组件')
 interface InquiryFormProps {
+  lang: string;
   id?: string;
   transitions?: any;
   showTitle?: boolean;
@@ -8,8 +9,9 @@ interface InquiryFormProps {
   successMode?: "toast" | "modal";
   className?: string;
   companyId?: string;
-  formId?: string;
-  formStructure?: any[];
+  formId: string;
+  formStructure: any[];
+  formTrans: any[];
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
@@ -19,6 +21,7 @@ interface FormFieldValue {
 }
 
 const InquiryForm: React.FC<InquiryFormProps> = ({
+  lang = 'en',
   id = "contact-page-form",
   transitions,
   showTitle = true,
@@ -28,6 +31,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
   companyId = '',
   formId = '',
   formStructure = [],
+  formTrans = [],
   onSuccess,
   onError,
 }) => {
@@ -37,7 +41,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
   const [showModal, setShowModal] = useState(false);
 
   const t = transitions || {};
-  
+  console.log('源数据', formStructure)
+  console.log('翻译数据', formTrans)
   // 辅助函数 - 与 Astro 版本保持一致
   const toSlug = (val: any) =>
     String(val ?? "")
@@ -113,13 +118,13 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     const messages = t?.form?.validation || {};
     switch (validateType) {
       case "email":
-        return messages?.email_invalid || "请输入有效的邮箱地址";
+        return messages?.email_invalid;
       case "phone":
-        return messages?.phone_invalid || "请输入有效的电话号码";
+        return messages?.phone_invalid;
       case "whatsapp":
-        return messages?.whatsapp_invalid || "请输入有效的WhatsApp号码";
+        return messages?.whatsapp_invalid;
       default:
-        return messages?.invalid_format || "格式不正确";
+        return messages?.invalid_format;
     }
   };
 
@@ -136,7 +141,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       const slugFromPreferred = toSlug(preferredKeySource);
       const slugFromName = toSlug(fieldName);
       const fieldKey = slugFromPreferred || slugFromName || `field_${index}`;
-      
+      console.log('fieldName', fieldName);
+      console.log('slugFromName', slugFromName);
       const required = Boolean(
         item?.required ??
         item?.isRequired ??
@@ -148,6 +154,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       const rawPlaceholder = item?.prompt ?? 
         (t.form?.placeholders ? t.form.placeholders[fieldName] : "") ?? "";
       const placeholder = i18nFormText(rawPlaceholder);
+      const rawPrompt = formTrans[item?.placeholder]?.[lang] ?? item?.placeholder;
+      const prompt = i18nFormText(rawPrompt);
       
       if (type === "radio" || type === "checkbox-group") {
         if (!required) {
@@ -157,7 +165,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         
         const value = fieldValues[fieldKey];
         if (!value || (Array.isArray(value) && value.length === 0)) {
-          setError(fieldKey, placeholder || "请选择");
+          setError(fieldKey, prompt);
           hasError = true;
         } else {
           clearError(fieldKey);
@@ -167,7 +175,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         const value = typeof rawVal === "string" ? rawVal.trim() : "";
         
         if (required && !value) {
-          setError(fieldKey, placeholder || "此字段为必填项");
+          setError(fieldKey, prompt);
           hasError = true;
           return;
         }
@@ -349,7 +357,6 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     const slugFromName = toSlug(fieldName);
     const fieldKey = slugFromPreferred || slugFromName || `field_${index}`;
     const fieldId = `${fieldKey}`;
-    
     const required = Boolean(
       item?.required ??
       item?.isRequired ??
@@ -358,9 +365,9 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       item?.requiredFlag,
     );
     
-    const rawLabel = item?.label ?? item?.name ?? "";
+    const rawLabel = formTrans[item?.label]?.[lang] ?? item?.label;
     const label = i18nFormText(rawLabel);
-    const rawPlaceholder = item?.prompt ?? 
+    const rawPlaceholder = formTrans[item?.prompt]?.[lang] ?? item?.prompt ?? 
       (t.form?.placeholders ? t.form.placeholders[fieldName] : "") ?? "";
     const placeholder = i18nFormText(rawPlaceholder);
     const options = getOptions(item);
@@ -403,12 +410,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
           >
             <option value="">{placeholder}</option>
             {options.map((opt: any, idx: number) => {
-              const optValue = String(
-                opt?.value ?? opt?.id ?? opt?.dicId ?? opt?.key ?? opt?.code ?? opt?.dicValue ?? opt,
-              );
-              const optRawLabel = String(
-                opt?.label ?? opt?.name ?? opt?.dicValue ?? opt?.text ?? optValue,
-              );
+              const optValue = opt?.dicId;
+              const optRawLabel = formTrans[opt?.dicValue]?.[lang] ?? opt?.dicValue;
               const optLabel = i18nFormText(optRawLabel);
               return (
                 <option key={idx} value={optValue}>
@@ -421,16 +424,11 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
           <div className="flex flex-wrap gap-2 sm:gap-3">
             {options.map((opt: any, idx: number) => {
               const optId = `${fieldId}-${idx}`;
-              const optValue = String(
-                opt?.value ?? opt?.id ?? opt?.dicId ?? opt?.key ?? opt?.code ?? opt?.dicValue ?? opt,
-              );
-              const optRawLabel = String(
-                opt?.label ?? opt?.name ?? opt?.dicValue ?? opt?.text ?? optValue,
-              );
+              const optValue = opt?.key;
+              const optRawLabel = formTrans[opt?.value]?.[lang] ?? opt?.value;
               const optLabel = i18nFormText(optRawLabel);
               const optKey = String(opt?.key ?? "");
               const isDefault = defaultRadioKey !== "" && optKey === defaultRadioKey;
-              
               return (
                 <label
                   key={idx}
@@ -456,12 +454,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
           <div className="flex flex-wrap gap-2 sm:gap-3">
             {options.map((opt: any, idx: number) => {
               const optId = `${fieldId}-${idx}`;
-              const optValue = String(
-                opt?.value ?? opt?.id ?? opt?.dicId ?? opt?.key ?? opt?.code ?? opt?.dicValue ?? opt,
-              );
-              const optRawLabel = String(
-                opt?.label ?? opt?.name ?? opt?.dicValue ?? opt?.text ?? optValue,
-              );
+              const optValue = opt?.key;
+              const optRawLabel = formTrans[opt?.value]?.[lang] ?? opt?.value;
               const optLabel = i18nFormText(optRawLabel);
               const checkedValues = Array.isArray(fieldValue) ? fieldValue : [];
               
@@ -536,7 +530,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
           <div className="mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center">
               <div className="w-1 h-6 bg-red-600 mr-3" />
-              {t.form?.title || "联系我们"}
+              {t.form?.title}
             </h2>
             {showDescription && t.form?.description && (
               <p className="text-gray-600">{t.form.description}</p>
@@ -544,7 +538,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
           </div>
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {Array.isArray(formStructure) &&
             formStructure.length > 0 &&
             formStructure.map((item: any, index: number) => renderFormField(item, index))}
@@ -558,8 +552,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-base disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting 
-              ? (t?.form?.messages?.sending || "提交中...") 
-              : (t?.form?.send || "提交询盘")}
+              ? (t?.form?.messages?.sending) 
+              : (t?.form?.send)}
           </button>
         </div>
       </form>
@@ -588,12 +582,12 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
 
               {/* 成功标题 */}
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {t?.form?.messages?.submit_success_model_text || "提交成功"}
+                {t?.form?.messages?.submit_success_model_text}
               </h3>
 
               {/* 成功描述 */}
               <p className="text-gray-600 mb-6">
-                {t?.form?.messages?.submit_success_model_subtitle || "我们会尽快与您联系"}
+                {t?.form?.messages?.submit_success_model_subtitle}
               </p>
 
               {/* 操作按钮 */}
@@ -615,7 +609,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
                   }}
                   className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200"
                 >
-                  {t?.form?.messages?.submit_success_model_button || "确定"}
+                  {t?.form?.messages?.submit_success_model_button}
                 </button>
               </div>
             </div>

@@ -6,8 +6,7 @@ import { getDictionary } from '@i18n/dictionaries';
 import { generateContactBreadcrumbs } from '@utils/breadcrumbUtils';
 import { getContact } from '@apis/common';
 import RichText from '@components/common/layout/RichText.astro';
-import ItalkinForm from '@components/common/italkin/form.astro';
-import InquiryForm from '@components/react/InquiryForm.tsx';
+import InquiryForm from '@components/common/italkin/InquiryForm';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
 import { getItalkinForm, getCompaniesSite } from "@apis/common";
 
@@ -48,8 +47,11 @@ const contact = contactData || {};
 const companiesResp = await getCompaniesSite(lang);
 const companyId = companiesResp?.company?.hz_company_id ?? "";
 const siteId = companiesResp?.website?.hz_website_id ?? "";
+// const companyId = 1277;
+// const siteId = 84;
 const formResp = await getItalkinForm(companyId, siteId);
 const formStructure = formResp?.data?.formStructure || [];
+const formTrans = formResp?.data?.formTrans || [];
 
 // 调试信息
 if (!contactData) {
@@ -87,9 +89,10 @@ const breadcrumbs = generateContactBreadcrumbs(lang);
       showDescription={true}
       successMode="modal"
       companyId={companyId}
+      lang={lang}
       formId={formResp?.data?.formStructure?.[0]?.formId}
       formStructure={formStructure}
-      className="max-w-4xl mx-auto"
+      formTrans={formTrans}
     />
     </div>
   </div>}
