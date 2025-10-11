@@ -89,10 +89,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                         alt={productImage?.name || productName}
                         width={227}
                         height={193}
-                        widths={[227, 454]}
-                        sizes="(max-width: 768px) 180px, 227px"
-                        quality={85}
-                        format="webp"
+                        quality={80}
                         loading="lazy"
                         decoding="async"
                         class="product-thumbnail" 
@@ -118,9 +115,6 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                     alt="No products available" 
                     width={227}
                     height={193}
-                    sizes="(max-width: 768px) 180px, 227px"
-                    quality={85}
-                    format="webp"
                     loading="lazy"
                     decoding="async"
                     class="thumbnail-image transition-transform duration-300 hover:scale-105" 
@@ -159,10 +153,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                   alt={bigImage?.name || productName}
                   width={600}
                   height={400}
-                  widths={[400, 600, 800]}
-                  sizes="(max-width: 768px) 100vw, 300px"
-                  quality={85}
-                  format="webp"
+                  quality={80}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
                   class={`main-product-image transition-all duration-500 ease-in-out hover:scale-105 ${index === 0 ? 'active' : 'hidden'}`}
