@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { buildLanguageUrl } from '@utils/languageUtils';
-console.log('加载 React Form 组件')
 interface InquiryFormProps {
   lang: string;
   id?: string;
@@ -42,8 +41,6 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
   const [showModal, setShowModal] = useState(false);
 
   const t = transitions || {};
-  console.log('源数据', formStructure)
-  console.log('翻译数据', formTrans)
   // 辅助函数 - 与 Astro 版本保持一致
   const toSlug = (val: any) =>
     String(val ?? "")
@@ -142,8 +139,6 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       const slugFromPreferred = toSlug(preferredKeySource);
       const slugFromName = toSlug(fieldName);
       const fieldKey = slugFromPreferred || slugFromName || `field_${index}`;
-      console.log('fieldName', fieldName);
-      console.log('slugFromName', slugFromName);
       const required = Boolean(
         item?.required ??
         item?.isRequired ??
@@ -313,11 +308,9 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         throw new Error(`HTTP ${response.status} ${response.statusText}`);
       }
       const result = await response.json();
-      console.log('组件请求数据 response', result);
       if(result.success && result.data.code !== '001') {
         throw new Error(result.message);
       }
-      console.log('打开成功提示', successMode)
       // 根据successMode显示成功消息
       if (successMode === "modal") {
         setShowModal(true);
