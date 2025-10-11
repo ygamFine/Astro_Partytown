@@ -1,6 +1,8 @@
 ---
 import { getDictionary } from "@i18n/dictionaries.js";
-import ItalkinForm from "../italkin/form.astro";
+import ItalkinForm from "../italkin/InquiryForm";
+import { getCompaniesSite } from "@apis/common";
+import { getItalkinForm } from "@apis/common";
 
 // 联系表单模态组件
 interface Props {
@@ -14,6 +16,13 @@ const { id, title, showCloseButton = true, lang = "en" } = Astro.props;
 
 // 确保数据结构正确
 let t = await getDictionary(lang);
+
+const companiesResp = await getCompaniesSite(lang);
+const companyId = companiesResp?.company?.hz_company_id ?? "";
+const siteId = companiesResp?.website?.hz_website_id ?? "";
+const formResp = await getItalkinForm(companyId, siteId);
+const formStructure = formResp?.data?.formStructure || [];
+const formTrans = formResp?.data?.formTrans || [];
 ---
 
 <!-- 模态背景遮罩 -->
@@ -54,7 +63,19 @@ let t = await getDictionary(lang);
 
     <!-- 表单内容 -->
     <div class="p-6">
-      <ItalkinForm id="modal-page-form" showTitle={false} successMode="toast" transitions={t} />
+      <ItalkinForm 
+      client:load
+      id="contact-page-form"
+      lang={lang}
+      transitions={t}
+      showTitle={false}
+      showDescription={false}
+      successMode="modal"
+      companyId={companyId}
+      formId={formResp?.data?.formStructure?.[0]?.formId}
+      formStructure={formStructure}
+      formTrans={formTrans}
+    />
     </div>
   </div>
 </div>

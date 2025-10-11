@@ -14,7 +14,9 @@ import { getDictionary } from '@i18n/dictionaries.js';
 import { generateProductDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
 import RichText from '@components/common/layout/RichText.astro';
-import ItalkinForm from '@components/common/italkin/form.astro';
+import ItalkinForm from '@components/common/italkin/InquiryForm';
+import { getCompaniesSite } from "@apis/common";
+import { getItalkinForm } from "@apis/common";
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -78,6 +80,13 @@ const popularProducts = recommendedProducts.map((p: any) => ({
 
 // 面包屑导航
 const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.title, product.product_category?.url_slug) : [];
+
+const companiesResp = await getCompaniesSite(lang);
+const companyId = companiesResp?.company?.hz_company_id ?? "";
+const siteId = companiesResp?.website?.hz_website_id ?? "";
+const formResp = await getItalkinForm(companyId, siteId);
+const formStructure = formResp?.data?.formStructure || [];
+const formTrans = formResp?.data?.formTrans || [];
 ---
 <>
 { !hasProduct ? (
@@ -300,7 +309,19 @@ const breadcrumbs = hasProduct ? generateProductDetailBreadcrumbs(lang, product.
 
             <!-- Leave your messages 表单 -->
             <div class="bg-white rounded-lg p-8 shadow-sm">
-              <ItalkinForm id="product-detail-form" showDescription={false} successMode="toast" transitions={t} />
+              <ItalkinForm 
+                client:load
+                id="product-detail-form"
+                lang={lang}
+                transitions={t}
+                showTitle={true}
+                showDescription={true}
+                successMode="toast"
+                companyId={companyId}
+                formId={formResp?.data?.formStructure?.[0]?.formId}
+                formStructure={formStructure}
+                formTrans={formTrans}
+              />
             </div>
 
             <!-- Related Products -->

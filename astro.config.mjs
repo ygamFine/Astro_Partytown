@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
+import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 // import critters from 'astro-critters';
 
@@ -36,6 +37,7 @@ export default defineConfig({
   },
   // 🔧 集成配置
   integrations: [
+    react(),
     tailwind({
       applyBaseStyles: true,
     }),
