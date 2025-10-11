@@ -1,0 +1,1438 @@
+{
+  "bannerData": [
+    {
+      "id": 718,
+      "name": "Banner01",
+      "description": "",
+      "link": null,
+      "desktopImage": "http://182.92.233.160:1137/uploads/banner3_3_3_25f52c3cc6.webp",
+      "mobileImage": "http://182.92.233.160:1137/uploads/sbanner3_02d9ae661a.webp",
+      "shipin": null,
+      "alt": "Banner01",
+      "type": "homepage",
+      "source": "field_shouyebanner",
+      "field_tupian_url": "http://182.92.233.160:1137/uploads/banner3_3_3_25f52c3cc6.webp",
+      "field_shouji_url": "http://182.92.233.160:1137/uploads/sbanner3_02d9ae661a.webp",
+      "field_bannershipin_url": null
+    },
+    {
+      "id": 719,
+      "name": "Banner02",
+      "description": "",
+      "link": null,
+      "desktopImage": "http://182.92.233.160:1137/uploads/banner3_1e5bcaadff.webp",
+      "mobileImage": "http://182.92.233.160:1137/uploads/shouji_banner3_d8daab695e.webp",
+      "shipin": null,
+      "alt": "Banner02",
+      "type": "homepage",
+      "source": "field_shouyebanner",
+      "field_tupian_url": "http://182.92.233.160:1137/uploads/banner3_1e5bcaadff.webp",
+      "field_shouji_url": "http://182.92.233.160:1137/uploads/shouji_banner3_d8daab695e.webp",
+      "field_bannershipin_url": null
+    },
+    {
+      "id": 720,
+      "name": "Banner03",
+      "description": "",
+      "link": null,
+      "desktopImage": "http://182.92.233.160:1137/uploads/banner4_93cdb2e15d.webp",
+      "mobileImage": "http://182.92.233.160:1137/uploads/shouji_banner4_cd32065e71.webp",
+      "shipin": null,
+      "alt": "Banner03",
+      "type": "homepage",
+      "source": "field_shouyebanner",
+      "field_tupian_url": "http://182.92.233.160:1137/uploads/banner4_93cdb2e15d.webp",
+      "field_shouji_url": "http://182.92.233.160:1137/uploads/shouji_banner4_cd32065e71.webp",
+      "field_bannershipin_url": null
+    }
+  ],
+  "productShowcase": {
+    "title": "PRODUCT SHOWCASE",
+    "description": "Our product line covers a wide range of products",
+    "products": [
+    {
+      "id": 1194,
+      "title": "Skid Steer Loader",
+      "url": "/images/tpl3/smallImg1.webp",
+      "url_text": "View Details",
+      "show_time": null,
+      "picture": {
+        "id": 18025,
+        "alt": "Skid Steer Loader",
+        "media": {
+          "id": 675,
+          "documentId": "gvznwi31hh23gk5fjmhtaxq6",
+          "name": "11.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 227,
+          "height": 227,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_11_82d7bd6481.webp",
+              "hash": "thumbnail_11_82d7bd6481",
+              "mime": "image/webp",
+              "name": "thumbnail_11.webp",
+              "path": null,
+              "size": 6.01,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 6006
+            }
+          },
+          "hash": "11_82d7bd6481",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 45.9,
+          "url": "/uploads/11_82d7bd6481.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T11:01:08.853Z",
+          "updatedAt": "2025-09-04T11:01:08.853Z",
+          "publishedAt": "2025-09-04T11:01:08.854Z"
+        }
+      },
+      "product_big": {
+        "id": 18041,
+        "alt": null,
+        "media": {
+          "id": 687,
+          "documentId": "c8fsj6iqtp3i0gsyoz64ne5k",
+          "name": "11+.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 600,
+          "height": 600,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_11_b00de13770.webp",
+              "hash": "thumbnail_11_b00de13770",
+              "mime": "image/webp",
+              "name": "thumbnail_11+.webp",
+              "path": null,
+              "size": 5.61,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 5614
+            }
+          },
+          "hash": "11_b00de13770",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 88.71,
+          "url": "/uploads/11_b00de13770.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T11:39:06.228Z",
+          "updatedAt": "2025-09-04T11:39:06.228Z",
+          "publishedAt": "2025-09-04T11:39:06.229Z"
+        }
+      },
+      "image": [
+        {
+          "url": "/images/tpl3/smallImg1.webp",
+          "name": "11.webp",
+          "alt": "Skid Steer Loader",
+          "width": 227,
+          "height": 227
+        }
+      ],
+      "bigImage": [
+        {
+          "url": "/images/tpl3/bigImg1.webp",
+          "name": "11+.webp",
+          "alt": "",
+          "width": 600,
+          "height": 600
+        }
+      ]
+    },
+    {
+      "id": 1195,
+      "title": "Remote-Control Mowers",
+      "url": "http://",
+      "url_text": "View Details",
+      "show_time": null,
+      "picture": {
+        "id": 18026,
+        "alt": "Remote-Control Mowers",
+        "media": {
+          "id": 676,
+          "documentId": "zqpxjcqw4ntaljmdbwad0xwo",
+          "name": "22.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 227,
+          "height": 227,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_22_747a833516.webp",
+              "hash": "thumbnail_22_747a833516",
+              "mime": "image/webp",
+              "name": "thumbnail_22.webp",
+              "path": null,
+              "size": 5.52,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 5520
+            }
+          },
+          "hash": "22_747a833516",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 33.08,
+          "url": "/uploads/22_747a833516.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T11:01:44.958Z",
+          "updatedAt": "2025-09-04T11:01:44.958Z",
+          "publishedAt": "2025-09-04T11:01:44.959Z"
+        }
+      },
+      "product_big": {
+        "id": 18042,
+        "alt": null,
+        "media": {
+          "id": 688,
+          "documentId": "cego6jtgd61w34df2rknrgmi",
+          "name": "22+.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 600,
+          "height": 600,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_22_25c3abaa0b.webp",
+              "hash": "thumbnail_22_25c3abaa0b",
+              "mime": "image/webp",
+              "name": "thumbnail_22+.webp",
+              "path": null,
+              "size": 5.02,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 5018
+            }
+          },
+          "hash": "22_25c3abaa0b",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 165.3,
+          "url": "/uploads/22_25c3abaa0b.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T11:39:17.889Z",
+          "updatedAt": "2025-09-04T11:39:17.889Z",
+          "publishedAt": "2025-09-04T11:39:17.890Z"
+        }
+      },
+      "image": [
+        {
+          "url": "/images/tpl3/smallImg2.webp",
+          "name": "22.webp",
+          "alt": "Remote-Control Mowers",
+          "width": 227,
+          "height": 227
+        }
+      ],
+      "bigImage": [
+        {
+          "url": "/images/tpl3/bigImg2.webp",
+          "name": "22+.webp",
+          "alt": "",
+          "width": 600,
+          "height": 600
+        }
+      ]
+    },
+    {
+      "id": 1196,
+      "title": "Backhoe Loader",
+      "url": "http://",
+      "url_text": "View Details",
+      "show_time": null,
+      "picture": {
+        "id": 18027,
+        "alt": "Backhoe Loader",
+        "media": {
+          "id": 677,
+          "documentId": "g72fg0yd1wgox4dyynemoy11",
+          "name": "33.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 227,
+          "height": 227,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_33_fbb727878a.webp",
+              "hash": "thumbnail_33_fbb727878a",
+              "mime": "image/webp",
+              "name": "thumbnail_33.webp",
+              "path": null,
+              "size": 5.82,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 5816
+            }
+          },
+          "hash": "33_fbb727878a",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 33.16,
+          "url": "/uploads/33_fbb727878a.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T11:02:20.227Z",
+          "updatedAt": "2025-09-04T11:02:20.227Z",
+          "publishedAt": "2025-09-04T11:02:20.227Z"
+        }
+      },
+      "product_big": {
+        "id": 18043,
+        "alt": null,
+        "media": {
+          "id": 689,
+          "documentId": "kbfmfwd2onmuy9fmknbx87q2",
+          "name": "33+.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 600,
+          "height": 600,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_33_4c456c6e9c.webp",
+              "hash": "thumbnail_33_4c456c6e9c",
+              "mime": "image/webp",
+              "name": "thumbnail_33+.webp",
+              "path": null,
+              "size": 4.78,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 4780
+            }
+          },
+          "hash": "33_4c456c6e9c",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 164.04,
+          "url": "/uploads/33_4c456c6e9c.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T11:39:30.572Z",
+          "updatedAt": "2025-09-04T11:39:30.572Z",
+          "publishedAt": "2025-09-04T11:39:30.573Z"
+        }
+      },
+      "image": [
+        {
+          "url": "/images/tpl3/smallImg3.webp",
+          "name": "33.webp",
+          "alt": "Backhoe Loader",
+          "width": 227,
+          "height": 227
+        }
+      ],
+      "bigImage": [
+        {
+          "url": "/images/tpl3/bigImg3.webp",
+          "name": "33+.webp",
+          "alt": "",
+          "width": 600,
+          "height": 600
+        }
+      ]
+    },
+    {
+      "id": 1197,
+      "title": "Remote-Control Mowers",
+      "url": "http://",
+      "url_text": "View Details",
+      "show_time": null,
+      "picture": {
+        "id": 18028,
+        "alt": null,
+        "media": {
+          "id": 727,
+          "documentId": "pg4pqlw2ihgn9ja8rpvnan8y",
+          "name": "44.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 227,
+          "height": 227,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_44_edca9a809c.webp",
+              "hash": "thumbnail_44_edca9a809c",
+              "mime": "image/webp",
+              "name": "thumbnail_44.webp",
+              "path": null,
+              "size": 5.26,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 5258
+            }
+          },
+          "hash": "44_edca9a809c",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 38.7,
+          "url": "/uploads/44_edca9a809c.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-24T07:12:49.342Z",
+          "updatedAt": "2025-09-24T07:12:49.342Z",
+          "publishedAt": "2025-09-24T07:12:49.343Z"
+        }
+      },
+      "product_big": {
+        "id": 18044,
+        "alt": null,
+        "media": {
+          "id": 728,
+          "documentId": "igygjprggoi1iy7fj6koxz6z",
+          "name": "44+.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 600,
+          "height": 600,
+          "formats": {
+            "thumbnail": {
+              "ext": ".webp",
+              "url": "/uploads/thumbnail_44_e8749485b9.webp",
+              "hash": "thumbnail_44_e8749485b9",
+              "mime": "image/webp",
+              "name": "thumbnail_44+.webp",
+              "path": null,
+              "size": 4.85,
+              "width": 156,
+              "height": 156,
+              "sizeInBytes": 4850
+            }
+          },
+          "hash": "44_e8749485b9",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 186.52,
+          "url": "/uploads/44_e8749485b9.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-24T07:13:02.798Z",
+          "updatedAt": "2025-09-24T07:13:02.798Z",
+          "publishedAt": "2025-09-24T07:13:02.798Z"
+        }
+      },
+      "image": [
+        {
+          "url": "/images/tpl3/smallImg4.webp",
+          "name": "44.webp",
+          "alt": "",
+          "width": 227,
+          "height": 227
+        }
+      ],
+      "bigImage": [
+        {
+          "url": "/images/tpl3/bigImg4.webp",
+          "name": "44+.webp",
+          "alt": "",
+          "width": 600,
+          "height": 600
+        }
+      ]
+    }
+  ],
+    "bigImgBg": {
+      "url": "/images/tpl3/bigBg.webp",
+      "name": "bigBg.webp",
+      "alt": "",
+      "width": 590,
+      "height": 356
+    }
+  },
+  "companyIntroduction": {
+    "title": "COMPANY INTRODUCTION",
+
+    "introduction": "",
+    "fuTitle": "",
+    "desc": "",
+    "imgBg": {
+        "url": "/images/tpl3/aboutBg.webp",
+        "name": "组33.webp",
+        "alt": "",
+        "width": 1920,
+        "height": 892
+      },
+    "stats": null,
+    "buttonText": "View All",
+    "companyInfo": [
+        {
+          "id": 624,
+          "field_biaoti": "Incorporation",
+          "field_danwei": null,
+          "field_lianjiedao": null,
+          "field_description": "2001",
+          "field_tubiao": {
+            "id": 18062,
+            "alt": null,
+            "media": null
+          },
+          "field_hovertubaio": {
+            "id": 18066,
+            "alt": null,
+            "media": null
+          },
+          "c_num": "2001",
+          "c_title": "Incorporation",
+          "c_unit": null
+        },
+        {
+          "id": 614,
+          "field_biaoti": "Floor space",
+          "field_danwei": null,
+          "field_lianjiedao": null,
+          "field_description": "60000",
+          "field_tubiao": null,
+          "field_hovertubaio": null,
+          "c_num": "60000",
+          "c_title": "Floor space",
+          "c_unit": null
+        },
+        {
+          "id": 615,
+          "field_biaoti": "Exporting country",
+          "field_danwei": "+",
+          "field_lianjiedao": null,
+          "field_description": "120",
+          "field_tubiao": null,
+          "field_hovertubaio": null,
+          "c_num": "120",
+          "c_title": "Exporting country",
+          "c_unit": "+"
+        },
+        {
+          "id": 616,
+          "field_biaoti": "Have employees",
+          "field_danwei": "+",
+          "field_lianjiedao": null,
+          "field_description": "500",
+          "field_tubiao": null,
+          "field_hovertubaio": null,
+          "c_num": "500",
+          "c_title": "Have employees",
+          "c_unit": "+"
+        }
+      ]
+  },
+  "corporateAdvantages": [
+    {
+      "id": 631,
+      "field_biaoti": "High quality",
+      "field_danwei": null,
+      "field_lianjiedao": null,
+      "field_description": "Ensure to provide customers with high quality, high performance, high reliability of construction machinery products",
+      "field_tubiao": {
+        "id": 18129,
+        "alt": null,
+        "media": {
+          "id": 661,
+          "documentId": "jdehwhukxwzt5vnebhv1ymct",
+          "name": "钻石.png.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 75,
+          "height": 60,
+          "formats": null,
+          "hash": "png_3952ed1c9c",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 1.02,
+          "url": "/uploads/png_3952ed1c9c.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T09:57:20.510Z",
+          "updatedAt": "2025-09-04T09:57:20.510Z",
+          "publishedAt": "2025-09-04T09:57:20.510Z"
+        }
+      },
+      "field_hovertubaio": null,
+      "adv_img": {
+        "url": "/images/tpl3/adv1.webp",
+        "name": "钻石.png.webp",
+        "alt": "",
+        "width": 75,
+        "height": 60
+      },
+      "adv_title": "High quality",
+      "adv_desc": "Ensure to provide customers with high quality, high performance, high reliability of construction machinery products"
+    },
+    {
+      "id": 632,
+      "field_biaoti": "Diversified demand",
+      "field_danwei": null,
+      "field_lianjiedao": null,
+      "field_description": "Offering versatile solutions tailored to various applications.",
+      "field_tubiao": {
+        "id": 18130,
+        "alt": null,
+        "media": {
+          "id": 659,
+          "documentId": "fpxu1dc82xq1v3hdl36cfyn2",
+          "name": "多样化智能设备.png.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 60,
+          "height": 60,
+          "formats": null,
+          "hash": "png_53c4debbdf",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 0.87,
+          "url": "/uploads/png_53c4debbdf.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T09:57:20.324Z",
+          "updatedAt": "2025-09-04T09:57:20.324Z",
+          "publishedAt": "2025-09-04T09:57:20.324Z"
+        }
+      },
+      "field_hovertubaio": null,
+      "adv_img": {
+        "url": "/images/tpl3/adv2.webp",
+        "name": "多样化智能设备.png.webp",
+        "alt": "",
+        "width": 60,
+        "height": 60
+      },
+      "adv_title": "Diversified demand",
+      "adv_desc": "Offering versatile solutions tailored to various applications."
+    },
+    {
+      "id": 633,
+      "field_biaoti": "Reduce cost",
+      "field_danwei": null,
+      "field_lianjiedao": null,
+      "field_description": "Delivering efficient and cost-effective solutions for our customers",
+      "field_tubiao": {
+        "id": 18131,
+        "alt": null,
+        "media": {
+          "id": 660,
+          "documentId": "hlnqcmkd992hogvrbfhk2qn8",
+          "name": "降低成本.png (1).webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 53,
+          "height": 60,
+          "formats": null,
+          "hash": "png_1_7e3ec4f381",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 1,
+          "url": "/uploads/png_1_7e3ec4f381.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T09:57:20.345Z",
+          "updatedAt": "2025-09-04T09:57:20.345Z",
+          "publishedAt": "2025-09-04T09:57:20.345Z"
+        }
+      },
+      "field_hovertubaio": null,
+      "adv_img": {
+        "url": "/images/tpl3/adv3.webp",
+        "name": "降低成本.png (1).webp",
+        "alt": "",
+        "width": 53,
+        "height": 60
+      },
+      "adv_title": "Reduce cost",
+      "adv_desc": "Delivering efficient and cost-effective solutions for our customers"
+    },
+    {
+      "id": 634,
+      "field_biaoti": "Perfect service",
+      "field_danwei": null,
+      "field_lianjiedao": null,
+      "field_description": "Ensuring comprehensive support and customer satisfaction at every step",
+      "field_tubiao": {
+        "id": 18132,
+        "alt": null,
+        "media": {
+          "id": 658,
+          "documentId": "fyywq2u4ftlh7u9goxu4dt7l",
+          "name": "服务02.png.webp",
+          "alternativeText": null,
+          "caption": null,
+          "width": 76,
+          "height": 60,
+          "formats": null,
+          "hash": "02_png_661d88f963",
+          "ext": ".webp",
+          "mime": "image/webp",
+          "size": 0.9,
+          "url": "/uploads/02_png_661d88f963.webp",
+          "previewUrl": null,
+          "provider": "local",
+          "provider_metadata": null,
+          "createdAt": "2025-09-04T09:57:20.167Z",
+          "updatedAt": "2025-09-04T09:57:20.167Z",
+          "publishedAt": "2025-09-04T09:57:20.167Z"
+        }
+      },
+      "field_hovertubaio": null,
+      "adv_img": {
+        "url": "/images/tpl3/adv4.webp",
+        "name": "服务02.png.webp",
+        "alt": "",
+        "width": 76,
+        "height": 60
+      },
+      "adv_title": "Perfect service",
+      "adv_desc": "Ensuring comprehensive support and customer satisfaction at every step"
+    }
+  ],
+  "hotRecommendedProducts": {
+    "title": "HOT RECOMMENDED PRODUCTS",
+    "description": "",
+    "products": [
+      {
+        "id": 1212,
+        "title": "Wheeled skid steer loader JC25",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": null,
+        "picture": {
+          "id": 18075,
+          "alt": null,
+          "media": {
+            "id": 665,
+            "documentId": "r1x2gl7d8ul0ufhzb7xw38t6",
+            "name": "product1.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 330,
+            "height": 330,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_product1_676e030a14.webp",
+                "hash": "thumbnail_product1_676e030a14",
+                "mime": "image/webp",
+                "name": "thumbnail_product1.webp",
+                "path": null,
+                "size": 6.9,
+                "width": 156,
+                "height": 156,
+                "sizeInBytes": 6896
+              }
+            },
+            "hash": "product1_676e030a14",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 122.78,
+            "url": "/uploads/product1_676e030a14.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:46:05.764Z",
+            "updatedAt": "2025-09-04T10:46:05.764Z",
+            "publishedAt": "2025-09-04T10:46:05.764Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/hotpro1.webp",
+          "name": "product1.webp",
+          "alt": "",
+          "width": 330,
+          "height": 330
+        }
+      },
+      {
+        "id": 1213,
+        "title": "Skid steer loaders TS65",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": null,
+        "picture": {
+          "id": 18076,
+          "alt": null,
+          "media": {
+            "id": 666,
+            "documentId": "sr79z56xs4bjmc1049y237gs",
+            "name": "product2.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 330,
+            "height": 330,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_product2_77e3111d68.webp",
+                "hash": "thumbnail_product2_77e3111d68",
+                "mime": "image/webp",
+                "name": "thumbnail_product2.webp",
+                "path": null,
+                "size": 6.42,
+                "width": 156,
+                "height": 156,
+                "sizeInBytes": 6416
+              }
+            },
+            "hash": "product2_77e3111d68",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 117.56,
+            "url": "/uploads/product2_77e3111d68.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:47:02.183Z",
+            "updatedAt": "2025-09-04T10:47:02.183Z",
+            "publishedAt": "2025-09-04T10:47:02.183Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/hotpro2.webp",
+          "name": "product2.webp",
+          "alt": "",
+          "width": 330,
+          "height": 330
+        }
+      },
+      {
+        "id": 1214,
+        "title": "Wheeled skid steer loader LY850",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": null,
+        "picture": {
+          "id": 18077,
+          "alt": null,
+          "media": {
+            "id": 667,
+            "documentId": "xhgg0n0ytqvxchpvfjg30ixy",
+            "name": "product3.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 330,
+            "height": 330,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_product3_2db0ab4906.webp",
+                "hash": "thumbnail_product3_2db0ab4906",
+                "mime": "image/webp",
+                "name": "thumbnail_product3.webp",
+                "path": null,
+                "size": 6.07,
+                "width": 156,
+                "height": 156,
+                "sizeInBytes": 6068
+              }
+            },
+            "hash": "product3_2db0ab4906",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 109.63,
+            "url": "/uploads/product3_2db0ab4906.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:47:24.680Z",
+            "updatedAt": "2025-09-04T10:47:24.680Z",
+            "publishedAt": "2025-09-04T10:47:24.681Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/hotpro3.webp",
+          "name": "product3.webp",
+          "alt": "",
+          "width": 330,
+          "height": 330
+        }
+      },
+      {
+        "id": 1215,
+        "title": "Wheeled skid steer loader JC50D",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": null,
+        "picture": {
+          "id": 18078,
+          "alt": null,
+          "media": {
+            "id": 668,
+            "documentId": "d3sgm4mp0zja8snyyrrvttnw",
+            "name": "product4.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 330,
+            "height": 330,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_product4_8d3d811702.webp",
+                "hash": "thumbnail_product4_8d3d811702",
+                "mime": "image/webp",
+                "name": "thumbnail_product4.webp",
+                "path": null,
+                "size": 6.45,
+                "width": 156,
+                "height": 156,
+                "sizeInBytes": 6446
+              }
+            },
+            "hash": "product4_8d3d811702",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 115.84,
+            "url": "/uploads/product4_8d3d811702.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:47:44.371Z",
+            "updatedAt": "2025-09-04T10:47:44.371Z",
+            "publishedAt": "2025-09-04T10:47:44.372Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/hotpro4.webp",
+          "name": "product4.webp",
+          "alt": "",
+          "width": 330,
+          "height": 330
+        }
+      },
+      {
+        "id": 1216,
+        "title": "Skid steer loaders TS120",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": null,
+        "picture": {
+          "id": 18079,
+          "alt": null,
+          "media": {
+            "id": 669,
+            "documentId": "u6x46xef20km349p40zn1jt8",
+            "name": "product5.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 330,
+            "height": 330,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_product5_a6eec46319.webp",
+                "hash": "thumbnail_product5_a6eec46319",
+                "mime": "image/webp",
+                "name": "thumbnail_product5.webp",
+                "path": null,
+                "size": 6.52,
+                "width": 156,
+                "height": 156,
+                "sizeInBytes": 6524
+              }
+            },
+            "hash": "product5_a6eec46319",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 118.28,
+            "url": "/uploads/product5_a6eec46319.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:48:04.554Z",
+            "updatedAt": "2025-09-18T02:25:14.193Z",
+            "publishedAt": "2025-09-04T10:48:04.555Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/hotpro5.webp",
+          "name": "product5.webp",
+          "alt": "",
+          "width": 330,
+          "height": 330
+        }
+      },
+      {
+        "id": 1217,
+        "title": "Wheeled skid steer loader JC25",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": null,
+        "picture": {
+          "id": 18080,
+          "alt": "Wheeled skid steer loader JC25",
+          "media": {
+            "id": 703,
+            "documentId": "yt1gg1sybtcxqr6tv11l36lp",
+            "name": "external-image-1757478375816.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 923,
+            "height": 853,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_external_image_1757478375816_1d943c486e.webp",
+                "hash": "thumbnail_external_image_1757478375816_1d943c486e",
+                "mime": "image/webp",
+                "name": "thumbnail_external-image-1757478375816.webp",
+                "path": null,
+                "size": 5.92,
+                "width": 169,
+                "height": 156,
+                "sizeInBytes": 5924
+              }
+            },
+            "hash": "external_image_1757478375816_1d943c486e",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 56.23,
+            "url": "/uploads/external_image_1757478375816_1d943c486e.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-10T04:26:16.397Z",
+            "updatedAt": "2025-09-10T04:26:16.397Z",
+            "publishedAt": "2025-09-10T04:26:16.397Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/hotpro1.webp",
+          "name": "external-image-1757478375816.webp",
+          "alt": "Wheeled skid steer loader JC25",
+          "width": 923,
+          "height": 853
+        }
+      }
+    ]
+  },
+  "frontContactUs": {
+    "title": "MEET THE DIVERSE NEEDS",
+    "fu_title": "OF DIFFERENT CUSTOMER GROUPS",
+    "description": "",
+    "buttonText": "Contact us",
+    "buttonUrl": "/contact-us.html",
+    "panoramaText": "360",
+    "panortitle": "Click to enter Panoramic display",
+    "contactImgBg": {
+      "url": "/images/tpl3/fontcontactBg.webp",
+      "name": "fontContactUsBg.webp",
+      "alt": "",
+      "width": 1920,
+      "height": 700
+    }
+  },
+  "customerCases": {
+    "title": "CUSTOMER CASES",
+    "description": "",
+    "products": [
+      {
+        "id": 1234,
+        "title": "Customer Case Name",
+        "url": "http://",
+        "url_text": null,
+        "show_time": null,
+        "picture": {
+          "id": 18097,
+          "alt": null,
+          "media": {
+            "id": 670,
+            "documentId": "ikxq8z8xm8m0slepkpedeb5d",
+            "name": "case1.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 506,
+            "height": 380,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_case1_0d721f0b86.webp",
+                "hash": "thumbnail_case1_0d721f0b86",
+                "mime": "image/webp",
+                "name": "thumbnail_case1.webp",
+                "path": null,
+                "size": 8.73,
+                "width": 208,
+                "height": 156,
+                "sizeInBytes": 8734
+              }
+            },
+            "hash": "case1_0d721f0b86",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 226.24,
+            "url": "/uploads/case1_0d721f0b86.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:51:36.120Z",
+            "updatedAt": "2025-09-04T10:51:36.120Z",
+            "publishedAt": "2025-09-04T10:51:36.121Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/case1.webp",
+          "name": "case1.webp",
+          "alt": "",
+          "width": 506,
+          "height": 380
+        }
+      },
+      {
+        "id": 1235,
+        "title": "Customer Case Name",
+        "url": null,
+        "url_text": null,
+        "show_time": null,
+        "picture": {
+          "id": 18098,
+          "alt": null,
+          "media": {
+            "id": 671,
+            "documentId": "faq6my1i6qfw0obqmvbesrta",
+            "name": "case2.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 506,
+            "height": 380,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_case2_06b6fe58af.webp",
+                "hash": "thumbnail_case2_06b6fe58af",
+                "mime": "image/webp",
+                "name": "thumbnail_case2.webp",
+                "path": null,
+                "size": 7.09,
+                "width": 208,
+                "height": 156,
+                "sizeInBytes": 7094
+              }
+            },
+            "hash": "case2_06b6fe58af",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 179.68,
+            "url": "/uploads/case2_06b6fe58af.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:53:01.917Z",
+            "updatedAt": "2025-09-18T11:56:30.721Z",
+            "publishedAt": "2025-09-04T10:53:01.918Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/case2.webp",
+          "name": "case2.webp",
+          "alt": "",
+          "width": 506,
+          "height": 380
+        }
+      },
+      {
+        "id": 1236,
+        "title": "Customer Case Name",
+        "url": "http://",
+        "url_text": null,
+        "show_time": null,
+        "picture": {
+          "id": 18099,
+          "alt": null,
+          "media": {
+            "id": 671,
+            "documentId": "faq6my1i6qfw0obqmvbesrta",
+            "name": "case2.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 506,
+            "height": 380,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_case2_06b6fe58af.webp",
+                "hash": "thumbnail_case2_06b6fe58af",
+                "mime": "image/webp",
+                "name": "thumbnail_case2.webp",
+                "path": null,
+                "size": 7.09,
+                "width": 208,
+                "height": 156,
+                "sizeInBytes": 7094
+              }
+            },
+            "hash": "case2_06b6fe58af",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 179.68,
+            "url": "/uploads/case2_06b6fe58af.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:53:01.917Z",
+            "updatedAt": "2025-09-18T11:56:30.721Z",
+            "publishedAt": "2025-09-04T10:53:01.918Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/case2.webp",
+          "name": "case2.webp",
+          "alt": "",
+          "width": 506,
+          "height": 380
+        }
+      },
+      {
+        "id": 1237,
+        "title": "Customer Case Name",
+        "url": "http://",
+        "url_text": null,
+        "show_time": null,
+        "picture": {
+          "id": 18100,
+          "alt": null,
+          "media": {
+            "id": 672,
+            "documentId": "uon2n8sgk6hmfrjzimqyhlyl",
+            "name": "case3.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 506,
+            "height": 380,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_case3_1b8c84fe35.webp",
+                "hash": "thumbnail_case3_1b8c84fe35",
+                "mime": "image/webp",
+                "name": "thumbnail_case3.webp",
+                "path": null,
+                "size": 6.2,
+                "width": 208,
+                "height": 156,
+                "sizeInBytes": 6200
+              }
+            },
+            "hash": "case3_1b8c84fe35",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 158.18,
+            "url": "/uploads/case3_1b8c84fe35.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:53:31.726Z",
+            "updatedAt": "2025-09-04T10:53:31.726Z",
+            "publishedAt": "2025-09-04T10:53:31.727Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/case3.webp",
+          "name": "case3.webp",
+          "alt": "",
+          "width": 506,
+          "height": 380
+        }
+      }
+    ],
+    "caseUrl": "/casecenter",
+    "caseUrlText": "More cases"
+  },
+  "customerNews": {
+    "title": "NEWS CENTER",
+    "description": "",
+    "products": [
+      {
+        "id": 1249,
+        "title": "Provide customers with high quality product solutions and engin",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": "2025-09-21T16:00:00.000Z",
+        "picture": {
+          "id": 18112,
+          "alt": null,
+          "media": {
+            "id": 674,
+            "documentId": "asijb924jfl9ziissqrvq4cx",
+            "name": "new2.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 780,
+            "height": 400,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_new2_0ad2ef518f.webp",
+                "hash": "thumbnail_new2_0ad2ef518f",
+                "mime": "image/webp",
+                "name": "thumbnail_new2.webp",
+                "path": null,
+                "size": 8.13,
+                "width": 245,
+                "height": 126,
+                "sizeInBytes": 8134
+              }
+            },
+            "hash": "new2_0ad2ef518f",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 319.4,
+            "url": "/uploads/new2_0ad2ef518f.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:56:28.466Z",
+            "updatedAt": "2025-09-04T10:56:28.466Z",
+            "publishedAt": "2025-09-04T10:56:28.467Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/news2.webp",
+          "name": "new2.webp",
+          "alt": "",
+          "width": 780,
+          "height": 400
+        }
+      },
+      {
+        "id": 1250,
+        "title": "Provide customers with high quality product solutions and engineering construction solutions...",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": "2025-09-20T16:00:00.000Z",
+        "picture": {
+          "id": 18113,
+          "alt": null,
+          "media": {
+            "id": 673,
+            "documentId": "xsuy6n9urde1wolshuwnpbh1",
+            "name": "new1.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 780,
+            "height": 400,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_new1_5f16ee849c.webp",
+                "hash": "thumbnail_new1_5f16ee849c",
+                "mime": "image/webp",
+                "name": "thumbnail_new1.webp",
+                "path": null,
+                "size": 8.27,
+                "width": 245,
+                "height": 126,
+                "sizeInBytes": 8274
+              }
+            },
+            "hash": "new1_5f16ee849c",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 309.8,
+            "url": "/uploads/new1_5f16ee849c.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:56:07.920Z",
+            "updatedAt": "2025-09-04T10:56:07.920Z",
+            "publishedAt": "2025-09-04T10:56:07.920Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/news1.webp",
+          "name": "new1.webp",
+          "alt": "",
+          "width": 780,
+          "height": 400
+        }
+      },
+      {
+        "id": 1251,
+        "title": "Provide customers with high quality product solutions and engineering construction solutions...",
+        "url": "http://",
+        "url_text": "View Details",
+        "show_time": "2025-09-19T16:00:00.000Z",
+        "picture": {
+          "id": 18114,
+          "alt": null,
+          "media": {
+            "id": 674,
+            "documentId": "asijb924jfl9ziissqrvq4cx",
+            "name": "new2.webp",
+            "alternativeText": null,
+            "caption": null,
+            "width": 780,
+            "height": 400,
+            "formats": {
+              "thumbnail": {
+                "ext": ".webp",
+                "url": "/uploads/thumbnail_new2_0ad2ef518f.webp",
+                "hash": "thumbnail_new2_0ad2ef518f",
+                "mime": "image/webp",
+                "name": "thumbnail_new2.webp",
+                "path": null,
+                "size": 8.13,
+                "width": 245,
+                "height": 126,
+                "sizeInBytes": 8134
+              }
+            },
+            "hash": "new2_0ad2ef518f",
+            "ext": ".webp",
+            "mime": "image/webp",
+            "size": 319.4,
+            "url": "/uploads/new2_0ad2ef518f.webp",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-09-04T10:56:28.466Z",
+            "updatedAt": "2025-09-04T10:56:28.466Z",
+            "publishedAt": "2025-09-04T10:56:28.467Z"
+          }
+        },
+        "product_big": null,
+        "image": {
+          "url": "/images/tpl3/news2.webp",
+          "name": "new2.webp",
+          "alt": "",
+          "width": 780,
+          "height": 400
+        }
+      }
+    ],
+    "newsUrl": "/news",
+    "newsUrlText": "View Details"
+  }
+}
+

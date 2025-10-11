@@ -1,0 +1,99 @@
+---
+// Templates 模版预览页面
+import Layout from '@layouts/Layout.astro';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
+import { getDictionary } from '../../../i18n/dictionaries.ts';
+import { getTemplatesContent } from '@apis/template';
+
+// 导入所有可用的模版组件
+import Tpl1 from '@components/templates/Index/tpl1/index.astro';
+import Tpl2 from '@components/templates/Index/tpl2/index.astro';
+import Tpl3 from '@components/templates/Index/tpl3/index.astro';
+
+// 为动态路由 [lang] 和 [...preview] 生成静态路径
+export async function getStaticPaths() {
+    const paths: Array<{
+        params: { lang: string; preview: string };
+        props: { lang: string; templateSlug: string; templateData: any };
+    }> = [];
+
+    // 先硬编码测试路径，确保路由工作
+    console.log('\n====== 开始生成模版路径 ======');
+    
+    for (const lang of SUPPORTED_LANGUAGES) {
+        // 为 tpl1 生成路径
+        paths.push({
+            params: { 
+                lang, 
+                preview: 'tpl1' 
+            },
+            props: { 
+                lang,
+                templateSlug: 'tpl1',
+                templateData: { title: 'Template 1', slug: 'tpl1' }
+            }
+        });
+        
+        // 为 tpl2 生成路径
+        paths.push({
+            params: { 
+                lang, 
+                preview: 'tpl2' 
+            },
+            props: { 
+                lang,
+                templateSlug: 'tpl2',
+                templateData: { title: 'Template 2', slug: 'tpl2' }
+            }
+        });
+        // 为 tpl3 生成路径
+        paths.push({
+            params: { 
+                lang, 
+                preview: 'tpl3' 
+            },
+            props: { 
+                lang,
+                templateSlug: 'tpl3',
+                templateData: { title: 'Template 3', slug: 'tpl3' }
+            }
+        });
+      
+    }
+ 
+    return paths;
+}
+
+// 获取当前语言参数和预览路径
+const { lang, preview } = Astro.params;
+const { templateSlug, templateData } = Astro.props;
+const t = await getDictionary(lang);
+
+// 模版组件映射表 - 将 slug 映射到对应的组件
+const TEMPLATE_COMPONENTS: Record<string, any> = {
+    'tpl1': Tpl1,
+    'tpl2': Tpl2,
+    'tpl3': Tpl3,
+    // 可以继续添加更多模版
+};
+
+// 根据 slug 获取对应的组件
+const TemplateComponent = TEMPLATE_COMPONENTS[templateSlug];
+
+// 如果找不到对应的组件，显示错误信息
+if (!TemplateComponent) {
+    console.error(`未找到模版组件: ${templateSlug}`);
+}
+---
+
+<Layout title={templateData?.title || 'Template Preview'} lang={lang} pageType="home">
+    {TemplateComponent ? (
+        <TemplateComponent lang={lang} />
+    ) : (
+        <div class="container mx-auto px-4 py-8 text-center">
+            <h1 class="text-3xl font-bold mb-4">模版未找到</h1>
+            <p class="text-gray-600 mb-4">抱歉，该模版 ({templateSlug}) 暂不可用。</p>
+            <a href={`/${lang}/templates`} class="text-blue-600 hover:underline">返回模版列表</a>
+        </div>
+    )}
+</Layout>
