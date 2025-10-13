@@ -1,5 +1,5 @@
 ---
-import { getBannerData } from '@apis/homeBanner';
+import { getBannerData } from '../../../../apis/homeBanner';
 
 import { Image } from 'astro:assets';
 
@@ -49,10 +49,6 @@ const banners = await getBannerData('homepage');
                 alt={banner.alt}
                 width={1920}
                 height={800}
-                widths={[640, 768, 1024, 1280, 1536, 1920]}
-                sizes="100vw"
-                quality={80}
-                format="webp"
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
@@ -83,10 +79,6 @@ const banners = await getBannerData('homepage');
                 alt={banner.alt}
                 width={750}
                 height={300}
-                widths={[320, 375, 640, 750]}
-                sizes="100vw"
-                quality={80}
-                format="webp"
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
@@ -99,10 +91,6 @@ const banners = await getBannerData('homepage');
                 alt={banner.alt}
                 width={750}
                 height={300}
-                widths={[320, 375, 640, 750]}
-                sizes="100vw"
-                quality={80}
-                format="webp"
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"

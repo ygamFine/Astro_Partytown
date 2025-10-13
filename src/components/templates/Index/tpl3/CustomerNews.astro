@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { getFirstImage, generateUrl } from '@utils/tools';
+import { getFirstImage, generateUrl } from '../../../../utils/tools';
 // 定义组件props接口
 export interface Props {
   customerNews?: {
@@ -58,7 +58,6 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
                                         alt={productImage?.name || productName}
                                         width={780}
                                         height={400}
-                                        quality={80}
                                         loading="lazy"
                                         decoding="async"
                                         class="thumbnail-image transition-transform duration-300 hover:scale-105" 
@@ -294,7 +293,7 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
                     // 元素进入视口时初始化 Swiper
                     try {
                         // 使用共享的 Swiper 加载器
-                        const { initSwiper } = await import('@utils/swiperLoader');
+                        const { initSwiper } = await import('../../../../utils/swiperLoader');
 
                         // 初始化 Swiper
                         const swiper = await initSwiper('.honor-swiper4', {

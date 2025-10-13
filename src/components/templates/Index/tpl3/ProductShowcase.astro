@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { getFirstImage, generateUrl } from '@utils/tools';
+import { getFirstImage, generateUrl } from '../../../../utils/tools';
 
 // 定义组件props接口
 export interface Props {
@@ -89,7 +89,6 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                         alt={productImage?.name || productName}
                         width={227}
                         height={193}
-                        quality={80}
                         loading="lazy"
                         decoding="async"
                         class="product-thumbnail" 
@@ -153,7 +152,6 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
                   alt={bigImage?.name || productName}
                   width={600}
                   height={400}
-                  quality={80}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
                   class={`main-product-image transition-all duration-500 ease-in-out hover:scale-105 ${index === 0 ? 'active' : 'hidden'}`}
@@ -401,7 +399,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
           // 元素进入视口时初始化 Swiper
           try {
             // 使用共享的 Swiper 加载器
-            const { initSwiper } = await import('@utils/swiperLoader');
+            const { initSwiper } = await import('../../../../utils/swiperLoader');
             
             // 初始化 Swiper
             const swiper = await initSwiper('.honor-swiper0', {

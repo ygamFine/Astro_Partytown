@@ -1,5 +1,5 @@
 ---
-export const prerender = true;
+// 移除 prerender = true，允许 SSR
 export const revalidate = 3600; // 1小时
 
 import Layout from '@layouts/Layout.astro';
@@ -37,15 +37,28 @@ const pageWidth = getPageWidth();
 
 
 <Layout title={t.nav.home} lang={lang} pageType="home">
-	<FullScreenBanner client:idle/>
+	<FullScreenBanner />
 	<!-- <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}> -->
 	<div class="mx-auto">		
-		<ProductShowcase data={homepageData?.productShowcase} lang={lang} client:visible />
+		<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
 		<StatsSection companyData={homepageData?.companyIntroduction} corporateAdvantages={homepageData?.corporateAdvantages} />
-		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} client:visible />
+		
+		<!-- 使用 server:defer 延迟渲染热门推荐产品 -->
+		<div server:defer>
+			<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} />
+		</div>
+		
 		<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
-		<CustomerCases customerCases={homepageData?.customerCases} lang={lang} client:visible  />
-		<CustomerNews customerNews={homepageData?.customerNews} lang={lang} client:visible  />
+		
+		<!-- 使用 server:defer 延迟渲染客户案例 -->
+		<div server:defer>
+			<CustomerCases customerCases={homepageData?.customerCases} lang={lang} />
+		</div>
+		
+		<!-- 使用 server:defer 延迟渲染客户新闻 -->
+		<div server:defer>
+			<CustomerNews customerNews={homepageData?.customerNews} lang={lang} />
+		</div>
 		<!-- 
 		<StatsSection 
 			companyData={homepageData?.companyIntroduction}

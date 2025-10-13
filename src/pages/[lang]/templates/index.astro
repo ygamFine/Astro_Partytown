@@ -1,0 +1,101 @@
+---
+// Templates 模版列表页面
+import { Image } from 'astro:assets';
+import Layout from '@layouts/Layout.astro';
+import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
+import { getDictionary } from '../../../i18n/dictionaries.ts';
+import { getTemplatesContent } from '@apis/template';
+
+// 为动态路由 [lang] 和 [...preview] 生成静态路径
+export async function getStaticPaths() {
+    const paths = [];
+
+    // 为每种语言生成默认预览路径
+  for (const lang of SUPPORTED_LANGUAGES) {
+    paths.push({
+    params: { lang, preview: undefined },
+    props: { lang }
+    });
+    }
+
+    return paths;
+    }
+
+// 获取当前语言参数和预览路径
+const { lang, preview } = Astro.params;
+const t = await getDictionary(lang);
+
+// 获取模版管理数据
+const templatesData = await getTemplatesContent(lang);
+---
+
+<Layout title="Template Preview" lang={lang}>
+  <div class="container mx-auto px-4 py-8 templates-page">
+    <h1 class="text-3xl font-bold mb-4 templates-title">模版中心</h1>
+    <div class="row-grid">
+        {templatesData && templatesData.map(item => (
+            <a class="row-grid-item" href={`/${lang}/templates${item.link}`}>
+              
+              <div class="row-grid-item-img">
+                <Image 
+                    src={item.image?.url || '/images/placeholder.webp'}
+                    alt={item.image?.alt || item.image?.name || '模版图片'}
+                    height={360}
+                    width={360}
+                    loading="lazy"
+                    decoding="async"
+                    class="contactUsSection-img pcImg" 
+                />
+              </div>
+              <h2 class="row-grid-item-title">{item.title}</h2>
+              
+            </a>
+          ))}
+    </div>
+  </div>
+</Layout>
+<style>
+    .templates-page{
+        padding-top: 8rem;
+        padding-bottom: 8rem;
+        .templates-title{
+            color: #333333;
+            font-size: 4rem;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+    }
+    .row-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+
+        .row-grid-item{
+            border: 1px solid #cccccc;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .row-grid-item-img{
+            height: 50rem;
+            overflow: hidden;
+            margin: 0 auto;
+            img{
+                margin: 0 auto;
+                transition: all .3s ease;
+            }
+            &:hover{
+                img{
+                    transform: scale(1.05);
+                }
+            }
+        }
+        .row-grid-item-title{
+            line-height: 50px;
+            color: #333333;
+            font-size: 2rem;
+            text-align: center;
+        }
+    }
+    
+</style>

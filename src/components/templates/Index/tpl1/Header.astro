@@ -1,0 +1,689 @@
+---
+import { Image } from "astro:assets";
+import StaticMenu from "./Menu.astro";
+import { themeConfig } from "@config/theme.js";
+import { getSupportedLanguages } from "@apis/common.js";
+import { imageProcess } from '@utils/tools';
+import { getCurrentLanguage, buildLanguageUrl } from '@utils/languageUtils';
+import { LanguageSelector } from "./index.ts";
+import { getDictionary } from "@i18n/dictionaries.js";
+
+
+// 接收网站配置参数
+export interface Props {
+  siteConfiguration?: any;
+}
+
+const { siteConfiguration = {} } = Astro.props;
+
+// 获取当前语言：使用工具函数
+const currentLang = getCurrentLanguage(Astro.url.pathname, Astro.url.hostname);
+
+// 生成首页链接（生产环境使用子域名，无语言后缀）
+const homeUrl = buildLanguageUrl(currentLang, "/");
+
+// 获取支持的语言列表（从 Strapi API，不做硬编码回退）
+let supportedLanguages = [];
+try {
+  supportedLanguages = await getSupportedLanguages();
+} catch (error) {
+  supportedLanguages = [];
+}
+// 加载翻译数据
+const t = await getDictionary(currentLang);
+
+// 从网站配置中提取联系信息
+const contactInfo = siteConfiguration.contact_info || [];
+const phone1 = siteConfiguration.field_zhandiandingbu || "Not yet configured";
+const phone2 = contactInfo[0]?.field_lianxidianhua || "Not yet configured";
+const email = siteConfiguration.field_zhandiandingbuyouxiang || "Not yet configured";
+let logoImage
+try{
+  const logoUrl = siteConfiguration?.field_logo && siteConfiguration?.field_logo.length > 0 && siteConfiguration?.field_logo[0]?.media?.url
+  logoImage = imageProcess(logoUrl)
+}
+catch(error){
+  logoImage = "/images/placeholder.webp";
+}
+
+---
+
+<header
+  class="relative z-50"
+  data-pagefind-ignore
+  style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;"
+>
+  <div id="main-header" class="md:bg-gray-800 text-white" style="transition: transform 0.3s ease-in-out;">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between md:h-[5.7rem] h-24 top-nav-tpl">
+      
+        <!-- Desktop Contact Info & Quote Button -->
+        <div class="hidden lg:flex items-center space-x-8">
+          <!-- Contact Items Group -->
+          <div class="flex items-center space-x-6">
+            <!-- Contact Details -->
+            <div class="flex items-
+             space-x-3 nav-info-tpl">
+              <i class="iconfont icon-phone"></i>
+              <div>
+                <p>
+                TEL:{phone1}
+                </p>
+              </div>
+            </div>
+            <!-- Email -->
+            <div class="flex items-center space-x-3 nav-info-tpl">
+              <i class="iconfont icon-youxiang"></i>
+              <div>
+                <p>
+                  E-mail:{email}
+                </p>
+              </div>
+            </div>
+          </div>
+           <!-- 右侧功能区 -->
+          <div class="flex items-center space-x-4">
+            <!-- 购物车图标和地球图标 - 按原型图样式 -->
+            <div class="flex items-center">
+
+              <!-- 地球图标 -->
+              <i class="iconfont icon-nav_icon_language w-8 h-8 text-white text-2xl"></i>
+            </div>
+
+            <!-- 语言选择器 -->
+            <LanguageSelector
+              supportedLanguages={supportedLanguages}
+              currentLang={currentLang}
+              showLanguageSelector={themeConfig.languageSelector.showLanguageSelector}
+              hideWhenSingleLanguage={themeConfig.languageSelector
+                .hideWhenSingleLanguage}
+            />
+            <!-- Pagefind 搜索框 -->
+            <div class="relative" id="header-search-container">
+              <input
+                type="text"
+                id="header-search-input"
+                placeholder="Search"
+                class="round bg-red-500/95 border border-red-400/30 text-white placeholder-white/70 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200"
+                autocomplete="off"
+              />
+              <button
+                type="submit"
+                id="header-search-button"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg"
+              >
+                <i class="iconfont icon-common_icon_search text-xl"></i>
+              </button>
+
+              <!-- Pagefind 搜索结果下拉框 -->
+              <div
+                id="header-search-results"
+                class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+                style="width: 30rem;"
+              >
+                <div id="header-search-results-content" class="p-2">
+                  <!-- Pagefind 搜索结果将在这里显示 -->
+                </div>
+              </div>
+            </div>
+          </div>   
+        </div>
+
+        <!-- Medium screens - Simplified contact -->
+        <div class="hidden md:flex lg:hidden items-center space-x-3 text-xs">
+          <div class="flex items-center space-x-1">
+            <i class="iconfont icon-phone text-red-500 text-lg"></i>
+            <span class="text-white font-medium text-xs">{phone1}</span>
+          </div>
+         
+        </div>
+
+        <!-- Mobile - Right side icons and menu button -->
+        <div class="md:hidden flex items-center space-x-4">
+          <!-- Search Icon -->
+          <button
+            id="mobile-search-button"
+            class="p-2 text-white focus:outline-none"
+            aria-label="搜索"
+          >
+            <i class="iconfont icon-common_icon_search text-xl"></i>
+          </button>
+
+          <!-- Globe Icon -->
+          <button
+            id="mobile-language-button"
+            class="p-2 text-white focus:outline-none"
+            aria-label="选择语言"
+          >
+            <i class="iconfont icon-nav_icon_language text-xl"></i>
+          </button>
+
+          <!-- Menu Button -->
+          <button
+            id="mobile-menu-button"
+            class="p-2 bg-red-600 text-white focus:outline-none focus-visible-ring rounded-md"
+            aria-label="主菜单"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <i
+              id="menu-open-icon"
+              class="iconfont icon-common_icon_list1 text-xl"
+            ></i>
+            <i
+              id="menu-close-icon"
+              class="iconfont icon-guanbi text-xl hidden"
+            ></i>
+          </button>
+        </div>
+      </div>
+   
+     
+    </div>
+  </div>
+
+  <!-- Navigation Bar (Will become sticky when banner scrolls away) -->
+  <div
+    id="nav-menu"
+    class="bg-red-600 border-red-500"
+    style="transform: translateY(0); transition: transform 0.3s ease-in-out; position: relative; z-index: 999;"
+  >
+    <div class="container mx-auto px-4">
+      
+        <!-- TEVIS Logo -->
+        <a href={homeUrl} class="flex items-center nav-logo-tpl">
+          <Image
+            src={logoImage}
+            alt="TEVIS Logo"
+            width={230}
+            height={54}
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+            class="md:h-23 h-8 w-auto"
+          />
+        </a>
+      <div class="hidden md:flex items-center justify-center h-[8rem]">
+        <StaticMenu />
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <div
+    id="mobile-menu"
+    class="hidden md:hidden bg-slate-700 border-gray-600 relative z-40"
+  >
+    <nav aria-label="移动端导航" class="px-4 pt-4 pb-4 space-y-3">
+      <!-- Navigation Links -->
+      <div class="space-y-3">
+        <a
+          href="/public"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors"
+          >Home</a
+        >
+        <a
+          href="/about"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors"
+          >About</a
+        >
+        <a
+          href="/products"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors"
+          >Products</a
+        >
+        <a
+          href="/case"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors"
+          >Case</a
+        >
+        <a
+          href="/news"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors"
+          >News</a
+        >
+        <button
+          type="button"
+          onclick="openContactModal()"
+          class="block text-white text-lg font-medium py-3 px-2 border-b border-gray-600 hover:text-red-400 transition-colors cursor-pointer w-full text-left"
+        >
+          Contact
+        </button>
+      </div>
+
+      <!-- Language Selector -->
+      {
+        themeConfig.languageSelector.showLanguageSelector &&
+          (!themeConfig.languageSelector.hideWhenSingleLanguage ||
+            supportedLanguages.length > 1) && (
+            <div class="mt-6 pt-4 border-t border-gray-600">
+              <div class="flex items-center space-x-2 text-white">
+                <i class="iconfont icon-nav_icon_language text-lg"></i>
+                <select
+                  id="mobile-language-selector"
+                  class="bg-transparent text-white border-none focus:outline-none"
+                >
+                  {supportedLanguages.map((lang: any) => (
+                    <option
+                      value={lang.code}
+                      selected={lang.code === currentLang}
+                    >
+                      🌐 {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )
+      }
+
+      <!-- Mobile Contact Information -->
+      <div class="mt-6 pt-4 border-t border-gray-600 space-y-3">
+        <div class="text-sm text-gray-300 space-y-3">
+          <div class="flex items-center space-x-2">
+            <i class="iconfont icon-phone text-red-500 text-lg"></i>
+            <span class="text-white">{phone1}</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <i class="iconfont icon-whatsapp text-red-500 text-lg"></i>
+            <span class="text-white">{phone2}</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <i class="iconfont icon-youxiang text-red-500 text-lg"></i>
+            <span class="text-white">{email}</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onclick="openContactModal()"
+          class="block w-full bg-red-600 text-white mt-4 py-3 px-6 font-bold focus-visible-ring touch-manipulation hover:bg-red-700 transition-colors text-center rounded cursor-pointer"
+        >
+          REQUEST A QUOTE
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+<style>
+  .container{
+    position: relative;
+  }
+  #main-header{
+    background: #f4f4f4;
+  }
+  .top-nav-tpl{
+    justify-content: right;
+  }
+  .nav-info-tpl{
+    color: #808080;
+    margin-left: 7rem;
+    p{
+      font-family: Oswald;
+      font-weight: bold;
+      font-size: 16px;
+      text-transform: uppercase;
+      color: inherit;
+      position: relative;
+      padding-right: 5rem;
+      margin-right: 4rem;
+      &:after{
+        content: '';
+        width: 1px;
+        height: 15px;
+        background: rgba(24, 24, 24, 0.1);
+        display: inline-block;
+        position: absolute;
+        right: 0rem;
+        top: 5px;
+      }
+    }
+    i{
+      font-size: 16px;
+      color: inherit;
+      font-weight: 600;
+    }
+  }
+  .nav-logo-tpl{
+    position: absolute;
+    top: 2rem;
+    z-index: 99999;
+    left: 0;
+  }
+  
+  #language-selector{
+    border:0 !important;
+    font-family: Oswald !important;
+    font-weight: 400 !important;
+    font-size: 16px !important;
+    color: #808080 !important;
+  }
+  .icon-nav_icon_language{
+    font-size: 16px;
+    color: #808080;
+  }
+  #header-search-input{
+      width: 30.9rem;
+      height: 36px;
+      background: #FFFFFF;
+      margin-left: 2rem;
+      border:0;
+      font-family: Oswald;
+      font-weight: 400;
+      font-size: 14px;
+      color: #808080;
+  }
+  #header-search-input::placeholder{
+    font-family: Oswald;
+    font-weight: 400;
+    font-size: 14px;
+    color: #808080;
+  }
+  #header-search-button{
+    color: #808080;
+
+    i{
+      font-size: 16px;
+    }
+  }
+  @media (min-width: 768px) {
+    main {
+        padding-top: 13rem !important;
+    }
+}
+</style>
+<script type="text/javascript">
+  (function () {
+    // 缓存DOM元素
+    let mobileMenuButton = null;
+    let mobileMenu = null;
+    let openIcon = null;
+    let closeIcon = null;
+    let mainHeader = null;
+    let navMenu = null;
+
+    // 状态管理
+    let lastScrollY = 0;
+
+    // 节流函数
+    function throttle(func, limit) {
+      let inThrottle;
+      return function (...args) {
+        if (!inThrottle) {
+          func.apply(this, args);
+          inThrottle = true;
+          setTimeout(() => (inThrottle = false), limit);
+        }
+      };
+    }
+
+    // 移动端菜单初始化
+    function initMobileMenu() {
+      mobileMenuButton = document.getElementById("mobile-menu-button");
+      mobileMenu = document.getElementById("mobile-menu");
+      openIcon = document.getElementById("menu-open-icon");
+      closeIcon = document.getElementById("menu-close-icon");
+      const mobileSearchButton = document.getElementById(
+        "mobile-search-button",
+      );
+      const mobileLangButton = document.getElementById(
+        "mobile-language-button",
+      );
+
+      if (!mobileMenuButton || !mobileMenu) return;
+
+      // 菜单切换 - 添加防抖
+      const toggleMenu = throttle((e) => {
+        e.preventDefault();
+        const isHidden = mobileMenu.classList.contains("hidden");
+
+        // 批量DOM操作
+        requestAnimationFrame(() => {
+          mobileMenu.classList.toggle("hidden");
+          mobileMenuButton.setAttribute(
+            "aria-expanded",
+            isHidden ? "true" : "false",
+          );
+
+          if (openIcon && closeIcon) {
+            openIcon.classList.toggle("hidden");
+            closeIcon.classList.toggle("hidden");
+          }
+        });
+      }, 100);
+
+      mobileMenuButton.addEventListener("click", toggleMenu);
+
+      // 移动端搜索按钮：跳转到搜索页
+      if (mobileSearchButton) {
+        mobileSearchButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          // 解析当前语言（路径优先，其次子域名）
+          const hostname = window.location.hostname;
+          const pathLang = window.location.pathname.split("/")[1] || "";
+          let lang = pathLang || "en";
+          const isDev = hostname === "localhost" || hostname === "127.0.0.1";
+          const url = isDev ? `/${lang}/search` : `/search`;
+          window.location.href = url;
+        });
+      }
+
+      // 移动端语言按钮：展开菜单并聚焦语言下拉
+      if (mobileLangButton) {
+        mobileLangButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          const isHidden = mobileMenu.classList.contains("hidden");
+          if (isHidden) {
+            mobileMenu.classList.remove("hidden");
+            mobileMenuButton.setAttribute("aria-expanded", "true");
+            if (openIcon && closeIcon) {
+              openIcon.classList.add("hidden");
+              closeIcon.classList.remove("hidden");
+            }
+          }
+          // 滚动到语言选择器
+          const selector = document.getElementById("mobile-language-selector");
+          if (selector) {
+            selector.scrollIntoView({ behavior: "smooth", block: "center" });
+            setTimeout(() => {
+              try {
+                if (typeof selector.focus === "function") selector.focus();
+              } catch (_) {}
+            }, 300);
+          }
+        });
+      }
+
+      // 点击链接关闭菜单 - 使用事件委托
+      mobileMenu.addEventListener("click", (e) => {
+        if (e.target && e.target.tagName &&e.target.tagName === "A") {
+          requestAnimationFrame(() => {
+            mobileMenu.classList.add("hidden");
+            mobileMenuButton.setAttribute("aria-expanded", "false");
+            if (openIcon && closeIcon) {
+              openIcon.classList.remove("hidden");
+              closeIcon.classList.add("hidden");
+            }
+          });
+        }
+      });
+    }
+
+    // 滚动头部处理：向下滚动时隐藏主头部，只保留菜单位置显示在最顶部
+    function initScrollHeader() {
+      mainHeader = document.getElementById("main-header");
+      navMenu = document.getElementById("nav-menu");
+      if (!mainHeader || !navMenu) return;
+      
+      // 获取主头部的高度，用于计算上移距离
+      const mainHeaderHeight = mainHeader.offsetHeight;
+      
+      // 滚动处理函数
+      let lastScrollY = 0;
+      let isHeaderHidden = false;
+      
+      const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+        
+        // 向下滚动超过100px时，整个Header上移，只保留Menu位置
+        if (currentScrollY > 100 && !isHeaderHidden) {
+          // 计算上移距离：主头部的高度
+          const translateY = -mainHeaderHeight;
+          mainHeader.style.transform = `translateY(${translateY}px)`;
+          navMenu.style.transform = `translateY(${translateY}px)`;
+          isHeaderHidden = true;
+        }
+        // 向上滚动或回到顶部时，恢复Header位置
+        else if ((currentScrollY < lastScrollY || currentScrollY <= 100) && isHeaderHidden) {
+          mainHeader.style.transform = 'translateY(0)';
+          navMenu.style.transform = 'translateY(0)';
+          isHeaderHidden = false;
+        }
+        
+        lastScrollY = currentScrollY;
+      };
+      
+      // 添加滚动监听
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    // 移动端语言选择器功能
+    function initMobileLanguageSelector() {
+      const mobileLanguageSelector = document.getElementById(
+        "mobile-language-selector",
+      );
+
+      if (mobileLanguageSelector) {
+        // 初始化当前语言：优先路径，其次子域名
+        const currentPath = window.location.pathname;
+        const pathLangMatch = currentPath.match(
+          /^\/([a-z]{2}(-[A-Z]{2,4})?)(\/|$)/,
+        );
+        let currentLang = pathLangMatch ? pathLangMatch[1] : null;
+        if (!currentLang) {
+          currentLang = "en";
+        }
+
+        // 设置当前选中的语言
+        mobileLanguageSelector.value = currentLang;
+
+        // 监听语言切换
+        mobileLanguageSelector.addEventListener("change", (e) => {
+          const selectedLang = e.target.value;
+          const currentPath = window.location.pathname;
+
+          // 根据环境构建语言切换URL
+          const isDev =
+            window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1";
+
+          if (isDev) {
+            // 本地开发：总是跳转到首页
+            const newPath = `/${selectedLang}/`;
+            // 在新标签页中打开
+            window.open(newPath, "_blank");
+          } else {
+            // 生产环境：构建子域名URL，总是跳转到首页
+            const subdomain = (function (x) {
+              const m = { "zh-Hans": "zh", "zh-Hant": "zh-hant" };
+              return m[x] || x;
+            })(selectedLang);
+            const currentDomain = window.location.hostname;
+            const baseDomain = currentDomain.split(".").slice(-2).join("."); // 获取主域名
+            const newUrl = `https://${subdomain}.${baseDomain}`;
+            // 在新标签页中打开
+            window.open(newUrl, "_blank");
+          }
+        });
+      }
+    }
+
+    // 初始化函数
+    function init() {
+      initMobileMenu();
+      initScrollHeader();
+      initMobileLanguageSelector();
+    }
+
+    // DOM就绪后初始化
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+</script>
+<script>
+  // 头部搜索功能
+  document.addEventListener('DOMContentLoaded', async function() {
+    const searchInput = document.getElementById('header-search-input') as HTMLInputElement;
+    const searchButton = document.getElementById('header-search-button');
+    const resultsContainer = document.getElementById('header-search-results');
+    const resultsContent = document.getElementById('header-search-results-content');
+    
+    if (!searchInput || !searchButton || !resultsContainer || !resultsContent) return;
+    
+    let pagefind: any = null;
+    let searchTimeout: NodeJS.Timeout | null = null;
+    
+    // 尝试初始化Pagefind
+    try {
+      const { PagefindUI } = await import('@pagefind/default-ui');
+      pagefind = new PagefindUI({
+        element: resultsContent,
+        showImages: false,
+        translations: {}
+      });
+    } catch (error) {
+      console.warn('Pagefind未能加载，使用备用搜索');
+    }
+    
+    // 搜索输入处理
+    searchInput.addEventListener('input', function(e) {
+      const target = e.target as HTMLInputElement;
+      const query = target.value.trim();
+      
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+      
+      searchTimeout = setTimeout(() => {
+        if (query.length > 0) {
+          if (pagefind) {
+            pagefind.triggerSearch(query);
+            resultsContainer.classList.remove('hidden');
+          }
+        } else {
+          resultsContainer.classList.add('hidden');
+        }
+      }, 300);
+    });
+    
+    // 回车键和按钮点击搜索
+    const performSearch = () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        const currentLang = document.documentElement.lang || 'en';
+        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+      }
+    };
+    
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performSearch();
+      }
+    });
+    
+    searchButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      performSearch();
+    });
+    
+    // 点击外部关闭搜索结果
+    document.addEventListener('click', function(e) {
+      if (e.target && (e.target as Element).closest && !(e.target as Element).closest('#header-search-container')) {
+        resultsContainer.classList.add('hidden');
+      }
+    });
+  });
+</script>
