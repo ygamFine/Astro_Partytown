@@ -278,7 +278,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         formId: formId,
         companyId: companyId,
         visitorSource: 1,
-        serverId: '',
+        serverId: 0,
         messagePage: window.location.href,
         ...fieldValues,
       };
