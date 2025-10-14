@@ -111,21 +111,21 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <meta property="og:type" content="website" />
 
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
-    <DynamicScriptLoader 
+    <!-- <DynamicScriptLoader 
       position="header" 
       pageType={pageType}
       lang={lang}
-    />
+    /> -->
 
     <title>{title}</title>
   </head>
   <body data-pagefind-body>
     <!-- 🎯 Body Top 位置动态脚本加载器 - 插入到 <body> 标签开始处 -->
-    <DynamicScriptLoader 
+    <!-- <DynamicScriptLoader 
       position="body-top" 
       pageType={pageType}
       lang={lang}
-    />
+    /> -->
 
     <Header siteConfiguration={siteConfiguration} />
     
@@ -143,13 +143,13 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <MobileBottomMenu lang={lang} currentPath={Astro.url.pathname} />
 
     <!-- 🚀 Pagefind 预加载器 - 使用专用组件 -->
-    <!-- <PagefindPreloader
+    <PagefindPreloader
       enableDebug={import.meta.env.DEV}
       pageType={pageType}
       lang={lang}
       currentPath={Astro.url.pathname}
       preloadStrategy="smart"
-    /> -->
+    />
 
     <!-- 🎬 动画系统 - 使用专用组件 -->
     <AnimationSystem 
@@ -189,10 +189,10 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <FooterSection siteConfiguration={siteConfiguration}/>
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
-    <DynamicScriptLoader 
+    <!-- <DynamicScriptLoader 
       position="body-bottom" 
       pageType={pageType}
       lang={lang}
-    />
+    /> -->
   </body>
 </html>
