@@ -60,17 +60,13 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <link rel="preload" href="/fontIcons/iconfont.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="/fontIcons/iconfont.css" /></noscript>
     
-    <!-- Antonio 字体：通过CSS @font-face异步加载，避免阻塞渲染 -->
-    
-    <!-- DNS预取优化，加速外部资源连接 -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <!-- Antonio 字体通过 CSS @font-face 和 font-display: swap 优化加载 -->
 
     <!-- Swiper 预加载优化 - 仅在首页预加载 -->
     {pageType === "home" && (
       <>
-        <link rel="preload" href="/node_modules/swiper/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="/node_modules/swiper/swiper-bundle.min.css" /></noscript>
+        <link rel="preload" href="/node_modules/swiper/swiper-bundle.min.css" as="style" />
+        <link rel="modulepreload" href="/src/utils/swiperLoader.ts" />
         <!-- 关键 Swiper 样式内联，避免 FOUC -->
         <style>
           .swiper { margin-left: auto; margin-right: auto; position: relative; overflow: hidden; list-style: none; padding: 0; z-index: 1; display: block; }
@@ -167,34 +163,24 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <!-- Swiper 预加载脚本 - 仅在首页执行 -->
     {pageType === "home" && (
       <script>
-        // 延迟加载 Swiper，避免阻塞首屏渲染
-        function loadSwiperWhenNeeded() {
-          // 等待首屏内容加载完成后再加载Swiper
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => {
-              import('@utils/swiperLoader').then(({ preloadSwiper }) => {
-                preloadSwiper();
-              }).catch(() => {
-                // 静默失败，不影响页面功能
-              });
-            }, { timeout: 5000 });
-          } else {
-            // 降级方案：更长延迟
-            setTimeout(() => {
-              import('@utils/swiperLoader').then(({ preloadSwiper }) => {
-                preloadSwiper();
-              }).catch(() => {
-                // 静默失败，不影响页面功能
-              });
-            }, 3000);
-          }
-        }
-        
-        // 等待页面完全加载后再执行
-        if (document.readyState === 'complete') {
-          loadSwiperWhenNeeded();
+        // 在空闲时间预加载 Swiper
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            import('@utils/swiperLoader').then(({ preloadSwiper }) => {
+              preloadSwiper();
+            }).catch(() => {
+              // 静默失败，不影响页面功能
+            });
+          });
         } else {
-          window.addEventListener('load', loadSwiperWhenNeeded);
+          // 降级方案：延迟预加载
+          setTimeout(() => {
+            import('@utils/swiperLoader').then(({ preloadSwiper }) => {
+              preloadSwiper();
+            }).catch(() => {
+              // 静默失败，不影响页面功能
+            });
+          }, 2000);
         }
       </script>
     )}

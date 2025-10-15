@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
-// import critters from 'astro-critters';
+import critters from 'astro-critters';
 
 
 import { getSupportedLanguages } from './src/utils/languageConfig';
@@ -41,24 +41,19 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
     }),
-    /* // ⚡ 自动提取并内联首屏关键 CSS
+    // ⚡ 自动提取并内联首屏关键 CSS - Astro 官方推荐
     critters({
       Critters: {
         preload: 'swap',
-        inlineFonts: true,
+        inlineFonts: false, // 避免字体内联导致的问题
         pruneSource: true,
-        // 设置日志级别为 silent，减少警告输出
         logLevel: 'silent',
-        // 设置外部文件阈值，避免处理有问题的文件
         inlineThreshold: 0,
-        // 禁用压缩，避免处理错误
-        compress: false,
-        // 忽略错误继续处理
-        mergeStylesheets: false,
-        // 减少对复杂选择器的处理
-        reduceInlineStyles: false
+        compress: true, // 启用压缩
+        mergeStylesheets: true, // 合并样式表
+        reduceInlineStyles: true // 减少内联样式
       }
-    }), */
+    }),
   ],
 
   // 🖼️ 图片优化配置
@@ -81,9 +76,36 @@ export default defineConfig({
   // 🏗️ 构建优化配置
   build: {
     assets: '_astro',
-    // 内联小资源
+    // 内联小资源 - Astro 官方推荐的 CSS 优化
     inlineStylesheets: 'auto',
     format: 'directory', // 输出格式
+  },
+  
+  // 🎯 Vite 配置 - 优化 CSS 处理
+  vite: {
+    build: {
+      // CSS 代码分割
+      cssCodeSplit: true,
+      // 启用 CSS 压缩
+      cssMinify: true,
+      rollupOptions: {
+        output: {
+          // 将小的 CSS 文件内联到 HTML 中
+          assetFileNames: (assetInfo) => {
+            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+              return '_astro/[name].[hash][extname]';
+            }
+            return '_astro/[name].[hash][extname]';
+          }
+        }
+      }
+    },
+    css: {
+      // 启用 CSS 压缩
+      postcss: {
+        plugins: []
+      }
+    }
   },
 
   // 📁 静态资源配置
