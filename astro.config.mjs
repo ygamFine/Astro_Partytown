@@ -41,17 +41,17 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
     }),
-    // ⚡ 自动提取并内联首屏关键 CSS - Astro 官方推荐
+    // ⚡ 自动提取并内联首屏关键 CSS
     critters({
       Critters: {
         preload: 'swap',
-        inlineFonts: false, // 避免字体内联导致的问题
+        inlineFonts: false, // 避免内联字体导致的问题
         pruneSource: true,
         logLevel: 'silent',
         inlineThreshold: 0,
-        compress: true, // 启用压缩
-        mergeStylesheets: true, // 合并样式表
-        reduceInlineStyles: true // 减少内联样式
+        compress: false,
+        mergeStylesheets: false,
+        reduceInlineStyles: false
       }
     }),
   ],
@@ -76,36 +76,9 @@ export default defineConfig({
   // 🏗️ 构建优化配置
   build: {
     assets: '_astro',
-    // 内联小资源 - Astro 官方推荐的 CSS 优化
+    // 内联小资源
     inlineStylesheets: 'auto',
     format: 'directory', // 输出格式
-  },
-  
-  // 🎯 Vite 配置 - 优化 CSS 处理
-  vite: {
-    build: {
-      // CSS 代码分割
-      cssCodeSplit: true,
-      // 启用 CSS 压缩
-      cssMinify: true,
-      rollupOptions: {
-        output: {
-          // 将小的 CSS 文件内联到 HTML 中
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-              return '_astro/[name].[hash][extname]';
-            }
-            return '_astro/[name].[hash][extname]';
-          }
-        }
-      }
-    },
-    css: {
-      // 启用 CSS 压缩
-      postcss: {
-        plugins: []
-      }
-    }
   },
 
   // 📁 静态资源配置
