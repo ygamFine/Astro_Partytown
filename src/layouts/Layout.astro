@@ -9,9 +9,8 @@ import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
 import { getSiteConfiguration } from "../apis/common.js";
 
-// 导入全局样式（包含 Tailwind CSS）
+// 只在根 Layout 导入一次全局样式，子组件不再重复导入
 import "../styles/global.css";
-// 导入共享样式
 import "../styles/components.css";
 
 export interface Props {

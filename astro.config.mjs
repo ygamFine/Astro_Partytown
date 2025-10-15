@@ -39,7 +39,11 @@ export default defineConfig({
   integrations: [
     react(),
     tailwind({
-      applyBaseStyles: true,
+      applyBaseStyles: true, // 让 Tailwind 处理基础样式
+      // 优化 Tailwind CSS 生成
+      configFile: './tailwind.config.js',
+      // 避免重复生成基础样式
+      nesting: true,
     }),
     /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
@@ -84,6 +88,19 @@ export default defineConfig({
     // 内联小资源
     inlineStylesheets: 'auto',
     format: 'directory', // 输出格式
+// CSS 优化配置 - 强制合并和去重
+    rollupOptions: {
+      output: {
+        // 更激进的 CSS 合并策略
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            // 将所有 CSS 合并到一个文件中，减少重复
+            return '_astro/styles.[hash].css';
+          }
+          return '_astro/[name].[hash][extname]';
+        }
+      }
+    }
   },
 
   // 📁 静态资源配置
