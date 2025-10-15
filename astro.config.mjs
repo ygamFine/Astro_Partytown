@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import partytown from '@astrojs/partytown';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
-import critters from 'astro-critters';
+// import critters from 'astro-critters';
 
 
 import { getSupportedLanguages } from './src/utils/languageConfig';
@@ -41,19 +41,24 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
     }),
-    // ⚡ 自动提取并内联首屏关键 CSS
+    /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
       Critters: {
         preload: 'swap',
-        inlineFonts: false, // 避免内联字体导致的问题
+        inlineFonts: true,
         pruneSource: true,
+        // 设置日志级别为 silent，减少警告输出
         logLevel: 'silent',
+        // 设置外部文件阈值，避免处理有问题的文件
         inlineThreshold: 0,
+        // 禁用压缩，避免处理错误
         compress: false,
+        // 忽略错误继续处理
         mergeStylesheets: false,
+        // 减少对复杂选择器的处理
         reduceInlineStyles: false
       }
-    }),
+    }), */
   ],
 
   // 🖼️ 图片优化配置

@@ -9,7 +9,7 @@ import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
 import { getSiteConfiguration } from "../apis/common.js";
 
-// 导入全局样式（Astro会自动优化CSS加载）
+// 导入全局样式（包含 Tailwind CSS）
 import "../styles/global.css";
 // 导入共享样式
 import "../styles/components.css";
@@ -60,7 +60,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <link rel="preload" href="/fontIcons/iconfont.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="/fontIcons/iconfont.css" /></noscript>
 
-
     <!-- Swiper 预加载优化 - 仅在首页预加载 -->
     {pageType === "home" && (
       <>
@@ -97,7 +96,6 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-
 
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
     <!-- <DynamicScriptLoader 
