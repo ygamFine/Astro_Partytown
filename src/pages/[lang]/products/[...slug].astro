@@ -353,7 +353,6 @@ const formTrans = formResp?.data?.formTrans || [];
   }}>
     // 图片画廊和放大镜功能
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('脚本开始执行');
       
       const container = document.getElementById('imageContainer');
         const slider = document.getElementById('imageSlider');
@@ -363,16 +362,7 @@ const formTrans = formResp?.data?.formTrans || [];
       const lens = document.getElementById('magnifierLens');
       const zoom = document.getElementById('magnifierZoom');
       
-      console.log('元素检查:', {
-        container: !!container,
-        slider: !!slider,
-        thumbnails: thumbnails.length,
-        prevBtn: !!prevBtn,
-        nextBtn: !!nextBtn,
-        lens: !!lens,
-        zoom: !!zoom
-      });
-      
+
       if (!container || !slider) {
         console.log('关键元素未找到，退出');
         return;

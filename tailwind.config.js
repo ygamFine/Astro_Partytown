@@ -2,6 +2,19 @@
 module.exports = {
   content: [
     './src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}',
+    './public/**/*.html',
+  ],
+  // Tailwind v3 配置
+  safelist: [
+    // 保留动态生成的类名
+    'animate-in',
+    'animate-fade-up',
+    'swiper-slide',
+    'swiper-wrapper',
+    'swiper-container',
+    {
+      pattern: /animate-delay-(100|200|300|400|500)/,
+    },
   ],
   theme: {
     extend: {
@@ -52,7 +65,7 @@ module.exports = {
     },
   },
   plugins: [],
-  // 性能优化配置
+  // 性能优化配置 - 更激进的禁用策略
   corePlugins: {
     preflight: true, // 保留重置样式
     container: true,
@@ -68,6 +81,26 @@ module.exports = {
     // 禁用过时的功能
     float: false,
     clear: false,
+    // 禁用更多不常用功能
+    backdropBlur: false,
+    backdropBrightness: false,
+    backdropContrast: false,
+    backdropGrayscale: false,
+    backdropHueRotate: false,
+    backdropInvert: false,
+    backdropOpacity: false,
+    backdropSaturate: false,
+    backdropSepia: false,
+    isolation: false,
+    mixBlendMode: false,
+    backgroundBlendMode: false,
+    touchAction: false,
+    scrollBehavior: false,
+    scrollMargin: false,
+    scrollPadding: false,
+    scrollSnapAlign: false,
+    scrollSnapStop: false,
+    scrollSnapType: false,
   },
 }
 
