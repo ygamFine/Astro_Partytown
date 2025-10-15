@@ -401,10 +401,10 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
           // 元素进入视口时初始化 Swiper
           try {
             // 使用共享的 Swiper 加载器
-            const { initSwiper } = await import('@utils/swiperLoader');
+            const Swiper = (await import('swiper/bundle')).default;
             
             // 初始化 Swiper
-            const swiper = await initSwiper('.honor-swiper0', {
+            const swiper = new Swiper('.honor-swiper0', {
         // 基本配置
         slidesPerView: 3,
         spaceBetween: 20,
@@ -484,29 +484,21 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
         }
       });
       
-      console.log('Swiper 初始化成功:', swiper);
-      
       // 添加点击事件监听器
       const slides = document.querySelectorAll('.honor-swiper0 .swiper-slide');
       const mainImages = document.querySelectorAll('.product-right-box .main-product-image');
       
-      // 初始化：设置第一个 slide 和图片为活动状态
-      console.log('找到的 slides 数量:', slides.length);
-      console.log('找到的 mainImages 数量:', mainImages.length);
       
       if (slides.length > 0) {
         slides[0].classList.add('dianActive');
-        console.log('设置第一个 slide 为 dianActive');
       }
       if (mainImages.length > 0) {
         mainImages[0].classList.add('active');
         mainImages[0].classList.remove('hidden');
-        console.log('设置第一个图片为 active');
       }
       
         slides.forEach((slide, index) => {
           slide.addEventListener('click', function() {
-            console.log('点击了第', index, '个 slide');
             
             // 先移除所有 slide 的 dianActive 类
             slides.forEach(s => {
@@ -515,7 +507,6 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
             
             // 然后给当前点击的 slide 添加 dianActive 类
             slide.classList.add('dianActive');
-            console.log('设置 slide', index, '为 dianActive');
             
             // 移除所有图片的 active 类，添加 hidden 类
             mainImages.forEach(img => {
@@ -527,9 +518,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
             if (mainImages[index]) {
               mainImages[index].classList.remove('hidden');
               mainImages[index].classList.add('active');
-              console.log('显示第', index, '个大图');
             } else {
-              console.log('没有找到第', index, '个大图');
             }
             
             // 更新 Swiper 到对应的 slide

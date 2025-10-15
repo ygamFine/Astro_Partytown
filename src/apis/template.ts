@@ -43,7 +43,6 @@ export async function getTpl1Content(locale = 'en') {
         // 导入静态数据
         const staticData = await import('@components/templates/Index/tpl1/staticData/templates.json');
         
-        console.log('使用 tpl1 静态数据');
         return staticData.default || staticData;
     } catch (error) {
         console.error('获取 tpl1 数据失败:', error);
@@ -67,7 +66,6 @@ export async function getTpl3Content(locale = 'en') {
         // 导入静态数据
         const staticData = await import('@components/templates/Index/tpl3/staticData/templates.json');
         
-        console.log('使用 tpl3 静态数据');
         return staticData.default || staticData;
     } catch (error) {
         console.error('获取 tpl3 数据失败:', error);

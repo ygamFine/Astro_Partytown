@@ -165,10 +165,10 @@ console.log('============banners============',banners);
 
       try {
           // 使用共享的 Swiper 加载器
-          const { initSwiper } = await import('@utils/swiperLoader');
+          const Swiper = (await import('swiper/bundle')).default;
 
           // 初始化 Swiper
-          const swiper = await initSwiper('.banner-swiper3', {
+          const swiper = new Swiper('.banner-swiper3', {
               // 基本配置
               slidesPerView: 1,
               spaceBetween: 0,
