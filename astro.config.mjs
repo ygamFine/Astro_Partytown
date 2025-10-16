@@ -43,13 +43,6 @@ export default defineConfig({
       applyBaseStyles: false,
       configFile: './tailwind.config.js',
     }),
-    // ⚡ Partytown - 将第三方脚本移至Web Worker，减少主线程阻塞
-    partytown({
-      config: {
-        forward: ['dataLayer.push', 'gtag', 'fbq', '_hmt'],
-        debug: process.env.NODE_ENV === 'development'
-      }
-    }),
     /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
       Critters: {
@@ -87,32 +80,12 @@ export default defineConfig({
     liveContentCollections: true, // 内容集合的实时更新
     staticImportMetaEnv: true, // 静态导入环境变量
   },
-  // 🏗️ 构建优化配置 - 平衡样式内联和JavaScript优化
+  // 🏗️ 构建优化配置 - 强制内联所有样式，彻底解决重复问题
   build: {
     assets: '_astro',
-    // 样式内联策略：自动判断，小文件内联，大文件外链
-    inlineStylesheets: 'auto',
-    format: 'directory'
-  },
-  
-  // ⚡ Vite构建优化配置
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          // 启用代码分割，按需加载
-          manualChunks: {
-            // 将Swiper单独打包，实现按需加载
-            'swiper': ['swiper/bundle'],
-            // 将React相关库单独打包
-            'react-vendor': ['react', 'react-dom']
-          },
-          // 优化chunk命名
-          chunkFileNames: 'chunks/[name]-[hash].js',
-          entryFileNames: 'entry/[name]-[hash].js'
-        }
-      }
-    }
+    // 强制内联所有样式，避免生成多个重复的 CSS 文件
+    inlineStylesheets: 'always',
+    format: 'directory',
   },
 
   // 📁 静态资源配置

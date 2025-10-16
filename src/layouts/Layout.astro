@@ -109,12 +109,11 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <meta property="og:type" content="website" />
 
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
-    <DynamicScriptLoader 
+    <!-- <DynamicScriptLoader 
       position="header" 
       pageType={pageType}
       lang={lang}
-      loadCondition={pageType === "home"}
-    />
+    /> -->
 
     <title>{title}</title>
   </head>
@@ -158,75 +157,36 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       enableDebug={import.meta.env.DEV}
     />
 
-    <!-- 视图切换功能 - 按需加载 -->
-    <script>
-      // 智能加载视图切换功能，仅在需要时加载
-      function loadViewToggleIfNeeded() {
-        // 检查页面是否有视图切换按钮
-        const hasViewToggle = document.querySelector('.view-toggle-btn');
-        if (hasViewToggle) {
-          // 动态加载视图切换脚本
-          const script = document.createElement('script');
-          script.src = '/scripts/viewToggle.js';
-          script.onload = () => {
-            if ((window as any).initViewToggle) {
-              (window as any).initViewToggle();
-            }
-          };
-          script.onerror = () => {
-            console.warn('视图切换脚本加载失败');
-          };
-          document.head.appendChild(script);
-        }
-      }
+    <!-- 视图切换功能 -->
+    <script type="text/partytown" src="/scripts/viewToggle.js"></script>
 
-      // 页面加载完成后检查
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadViewToggleIfNeeded);
-      } else {
-        loadViewToggleIfNeeded();
-      }
-    </script>
-
-    <!-- Swiper 智能预加载 - 仅在需要时加载 -->
-    <script>
-      // 智能Swiper加载器 - 检测页面是否有轮播组件
-      function initSwiperLoader() {
-        const swiperContainers = document.querySelectorAll('[class*="swiper"], .honor-swiper');
-        if (swiperContainers.length === 0) return;
-
-        // 使用Intersection Observer实现懒加载
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              // 预加载Swiper模块
-              import('swiper/bundle').catch(() => {
-                console.warn('Swiper模块加载失败');
-              });
-              observer.disconnect(); // 只需要预加载一次
-            }
+    <!-- Swiper 预加载脚本 - 仅在首页执行 -->
+    {pageType === "home" && (
+      <script>
+        // 在空闲时间预加载 Swiper
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            import('swiper/bundle').catch(() => {
+              // 静默失败，不影响页面功能
+            });
           });
-        }, { rootMargin: '100px' });
-
-        // 观察第一个轮播容器
-        observer.observe(swiperContainers[0]);
-      }
-
-      // 页面加载完成后初始化
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSwiperLoader);
-      } else {
-        initSwiperLoader();
-      }
-    </script>
+        } else {
+          // 降级方案：延迟预加载
+          setTimeout(() => {
+            import('swiper/bundle').catch(() => {
+              // 静默失败，不影响页面功能
+            });
+          }, 2000);
+        }
+      </script>
+    )}
 
     <FooterSection siteConfiguration={siteConfiguration}/>
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
-    <DynamicScriptLoader 
+    <!-- <DynamicScriptLoader 
       position="body-bottom" 
       pageType={pageType}
       lang={lang}
-      loadCondition={false}
-    />
+    /> -->
   </body>
 </html>
