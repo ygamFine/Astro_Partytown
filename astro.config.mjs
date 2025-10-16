@@ -80,11 +80,11 @@ export default defineConfig({
     liveContentCollections: true, // 内容集合的实时更新
     staticImportMetaEnv: true, // 静态导入环境变量
   },
-  // 🏗️ 构建优化配置 - 符合 Astro 官方最佳实践
+  // 🏗️ 构建优化配置 - 强制内联所有样式，彻底解决重复问题
   build: {
     assets: '_astro',
-    // 官方推荐：控制样式表内联策略
-    inlineStylesheets: 'never', // 始终将样式表作为外部文件，避免重复内联
+    // 强制内联所有样式，避免生成多个重复的 CSS 文件
+    inlineStylesheets: 'always',
     format: 'directory',
   },
 
