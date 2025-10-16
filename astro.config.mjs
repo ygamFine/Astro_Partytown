@@ -39,11 +39,9 @@ export default defineConfig({
   integrations: [
     react(),
     tailwind({
-      applyBaseStyles: true, // 让 Tailwind 处理基础样式
-      // 优化 Tailwind CSS 生成
+      // 官方推荐：让 Astro 统一管理基础样式
+      applyBaseStyles: false,
       configFile: './tailwind.config.js',
-      // 避免重复生成基础样式
-      nesting: true,
     }),
     /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
@@ -82,25 +80,12 @@ export default defineConfig({
     liveContentCollections: true, // 内容集合的实时更新
     staticImportMetaEnv: true, // 静态导入环境变量
   },
-  // 🏗️ 构建优化配置
+  // 🏗️ 构建优化配置 - 符合 Astro 官方最佳实践
   build: {
     assets: '_astro',
-    // 内联小资源
-    inlineStylesheets: 'auto',
-    format: 'directory', // 输出格式
-// CSS 优化配置 - 强制合并和去重
-    rollupOptions: {
-      output: {
-        // 更激进的 CSS 合并策略
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-            // 将所有 CSS 合并到一个文件中，减少重复
-            return '_astro/styles.[hash].css';
-          }
-          return '_astro/[name].[hash][extname]';
-        }
-      }
-    }
+    // 官方推荐：控制样式表内联策略
+    inlineStylesheets: 'never', // 始终将样式表作为外部文件，避免重复内联
+    format: 'directory',
   },
 
   // 📁 静态资源配置
