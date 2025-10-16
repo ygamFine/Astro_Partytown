@@ -1,5 +1,5 @@
-// 视图切换功能
-function toggleView(viewType) {
+// 视图切换功能模块
+export function toggleView(viewType) {
   // 获取当前页面的视图容器
   const gridContainer = document.querySelector('.enhanced-grid-list');
   if (!gridContainer) return;
@@ -54,7 +54,7 @@ function toggleView(viewType) {
 }
 
 // 初始化视图切换功能
-function initViewToggle() {
+export function initViewToggle() {
   // 为所有视图切换按钮添加事件监听器
   document.addEventListener('click', function(e) {
     if (e.target.closest('.view-toggle-btn')) {
@@ -80,14 +80,22 @@ function initViewToggle() {
   }
 }
 
-// 页面加载完成后初始化
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initViewToggle);
-} else {
-  initViewToggle();
+// 自动初始化（当作为模块导入时）
+export function autoInit() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initViewToggle);
+  } else {
+    initViewToggle();
+  }
+  
+  // 导出函数供全局使用
+  window.toggleView = toggleView;
+  window.initViewToggle = initViewToggle;
 }
 
-// 导出函数供全局使用
-window.toggleView = toggleView;
-window.initViewToggle = initViewToggle;
+// 如果直接加载（非模块方式），自动初始化
+if (typeof window !== 'undefined' && !window.viewToggleLoaded) {
+  window.viewToggleLoaded = true;
+  autoInit();
+}
 

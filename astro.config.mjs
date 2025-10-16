@@ -43,13 +43,12 @@ export default defineConfig({
       applyBaseStyles: false,
       configFile: './tailwind.config.js',
     }),
-    // ⚡ Partytown 配置 - 将第三方脚本移至 Web Worker
+    // ⚡ Partytown - 将第三方脚本移至Web Worker，减少主线程阻塞
     partytown({
       config: {
-        forward: ['dataLayer.push'],
-        // 将 Swiper 相关脚本移至 Web Worker
-        lib: '/~partytown/',
-      },
+        forward: ['dataLayer.push', 'gtag', 'fbq', '_hmt'],
+        debug: process.env.NODE_ENV === 'development'
+      }
     }),
     /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
@@ -88,61 +87,32 @@ export default defineConfig({
     liveContentCollections: true, // 内容集合的实时更新
     staticImportMetaEnv: true, // 静态导入环境变量
   },
-
-  // ⚡ Vite 优化配置
-  vite: {
-    build: {
-      // 启用压缩
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          // 移除 console.log
-          drop_console: true,
-          // 移除 debugger
-          drop_debugger: true,
-          // 移除未使用的代码
-          dead_code: true,
-        },
-      },
-      // 启用代码分割和摇树优化
-      rollupOptions: {
-        output: {
-          // 按模块分割代码，减少单个文件大小
-          manualChunks: (id) => {
-            // 将 Swiper 单独打包
-            if (id.includes('swiper')) {
-              return 'swiper';
-            }
-            // 将 React 相关库单独打包
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            // 将 node_modules 中的其他库单独打包
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
-          },
-          // 优化文件名生成
-          chunkFileNames: 'chunks/[name]-[hash].js',
-          entryFileNames: 'entry/[name]-[hash].js',
-          assetFileNames: 'assets/[name]-[hash][extname]',
-          // 进一步优化代码分割
-          experimentalMinChunkSize: 1000,
-        }
-      }
-    },
-    // 优化依赖预构建
-    optimizeDeps: {
-      include: ['swiper/bundle'],
-      exclude: ['@astrojs/partytown']
-    }
-  },
-  // 🏗️ 构建优化配置 - 强制内联所有样式，彻底解决重复问题
+  // 🏗️ 构建优化配置 - 平衡样式内联和JavaScript优化
   build: {
     assets: '_astro',
-    // 强制内联所有样式，避免生成多个重复的 CSS 文件
-    inlineStylesheets: 'always',
-    format: 'directory',
+    // 样式内联策略：自动判断，小文件内联，大文件外链
+    inlineStylesheets: 'auto',
+    format: 'directory'
+  },
+  
+  // ⚡ Vite构建优化配置
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          // 启用代码分割，按需加载
+          manualChunks: {
+            // 将Swiper单独打包，实现按需加载
+            'swiper': ['swiper/bundle'],
+            // 将React相关库单独打包
+            'react-vendor': ['react', 'react-dom']
+          },
+          // 优化chunk命名
+          chunkFileNames: 'chunks/[name]-[hash].js',
+          entryFileNames: 'entry/[name]-[hash].js'
+        }
+      }
+    }
   },
 
   // 📁 静态资源配置
