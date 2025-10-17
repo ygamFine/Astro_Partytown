@@ -98,5 +98,5 @@ export default defineConfig({
   publicDir: 'public',
 
   // 📤 输出配置 - 服务端渲染模式，支持API路由
-  output: 'server',
+  output: 'static',
 });
