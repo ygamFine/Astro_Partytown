@@ -51,8 +51,6 @@ const banners = await getBannerData('homepage');
                 height={800}
                 quality={80}
                 format="webp"
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
@@ -83,8 +81,6 @@ const banners = await getBannerData('homepage');
                 height={300}
                 quality={80}
                 format="webp"
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
