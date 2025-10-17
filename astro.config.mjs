@@ -28,7 +28,7 @@ export default defineConfig({
     defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
     routing: {
       prefixDefaultLocale: true,
-      redirectToDefaultLocale: true,
+      redirectToDefaultLocale: false,
       
     }
   },
