@@ -8,6 +8,7 @@ import AnimationSystem from "../components/common/AnimationSystem.astro";
 import RightSidebar from "../components/common/RightSidebar.astro";
 import ContactModal from "../components/common/contact/ContactModal.astro";
 import { getSiteConfiguration } from "../apis/common.js";
+import { ClientRouter } from 'astro:transitions';
 
 // 官方推荐：只在根 Layout 导入一次全局样式
 import "../styles/global.css";
@@ -64,10 +65,9 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <link rel="preload" href="/fonts/Antonio-SemiBold.ttf" as="font" type="font/ttf" crossorigin />
 
     <!-- Swiper 预加载优化 - 仅在首页预加载 -->
-    {pageType === "home" && (
+    <!-- {pageType === "home" && (
       <>
         <link rel="preload" href="/node_modules/swiper/swiper-bundle.min.css" as="style" />
-        <!-- 关键 Swiper 样式内联，避免 FOUC -->
         <style>
           .swiper { margin-left: auto; margin-right: auto; position: relative; overflow: hidden; list-style: none; padding: 0; z-index: 1; display: block; }
           .swiper-wrapper { position: relative; width: 100%; height: 100%; z-index: 1; display: flex; transition-property: transform; box-sizing: content-box; }
@@ -78,8 +78,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
           .swiper-pagination-bullet-active { opacity: 1; background: var(--swiper-pagination-color, var(--swiper-theme-color)); }
         </style>
       </>
-    )}
-
+    )} -->
     <!-- 阿拉伯语字体预加载（仅阿语时预连接与预加载） -->
     {isRTL && (
       <>
@@ -114,7 +113,7 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
       pageType={pageType}
       lang={lang}
     /> -->
-
+    <!-- <ClientRouter /> -->
     <title>{title}</title>
   </head>
   <body data-pagefind-body>
