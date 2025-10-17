@@ -9,7 +9,7 @@ import { getSupportedLanguages } from './src/utils/languageConfig';
 
 // 动态获取支持的语言列表
 const locales = await getSupportedLanguages();
-console.log('默认支持的语言', locales)
+
 export default defineConfig({
   // 生成站点地图
   site: process.env.PUBLIC_SITE_URL,
@@ -27,8 +27,8 @@ export default defineConfig({
     locales: locales,
     defaultLocale: process.env.PUBLIC_DEFAULT_LOCALE || "en",
     routing: {
-      prefixDefaultLocale: true,
-      redirectToDefaultLocale: false,
+      prefixDefaultLocale: false,
+      // redirectToDefaultLocale: false,
       
     }
   },
@@ -48,7 +48,6 @@ export default defineConfig({
       }
     }),
   ],
-
   // 🖼️ 图片优化配置
   image: {
     domains: ["astro.build", "localhost:4321", "192.168.7.249:4321"],

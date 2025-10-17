@@ -4,18 +4,6 @@ module.exports = {
     './src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}',
     './public/**/*.html',
   ],
-  // Tailwind v3 配置
-  safelist: [
-    // 保留动态生成的类名
-    'animate-in',
-    'animate-fade-up',
-    'swiper-slide',
-    'swiper-wrapper',
-    'swiper-container',
-    {
-      pattern: /animate-delay-(100|200|300|400|500)/,
-    },
-  ],
   theme: {
     extend: {
       fontFamily: {
