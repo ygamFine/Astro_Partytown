@@ -1,6 +1,6 @@
 ---
-// 移除 prerender = true，允许 SSR
-export const revalidate = 3600; // 1小时
+// 启用完全静态预渲染，在构建时生成所有页面和数据
+export const prerender = true;
 
 import Layout from '@layouts/Layout.astro';
 import FullScreenBanner from '@components/Custom/Home/FullScreenBanner.astro';
@@ -43,22 +43,16 @@ const pageWidth = getPageWidth();
 		<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
 		<StatsSection companyData={homepageData?.companyIntroduction} corporateAdvantages={homepageData?.corporateAdvantages} />
 		
-		<!-- 使用 server:defer 延迟渲染热门推荐产品 -->
-		<div server:defer>
-			<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} />
-		</div>
+		<!-- 静态预渲染热门推荐产品 -->
+		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} />
 		
 		<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
 		
-		<!-- 使用 server:defer 延迟渲染客户案例 -->
-		<div server:defer>
-			<CustomerCases customerCases={homepageData?.customerCases} lang={lang} />
-		</div>
+		<!-- 静态预渲染客户案例 -->
+		<CustomerCases customerCases={homepageData?.customerCases} lang={lang} />
 		
-		<!-- 使用 server:defer 延迟渲染客户新闻 -->
-		<div server:defer>
-			<CustomerNews customerNews={homepageData?.customerNews} lang={lang} />
-		</div>
+		<!-- 静态预渲染客户新闻 -->
+		<CustomerNews customerNews={homepageData?.customerNews} lang={lang} />
 		<!-- 
 		<StatsSection 
 			companyData={homepageData?.companyIntroduction}

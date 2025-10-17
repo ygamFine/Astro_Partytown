@@ -14,9 +14,8 @@ const locales = await getSupportedLanguages();
 
 export default defineConfig({
   site: process.env.PUBLIC_SITE_URL,
-  adapter: vercel({
-    isr: true
-  }),
+  // 使用Vercel适配器支持API路由
+  adapter: vercel(),
   trailingSlash: 'ignore',
   server: {
     port: 3000,
@@ -98,6 +97,6 @@ export default defineConfig({
   // 📁 静态资源配置
   publicDir: 'public',
 
-  // 📤 输出配置
-  output: 'static',
+  // 📤 输出配置 - 服务端渲染模式，支持API路由
+  output: 'server',
 });
