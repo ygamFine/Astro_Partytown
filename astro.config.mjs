@@ -43,6 +43,13 @@ export default defineConfig({
       applyBaseStyles: false,
       configFile: './tailwind.config.js',
     }),
+    // 🚀 启用 Partytown 来优化第三方脚本性能
+    partytown({
+      config: {
+        forward: ['dataLayer.push'],
+        debug: import.meta.env.DEV
+      }
+    }),
     /* // ⚡ 自动提取并内联首屏关键 CSS
     critters({
       Critters: {

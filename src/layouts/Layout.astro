@@ -160,10 +160,10 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
 
-    <!-- Swiper 预加载脚本 - 仅在首页执行 -->
+    <!-- Swiper 预加载脚本 - 仅在首页执行，使用Partytown优化 -->
     {pageType === "home" && (
-      <script>
-        // 在空闲时间预加载 Swiper
+      <script type="text/partytown">
+        // 在空闲时间预加载 Swiper - 在Partytown中执行
         if ('requestIdleCallback' in window) {
           requestIdleCallback(() => {
             import('swiper/bundle').catch(() => {

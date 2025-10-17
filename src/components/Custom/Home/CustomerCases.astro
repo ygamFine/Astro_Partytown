@@ -282,8 +282,8 @@ const safeCases = Array.isArray(products) ? products.slice(0, 10) : [];
     
 </style>
 
-<!-- 使用 Intersection Observer 实现懒加载 -->
-<script>
+<!-- 使用 Intersection Observer 实现懒加载 - 使用Partytown优化 -->
+<script type="text/partytown">
     document.addEventListener('DOMContentLoaded', async function() {
         const swiperContainer = document.querySelector('.honor-swiper3');
         if (!swiperContainer) return;

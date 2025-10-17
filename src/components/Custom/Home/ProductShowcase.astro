@@ -384,8 +384,8 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
 
   </style>
 
-<!-- 使用 Intersection Observer 实现懒加载 -->
-<script>
+<!-- 使用 Intersection Observer 实现懒加载 - 使用Partytown优化 -->
+<script type="text/partytown">
   document.addEventListener('DOMContentLoaded', async function() {
     // 检查是否存在轮播容器
     const swiperContainer = document.querySelector('.honor-swiper0');
