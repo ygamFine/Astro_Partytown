@@ -51,6 +51,8 @@ const banners = await getBannerData('homepage');
                 height={800}
                 quality={80}
                 format="webp"
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
@@ -81,6 +83,8 @@ const banners = await getBannerData('homepage');
                 height={300}
                 quality={80}
                 format="webp"
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
@@ -319,8 +323,8 @@ const banners = await getBannerData('homepage');
   }
 </style>
 
-<script type="text/partytown">
-  // 使用 Intersection Observer 实现懒加载的高性能Banner轮播 - 在Partytown中执行
+<script>
+  // Banner是首屏关键内容,使用主线程立即执行,不使用Partytown
   document.addEventListener('DOMContentLoaded', function() {
     // 检查是否存在轮播容器
     const bannerContainer = document.getElementById('homepage-banner');
