@@ -62,10 +62,4 @@ export default defineConfig({
       },
     }
   },
-  // 🏗️ 构建优化配置 - 内联关键CSS,减少阻塞
-  build: {
-    assets: '_astro',
-    // 自动内联小于10KB的CSS，减少渲染阻塞请求
-    inlineStylesheets: 'auto',
-  },
 });
