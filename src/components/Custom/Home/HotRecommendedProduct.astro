@@ -1,5 +1,8 @@
 ---
 import { Image } from "astro:assets";
+// 按需引入Swiper样式
+import "swiper/css";
+import "swiper/css/pagination";
 
 // 定义组件props接口
 export interface Props {
@@ -99,11 +102,14 @@ const safeProducts = Array.isArray(products) ? products.slice(0, 10) : [];
 <script>
     document.addEventListener("DOMContentLoaded", async function () {
         try {
-            // 使用共享的 Swiper 加载器
-            const Swiper = (await import("swiper/bundle")).default;
+            // 按需引入Swiper核心和所需模块
+            const { default: Swiper } = await import("swiper");
+            const { Pagination, Autoplay } = await import("swiper/modules");
 
             // 初始化 Swiper
             const swiper = new Swiper(".honor-swiper2", {
+                // 配置使用的模块
+                modules: [Pagination, Autoplay],
                 // 基本配置
                 slidesPerView: 2,
                 spaceBetween: 15,
