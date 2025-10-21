@@ -292,11 +292,14 @@ const safeNews = Array.isArray(products) ? products.slice(0, 10) : [];
                 if (entry.isIntersecting) {
                     // 元素进入视口时初始化 Swiper
                     try {
-                        // 使用共享的 Swiper 加载器
-                        const Swiper = (await import('swiper/bundle')).default;
+                        // 按需加载 Swiper 核心模块
+                        const { loadSwiper, injectSwiperStyles } = await import('@utils/swiperLoader');
+                        const { Swiper, Navigation, Pagination, Autoplay } = await loadSwiper();
+                        injectSwiperStyles();
 
                         // 初始化 Swiper
                         const swiper = new Swiper('.honor-swiper4', {
+                modules: [Navigation, Pagination, Autoplay],
                 // 基本配置
                 slidesPerView: 2,
                 spaceBetween: 15,
