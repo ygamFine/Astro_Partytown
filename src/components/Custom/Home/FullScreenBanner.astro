@@ -27,7 +27,7 @@ const firstBannerImage = firstBanner?.desktopImage || firstBanner?.field_tupian_
 
 <!-- 预加载首屏关键图片 - 最高优先级 -->
 {firstBannerImage && (
-  <link rel="preload" as="image" href={firstBannerImage} fetchpriority="high" />
+  <link rel="preload" as="image" href={firstBannerImage} />
 )}
 
 <!-- 响应式Banner容器 -->
@@ -60,8 +60,7 @@ const firstBannerImage = firstBanner?.desktopImage || firstBanner?.field_tupian_
                 height={800}
                 quality={80}
                 format="webp"
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
+                loading="lazy"
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
@@ -92,8 +91,7 @@ const firstBannerImage = firstBanner?.desktopImage || firstBanner?.field_tupian_
                 height={220}
                 quality={80}
                 format="webp"
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
+                loading="lazy"
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
@@ -106,8 +104,7 @@ const firstBannerImage = firstBanner?.desktopImage || firstBanner?.field_tupian_
                 height={220}
                 quality={80}
                 format="webp"
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
+                loading="lazy"
                 decoding="async"
                 class="banner-image"
                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease;"
