@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { buildLanguageUrl } from '@utils/languageUtils';
+
 interface InquiryFormProps {
   lang: string;
   id?: string;
@@ -41,7 +42,8 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
   const [showModal, setShowModal] = useState(false);
 
   const t = transitions || {};
-  // 辅助函数 - 与 Astro 版本保持一致
+
+  // 辅助函数
   const toSlug = (val: any) =>
     String(val ?? "")
       .toLowerCase()
@@ -80,11 +82,10 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
   };
 
   const i18nFormText = (raw: any): string => {
-    // 简化版本，可以根据需要扩展国际化逻辑
     return String(raw ?? "").trim();
   };
 
-  // Cookie 操作函数 - 与 Astro 版本一致
+  // Cookie 操作函数
   const getCookieValue = (name: string): string => {
     if (typeof document === "undefined" || !name) return "";
     const encodedName = encodeURIComponent(name) + "=";
@@ -114,23 +115,18 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
 
   const getDefaultValidationMessage = (validateType: string) => {
     const messages = t?.form?.validation || {};
-    switch (validateType) {
-      case "email":
-        return messages?.email_invalid;
-      case "phone":
-        return messages?.phone_invalid;
-      case "whatsapp":
-        return messages?.whatsapp_invalid;
-      default:
-        return messages?.invalid_format;
-    }
+    const msgMap: Record<string, string> = {
+      email: messages?.email_invalid,
+      phone: messages?.phone_invalid,
+      whatsapp: messages?.whatsapp_invalid,
+    };
+    return msgMap[validateType] || messages?.invalid_format;
   };
 
-  // 表单验证 - 与 Astro 版本完全一致
+  // 表单验证
   const validate = (): boolean => {
     let hasError = false;
     
-    // 普通控件验证
     formStructure.forEach((item, index) => {
       const fieldName = getFieldName(item, index);
       const rawType = item?.type ?? item?.componentType ?? item?.inputType;
@@ -225,15 +221,15 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     clearError(fieldKey);
   };
 
-  // 消息提示函数 - 与 Astro 版本一致
+  // 消息提示函数
   const showMessage = (message: string, type = "info") => {
     const messageDiv = document.createElement("div");
-    const bgColor =
-      type === "success"
-        ? "#10b981"
-        : type === "error"
-          ? "#ef4444"
-          : "#3b82f6";
+    const bgColorMap: Record<string, string> = {
+      success: "#10b981",
+      error: "#ef4444",
+      info: "#3b82f6"
+    };
+    const bgColor = bgColorMap[type] || bgColorMap.info;
 
     messageDiv.style.cssText = `
       position: fixed !important;
@@ -253,17 +249,15 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     setTimeout(() => messageDiv.remove(), 3000);
   };
 
-  // 提交表单 - 与 Astro 版本完全一致
+  // 提交表单
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 检查是否有表单字段
     if (!Array.isArray(formStructure) || formStructure.length === 0) {
       showMessage("表单配置错误，请联系管理员", "error");
       return;
     }
 
-    // 验证表单
     const invalid = validate();
     if (invalid) {
       showMessage(t?.form?.messages?.validation_error || "请检查表单填写", "error");
@@ -273,7 +267,6 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      // 组装最终提交数据（固定字段 + 表单字段）
       const payload = {
         formId: formId,
         companyId: companyId,
@@ -285,15 +278,11 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       
       const visitorId = getCookieValue("_hzVisitorid") || "";
       
-      // 组装请求数据
       const requestData = {
         visitorId,
         ...payload,
       };
       
-      // 使用通用多语言 URL 构建：
-      // - 生产（域名模式）：返回不带语言前缀的路径
-      // - 开发/本地（路径前缀模式）：返回带 `/{lang}` 前缀的路径
       const apiEndpoint = buildLanguageUrl(lang, '/api/inquiry');
 
       const response = await fetch(apiEndpoint, {
@@ -311,23 +300,20 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       if(result.success && result.data.code !== '001') {
         throw new Error(result.message);
       }
-      // 根据successMode显示成功消息
+
       if (successMode === "modal") {
         setShowModal(true);
       } else {
-        // toast 模式下直接跳转：使用通用多语言 URL 构建
         const contactSuccessPath = buildLanguageUrl(lang, '/contact/success');
         window.location.href = contactSuccessPath;
       }
 
-      // 触发自定义事件，通知其他组件表单提交成功
       document.dispatchEvent(
         new CustomEvent("contactFormSubmitted", {
           detail: { success: true, data: payload },
         }),
       );
 
-      // 重置表单
       setFieldValues({});
       onSuccess?.();
 
@@ -341,7 +327,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     }
   };
 
-  // 渲染表单字段 - 与 Astro 版本完全一致
+  // 渲染表单字段
   const renderFormField = (item: any, index: number) => {
     const rawType = item?.type ?? item?.componentType ?? item?.inputType;
     const type = normalizeType(rawType, item);
@@ -370,13 +356,14 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
     const error = errorMap.get(fieldKey);
     const fieldValue = fieldValues[fieldKey] || "";
 
+    // 通用样式类
+    const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200";
+    const labelClass = "block text-2xl font-medium text-gray-700 mb-2";
+
     return (
       <div key={fieldKey} className={fullWidth ? "md:col-span-2" : ""}>
         {label && (
-          <label
-            htmlFor={`${fieldId}-${fieldName}`}
-            className="block text-2xl font-medium text-gray-700 mb-2"
-          >
+          <label htmlFor={`${fieldId}-${fieldName}`} className={labelClass}>
             {label}
             {required && <span className="text-red-600"> *</span>}
           </label>
@@ -391,7 +378,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
             placeholder={placeholder}
             value={fieldValue}
             onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+            className={`${inputClass} resize-none`}
           />
         ) : type === "select" ? (
           <select
@@ -400,7 +387,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
             required={required}
             value={fieldValue}
             onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+            className={inputClass}
           >
             <option value="">{placeholder}</option>
             {options.map((opt: any, idx: number) => {
@@ -502,7 +489,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
             maxLength={item?.maxLength}
             min={item?.min}
             max={item?.max}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+            className={inputClass}
           />
         )}
         
@@ -538,7 +525,6 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
             formStructure.map((item: any, index: number) => renderFormField(item, index))}
         </div>
 
-        {/* 提交按钮 */}
         <div className="flex gap-4">
           <button
             type="submit"
@@ -552,12 +538,10 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         </div>
       </form>
 
-      {/* 成功提交模态框 */}
       {showModal && (
         <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all duration-300">
             <div className="p-6 text-center">
-              {/* 成功图标 */}
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
                 <svg
                   className="h-8 w-8 text-green-600"
@@ -574,23 +558,19 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
                 </svg>
               </div>
 
-              {/* 成功标题 */}
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {t?.form?.messages?.submit_success_model_text}
               </h3>
 
-              {/* 成功描述 */}
               <p className="text-gray-600 mb-6">
                 {t?.form?.messages?.submit_success_model_subtitle}
               </p>
 
-              {/* 操作按钮 */}
               <div className="flex gap-3 justify-center">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
-                    // 触发成功回调事件
                     document.dispatchEvent(
                       new CustomEvent("contactFormSuccessAction", {
                         detail: {
