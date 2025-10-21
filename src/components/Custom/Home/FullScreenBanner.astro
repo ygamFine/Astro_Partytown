@@ -19,7 +19,16 @@ export interface Props {
 
 // 获取props
 const banners = await getBannerData('homepage');
+
+// 获取首屏Banner图片用于预加载
+const firstBanner = banners && banners.length > 0 ? banners[0] : null;
+const firstBannerImage = firstBanner?.desktopImage || firstBanner?.field_tupian_url;
 ---
+
+<!-- 预加载首屏关键图片 - 最高优先级 -->
+{firstBannerImage && (
+  <link rel="preload" as="image" href={firstBannerImage} fetchpriority="high" />
+)}
 
 <!-- 响应式Banner容器 -->
 <section class="banner-container" id="homepage-banner">
@@ -324,7 +333,7 @@ const banners = await getBannerData('homepage');
 </style>
 
 <script>
-  // Banner是首屏关键内容,使用主线程立即执行,不使用Partytown
+  // Banner是首屏关键内容,立即初始化,不使用懒加载
   document.addEventListener('DOMContentLoaded', function() {
     // 检查是否存在轮播容器
     const bannerContainer = document.getElementById('homepage-banner');
@@ -333,26 +342,8 @@ const banners = await getBannerData('homepage');
       return;
     }
 
-    // 创建 Intersection Observer
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          // 元素进入视口时初始化轮播
-          initBanner();
-          
-          // 停止观察，避免重复初始化
-          observer.unobserve(entry.target);
-        }
-      }
-    }, {
-      // 当元素 10% 可见时触发
-      threshold: 0.1,
-      // 提前 100px 开始加载
-      rootMargin: '100px'
-    });
-
-    // 开始观察轮播容器
-    observer.observe(bannerContainer);
+    // 立即初始化Banner,不使用Intersection Observer
+    initBanner();
 
     // 轮播初始化函数
     function initBanner() {

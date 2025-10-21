@@ -188,7 +188,7 @@ const productIds = safeProducts.map((_, index) => `product-${index}`);
       const { Navigation, Pagination } = await import("swiper/modules");
 
       // 初始化 Swiper
-      new Swiper(".honor-swiper0", {
+      const swiper = new Swiper(".honor-swiper0", {
         // 配置使用的模块
         modules: [Navigation, Pagination],
         // 基本配置

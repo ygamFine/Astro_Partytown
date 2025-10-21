@@ -62,23 +62,10 @@ export default defineConfig({
       },
     }
   },
-  // experimental: {
-  //   // 只保留 5.13.8 版本中明确存在的实验性特性
-  //   contentIntellisense: true, // 内容集合的智能提示支持
-  //   liveContentCollections: true, // 内容集合的实时更新
-  //   staticImportMetaEnv: true, // 静态导入环境变量
-  // },
-  // // 🏗️ 构建优化配置 - 强制内联所有样式，彻底解决重复问题
-  // build: {
-  //   assets: '_astro',
-  //   // 强制内联所有样式，避免生成多个重复的 CSS 文件
-  //   inlineStylesheets: 'always',
-  //   format: 'directory',
-  // },
-
-  // // 📁 静态资源配置
-  // publicDir: 'public',
-
-  // // 📤 输出配置 - 服务端渲染模式，支持API路由
-  // output: 'static',
+  // 🏗️ 构建优化配置 - 内联关键CSS,减少阻塞
+  build: {
+    assets: '_astro',
+    // 自动内联小于10KB的CSS，减少渲染阻塞请求
+    inlineStylesheets: 'auto',
+  },
 });
