@@ -88,21 +88,21 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <meta property="og:type" content="website" />
 
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
-    <!-- <DynamicScriptLoader 
+    <DynamicScriptLoader 
       position="header" 
       pageType={pageType}
       lang={lang}
-    /> -->
+    />
     <!-- <ClientRouter /> -->
     <title>{title}</title>
   </head>
   <body data-pagefind-body>
     <!-- 🎯 Body Top 位置动态脚本加载器 - 插入到 <body> 标签开始处 -->
-    <!-- <DynamicScriptLoader 
+    <DynamicScriptLoader 
       position="body-top" 
       pageType={pageType}
       lang={lang}
-    /> -->
+    />
 
     <Header siteConfiguration={siteConfiguration} />
     
@@ -133,10 +133,10 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
 
     <FooterSection siteConfiguration={siteConfiguration}/>
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
-    <!-- <DynamicScriptLoader 
+    <DynamicScriptLoader 
       position="body-bottom" 
       pageType={pageType}
       lang={lang}
-    /> -->
+    />
   </body>
 </html>
