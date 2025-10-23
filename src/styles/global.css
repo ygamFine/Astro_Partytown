@@ -295,3 +295,11 @@ img[loading="lazy"]:not([src]) {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.termsfeed-com---nb-headline{
+  position: fixed !important
+}
+.termsfeed-com---nb-simple{
+  left: 0 !important;
+  max-width: 100% !important;
+}
