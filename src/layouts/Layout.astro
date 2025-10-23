@@ -19,12 +19,7 @@ export interface Props {
   pageType?: string;
 }
 
-const {
-  title,
-  description = '',
-  lang = "en",
-  pageType = "home",
-} = Astro.props;
+const { title, description = "", lang = "en", pageType = "home" } = Astro.props;
 
 // 获取网站配置信息
 let siteConfiguration = {};
@@ -37,75 +32,86 @@ try {
 // 每个页面组件应在其自己的文件中定义 pageWidth
 
 // RTL 语言列表
-const RTL_LANGUAGES = ['ar'];
+const RTL_LANGUAGES = ["ar"];
 const isRTL = RTL_LANGUAGES.includes(lang);
-const htmlDir = isRTL ? 'rtl' : 'ltr';
+const htmlDir = isRTL ? "rtl" : "ltr";
 ---
 
 <!doctype html>
 <html lang={lang} dir={htmlDir}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
     <!-- 关键资源预加载 - 只预加载首屏必需的 -->
-    <link rel="preload" href="/fontIcons/iconfont.woff2" as="font" type="font/woff2" crossorigin />
-    
+    <link
+      rel="preload"
+      href="/fontIcons/iconfont.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
     <!-- 延迟加载非关键CSS -->
-    <link rel="preload" href="/fontIcons/iconfont.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/fontIcons/iconfont.css" /></noscript>
+    <link
+      rel="preload"
+      href="/fontIcons/iconfont.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="/fontIcons/iconfont.css" /></noscript
+    >
 
     <!-- 阿拉伯语字体预加载（仅阿语时预连接与预加载） -->
-    {isRTL && (
-      <>
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link 
-          rel="preload" 
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" 
-          as="style" 
-          onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <noscript>
-          <link 
-            href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" 
-            rel="stylesheet"
+    {
+      isRTL && (
+        <>
+          <link
+            rel="preconnect"
+            href="https://fonts.googleapis.com"
+            crossorigin
           />
-        </noscript>
-      </>
-    )}
-    
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link
+            rel="preload"
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'"
+          />
+          <noscript>
+            <link
+              href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
+              rel="stylesheet"
+            />
+          </noscript>
+        </>
+      )
+    }
+
     <!-- SEO优化 -->
-    {description && (
-      <meta name="description" content={description} />
-    )}
+    {description && <meta name="description" content={description} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
 
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
-    <DynamicScriptLoader 
-      position="header" 
-      pageType={pageType}
-      lang={lang}
-    />
+    <DynamicScriptLoader position="header" pageType={pageType} lang={lang} />
     <!-- <ClientRouter /> -->
     <title>{title}</title>
   </head>
   <body data-pagefind-body>
     <!-- 🎯 Body Top 位置动态脚本加载器 - 插入到 <body> 标签开始处 -->
-    <DynamicScriptLoader 
-      position="body-top" 
-      pageType={pageType}
-      lang={lang}
-    />
+    <DynamicScriptLoader position="body-top" pageType={pageType} lang={lang} />
 
     <Header siteConfiguration={siteConfiguration} />
-    
+
     <main data-pagefind-body id="main-content">
       <slot />
     </main>
@@ -131,12 +137,58 @@ const htmlDir = isRTL ? 'rtl' : 'ltr';
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
 
-    <FooterSection siteConfiguration={siteConfiguration}/>
+    <FooterSection siteConfiguration={siteConfiguration} />
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
-    <DynamicScriptLoader 
-      position="body-bottom" 
+    <DynamicScriptLoader
+      position="body-bottom"
       pageType={pageType}
       lang={lang}
     />
+    <!-- Cookie Consent by TermsFeed https://www.TermsFeed.com -->
+    <script
+      type="text/javascript"
+      src="https://www.termsfeed.com/public/cookie-consent/4.2.0/cookie-consent.js"
+      charset="UTF-8"></script>
+    <script type="text/javascript" charset="UTF-8">
+      document.addEventListener("DOMContentLoaded", function () {
+        cookieconsent.run({
+          notice_banner_type: "simple",
+          consent_type: "express",
+          palette: "light",
+          language: "en",
+          page_load_consent_levels: ["strictly-necessary"],
+          notice_banner_reject_button_hide: false,
+          preferences_center_close_button_hide: false,
+          page_refresh_confirmation_buttons: false,
+          website_name: "aihuazhi",
+        });
+      });
+    </script>
+
+    <!-- Unnamed script -->
+    <script type="text/plain" data-cookie-consent="tracking" async>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-5MNNZB76");
+    </script>
+    <!-- end of Unnamed script-->
+
+    <noscript
+      >Free cookie consent management tool by <a
+        href="https://www.termsfeed.com/">TermsFeed</a
+      ></noscript
+    >
+    <!-- End Cookie Consent by TermsFeed https://www.TermsFeed.com -->
+
+    <!-- Below is the link that users can use to open Preferences Center to change their preferences. Do not modify the ID parameter. Place it where appropriate, style it as needed. -->
+
+    <a href="#" id="open_preferences_center">Update cookies preferences</a>
   </body>
 </html>
