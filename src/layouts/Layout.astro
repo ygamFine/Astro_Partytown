@@ -150,7 +150,6 @@ const htmlDir = isRTL ? "rtl" : "ltr";
       src="https://www.termsfeed.com/public/cookie-consent/4.2.0/cookie-consent.js"
       charset="UTF-8"></script>
     <script type="text/javascript" charset="UTF-8" define:vars={{ lang }}>
-      console.log('获取当前域名', window.location.origin);
       document.addEventListener("DOMContentLoaded", function () {
         cookieconsent.run({
           notice_banner_type: "headline",
@@ -162,7 +161,7 @@ const htmlDir = isRTL ? "rtl" : "ltr";
           preferences_center_close_button_hide: false,
           page_refresh_confirmation_buttons: false,
           website_name: "aihauzhi",
-          website_privacy_policy_url: `${window.location.origin}/contact`,
+          website_privacy_policy_url: `${window.location.origin}/cookie-policy/`,
           notice_banner_insert_legal_urls: true,
           notice_banner_append: 'beforeend'
         });

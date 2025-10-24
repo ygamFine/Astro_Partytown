@@ -297,6 +297,18 @@ export async function getContact(locale = 'en') {
 }
 
 /**
+ * 获取单页面列表
+ */
+export async function getSinglepages(locale = 'en') {
+  try {
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/singlepages?locale=${locale}&populate=all`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
  * 获取联系方式侧边栏
  */
 export async function getContactSidebar(locale = 'en') {
