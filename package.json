@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && npm run generate:sitemap",
+    "build": "astro build && npm run generate:sitemap && npm run generate:pagefind",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images:node": "node scripts/optimize-images-node.js",
