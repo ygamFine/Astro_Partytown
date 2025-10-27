@@ -16,6 +16,7 @@ if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
  */
 export async function getSiteConfiguration(locale = 'en') {
   try {
+    console.log('加载网站配置信息');
     const data = await fetchJson(`${PUBLIC_API_URL}/api/site-configuration?locale=${locale}&populate=all`);
 
     // 转换为标准格式，支持国际化字段
@@ -52,6 +53,7 @@ export async function getSupportedLanguages() {
  */
 export async function getMenus(locale = 'en') {
   try {
+    console.log('加载获取菜单数据信息');
     const data = await fetchJson(`${PUBLIC_API_URL}/api/menu-manages?locale=${locale}&populate=all&sort=sort:ASC`);
     
     // 转换为标准格式，支持国际化字段
