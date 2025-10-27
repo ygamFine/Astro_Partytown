@@ -18,6 +18,29 @@ interface RequestHeaders {
   [key: string]: string;
 }
 
+// SSG 模式下的内存缓存
+// 缓存结构：{ [url]: { data: response, timestamp: number } }
+const apiCache = new Map<string, { data: any; timestamp: number }>();
+
+// 获取缓存数据
+function getCachedData(url: string): any | null {
+  const cached = apiCache.get(url);
+  if (cached) {
+    console.log(`缓存命中: ${url}`);
+    return cached.data;
+  }
+  return null;
+}
+
+// 设置缓存数据
+function setCachedData(url: string, data: any): void {
+  apiCache.set(url, {
+    data,
+    timestamp: Date.now()
+  });
+  console.log(`缓存已设置: ${url}`);
+}
+
 export const PUBLIC_API_URL: string | undefined = getSecret('PUBLIC_API_URL');
 export const STRAPI_TOKEN: string | undefined = getSecret('PUBLIC_API_TOKEN');
 export const ITALKIN_API: string | undefined = getSecret('ITALKIN_API') || ITALKIN_API_URL;
@@ -49,6 +72,12 @@ export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>
       return { data: [] } as StrapiResponse<T>;
     }
 
+    // 尝试从缓存获取数据
+    const cachedData = getCachedData(url);
+    if (cachedData !== null) {
+      return cachedData;
+    }
+
     // 创建 AbortController 用于超时控制
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
@@ -60,7 +89,13 @@ export async function fetchJson<T = any>(url: string): Promise<StrapiResponse<T>
     clearTimeout(timeoutId);
     
     if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
-    return res.json();
+    
+    const responseData = await res.json();
+    
+    // 将响应数据存入缓存
+    setCachedData(url, responseData);
+    
+    return responseData;
   } catch (error) {
     // Strapi 网络请求失败
     // 在构建环境下，网络请求失败是常见的，不应该中断构建

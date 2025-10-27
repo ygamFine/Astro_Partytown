@@ -1,8 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-import SocialIcons from '../social/SocialIcons.astro';
 import { themeConfig } from '../../../config/theme.js';
-import { getMenus, getSupportedLanguages } from "@apis/common";
+import { getMenus } from "@apis/common";
 import { getCurrentLanguage } from '@utils/languageUtils';
 import { getDictionary } from "@i18n/dictionaries.js";
 import { generateUrl,extractUrl, getFirstImage } from '@utils/tools.js';
