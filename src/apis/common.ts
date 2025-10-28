@@ -5,7 +5,7 @@ import { buildMenuTree, extractUrl, getFirstImage } from '@utils/tools.js';
 import { getMobileBottomMenuIcon } from '@utils/iconUtils.js';
 import { MENU_TYPE_MAPPING } from '@config/constant.js';
 import { getSupportedLanguages as languageConfig } from '@utils/languageConfig';
-
+import { API_PAGE_SIZE } from '@config/constant.js';
 // 验证环境变量
 if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
   throw new Error('缺少必要的 Strapi 环境变量配置');
@@ -16,13 +16,29 @@ if (!PUBLIC_API_URL || !STRAPI_TOKEN) {
  */
 export async function getSiteConfiguration(locale = 'en') {
   try {
-    console.log('加载网站配置信息');
     const data = await fetchJson(`${PUBLIC_API_URL}/api/site-configuration?locale=${locale}&populate=all`);
 
     // 转换为标准格式，支持国际化字段
     const siteConfiguration = data.data || {};
 
     return siteConfiguration;
+
+  } catch (error) {
+    return []
+  }
+}
+
+/**
+ * 获取关键词列表
+ */
+export async function getKeywords(locale = 'en') {
+  try {
+    console.log('加载网站配置信息1', API_PAGE_SIZE);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/huazhi-seo-plugin/keywords/inner-link?locale=${locale}&populate=all`);
+
+    const keywords = data.data || {};
+    console.log('加载网站配置信息2', keywords.length);
+    return keywords;
 
   } catch (error) {
     return []
@@ -86,7 +102,7 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取产品列表
     if (slugOrId === undefined) {
-      const json = await fetchJson(`${PUBLIC_API_URL}/api/product-manages?locale=${locale}&populate=all`);
+      const json = await fetchJson(`${PUBLIC_API_URL}/api/product-manages?locale=${locale}&populate=all&pagination[pageSize]=${API_PAGE_SIZE}`);
       
       // 处理所有产品的图片，使用缓存的图片
       const products = (json.data && Array.isArray(json.data)) 

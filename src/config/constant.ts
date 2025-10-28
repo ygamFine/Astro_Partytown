@@ -34,3 +34,22 @@ export const MENU_TYPE_MAPPING = {
     'whatsapp': 'whatsapp',
     'email': 'email',
 } as const;
+
+/**
+ * 关键词归属模块映射
+ * key 为 关键词归属模块的唯一标识
+ * value 为 关键词归属模块的名称
+ */
+export const KEY_WORDS_CONTENT_TYPE = {
+    'api::product-category.product-category': 'product',
+    'api::product-manage.product-manage': 'product',
+    'api::newcategory.newcategory': 'news',
+    'api::new.new': 'news',
+    'api::case-category.case-category': 'case',
+    'api::case.case': 'case',
+} as const;
+
+/**
+ * 每页条数
+ */
+export const API_PAGE_SIZE = 99999;
