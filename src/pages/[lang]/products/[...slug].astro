@@ -8,15 +8,13 @@ import RelatedProducts from '@components/templates/common/RelatedProducts.astro'
 import PopularProductsSidebar from '@components/templates/common/PopularProductsSidebar.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes'
-import { getProducts, getNews } from '@apis/common.js';
+import { getProducts, getNews, getCompaniesSite, getItalkinForm } from '@apis/common.js';
 import { extractUrl, getFirstImage, generateUrl } from '@utils/tools.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateProductDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
 import RichText from '@components/common/layout/RichText.astro';
 import ItalkinForm from '@components/common/italkin/InquiryForm';
-import { getCompaniesSite } from "@apis/common";
-import { getItalkinForm } from "@apis/common";
 
 export async function getStaticPaths() {
   // 只为配置中启用的语言和产品生成静态路径
@@ -39,7 +37,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { lang, products, product } = Astro.props;
+const { lang, products, product, keywords } = Astro.props;
 // 如果产品不存在，返回404
 if (!product) {
   return Astro.redirect('/404');
@@ -300,7 +298,7 @@ const formTrans = formResp?.data?.formTrans || [];
               <h2 class="text-2xl font-bold text-gray-900 mb-6">{t.product.details}</h2>
               <!-- 富文本内容 -->
               {product.details && (
-                <RichText content={product.details} />
+                <RichText lang={lang} content={product.details} />
               )}
             </div>
 
@@ -370,8 +368,6 @@ const formTrans = formResp?.data?.formTrans || [];
       
       const images = Array.from(slider.querySelectorAll('img'));
       let currentIndex = 0;
-      
-      console.log('找到图片数量:', images.length);
       
       // 初始化图片容器宽度
       if (images.length > 0) {

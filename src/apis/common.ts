@@ -33,11 +33,9 @@ export async function getSiteConfiguration(locale = 'en') {
  */
 export async function getKeywords(locale = 'en') {
   try {
-    console.log('加载网站配置信息1', API_PAGE_SIZE);
-    const data = await fetchJson(`${PUBLIC_API_URL}/api/huazhi-seo-plugin/keywords/inner-link?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/huazhi-seo-plugin/keywords/inner-link?locale=${locale}&populate=all&pagination[pageSize]=${API_PAGE_SIZE}`);
 
     const keywords = data.data || {};
-    console.log('加载网站配置信息2', keywords.length);
     return keywords;
 
   } catch (error) {
@@ -69,8 +67,7 @@ export async function getSupportedLanguages() {
  */
 export async function getMenus(locale = 'en') {
   try {
-    console.log('加载获取菜单数据信息');
-    const data = await fetchJson(`${PUBLIC_API_URL}/api/menu-manages?locale=${locale}&populate=all&sort=sort:ASC`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/menu-manages?locale=${locale}&populate=all&sort=sort:ASC&pagination[pageSize]=${API_PAGE_SIZE}`);
     
     // 转换为标准格式，支持国际化字段
     const flatMenus = (data.data && Array.isArray(data.data)) 
@@ -114,7 +111,6 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
             },
           }))
         : [];
-      console.log('查出来的产品数量', products.length);
       return products;
     }
     
@@ -169,7 +165,7 @@ export async function getByCategory(locale = 'en', slug: string, model: string) 
       ? `&filters[${model === 'product' ? 'product_category' : 'category'}][url_slug][$eq]=${slug}`
       : '';
     
-    const url = `${PUBLIC_API_URL}${baseUrls[model]}?locale=${locale}&populate=all${filterParams}`;
+    const url = `${PUBLIC_API_URL}${baseUrls[model]}?locale=${locale}&populate=all${filterParams}&pagination[pageSize]=${API_PAGE_SIZE}`;
     const json = await fetchJson(url);
     // 处理所有产品的图片，使用缓存的图片
     const datas = (json.data && Array.isArray(json.data)) 
@@ -195,7 +191,7 @@ export async function getNews(locale = 'en', slugOrId?: string | number) {
   try {
     // 如果没有传入 slugOrId，则获取新闻列表
     if (slugOrId === undefined) {
-      const json = await fetchJson(`${PUBLIC_API_URL}/api/news?locale=${locale}&populate=all`);
+      const json = await fetchJson(`${PUBLIC_API_URL}/api/news?locale=${locale}&populate=all&pagination[pageSize]=${API_PAGE_SIZE}`);
 
       // 处理所有新闻的图片，使用缓存的图片
       const news = (json.data && Array.isArray(json.data)) 
@@ -247,7 +243,7 @@ export async function getCases(locale = 'en', slugOrId?: string | number) {
     // 如果没有传入 slugOrId，则获取案例列表
     if (slugOrId === undefined) {
       const baseUrl = `${PUBLIC_API_URL}/api/cases?locale=${locale}&populate=all`;
-      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${24}`);
+      const json = await fetchJson(`${baseUrl}&pagination[page]=${1}&pagination[pageSize]=${API_PAGE_SIZE}`);
 
       // 处理所有新闻的图片，使用缓存的图片
       const cases = (json.data && Array.isArray(json.data)) 
@@ -295,7 +291,7 @@ export async function getCases(locale = 'en', slugOrId?: string | number) {
  */
 export async function getAbout(locale = 'en') {
   try {
-    const data = await fetchJson(`${PUBLIC_API_URL}/api/about-uses?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/about-uses?locale=${locale}&populate=all&pagination[pageSize]=${API_PAGE_SIZE}`);
     return data.data;
   } catch (error) {
     return null;
@@ -319,7 +315,7 @@ export async function getContact(locale = 'en') {
  */
 export async function getSinglepages(locale = 'en') {
   try {
-    const data = await fetchJson(`${PUBLIC_API_URL}/api/singlepages?locale=${locale}&populate=all`);
+    const data = await fetchJson(`${PUBLIC_API_URL}/api/singlepages?locale=${locale}&populate=all&pagination[pageSize]=${API_PAGE_SIZE}`);
     return data.data;
   } catch (error) {
     return null;

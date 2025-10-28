@@ -1,15 +1,87 @@
 ---
 import { Image } from "astro:assets";
 import * as cheerio from "cheerio";
+import { getKeywords } from "@apis/common.js";
+import { KEY_WORDS_CONTENT_TYPE } from '@config/constant';
+import { generateUrl } from '@utils/tools.js';
 
 interface Props {
+    lang: string;
     content: string; // 富文本内容（HTML格式）
 }
 
-const { content } = Astro.props;
+const { content, lang } = Astro.props;
+
+const keywords = await getKeywords(lang);
 
 // 解析富文本并用占位符替换 img，以便在模板中插入 <Image /> 组件
 const $ = cheerio.load(content || "");
+
+// 关键词匹配和链接替换函数
+function processKeywordMatching(htmlContent: string, keywordsList: any[]): string {
+    if (!keywordsList || !Array.isArray(keywordsList) || keywordsList.length === 0) {
+        return htmlContent;
+    }
+    
+    // 使用cheerio解析HTML，避免破坏HTML结构
+    const $temp = cheerio.load(htmlContent);
+    
+    // 遍历所有关键词
+    keywordsList.forEach((keywordObj) => {
+        if (!keywordObj.keyword || !keywordObj.slug) return;
+        
+        const keyword = keywordObj.keyword.trim();
+        if (!keyword || keyword.length < 2) return; // 避免匹配过短的关键词
+        
+        // 创建不区分大小写、忽略空格的正则表达式
+        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const flexibleKeyword = escapedKeyword.replace(/\s+/g, '\\s*');
+        const regex = new RegExp(`\\b${flexibleKeyword}\\b`, 'gi');
+        
+        // 遍历所有文本节点，避免在HTML标签内进行替换
+        $temp('*').contents().each(function() {
+            if (this.type === 'text') {
+                const textNode = $temp(this);
+                const text = textNode.text();
+                
+                // 检查父元素是否已经是链接或其他不应该包含链接的元素
+                if (textNode.parent().is('a, script, style, code, pre')) return;
+                
+                // 只在有足够长度的文本中进行匹配，避免过度匹配
+                if (text.trim().length < keyword.length) return;
+                
+                // 限制每个文本节点中的替换次数，避免过度链接
+                let replacementCount = 0;
+                const maxReplacements = 3;
+                
+                // 进行关键词替换
+                const newText = text.replace(regex, (match) => {
+                    if (replacementCount >= maxReplacements) return match;
+                    replacementCount++;
+                    return `<a href="${generateKeywordUrl(keywordObj)}" class="keyword-link">${match}</a>`;
+                });
+                
+                // 如果有替换，更新节点
+                if (newText !== text) {
+                    textNode.replaceWith(newText);
+                }
+            }
+        });
+    });
+    
+    return $temp.root().html() || htmlContent;
+}
+
+// 生成关键词链接URL
+function generateKeywordUrl(keyword: any): string {
+    let slug = keyword.slug;
+    const contentType = KEY_WORDS_CONTENT_TYPE[keyword.document_type as keyof typeof KEY_WORDS_CONTENT_TYPE];
+    if (contentType) {
+        slug = contentType + slug;
+    }
+    return generateUrl(lang, slug);
+}
+
 
 interface ParsedImage {
     src: string;
@@ -39,7 +111,11 @@ $("img").each((i, el) => {
 });
 
 // 带占位符的 HTML，用于后续分段渲染
-const htmlWithTokens = $.root().html() || (content || "");
+let htmlWithTokens = $.root().html() || (content || "");
+
+// 应用关键词匹配和链接替换
+htmlWithTokens = processKeywordMatching(htmlWithTokens, keywords);
+
 const parts = htmlWithTokens.split(/(__ASTRO_IMG_\d+__)/g).filter(Boolean);
 ---
 <div class="prose max-w-none">
@@ -65,3 +141,18 @@ const parts = htmlWithTokens.split(/(__ASTRO_IMG_\d+__)/g).filter(Boolean);
         return <div class="contents" set:html={part} />;
     })}
 </div>
+
+<style>
+    :global(.keyword-link) {
+        color: #2563eb;
+        text-decoration: underline;
+        text-decoration-color: rgba(37, 99, 235, 0.3);
+        text-underline-offset: 2px;
+        transition: all 0.2s ease;
+    }
+    
+    :global(.keyword-link:hover) {
+        color: #1d4ed8;
+        text-decoration-color: rgba(29, 78, 216, 0.6);
+    }
+</style>

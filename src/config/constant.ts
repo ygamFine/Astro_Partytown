@@ -41,12 +41,12 @@ export const MENU_TYPE_MAPPING = {
  * value 为 关键词归属模块的名称
  */
 export const KEY_WORDS_CONTENT_TYPE = {
-    'api::product-category.product-category': 'product',
-    'api::product-manage.product-manage': 'product',
-    'api::newcategory.newcategory': 'news',
-    'api::new.new': 'news',
-    'api::case-category.case-category': 'case',
-    'api::case.case': 'case',
+    'api::product-category.product-category': '/products',
+    'api::product-manage.product-manage': '/products',
+    'api::newcategory.newcategory': '/news',
+    'api::new.new': '/news',
+    'api::case-category.case-category': '/case',
+    'api::case.case': '/case',
 } as const;
 
 /**

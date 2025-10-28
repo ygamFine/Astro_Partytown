@@ -299,13 +299,13 @@ export async function generateStaticPaths(perPage = 9, contentType: ContentType 
       try {
         // 一次性获取所有数据，避免重复调用接口
         const allData = await getByCategory(lang, '', contentType);
+        console.log('allData', allData);
         // 添加路径
         const totalPages = Math.max(1, Math.ceil(allData.length / perPage));
         for (let page = 1; page <= totalPages; page++) {
           const startIndex = (page - 1) * perPage;
           const endIndex = startIndex + perPage;
           const currentPageItems = allData.slice(startIndex, endIndex);
-
           const params = page === 1
             ? { lang, page: undefined }
             : { lang, page: page.toString() };

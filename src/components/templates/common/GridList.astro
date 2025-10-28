@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 
 // 导入主题配置
 import { themeConfig } from '@config/theme.js';
-import { generateUrl, getFirstImage } from '@utils/tools.js';
+import { getFirstImage } from '@utils/tools.js';
 
 
 interface Props {
@@ -45,7 +45,7 @@ const cardConfig = themeConfig.layout.productCard;
   <div class={mode === 'sidebar' ? 'grid grid-cols-1 gap-6 sidebar-grid' : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsPerRow} gap-6`}>
     {displayItems.map((item: any) => (
       <article class={`grid-item bg-white rounded-lg shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 relative ${cardConfig.style.hoverEffect === 'lift' ? 'hover:-translate-y-1' : cardConfig.style.hoverEffect === 'scale' ? 'hover:scale-105' : ''}`}>
-        <a href={generateUrl(lang, '/' + mode, item.url_slug) || 'javascript:void(0)'} class="block h-full">
+        <a href={item.href || 'javascript:void(0)'} class="block h-full">
           <div class="aspect-video overflow-hidden">
             <Image 
               src={getFirstImage(item.image || [])?.url || '/images/placeholder.webp'} 
