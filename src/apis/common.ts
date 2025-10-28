@@ -114,7 +114,7 @@ export async function getProducts(locale = 'en', slugOrId?: string | number) {
             },
           }))
         : [];
-
+      console.log('查出来的产品数量', products.length);
       return products;
     }
     
