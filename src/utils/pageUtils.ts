@@ -4,7 +4,7 @@
  */
 
 import { SUPPORTED_LANGUAGES } from './i18n-routes';
-import { getMenus, getProducts, getByCategory } from '@apis/common';
+import { getMenus } from '@apis/common';
 
 // 类型定义
 export interface MenuItem {
@@ -207,38 +207,6 @@ export function getPaginationInfo<T>(items: T[], page: number, perPage: number):
   return { startIndex, endIndex, currentPageItems, totalPages };
 }
 
-// 根据分类路径获取产品
-export async function getProductsByCategoryPath(lang: string, categoryPath: string[]): Promise<Product[]> {
-  const allProducts: Product[] = await getProducts(lang, {
-    fields: 'id,title',
-    ...(categoryPath.length > 0 && {
-      queryParams: {
-        [`filters[product_category][url_slug][$eq]`]: categoryPath[0]
-      }
-    })
-  });
-
-  if (categoryPath.length === 0) {
-    return allProducts;
-  }
-
-  return allProducts.filter(product => {
-    if (product.category_path && Array.isArray(product.category_path)) {
-      return categoryPath.every((segment, index) =>
-        product.category_path![index] === segment
-      );
-    }
-
-    if (product.product_category) {
-      const productCategoryPath = product.product_category.url_slug ||
-        product.product_category.path ||
-        product.product_category.name;
-      return categoryPath.includes(productCategoryPath);
-    }
-
-    return false;
-  });
-}
 
 // 获取分类信息
 export async function getCategoryInfo(lang: string, categoryPath: string[], mode = 'products'): Promise<CategoryInfo> {
@@ -363,91 +331,6 @@ export async function generateAllCategoryPaths(dataFetcher: DataFetcher, itemsPe
   return allLangPaths.flat();
 }
 
-/**
- * 生成页面的静态路径（包含分类和分页）
- * 这是从 [...path].astro 中提取的通用逻辑
- * @param {number} productsPerPage - 每页产品数量
- * @param {string} contentType - 内容类型，如 'product'
- * @returns {Promise<Array>} 静态路径数组
- */
-export async function generateStaticPaths(perPage = 9, contentType: ContentType = 'product'): Promise<StaticPath[]> {
-  const paths: StaticPath[] = [];
-
-  try {
-    // 并行处理所有语言，提高性能
-    const languagePromises = SUPPORTED_LANGUAGES.map(async (lang: string) => {
-      const langPaths: StaticPath[] = [];
-      try {
-        // 加载全部的产品数据
-        const allProducts = await getProducts(lang, {
-          fields: 'title, url_slug',
-        })
-        if (allProducts.length > perPage) {
-          const { totalPages } = getPaginationInfo(allProducts, 1, perPage);
-          for (let page = 1; page <= totalPages; page++) {
-            const { currentPageItems } = getPaginationInfo(allProducts, page, perPage);
-            langPaths.push({
-              params: {
-                lang,
-                page: page === 1 ? undefined : page.toString()
-              },
-              props: {
-                lang,
-                pages: {
-                  currentPage: page,
-                  totalPages,
-                  items: currentPageItems
-                }
-              }
-            })
-          }
-        }
-
-
-        // // 一次性获取所有数据，避免重复调用接口
-        // const allData = await getByCategory(lang, '', contentType);
-        // console.log('分类路径获取产品', JSON.stringify(allData))
-        // for (const item of allData) {
-        //   // 将分类路径添加到路径中
-        //   langPaths.push(createStaticPath(lang, { path: item.url_slug, name: item.title }));
-        //   // 根据分类路径获取产品
-        //   const items = await getProductsByCategoryPath(lang, [item.url_slug])
-        //   if (items.length > perPage) {
-        //     const totalPages = Math.ceil(items.length / perPage);
-        //     for (let page = 1; page <= totalPages; page++) {
-        //       const startIndex = (page - 1) * perPage;
-        //       const endIndex = startIndex + perPage;
-        //       const currentPageItems = items.slice(startIndex, endIndex);
-        //       // 生成分页路径
-        //       langPaths.push(createStaticPath(lang, { path: item.url_slug, name: item.title }, { currentPage: page, totalPages, items: currentPageItems }));
-        //     }
-        //   }
-
-        // }
-      } catch (error) {
-        console.error(`处理语言 ${lang} 失败:`, error);
-        // 如果获取失败，至少提供一个空页面
-        langPaths.push({
-          params: { lang, page: undefined },
-          props: {
-            lang,
-          }
-        });
-      }
-      // console.log('langPaths', JSON.stringify(langPaths))
-      return langPaths;
-    });
-
-    // 等待所有语言处理完成
-    const allLangPaths = await Promise.all(languagePromises);
-    paths.push(...allLangPaths.flat());
-
-    return paths.length > 0 ? paths : [];
-  } catch (error) {
-    console.error('生成静态路径失败:', error);
-    return [];
-  }
-}
 
 
 // 生成所有支持语言的静态路径
