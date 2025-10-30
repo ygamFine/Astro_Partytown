@@ -14,7 +14,6 @@ export async function getStaticPaths() {
   paths.forEach((item) => {
     (item.params as any).about = (item.params as any).about !== '/about' ? '/about' + (item.params as any).about : '/about';
   })
-  console.log('paths', paths);
   return paths;
 }
 

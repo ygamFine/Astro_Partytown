@@ -193,6 +193,6 @@ export async function generateCategoryBreadcrumbs(lang: string, from: PageType =
     });
   }
   const breadcrumbs = await baseBreadcrumbs(lang, from, newsBreadcrumbs)
-  console.log('breadcrumbs', breadcrumbs)
+
   return breadcrumbs;
 }

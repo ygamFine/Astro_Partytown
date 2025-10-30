@@ -83,9 +83,6 @@ export default class StaticPaths {
         const categoriesData = await this.apiTransfer(lang, contentType, ApiTypeEnum.CATEGORY);
         // 遍历分类数据，生成分类路径
         categoriesData.forEach(async (category: any) => {
-          if (lang === 'en') {
-            console.log('category', category);
-          }
           this.paths.push({
             params: { lang, page: category.url_slug },
             props: { lang, category: { path: category.url_slug, name: category.title } }
@@ -132,7 +129,6 @@ export default class StaticPaths {
             props: { lang, category: { path: category?.url_slug, name: category?.title }, pages: { items: allData, item } }
           })
         })
-        console.log('this.paths', this.paths);
         return uniqueByParamsLangAndPage(this.paths);
       } catch (error) {
         console.error(`处理语言 ${lang} 失败:`, error);
