@@ -26,7 +26,7 @@ const apiCache = new Map<string, { data: any; timestamp: number }>();
 function getCachedData(url: string): any | null {
   const cached = apiCache.get(url);
   if (cached) {
-    console.log(`缓存命中: ${url}`);
+    // console.log(`缓存命中: ${url}`);
     return cached.data;
   }
   return null;
@@ -38,7 +38,7 @@ function setCachedData(url: string, data: any): void {
     data,
     timestamp: Date.now()
   });
-  console.log(`缓存已设置: ${url}`);
+  // console.log(`缓存已设置: ${url}`);
 }
 
 export const PUBLIC_API_URL: string | undefined = getSecret('PUBLIC_API_URL');
@@ -46,7 +46,6 @@ export const STRAPI_TOKEN: string | undefined = getSecret('PUBLIC_API_TOKEN');
 export const ITALKIN_API: string | undefined = getSecret('ITALKIN_API') || ITALKIN_API_URL;
 const DISABLE_PNC_FETCH_RAW: string | undefined = getSecret('PUBLIC_DISABLE_PNC_FETCH');
 export const DISABLE_PNC_FETCH: boolean = DISABLE_PNC_FETCH_RAW === '1' || (DISABLE_PNC_FETCH_RAW || '').toLowerCase() === 'true';
-console.log('DISABLE_PNC_FETCH 环境变量', DISABLE_PNC_FETCH);
 function shouldBypassBusinessData(url: string): boolean {
   if (!DISABLE_PNC_FETCH) return false;
   const lowerUrl = url.toLowerCase();

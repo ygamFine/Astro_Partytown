@@ -23,6 +23,7 @@ export interface PageProps {
 
 export interface StaticPath {
   params: {
+    [x: string]: string;
     lang: string;
     page?: string;
     slug?: string;
