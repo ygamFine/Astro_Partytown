@@ -5,54 +5,33 @@ import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
 import { getDictionary } from '@i18n/dictionaries.js';
-import { getCategoryInfo, generateStaticPaths } from '@utils/pageUtils';
-import { generateCategoryBreadcrumbs, generateCaseListBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { themeConfig } from '@config/theme.js';
 import { generateUrl } from '@utils/tools.js';
-
-// 定义 Props 类型
-interface PageProps {
-  lang: string;
-  categoryPath?: {
-    path: string;
-    name: string;
-  };
-  currentPage?: number;
-  totalPages?: number;
-  items?: any[];
-}
-
-const MODEL = 'case';
-const MODEL_PATH = '/case';
+import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
 // 生成静态路径
 export async function getStaticPaths() {
-  const productsPerPage = 9;
-  return generateStaticPaths(productsPerPage, 'case');
+  return await new StaticPaths().generateCaseStaticPaths()
 }
 
-const { lang, categoryPath, currentPage, totalPages, items } = Astro.props as PageProps;
-
-// 将字符串形式的 categoryPath 转换为数组
-const categoryPathArray = categoryPath?.path && categoryPath?.path.length > 0 
-  ? categoryPath?.path.split('/').filter(segment => segment !== '')
-  : [];
-
-const categoryInfo = await getCategoryInfo(lang, categoryPathArray, MODEL);
-const t = await getDictionary(lang);
-
+const { lang, category = { path: '', name: '' }, pages = { currentPage: 1, totalPages: 1, items: [] } } = Astro.props as PageProps;
+// 分类数据
+const { path, name } = category;
+// 分页数据
+const { currentPage, totalPages, items } = pages;
 // 面包屑导航
-const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0 
-  ? generateCategoryBreadcrumbs(lang, categoryPath, MODEL_PATH, t.case.title)
-  : generateCaseListBreadcrumbs(lang);
+const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'case', path && name ? category: []);
+
+const t = await getDictionary(lang);
 
 ---
 
 <SecondaryPageLayout 
-title={categoryInfo.current.name || t.case.title}
+title={name || t.case.title}
   breadcrumbs={breadcrumbs}
-  pageType={MODEL}
-  currentSection={MODEL}
+  pageType="case"
+  currentSection="case"
   contentType="grid"
   lang={lang}
 >
@@ -92,7 +71,7 @@ title={categoryInfo.current.name || t.case.title}
         <Pagination
           currentPage={currentPage || 1}
           totalPages={totalPages}
-          baseUrl={generateUrl(lang, MODEL_PATH)}
+          baseUrl={generateUrl(lang, '/products', path)}
           i18n={t.common}
         />
       )}
@@ -101,7 +80,7 @@ title={categoryInfo.current.name || t.case.title}
     <EmptyState 
       title={t.case.empty_state.no_cases_title}
       description={t.case.empty_state.no_cases_description}
-      icon={MODEL}
+      icon="case"
       lang={lang}
   />
   )}

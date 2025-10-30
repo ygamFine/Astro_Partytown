@@ -5,78 +5,58 @@ import RelatedNews from "@components/templates/common/RelatedNews.astro";
 import PopularArticles from "@components/templates/common/PopularArticles.astro";
 import PageNavigation from "@components/templates/common/PageNavigation.astro";
 import EmptyState from "@components/templates/common/EmptyState.astro";
-import { getNews, getProducts } from "@apis/common";
+import { getByCenterData } from "@apis/common";
 import { getDictionary } from "@i18n/dictionaries";
 import { getFirstImage, formatDate, generateUrl } from "@utils/tools.js";
-import { SUPPORTED_LANGUAGES } from "@utils/i18n-routes";
-import { generateNewsDetailBreadcrumbs } from "@utils/breadcrumbUtils.js";
+import { generateCategoryBreadcrumbs } from "@utils/breadcrumbUtils.js";
 import RichText from "@components/common/layout/RichText.astro";
+import StaticPaths, { type PageProps, type Category, type Pages } from '@utils/StaticPaths';
 
-export async function getStaticPaths() {
-  // 只为配置中启用的语言和产品生成静态路径
-  const paths: any[] = [];
-
-  for (const lang of SUPPORTED_LANGUAGES) {
-    const news = await getNews(lang);
-    for (const newsItem of news) {
-      // 仅为有有效 slug 的产品生成详情页
-      if (newsItem && typeof newsItem.url_slug === "string" && newsItem.url_slug.trim().length > 0 ) {
-        const cleanSlug = newsItem.url_slug.startsWith('/') ? newsItem.url_slug.slice(1) : newsItem.url_slug;
-        paths.push({
-          params: { lang, slug: cleanSlug },
-          props: { slug: newsItem.url_slug, lang, news, newsItem },
-        });
-      }
-    }
-  }
-
-  return paths;
+export async function getStaticPaths() {  
+  return await new StaticPaths().detailStaticPaths('news');
 }
 
-const { lang, news, newsItem } = Astro.props;
+const { lang, category, pages } = Astro.props as PageProps;
+const { path = '', name = '' } = category as Category;
+const { items, item } = pages as Pages;
+
 
 // 如果产品不存在，返回404
-if (!newsItem) {
+if (!item) {
   return Astro.redirect("/404");
 }
 
 // 检查是否有新闻数据
-const hasNews = newsItem !== null;
+const hasNews = item !== null;
 
 // 加载国际化翻译
 const t = await getDictionary(lang);
 
-// 获取当前产品在列表中的位置，用于上一个/下一个导航
-const currentIndex = news.findIndex(
-  (p: any) => p.url_slug === newsItem.url_slug,
+// 获取当前新闻在列表中的位置，用于上一个/下一个导航
+const currentIndex = items?.findIndex(
+  (p: any) => p.url_slug === item.url_slug,
 );
-const previousNews = currentIndex > 0 ? news[currentIndex - 1] : null;
-const nextNews = currentIndex < news.length - 1 ? news[currentIndex + 1] : null;
+const previousNews = currentIndex && currentIndex > 0 ? items?.[currentIndex - 1] : null;
+const nextNews = currentIndex && items?.length && currentIndex < items?.length - 1 ? items?.[currentIndex + 1] : null;
 
 // 获取3个相关产品（随机）
-const products = await getProducts(lang);
+const products = await getByCenterData(lang, 'product', { isLoadImg: true });
 const shuffledProducts = products.sort(() => 0.5 - Math.random());
 const relatedProducts = shuffledProducts.slice(0, 3);
 
-// 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
-const allNews = await getNews(lang);
-const relatedNews = allNews
-  .filter((item: any) => item.url_slug !== news.url_slug)
-  .sort(
-    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  )
-  .slice(0, 4);
 
-// 获取热门文章 (最新的5篇，排除当前文章) -> 用于右侧边栏
-const popularArticles = allNews
-  .filter((item: any) => item.url_slug !== news.url_slug)
-  .sort(
-    (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  )
-  .slice(0, 5);
+  const filterNews = (num: number): any[] => {
+    return (items ?? [])
+      .filter((p: any) => p.url_slug !== item?.url_slug)
+      .sort(
+        (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      )
+      .slice(0, num);
+  }
 
   // 面包屑导航
-const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title, newsItem.news_category?.url_slug) : [];
+  const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'news', [{ path: path, name: name }, { path: item.url_slug, name: item.title }]) || [];
+
 ---
 <>
 { !hasNews ? (
@@ -110,7 +90,7 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
     <!-- Pagefind 图片元数据 -->
     <div
       data-pagefind-meta="image"
-      data-pagefind-meta-image={getFirstImage(news.image)?.url}
+      data-pagefind-meta-image={getFirstImage(item?.image)?.url}
       style="display: none;"
     >
     </div>
@@ -126,16 +106,16 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
                 <h1
                   class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight"
                 >
-                  {newsItem.title}
+                  {item.title}
                 </h1>
                 <time
-                  datetime={formatDate(newsItem.publishedAt)}
+                  datetime={formatDate(item.publishedAt)}
                   class="text-sm text-gray-500 block"
-                  >{formatDate(newsItem.publishedAt)}</time
+                  >{formatDate(item.publishedAt)}</time
                 >
               </header>
               <!-- Article Content -->
-              <RichText content={newsItem.news_detail} />
+              <RichText lang={lang} content={item.news_detail} />
               {/* <div class="prose max-w-none" set:html={newsItem.news_detail} /> */}
             </article>
           </div>
@@ -164,11 +144,11 @@ const breadcrumbs = hasNews ? generateNewsDetailBreadcrumbs(lang, newsItem.title
           </div>
 
           <!-- Related News -->
-          <RelatedNews relatedNews={relatedNews} lang={lang} />
+          <RelatedNews relatedNews={filterNews(4)} lang={lang} />
         </div>
 
         <!-- 右侧热门文章 -->
-        <PopularArticles popularArticles={popularArticles} lang={lang} />
+        <PopularArticles popularArticles={filterNews(5)} lang={lang} />
       </div>
     </div>
   </SecondaryPageLayout>

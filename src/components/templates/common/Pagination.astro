@@ -9,7 +9,7 @@ interface Props {
 
 
 const { currentPage, totalPages, baseUrl, maxVisiblePages = 5, i18n } = Astro.props;
-
+console.log('分页数据组件条件信息', baseUrl)
 // 计算显示的页码范围
 const getVisiblePages = (current: number, total: number, maxVisible: number) => {
   const start = Math.max(1, current - Math.floor(maxVisible / 2));
@@ -31,7 +31,8 @@ const getPageUrl = (page: number) => {
   if (page === 1) {
     return baseUrl;
   }
-  return `${baseUrl}/${page}`;
+  const baseUrlNew = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+  return `${baseUrlNew}${page}`;
 };
 
 // 检查是否需要显示分页

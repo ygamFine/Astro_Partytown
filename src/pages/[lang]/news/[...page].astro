@@ -6,56 +6,36 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { generateStaticPaths, getCategoryInfo } from '@utils/pageUtils';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { themeConfig } from '@config/theme.js';
-import { generateCategoryBreadcrumbs, generateNewsListBreadcrumbs } from '@utils/breadcrumbUtils';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils';
 import { generateUrl } from '@utils/tools';
-
-// 定义 Props 类型
-interface PageProps {
-  lang: string;
-  categoryPath?: {
-    path: string;
-    name: string;
-  };
-  currentPage?: number;
-  totalPages?: number;
-  items?: any[];
-}
-
-const MODEL = 'news';
-const MODEL_PATH = '/news';
-
+import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
 // 生成静态路径
 export async function getStaticPaths() {
-  const productsPerPage = 9;
-  return generateStaticPaths(productsPerPage, 'news');
+  return await new StaticPaths().generateNewsStaticPaths()
 }
 
-const { lang, categoryPath, currentPage, totalPages, items } = Astro.props as PageProps;
+const { lang, category = { path: '', name: '' }, pages = { currentPage: 1, totalPages: 1, items: [] } } = Astro.props as PageProps;
 
-// 将字符串形式的 categoryPath 转换为数组
-const categoryPathArray = categoryPath?.path && categoryPath?.path.length > 0 
-  ? categoryPath?.path.split('/').filter(segment => segment !== '')
-  : [];
+// 分类数据
+const { path, name } = category;
 
-const categoryInfo = await getCategoryInfo(lang, categoryPathArray, MODEL);
-const t = await getDictionary(lang);
-
+// 分页数据
+const { currentPage, totalPages, items } = pages;
 // 面包屑导航
-const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0 
-  ? generateCategoryBreadcrumbs(lang, categoryPath, MODEL_PATH, t.product.title)
-  : generateNewsListBreadcrumbs(lang);
+const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'news', path && name ? category: []);
+
+const t = await getDictionary(lang);
 
 ---
 
 <SecondaryPageLayout 
-  title={categoryInfo.current.name || t.news.title}
+  title={name || t.news.title}
   breadcrumbs={breadcrumbs}
-  currentSection={MODEL}
-  pageType={MODEL}
+  currentSection="news"
+  pageType="news"
   contentType="grid"
   lang={lang}
 >
@@ -75,7 +55,7 @@ const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0
         items={items || []}
         itemsPerRow={3}
         maxRows={3}
-        mode={MODEL}
+        mode="news"
         translations={t.common}
         lang={lang}
         viewMode="grid"
@@ -95,7 +75,7 @@ const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0
         <Pagination
           currentPage={currentPage || 1}
           totalPages={totalPages}
-          baseUrl={generateUrl(lang, MODEL_PATH)}
+          baseUrl={generateUrl(lang, '/news', path)}
           i18n={t.common}
         />
       )}
@@ -104,7 +84,7 @@ const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0
     <EmptyState 
       title={t.news.empty_state.no_news_title}
       description={t.news.empty_state.no_news_description}
-      icon={MODEL}
+      icon="news"
       lang={lang}
   />
   )}

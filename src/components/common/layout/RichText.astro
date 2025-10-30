@@ -112,11 +112,10 @@ $("img").each((i, el) => {
 
 // 带占位符的 HTML，用于后续分段渲染
 let htmlWithTokens = $.root().html() || (content || "");
-
 // 应用关键词匹配和链接替换
 htmlWithTokens = processKeywordMatching(htmlWithTokens, keywords);
 
-const parts = htmlWithTokens.split(/(__ASTRO_IMG_\d+__)/g).filter(Boolean);
+const parts = htmlWithTokens?.split(/(__ASTRO_IMG_\d+__)/g).filter(Boolean);
 ---
 <div class="prose max-w-none">
     {parts.map((part) => {

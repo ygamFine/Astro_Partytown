@@ -5,7 +5,6 @@
 
 import { SUPPORTED_LANGUAGES } from './i18n-routes';
 import { getMenus, getProducts, getByCategory } from '@apis/common';
-import { filterCategories } from './categories';
 
 // 类型定义
 export interface MenuItem {
@@ -54,13 +53,65 @@ export interface CategoryInfo {
 
 export interface PaginationProps {
   lang: string;
-  currentPage: number;
-  totalPages: number;
-  items: any[];
+  pages?: {
+    currentPage?: number;
+    totalPages?: number;
+    items?: any[];
+  }
+}
+
+/**
+ * 生成静态路径的公共方法
+ * @param lang 语言代码
+ * @param urlSlug URL slug
+ * @param name 分类名称
+ * @param page 页码（可选，默认为1）
+ * @param totalPages 总页数（可选）
+ * @param items 当前页数据（可选）
+ * @returns 静态路径对象
+ */
+function createStaticPath(
+  lang: string,
+  category: {
+    path: string,
+    name: string
+  },
+  pages?: {
+    currentPage?: number;
+    totalPages?: number;
+    items?: any[];
+  },
+): StaticPath {
+  const { path, name } = category || {};
+  const { currentPage, totalPages, items } = pages || {};
+  // 确保url_slug以/结尾
+  const normalizedUrlSlug = path.endsWith('/') ? path : path + '/';
+  
+  // 构建页面路径
+  const pagePath = currentPage && currentPage > 1 ? normalizedUrlSlug + currentPage.toString() : normalizedUrlSlug;
+
+  return {
+    params: {
+      lang,
+      page: pagePath
+    },
+    props: {
+      lang,
+      category: {
+        path: pagePath,
+        name: name
+      },
+      pages: {
+        ...(currentPage && { currentPage }),
+        ...(totalPages && { totalPages }),
+        ...(items && { items })
+      }
+    }
+  };
 }
 
 export interface CategoryPaginationProps extends PaginationProps {
-  categoryPath: string[] | { path: string; name: string };
+  category: string[] | { path: string; name: string };
 }
 
 export interface StaticPath {
@@ -81,32 +132,35 @@ export async function generatePaginationPaths(dataFetcher: DataFetcher, itemsPer
   for (const lang of SUPPORTED_LANGUAGES) {
     try {
       const allItems = await dataFetcher(lang);
-      const totalPages = Math.ceil(allItems.length / itemsPerPage);
-
-      // 总是生成至少第一页，即使没有数据
-      const actualTotalPages = Math.max(1, totalPages); // 至少1页
+      const { totalPages } = getPaginationInfo(allItems, 1, itemsPerPage);
+      const actualTotalPages = Math.max(1, totalPages);
 
       // 第一页
+      const { currentPageItems: firstPageItems } = getPaginationInfo(allItems, 1, itemsPerPage);
       paths.push({
         params: { lang, page: undefined },
         props: {
           lang,
-          currentPage: 1,
-          totalPages: actualTotalPages,
-          items: allItems.length > 0 ? allItems.slice(0, itemsPerPage) : []
+          pages: {
+            currentPage: 1,
+            totalPages: actualTotalPages,
+            items: firstPageItems
+          }
         }
       });
 
-      // 其他页面（如果有数据的话）
+      // 其他页面
       for (let i = 2; i <= actualTotalPages; i++) {
-        const pageParam = i.toString();
+        const { currentPageItems } = getPaginationInfo(allItems, i, itemsPerPage);
         paths.push({
-          params: { lang, page: pageParam },
+          params: { lang, page: i.toString() },
           props: {
             lang,
-            currentPage: i,
-            totalPages: actualTotalPages,
-            items: allItems.length > 0 ? allItems.slice((i - 1) * itemsPerPage, i * itemsPerPage) : []
+            pages: {
+              currentPage: i,
+              totalPages: actualTotalPages,
+              items: currentPageItems
+            }
           }
         });
       }
@@ -117,9 +171,6 @@ export async function generatePaginationPaths(dataFetcher: DataFetcher, itemsPer
         params: { lang, page: undefined },
         props: {
           lang,
-          currentPage: 1,
-          totalPages: 0,
-          items: []
         }
       });
     }
@@ -135,9 +186,37 @@ export function parsePageParam(pageParam: string | undefined, pagePrefix = ''): 
   return !isNaN(pageNumber) && pageNumber >= 1 ? pageNumber : 1;
 }
 
+/**
+ * 获取分页信息
+ * @param items 数据数组
+ * @param page 页码（从1开始）
+ * @param perPage 每页数量
+ * @returns 分页信息对象 { startIndex, endIndex, currentPageItems, totalPages }
+ */
+export function getPaginationInfo<T>(items: T[], page: number, perPage: number): {
+  startIndex: number;
+  endIndex: number;
+  currentPageItems: T[];
+  totalPages: number;
+} {
+  const startIndex = (page - 1) * perPage;
+  const endIndex = startIndex + perPage;
+  const currentPageItems = items.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(items.length / perPage);
+  
+  return { startIndex, endIndex, currentPageItems, totalPages };
+}
+
 // 根据分类路径获取产品
 export async function getProductsByCategoryPath(lang: string, categoryPath: string[]): Promise<Product[]> {
-  const allProducts: Product[] = await getProducts(lang);
+  const allProducts: Product[] = await getProducts(lang, {
+    fields: 'id,title',
+    ...(categoryPath.length > 0 && {
+      queryParams: {
+        [`filters[product_category][url_slug][$eq]`]: categoryPath[0]
+      }
+    })
+  });
 
   if (categoryPath.length === 0) {
     return allProducts;
@@ -263,10 +342,12 @@ export async function generateAllCategoryPaths(dataFetcher: DataFetcher, itemsPe
           },
           props: {
             lang,
-            categoryPath: categoryPath,
-            currentPage: page,
-            totalPages,
-            items: datas.length > 0 ? datas.slice(startIndex, endIndex) : [] // 确保总是返回数组
+            category: categoryPath,
+            pages: {
+              currentPage: page,
+              totalPages,
+              items: datas.length > 0 ? datas.slice(startIndex, endIndex) : [] // 确保总是返回数组
+            }
           }
         });
       }
@@ -297,94 +378,52 @@ export async function generateStaticPaths(perPage = 9, contentType: ContentType 
     const languagePromises = SUPPORTED_LANGUAGES.map(async (lang: string) => {
       const langPaths: StaticPath[] = [];
       try {
-        // 一次性获取所有数据，避免重复调用接口
-        const allData = await getByCategory(lang, '', contentType);
-        console.log('allData', allData);
-        // 添加路径
-        const totalPages = Math.max(1, Math.ceil(allData.length / perPage));
-        for (let page = 1; page <= totalPages; page++) {
-          const startIndex = (page - 1) * perPage;
-          const endIndex = startIndex + perPage;
-          const currentPageItems = allData.slice(startIndex, endIndex);
-          const params = page === 1
-            ? { lang, page: undefined }
-            : { lang, page: page.toString() };
-
-          langPaths.push({
-            params,
-            props: {
-              lang,
-              categoryPath: [],
-              currentPage: page,
-              totalPages,
-              items: currentPageItems
-            }
-          });
+        // 加载全部的产品数据
+        const allProducts = await getProducts(lang, {
+          fields: 'title, url_slug',
+        })
+        if (allProducts.length > perPage) {
+          const { totalPages } = getPaginationInfo(allProducts, 1, perPage);
+          for (let page = 1; page <= totalPages; page++) {
+            const { currentPageItems } = getPaginationInfo(allProducts, page, perPage);
+            langPaths.push({
+              params: {
+                lang,
+                page: page === 1 ? undefined : page.toString()
+              },
+              props: {
+                lang,
+                pages: {
+                  currentPage: page,
+                  totalPages,
+                  items: currentPageItems
+                }
+              }
+            })
+          }
         }
 
-        // 获取并过滤分类
-        const allCategories = await getMenus(lang);
-        const filteredCategories = filterCategories(allCategories);
 
-        // 递归收集所有分类及其分页路径
-        const collectPaths = async (categories: MenuItem[], parentPath = ''): Promise<void> => {
-          const categoryPromises = categories.map(async (category: MenuItem) => {
-            const fullPath = parentPath
-              ? `${parentPath}/${category.path}`
-              : category.path;
-            try {
-              // 从已获取的所有产品中过滤出该分类的产品
-              const categoryData = allData.filter((item: any) => {
-                if (item[contentType + '_category']) {
-                  const itemCategoryPath = item[contentType + '_category'].url_slug ||
-                    item[contentType + '_category'].path ||
-                    item[contentType + '_category'].name;
-                  return itemCategoryPath === category.path;
-                }
-                return false;
-              });
-              const totalPages = Math.max(1, Math.ceil(categoryData.length / perPage));
+        // // 一次性获取所有数据，避免重复调用接口
+        // const allData = await getByCategory(lang, '', contentType);
+        // console.log('分类路径获取产品', JSON.stringify(allData))
+        // for (const item of allData) {
+        //   // 将分类路径添加到路径中
+        //   langPaths.push(createStaticPath(lang, { path: item.url_slug, name: item.title }));
+        //   // 根据分类路径获取产品
+        //   const items = await getProductsByCategoryPath(lang, [item.url_slug])
+        //   if (items.length > perPage) {
+        //     const totalPages = Math.ceil(items.length / perPage);
+        //     for (let page = 1; page <= totalPages; page++) {
+        //       const startIndex = (page - 1) * perPage;
+        //       const endIndex = startIndex + perPage;
+        //       const currentPageItems = items.slice(startIndex, endIndex);
+        //       // 生成分页路径
+        //       langPaths.push(createStaticPath(lang, { path: item.url_slug, name: item.title }, { currentPage: page, totalPages, items: currentPageItems }));
+        //     }
+        //   }
 
-              // 为每个分页生成路径
-              for (let page = 1; page <= totalPages; page++) {
-                const startIndex = (page - 1) * perPage;
-                const endIndex = startIndex + perPage;
-                const currentPageItems = categoryData.slice(startIndex, endIndex);
-
-                // 构建路径参数
-                const pathSegments = fullPath.split('/').filter((segment) => segment !== '');
-                const pathString = pathSegments.join('/');
-                const params = page === 1
-                  ? { lang, page: pathString }
-                  : { lang, page: `${pathString}/${page}` };
-                langPaths.push({
-                  params,
-                  props: {
-                    lang,
-                    categoryPath: {
-                      path: fullPath,
-                      name: category.name
-                    },
-                    currentPage: page,
-                    totalPages,
-                    items: currentPageItems
-                  }
-                });
-              }
-
-              // 递归处理子分类
-              if (category.children && category.children.length > 0) {
-                await collectPaths(category.children, fullPath);
-              }
-            } catch (error) {
-              console.error(`处理分类 ${category.path} 失败:`, error);
-            }
-          });
-
-          await Promise.all(categoryPromises);
-        };
-
-        await collectPaths(filteredCategories);
+        // }
       } catch (error) {
         console.error(`处理语言 ${lang} 失败:`, error);
         // 如果获取失败，至少提供一个空页面
@@ -392,13 +431,10 @@ export async function generateStaticPaths(perPage = 9, contentType: ContentType 
           params: { lang, page: undefined },
           props: {
             lang,
-            categoryPath: [],
-            currentPage: 1,
-            totalPages: 1,
-            items: []
           }
         });
       }
+      // console.log('langPaths', JSON.stringify(langPaths))
       return langPaths;
     });
 
@@ -420,16 +456,16 @@ export function generateCommonStaticPaths(): StaticPath[] {
     console.warn('[i18n] 未获取到任何语言，generateStaticPaths 将返回空列表');
     return [];
   }
-  
+
   const paths: StaticPath[] = SUPPORTED_LANGUAGES.map((lang: string) => ({
     params: { lang },
-    props: { 
-      lang,
-      currentPage: 1,
-      totalPages: 1,
-      items: []
+    props: {
+      lang
     }
   }));
-  
+
   return paths;
 }
+
+
+

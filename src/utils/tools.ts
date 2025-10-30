@@ -1,7 +1,20 @@
+
 /**
- * 工具函数集合
- * 用于处理菜单数据转换、递归分类等功能
+ * 构建完整的API URL，包含查询参数
+ * @param baseUrl 基础URL
+ * @param queryParams 查询参数对象（可选）
+ * @returns 完整的URL字符串
  */
+export function buildApiUrl(baseUrl: string, queryParams?: Record<string, any>): string {
+  let url = baseUrl;
+  if (queryParams) {
+    const serializedParams = serializeQueryParams(queryParams);
+    if (serializedParams) {
+      url += `&${serializedParams}`;
+    }
+  }
+  return url;
+}
 const strapiStaticUrl = process.env.PUBLIC_API_URL || import.meta.env?.PUBLIC_API_URL;
 /**
  * 处理图片url
@@ -166,7 +179,7 @@ export function generateUrl(lang: string, basePath: string, urlSlug?: string, pa
   let fullPath = normalizedBasePath;
   if (urlSlug) {
     // 确保 urlSlug 以 / 开头
-    const normalizedSlug = urlSlug.startsWith('/') ? urlSlug : `/${urlSlug}`;
+    const normalizedSlug = normalizedBasePath.startsWith('/') ? urlSlug : `/${urlSlug}`;
     fullPath = `${normalizedBasePath}${normalizedSlug}`;
   }
   
@@ -199,4 +212,149 @@ export function getFirstImage(images: Array<{url: string, name: string, alt: str
   
   // 返回第一个有效的图片对象
   return images[0];
+}
+
+
+/**
+ * 工具函数集合
+ * 用于处理菜单数据转换、递归分类、URL序列化等功能
+ */
+
+
+// 工具函数：将嵌套对象转换为 URL 参数字符串（处理 [ ] 格式）
+export function flattenParams(obj: Record<string, any>, parentKey = ''): Record<string, any> {
+  let params = {};
+  Object.entries(obj).forEach(([key, value]) => {
+    const newKey = parentKey ? `${parentKey}[${key}]` : key;
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      // 递归处理嵌套对象
+      Object.assign(params, flattenParams(value, newKey));
+    } else {
+      (params as Record<string, any>)[newKey] = value;
+    }
+  });
+  return params;
+}
+
+export function deepMerge(target: Record<string, any>, ...sources: Record<string, any>[]) {
+  // 终止条件：若目标不是对象/数组，直接返回源（源为undefined则返回目标）
+  if (target === null || typeof target !== 'object') return sources[0] ?? target;
+
+  // 处理数组场景：合并数组（去重可选，此处保留全部元素，后数组元素追加）
+  if (Array.isArray(target)) {
+    return [...target, ...sources.filter(source => Array.isArray(source)).flat()];
+  }
+
+  // 处理对象场景：递归合并属性
+  const merged = { ...target }; // 基于目标对象创建新对象，不修改原对象
+  sources.forEach(source => {
+    if (source && typeof source === 'object' && !Array.isArray(source)) {
+      Object.keys(source).forEach(key => {
+        merged[key] = deepMerge(merged[key], source[key]);
+      });
+    }
+  });
+
+  return merged;
+}
+
+/**
+ * 序列化查询参数对象为URL查询字符串
+ * @param queryParams 查询参数对象
+ * @returns 序列化后的查询字符串
+ */
+export function serializeQueryParams(queryParams: Record<string, any>): string {
+  const serializedParams = new URLSearchParams();
+  Object.entries(queryParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      serializedParams.append(key, String(value));
+    }
+  });
+  return serializedParams.toString();
+}
+
+/**
+ * 根据 params 中的 lang 和 page 去重
+ * @param arr 数组
+ * @returns 去重后的数组
+ */
+export function uniqueByParamsLangAndPage(arr: any[]): any[] {
+  const map = new Map<string, any>();
+  arr.forEach((item: any) => {
+    // 从 params 中获取 lang 和 page，兼容 params 可能不存在的情况
+    const { params = {} } = item;
+    const lang = params.lang ?? '';
+    const page = params.page ?? '';
+    const key = `${lang}|${page}`;
+
+    // 检查是否已存在相同 key 的元素
+    if (map.has(key)) {
+      // 存在重复时，验证当前对象 props 下是否有 pages 字段
+      const currentHasPages = item.props?.pages !== undefined;
+      const existingItem = map.get(key);
+      const existingHasPages = existingItem.props?.pages !== undefined;
+
+      // 策略：优先保留有 pages 字段的；都有时保留后出现的；都没有时也保留后出现的
+      if (currentHasPages || !existingHasPages) {
+        map.set(key, item);
+      }
+    } else {
+      // 不存在重复 key 时直接添加
+      map.set(key, item);
+    }
+  });
+  return Array.from(map.values());
+}
+
+/**
+ * 路径拼接（确保片段之间仅一个斜杠）
+ * @example
+ * joinUrlPaths(['/', '/test/', '/ab']) => '/test/ab'
+ * joinUrlPaths(['products', 'category/', '/item']) => 'products/category/item'
+ */
+export function joinUrlPaths(segments: Array<string | number | undefined | null>): string {
+  if (!Array.isArray(segments) || segments.length === 0) return '';
+
+  // 是否绝对路径：第一个非空片段以 / 开头或第一个片段就是 '/'
+  const firstNonEmpty = segments.find(s => s !== undefined && s !== null && String(s).trim() !== '');
+  const isAbsolute = typeof firstNonEmpty === 'string' && (firstNonEmpty === '/' || firstNonEmpty.startsWith('/'));
+
+  const cleaned = segments
+    .filter(s => s !== undefined && s !== null)
+    .map(s => String(s))
+    .filter(s => s.trim() !== '')
+    .map(s => s.replace(/^\/+|\/+$/g, '')) // 去掉前后所有斜杠
+    .filter(s => s !== '');
+
+  const joined = cleaned.join('/');
+  if (joined === '') return isAbsolute ? '/' : '';
+  return isAbsolute ? `/${joined}` : joined;
+}
+
+/**
+ * 序列化嵌套的filters对象为URL查询字符串
+ * 例如: {product_category: {url_slug: '/test-code/'}} => filters[product_category][url_slug]=/test-code/
+ * @param filters 嵌套的filters对象
+ * @returns 序列化后的查询字符串
+ */
+export function serializeNestedFilters(filters: Record<string, any>): string {
+  const params: string[] = [];
+  
+  const serializeObject = (obj: Record<string, any>, prefix: string): void => {
+    Object.entries(obj).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        const paramKey = prefix ? `${prefix}[${key}]` : key;
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          // 递归处理嵌套对象
+          serializeObject(value, paramKey);
+        } else {
+          // 最终值
+          params.push(`${paramKey}=${encodeURIComponent(String(value))}`);
+        }
+      }
+    });
+  };
+  
+  serializeObject(filters, 'filters');
+  return params.join('&');
 }

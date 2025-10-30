@@ -4,25 +4,52 @@
  */
 
 import { generateUrl } from '@utils/tools.js';
+import { getDictionary } from '@i18n/dictionaries'
+import { type ContentType as PageType } from './staticPathsParams';
 
 interface BreadcrumbItem {
   label: string;
   href?: string;
 }
 
-type PageType = 'products' | 'case' | 'news';
+
+/**
+ * 生成基础面包屑
+ * @param lang 语言
+ * @param from 来源页面
+ * @param children 子页面
+ * @returns 面包屑
+ */
+const baseBreadcrumbs = async (lang: string, from: PageType, children?: string | BreadcrumbItem[]) => {
+  const t = await getDictionary(lang);
+
+  const breadcrumbs: BreadcrumbItem[] = [{ label: t.breadcrumb.home, href: generateUrl(lang, '/') }];
+
+  if (from) {
+    breadcrumbs.push({ label: t.breadcrumb[from] || '', href: generateUrl(lang, `/${from}`) });
+  }
+  if (children) {
+    if (typeof children === 'string') {
+      breadcrumbs.push({ label: children, href: generateUrl(lang, `/${from}/${children}`) });
+    } else {
+      breadcrumbs.push(...children);
+    }
+  }
+  return breadcrumbs
+}
 
 /**
  * 生成列表页面的面包屑（产品、案例、新闻通用）
  */
-export function generateListBreadcrumbs(lang: string, type: PageType = 'products', category: string | null = null, page: number | null = null): BreadcrumbItem[] {
+export function generateListBreadcrumbs(lang: string, type: PageType, category: string | null = null, page: number | null = null): BreadcrumbItem[] {
   const typeConfig = {
     products: { label: 'products', path: '/products' },
     case: { label: 'case', path: '/case' },
-    news: { label: 'news', path: '/news' }
+    news: { label: 'news', path: '/news' },
+    about: { label: 'about', path: '/about' }
   };
 
-  const config = typeConfig[type] || typeConfig.products;
+  const config = typeConfig[type as keyof typeof typeConfig] || {};
   
   const breadcrumbs: BreadcrumbItem[] = [
     { label: 'home', href: generateUrl(lang, '/') }
@@ -148,22 +175,24 @@ export function generateSearchBreadcrumbs(lang: string, searchTerm: string | nul
 /**
  * 生成分类页面的面包屑 - 支持多级分类
  */
-export function generateCategoryBreadcrumbs(lang: string, categoryPath: {path: string, name: string}, basePath: string = '/products', baseLabel: string = 'products'): BreadcrumbItem[] {
-  const breadcrumbs = [
-    { label: 'home', href: generateUrl(lang, '/') },
-    { label: baseLabel, href: generateUrl(lang, basePath) }
-  ];
-  
-  if (categoryPath?.path && categoryPath?.path.length > 0) {
-    const segments = categoryPath?.path.split('/').filter(s => s);
-    segments.forEach((segment, index) => {
-      const path = segments.slice(0, index + 1).join('/');
-      breadcrumbs.push({
-        label: categoryPath.name,
-        href: generateUrl(lang, `${basePath}/${path}`)
-      });
+export async function generateCategoryBreadcrumbs(lang: string, from: PageType = 'products', category?: {path: string, name: string} | {path: string, name: string}[]): Promise<BreadcrumbItem[]> {
+  const newsBreadcrumbs: BreadcrumbItem[] = [];
+  if (Array.isArray(category)) {
+    category.map(item => {
+      if(item.path && item.name) {
+        newsBreadcrumbs.push({
+          label: item.name,
+          href: generateUrl(lang, '/' + from, item.path)
+        });
+      }
+    });
+  } else {
+    newsBreadcrumbs.push({
+      label: category?.name || '',
+      href: generateUrl(lang, '/' + from, category?.path || '')
     });
   }
-  
+  const breadcrumbs = await baseBreadcrumbs(lang, from, newsBreadcrumbs)
+  console.log('breadcrumbs', breadcrumbs)
   return breadcrumbs;
 }

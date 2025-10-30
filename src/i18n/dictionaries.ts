@@ -3,7 +3,7 @@ import { getSupportedLanguages } from '@utils/languageConfig';
 
 // 翻译命名空间
 const TRANSLATION_NAMESPACES = [
-  'common', 'breadcrumb', 'about', 'case', 'news', 'contact', 'product', 'form', 'search'
+  'common', 'breadcrumb', 'about', 'case', 'news', 'contact', 'product', 'form', 'search', 'pagination'
 ];
 
 // 缓存翻译数据
@@ -78,10 +78,14 @@ const TRANSLATION_CONFIG = {
     empty_state: { back_to_home: 'common.empty_state.back_to_home' },
     placeholders: { search: 'common.placeholders.search' },
     pagination: {
-      previous: 'common.pagination.previous',
-      next: 'common.pagination.next',
-      page: 'common.pagination.page',
-      to: 'common.pagination.to',
+      previous: 'pagination.paging.previous',
+      next: 'pagination.paging.next',
+      page: 'pagination.paging.page',
+      of: 'pagination.paging.of',
+      first: 'pagination.paging.first',
+      last: 'pagination.paging.last',
+      pages: 'pagination.paging.pages',
+      ofTotal: 'pagination.paging.ofTotal',
     },
     actions: {
       view: 'common.actions.view',
@@ -111,6 +115,7 @@ const TRANSLATION_CONFIG = {
     products: 'breadcrumb.products',
     news: 'breadcrumb.news',
     case: 'breadcrumb.case',
+    about: 'breadcrumb.about',
   },
   nav: { home: 'breadcrumb.home' },
   placeholder: { search: 'common.placeholders.search' },

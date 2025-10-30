@@ -4,63 +4,49 @@ import EmptyState from '@components/templates/common/EmptyState.astro';
 import PageNavigation from '@components/templates/common/PageNavigation.astro';
 import RelatedNews from '@components/templates/common/RelatedNews.astro';
 import RelatedCasesSidebar from '@components/templates/common/RelatedCasesSidebar.astro';
-import { getCases, getNews } from '@apis/common.js';
-import { generateCaseDetailBreadcrumbs } from '@utils/breadcrumbUtils.js';
-import { SUPPORTED_LANGUAGES } from '@utils/i18n-routes';
-import { formatDate, generateUrl } from '@utils/tools.js';
-import { getDictionary } from '@i18n/dictionaries.js';
+import { getByCenterData } from '@apis/common';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils';
+import { formatDate, generateUrl } from '@utils/tools';
+import { getDictionary } from '@i18n/dictionaries';
 import RichText from '@components/common/layout/RichText.astro';
+import StaticPaths, { type PageProps, type Category, type Pages } from '@utils/StaticPaths';
 
-export async function getStaticPaths() {
-  // 只为配置中启用的语言和产品生成静态路径
-  const paths: any[] = [];
-  for (const lang of SUPPORTED_LANGUAGES) {
-    const cases = await getCases(lang);
-    for (const casesItem of cases) {
-      // 仅为有有效 slug 的产品生成详情页
-      if (casesItem && typeof casesItem.url_slug === "string" && casesItem.url_slug.trim().length > 0) {
-        const cleanSlug = casesItem.url_slug.startsWith('/') ? casesItem.url_slug.slice(1) : casesItem.url_slug;
-        paths.push({
-          params: { lang, slug: cleanSlug },
-          props: { slug: casesItem.url_slug, lang, cases, casesItem },
-        });
-      }
-    }
-  }
-  return paths;
+export async function getStaticPaths() {  
+  return await new StaticPaths().detailStaticPaths('case');
 }
 
-const { lang, cases, casesItem } = Astro.props;
+const { lang, category, pages } = Astro.props as PageProps;
+const { path = '', name = '' } = category as Category;
+const { items, item } = pages as Pages;
 
 // 如果产品不存在，返回404
-if (!casesItem) {
+if (!item) {
   return Astro.redirect("/404");
 }
 
 // 检查是否有案例数据
-const hasCase = casesItem !== null;
+const hasCase = item !== null;
 
 // 加载国际化翻译
 const t = await getDictionary(lang);
 
 // 获取当前产品在列表中的位置，用于上一个/下一个导航
-const currentIndex = cases && Array.isArray(cases) ? cases.findIndex(
-  (p: any) => p.url_slug === casesItem.url_slug,
+const currentIndex = items && Array.isArray(items) ? items.findIndex(
+  (p: any) => p.url_slug === item.url_slug,
 ) : -1;
-const previousCase = currentIndex > 0 && cases && Array.isArray(cases) ? cases[currentIndex - 1] : null;
-const nextCase = currentIndex < (cases?.length || 0) - 1 && cases && Array.isArray(cases) ? cases[currentIndex + 1] : null;
+const previousCase = currentIndex > 0 && items && Array.isArray(items) ? items[currentIndex - 1] : null;
+const nextCase = currentIndex < (items?.length || 0) - 1 && items && Array.isArray(items) ? items[currentIndex + 1] : null;
 
 
 // 获取相关新闻 (最新的4篇，排除当前文章) -> 用于主内容区底部
-const allNews = await getNews(lang);
+const allNews = await getByCenterData(lang, 'news');
 const relatedNews = allNews && Array.isArray(allNews) ? allNews.slice(0, 4) : [];
 
 // 获取相关案例（排除当前案例，取前3个）
-const relatedCases = cases && Array.isArray(cases) ? cases.filter((c: any) => c.case_category?.id == casesItem?.case_category?.id).slice(0, 3) : [];
+const relatedCases = items && Array.isArray(items) ? items.filter((c: any) => c.case_category?.id == item?.case_category?.id).slice(0, 3) : [];
 
+const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'case', [{ path, name }, { path: item.url_slug, name: item.title }]) || [];
 
-// 面包屑导航
-const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.title, casesItem.case_category?.url_slug) : [];
 ---
 <>
 {!hasCase ? (
@@ -99,13 +85,13 @@ const breadcrumbs = hasCase ? generateCaseDetailBreadcrumbs(lang, casesItem.titl
           <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
             <!-- 案例头部信息 -->
             <header class="mb-8">
-              <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight" data-pagefind-title>{casesItem.title}</h1>
-              <time datetime={formatDate(casesItem.publish_date)} class="text-sm text-gray-500 mb-6 block" data-pagefind-date>{formatDate(casesItem.publish_date)}</time>
+              <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight" data-pagefind-title>{item.title}</h1>
+              <time datetime={formatDate(item.publishedAt)} class="text-sm text-gray-500 mb-6 block" data-pagefind-date>{formatDate(item.publishedAt)}</time>
             </header>
 
             <!-- 案例详细内容 -->
-            {casesItem.details && (
-              <RichText content={casesItem.details} />
+            {item.details && (
+              <RichText lang={lang} content={item.details} />
               // <div class="mb-8" data-pagefind-content set:html={casesItem.details}></div>
             )}
             

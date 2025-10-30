@@ -6,50 +6,32 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { getCategoryInfo, generateStaticPaths } from '@utils/pageUtils';
-import { generateProductListBreadcrumbs, generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
 import { getDictionary } from '@i18n/dictionaries.js';
 import { generateUrl } from '@utils/tools.js';
 import themeConfig from '@config/theme';
-
-
-// 定义 Props 类型
-interface PageProps {
-  lang: string;
-  categoryPath?: {
-    path: string;
-    name: string;
-  };
-  currentPage?: number;
-  totalPages?: number;
-  items?: any[];
-}
+import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
 // 生成静态路径
 export async function getStaticPaths() {
-  const productsPerPage = 9;
-  return generateStaticPaths(productsPerPage, 'product');
+  return await new StaticPaths().generateProductStaticPaths()
 }
 
-const { lang, categoryPath, currentPage, totalPages, items } = Astro.props as PageProps;
+const { lang, category = { path: '', name: '' }, pages = { currentPage: 1, totalPages: 1, items: [] } } = Astro.props as PageProps;
 
-// 将字符串形式的 categoryPath 转换为数组
-const categoryPathArray = categoryPath?.path && categoryPath?.path.length > 0 
-  ? categoryPath?.path.split('/').filter(segment => segment !== '')
-  : [];
-
-const categoryInfo = await getCategoryInfo(lang, categoryPathArray, 'products');
-const t = await getDictionary(lang);
-
+// 分类数据
+const { path, name } = category;
+// 分页数据
+const { currentPage, totalPages, items } = pages;
 // 面包屑导航
-const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0 
-  ? generateCategoryBreadcrumbs(lang, categoryPath, '/products', t.product.title)
-  : generateProductListBreadcrumbs(lang);
+const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'products', path && name ? category: []);
+
+const t = await getDictionary(lang);
 
 ---
 
 <SecondaryPageLayout 
-  title={categoryInfo.current.name || t.product.title}
+  title={name || t.product.title}
   breadcrumbs={breadcrumbs}
   currentSection="products"
   pageType="products"
@@ -92,7 +74,7 @@ const breadcrumbs = categoryPath?.path && categoryPath?.path.length > 0
         <Pagination
           currentPage={currentPage || 1}
           totalPages={totalPages}
-          baseUrl={generateUrl(lang, '/products')}
+          baseUrl={generateUrl(lang, '/products', path)}
           i18n={t.common}
         />
       )}
