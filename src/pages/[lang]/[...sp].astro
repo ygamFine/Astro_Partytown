@@ -40,20 +40,7 @@ const t = await getDictionary(lang);
 
 // 面包屑导航
 
-const breadcrumbs =
-  url_slug === "/about"
-    ? generateCategoryBreadcrumbs(
-        lang,
-        { path: "", name: "" },
-        "/about",
-        t.about.title,
-      )
-    : generateCategoryBreadcrumbs(
-        lang,
-        { path: url_slug, name: title || t.about.title },
-        "/about",
-        t.about.title,
-      );
+const breadcrumbs = {};
 ---
 
 <SecondaryPageLayout
