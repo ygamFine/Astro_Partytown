@@ -113,7 +113,7 @@ export async function getByCategory(locale = 'en', model: string, params?: any) 
 
     // 构建基础URL
     const baseUrls: any = {
-      product: `/api/product-categories`,
+      products: `/api/product-categories`,
       news: `/api/newcategries`,
       case: `/api/case-categories`,
     }
@@ -152,7 +152,7 @@ export async function getByCenterData(locale = 'en', model: string, params?: any
   try {
     // 构建基础URL
     const baseUrls: any = {
-      product: `/api/product-manages`,
+      products: `/api/product-manages`,
       news: `/api/news`,
       case: `/api/cases`,
       about: `/api/about-uses`,

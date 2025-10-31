@@ -1,6 +1,6 @@
 import { getByCategory, getByCenterData } from '@apis/common';
 
-export type ContentType = 'product' | 'news' | 'case' | 'about' | 'contact' | 'search' | 'singlepage' | null;
+export type ContentType = 'products' | 'news' | 'case' | 'about' | 'contact' | 'search' | 'singlepage' | null;
 
 export type ApiFn = (locale?: string, params?: any, from?: string) => Promise<any>;
 export interface ApiConfig { api: ApiFn; params?: any; }
@@ -13,7 +13,7 @@ export enum ApiTypeEnum {
 
 const requestMap: Partial<Record<Exclude<ContentType, null>, Partial<Record<ApiTypeEnum, ApiConfig>>>> = {
     // 产品
-    product: {
+    products: {
         // 分类
         [ApiTypeEnum.CATEGORY]: {
             api: getByCategory,
@@ -39,6 +39,10 @@ const requestMap: Partial<Record<Exclude<ContentType, null>, Partial<Record<ApiT
             api: getByCenterData,
             params: {
                 fields: 'title,url_slug,details,product_advantage',
+                populate: {
+                    keyword: '*',
+                    seoSetting: '*'
+                },
                 isLoadImg: true
             }
         }

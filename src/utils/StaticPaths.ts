@@ -56,7 +56,7 @@ export default class StaticPaths {
   }
   // 产品分类静态路径
   async generateProductStaticPaths(): Promise<StaticPath[]> {
-    return await this.generateStaticPaths('product');
+    return await this.generateStaticPaths('products');
   }
   // 新闻分类静态路径
   async generateNewsStaticPaths(): Promise<StaticPath[]> {
@@ -88,7 +88,7 @@ export default class StaticPaths {
     return await this.detailStaticPaths('singlepage', 'sp');
   }
   // 生成静态路径
-  async generateStaticPaths(contentType: ContentType = 'product'): Promise<StaticPath[]> {
+  async generateStaticPaths(contentType: ContentType): Promise<StaticPath[]> {
     return await this.byStaticPaths(contentType);
   }
   async byStaticPaths(contentType: ContentType): Promise<StaticPath[]> {

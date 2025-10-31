@@ -2,6 +2,7 @@
 const { 
   title, 
   description, 
+  seoSetting,
   breadcrumbs, 
   currentSection, 
   contentType = 'grid',
@@ -28,7 +29,7 @@ const getPageWidth = () => {
 const pageWidth = getPageWidth();
 ---
 
-<Layout title={title} description={description} lang={lang} pageType={pageType}>
+<Layout title={title} description={description} seoSetting={seoSetting} lang={lang} pageType={pageType}>
     <!-- Page Banner - 岛屿化组件，使用Strapi通用banner背景 -->
     <PageBanner
       title={title}

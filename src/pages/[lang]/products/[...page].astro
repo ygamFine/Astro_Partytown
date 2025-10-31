@@ -14,9 +14,7 @@ import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
 // 生成静态路径
 export async function getStaticPaths() {
-  const aaa = await new StaticPaths().generateProductStaticPaths()
-  console.log('最终的数量', aaa.length, '数量')
-  return aaa
+  return await new StaticPaths().generateProductStaticPaths()
 }
 
 const { lang, category = { path: '', name: '' }, pages = { currentPage: 1, totalPages: 1, items: [] } } = Astro.props as PageProps;
@@ -26,14 +24,20 @@ const { path, name } = category;
 // 分页数据
 const { currentPage, totalPages, items } = pages;
 // 面包屑导航
-const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'product', path && name ? category: []);
+const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'products', path && name ? category: []);
 
 const t = await getDictionary(lang);
+
+// 加载 SEO 数据
+const description = name ? `${name} - ${t.product.title}` : t.product.description || 'Product listing page';
+
+
 
 ---
 
 <SecondaryPageLayout 
   title={name || t.product.title}
+  description={description}
   breadcrumbs={breadcrumbs}
   currentSection="products"
   pageType="products"

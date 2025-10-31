@@ -15,11 +15,12 @@ import "../styles/components.css";
 export interface Props {
   title: string;
   description?: string;
+  seoSetting: any;
   lang?: string;
   pageType?: string;
 }
 
-const { title, description = "", lang = "en", pageType = "home" } = Astro.props;
+const { title, description = "", seoSetting = {}, lang = "en", pageType = "home" } = Astro.props;
 
 // 获取网站配置信息
 let siteConfiguration = {};
@@ -104,7 +105,10 @@ const htmlDir = isRTL ? "rtl" : "ltr";
     <!-- 🎯 Header 位置动态脚本加载器 - 插入到 <head> 标签内 -->
     <DynamicScriptLoader position="header" pageType={pageType} lang={lang} />
     <!-- <ClientRouter /> -->
-    <title>{title}</title>
+    <title>{seoSetting.title || title}</title>
+    <!-- SEO -->
+    {seoSetting.description && <meta name="description" content={seoSetting.description} />}
+    {seoSetting.keyword && <meta name="keywords" content={seoSetting.keyword.map((item: any) => item.keyword)?.join(',')} />}
   </head>
   <body data-pagefind-body>
     <!-- 🎯 Body Top 位置动态脚本加载器 - 插入到 <body> 标签开始处 -->

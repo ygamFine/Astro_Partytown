@@ -17,13 +17,12 @@ import ItalkinForm from '@components/common/italkin/InquiryForm';
 import StaticPaths, { type PageProps, type Category, type Pages } from '@utils/StaticPaths';
 
 export async function getStaticPaths() {  
-  return await new StaticPaths().detailStaticPaths('product');
+  return await new StaticPaths().detailStaticPaths('products');
 }
 
 const { lang, category, pages } = Astro.props as PageProps;
 const { path = '', name = '' } = category as Category;
 const { items, item } = pages as Pages;
-
 
 // 如果产品不存在，返回404
 if (!item) {
@@ -99,6 +98,7 @@ const formTrans = formResp?.data?.formTrans || [];
   </SecondaryPageLayout>
 ) : (
   <SecondaryPageLayout
+  seoSetting={{...item.seoSetting, keyword: item.keyword}}
     breadcrumbs={breadcrumbs}
     lang={lang}
     showContentTitle={false}
