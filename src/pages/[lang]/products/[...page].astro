@@ -14,7 +14,9 @@ import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
 // 生成静态路径
 export async function getStaticPaths() {
-  return await new StaticPaths().generateProductStaticPaths()
+  const aaa = await new StaticPaths().generateProductStaticPaths()
+  console.log('最终的数量', aaa.length, '数量')
+  return aaa
 }
 
 const { lang, category = { path: '', name: '' }, pages = { currentPage: 1, totalPages: 1, items: [] } } = Astro.props as PageProps;

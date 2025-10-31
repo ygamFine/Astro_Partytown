@@ -130,16 +130,18 @@ export default class StaticPaths {
               props: { lang, category: { path: category.url_slug, name: category.title }, pages: { currentPage: page, totalPages, items: currentPageItems } }
             })
           }
-        })
-        const uniquePaths = uniqueByParamsLangAndPage(this.paths);
-        console.log(`——————当前语言：${lang}，原始生成路径数量：${this.paths.length}，去重后路径数量：${uniquePaths.length}，去除数量：${this.paths.length - uniquePaths.length}——————`);
-        return uniquePaths;
+        })        
+        return this.paths;
       } catch (error) {
         console.error(`处理语言 ${lang} 失败:`, error);
         return [];
       }
     })
-    return this.paths;
+
+    const uniquePaths = uniqueByParamsLangAndPage(this.paths);
+    console.log(`——————原始生成路径数量：${this.paths.length}，去重后路径数量：${uniquePaths.length}，去除数量：${this.paths.length - uniquePaths.length}——————`);
+    console.log(this.paths.length, '数量')
+    return uniquePaths;
   }
   /**
  * 详情页的静态路径
@@ -155,13 +157,13 @@ export default class StaticPaths {
             props: { lang, category: { path: category?.url_slug, name: category?.title }, pages: { items: allData, item } }
           })
         })
-        return uniqueByParamsLangAndPage(this.paths);
+        return this.paths
       } catch (error) {
         console.error(`处理语言 ${lang} 失败:`, error);
         return [];
       }
     })
-    return this.paths;
+    return uniqueByParamsLangAndPage(this.paths);
   }
   
 
