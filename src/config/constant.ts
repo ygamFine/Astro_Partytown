@@ -57,4 +57,4 @@ export const API_PAGE_SIZE = 99999;
 /** 
  * 每页显示的数据条数
  */
-export const PAGE_SIZE = 1;
+export const PAGE_SIZE = 9;
