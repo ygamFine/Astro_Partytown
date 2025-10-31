@@ -41,7 +41,7 @@ const generateAriaLabel = (): string => {
 
 <nav aria-label={generateAriaLabel()} class="breadcrumb">
   <ol class="flex items-center space-x-2 text-xl">
-    {breadcrumbs && breadcrumbs.map((crumb, index) => (
+    {breadcrumbs && breadcrumbs.length > 0 && breadcrumbs.map((crumb, index) => (
       <li class="flex items-center">
         {index > 0 && (
           <svg class="w-6 h-6 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
