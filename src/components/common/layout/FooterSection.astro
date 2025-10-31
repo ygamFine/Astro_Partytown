@@ -1,26 +1,17 @@
 ---
 import { Image } from 'astro:assets';
-import { themeConfig } from '../../../config/theme.js';
+import { themeConfig } from '@config/theme.js';
 import { getMenus } from "@apis/common";
-import { getCurrentLanguage } from '@utils/languageUtils';
-import { getDictionary } from "@i18n/dictionaries.js";
 import { generateUrl,extractUrl, getFirstImage } from '@utils/tools.js';
-// 使用public目录中的图片
-const logoImage = '/images/logo.png.webp';
+
 // 接收网站配置参数
 export interface Props {
+  lang: string;
   siteConfiguration?: any;
 }
 
-const { siteConfiguration = {} } = Astro.props;
+const { lang, siteConfiguration = {} } = Astro.props;
 
-// 获取当前页面路径，用于服务端渲染时设置选中状态
-const currentPath = Astro.url.pathname;
-// 使用工具函数获取当前语言
-const currentLang = getCurrentLanguage(currentPath, Astro.url.hostname);
-
-// 加载翻译数据
-const t = await getDictionary(currentLang);
 
 
 // 在构建时获取菜单数据
@@ -31,7 +22,7 @@ interface MenuItem {
 }
 let menuItems: MenuItem[] = [];
 try {
-  menuItems = await getMenus(currentLang);
+  menuItems = await getMenus(lang);
 } catch (error) {
   // 如果接口失败，不显示任何菜单
   menuItems = [];
@@ -75,11 +66,11 @@ const copyright_settings = siteConfiguration.copyright_settings || [];
       {menuItems.map((item, index) => (
         index > 0 && index < 3 && (
           <div class="space-y-6 footer-menu-item">
-            <a href={generateUrl(currentLang, item.path)} class="menu-first-item footer-section-title" title={item.name}>{item.name}</a>
+            <a href={generateUrl(lang, item.path)} class="menu-first-item footer-section-title" title={item.name}>{item.name}</a>
             {item.children && (
               <div class="menu-second-item-list">
                 {item.children.map((child, childIndex) => (
-                  <a href={generateUrl(currentLang, child.path)} class="block menu-second-item" title={child.name}>{child.name}</a>
+                  <a href={generateUrl(lang, child.path)} class="block menu-second-item" title={child.name}>{child.name}</a>
                 ))}
               </div>
             )}

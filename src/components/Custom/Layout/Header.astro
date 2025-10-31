@@ -3,22 +3,20 @@ import { Image } from "astro:assets";
 import StaticMenu from "./Menu.astro";
 import { themeConfig } from "@config/theme.js";
 import { getSupportedLanguages } from "@apis/common.js";
-import { imageProcess } from '@utils/tools';
-import { getCurrentLanguage, buildLanguageUrl } from '@utils/languageUtils';
+import { imageProcess, generateUrl } from '@utils/tools';
 
 
 // 接收网站配置参数
 export interface Props {
+  lang: string;
   siteConfiguration?: any;
 }
 
-const { siteConfiguration = {} } = Astro.props;
+const { lang, siteConfiguration = {} } = Astro.props;
 
-// 获取当前语言：使用工具函数
-const currentLang = getCurrentLanguage(Astro.url.pathname, Astro.url.hostname);
 
 // 生成首页链接（生产环境使用子域名，无语言后缀）
-const homeUrl = buildLanguageUrl(currentLang, "/");
+const homeUrl = generateUrl(lang, "/");
 
 // 获取支持的语言列表（从 Strapi API，不做硬编码回退）
 let supportedLanguages = [];
@@ -200,7 +198,7 @@ catch(error){
         class="hidden md:flex items-center justify-center"
         style="height: 6rem;"
       >
-        <StaticMenu />
+        <StaticMenu lang={lang} />
       </div>
     </div>
   </div>
@@ -262,7 +260,7 @@ catch(error){
                   {supportedLanguages.map((lang: any) => (
                     <option
                       value={lang.code}
-                      selected={lang.code === currentLang}
+                      selected={lang.code === lang}
                     >
                       🌐 {lang.name}
                     </option>
@@ -479,7 +477,6 @@ catch(error){
         // 监听语言切换
         mobileLanguageSelector.addEventListener("change", (e) => {
           const selectedLang = e.target.value;
-          const currentPath = window.location.pathname;
 
           // 根据环境构建语言切换URL
           const isDev =

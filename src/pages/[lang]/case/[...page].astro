@@ -4,10 +4,10 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { getDictionary } from '@i18n/dictionaries.js';
-import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
-import { themeConfig } from '@config/theme.js';
-import { generateUrl } from '@utils/tools.js';
+import { getDictionary } from '@i18n/dictionaries';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils';
+import { themeConfig } from '@config/theme';
+import { generateUrl } from '@utils/tools';
 import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
 // 生成静态路径
@@ -71,7 +71,7 @@ title={name || t.case.title}
         <Pagination
           currentPage={currentPage || 1}
           totalPages={totalPages}
-          baseUrl={generateUrl(lang, '/products', path)}
+          baseUrl={generateUrl(lang, '/case', path)}
           i18n={t.common}
         />
       )}

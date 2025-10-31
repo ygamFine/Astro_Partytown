@@ -156,6 +156,7 @@ export async function getByCenterData(locale = 'en', model: string, params?: any
       news: `/api/news`,
       case: `/api/cases`,
       about: `/api/about-uses`,
+      singlepage: `/api/singlepages`,
     }
     if (!baseUrls[model]) {
       console.warn('model is not supported');

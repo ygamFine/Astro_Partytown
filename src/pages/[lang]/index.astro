@@ -2,21 +2,19 @@
 // 启用完全静态预渲染，在构建时生成所有页面和数据
 export const prerender = true;
 
-import Layout from '@layouts/Layout.astro';
-import FullScreenBanner from '@components/Custom/Home/FullScreenBanner.astro';
-import ProductShowcase from '@components/Custom/Home/ProductShowcase.astro';
-import StatsSection from '@components/Custom/Home/StatsSection.astro';
-import HotRecommendedProducts from '@components/Custom/Home/HotRecommendedProduct.astro';
-import FrontContactUs from '@components/Custom/Home/FrontContactUs.astro';
-import CustomerNeeds from '../../components/CustomerNeeds.astro';
-import CustomerCases from '@components/Custom/Home/CustomerCases.astro';
-import CustomerNews from '@components/Custom/Home/CustomerNews.astro';
+import Layout from "@layouts/Layout.astro";
+import FullScreenBanner from "@components/Custom/Home/FullScreenBanner.astro";
+import ProductShowcase from "@components/Custom/Home/ProductShowcase.astro";
+import StatsSection from "@components/Custom/Home/StatsSection.astro";
+import HotRecommendedProducts from "@components/Custom/Home/HotRecommendedProduct.astro";
+import FrontContactUs from "@components/Custom/Home/FrontContactUs.astro";
+import CustomerCases from "@components/Custom/Home/CustomerCases.astro";
+import CustomerNews from "@components/Custom/Home/CustomerNews.astro";
 
-
-import { themeConfig } from '../../config/theme.js';
-import { generateCommonStaticPaths } from '@utils/pageUtils'
-import { getHomepageContent } from '@apis/home';
-import { getDictionary } from '../../i18n/dictionaries.ts';
+import { themeConfig } from "@config/theme.js";
+import { getHomepageContent } from "@apis/home";
+import { getDictionary } from "@i18n/dictionaries.ts";
+import StaticPaths from "@utils/StaticPaths";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -24,7 +22,7 @@ import "swiper/css/pagination";
 
 // 使用 Astro 内置的 i18n 路由
 export async function getStaticPaths() {
-  return generateCommonStaticPaths();
+	return await new StaticPaths().generateBaseStaticPaths();
 }
 
 const { lang } = Astro.params;
@@ -34,38 +32,40 @@ const t = await getDictionary(lang);
 const homepageData = await getHomepageContent(lang);
 // 获取页面宽度配置
 const getPageWidth = () => {
-  return themeConfig.layout.dynamicWidth.getPageWidth('home');
+	return themeConfig.layout.dynamicWidth.getPageWidth("home");
 };
 const pageWidth = getPageWidth();
 ---
 
-
 <Layout title={t.nav.home} lang={lang} pageType="home">
 	<FullScreenBanner />
 	<!-- <div class="container mx-auto px-4" style={`max-width: ${pageWidth}`}> -->
-	<div class="mx-auto">		
-		<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
-		<StatsSection companyData={homepageData?.companyIntroduction} corporateAdvantages={homepageData?.corporateAdvantages} />
-		
-		<!-- 静态预渲染热门推荐产品 -->
-		<HotRecommendedProducts data={homepageData?.hotRecommendedProducts} lang={lang} />
-		
-		<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
-		
-		<!-- 静态预渲染客户案例 -->
-		<CustomerCases customerCases={homepageData?.customerCases} lang={lang} />
-		
-		<!-- 静态预渲染客户新闻 -->
-		<CustomerNews customerNews={homepageData?.customerNews} lang={lang} />
-		<!-- 
-		<StatsSection 
-			companyData={homepageData?.companyIntroduction}
-		/>
-		
-		<CustomerNeeds 
-			contactData={homepageData?.contactUs}
-		/>
-		
-		<NewsCenter /> -->
+		<div class="mx-auto">
+			<ProductShowcase data={homepageData?.productShowcase} lang={lang} />
+			<StatsSection
+				companyData={homepageData?.companyIntroduction}
+				corporateAdvantages={homepageData?.corporateAdvantages}
+			/>
+
+			<!-- 静态预渲染热门推荐产品 -->
+			<HotRecommendedProducts
+				data={homepageData?.hotRecommendedProducts}
+				lang={lang}
+			/>
+
+			<FrontContactUs frontContactUs={homepageData?.frontContactUs} />
+
+			<!-- 静态预渲染客户案例 -->
+			<CustomerCases
+				customerCases={homepageData?.customerCases}
+				lang={lang}
+			/>
+
+			<!-- 静态预渲染客户新闻 -->
+			<CustomerNews
+				customerNews={homepageData?.customerNews}
+				lang={lang}
+			/>
+		</div>
 	</div>
 </Layout>

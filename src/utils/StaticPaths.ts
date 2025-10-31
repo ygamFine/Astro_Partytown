@@ -23,7 +23,6 @@ export interface PageProps {
 
 export interface StaticPath {
   params: {
-    [x: string]: string;
     lang: string;
     page?: string;
     slug?: string;
@@ -46,6 +45,16 @@ export default class StaticPaths {
     this.perPage = perPage ?? PAGE_SIZE;
   }
   // 产品分类静态路径
+  async generateBaseStaticPaths(): Promise<StaticPath[]> {
+    await this.runForAllLanguages(async (lang: string) => {
+      this.paths.push({
+        params: { lang },
+        props: { lang }
+      })
+    })
+    return this.paths;
+  }
+  // 产品分类静态路径
   async generateProductStaticPaths(): Promise<StaticPath[]> {
     return await this.generateStaticPaths('product');
   }
@@ -57,9 +66,26 @@ export default class StaticPaths {
   async generateCaseStaticPaths(): Promise<StaticPath[]> {
     return await this.generateStaticPaths('case');
   }
-  // 关于分类静态路径
+  // 关于关于我们静态路径
   async generateAboutStaticPaths(): Promise<StaticPath[]> {
     return await this.detailStaticPaths('about', 'about');
+  }
+  // 联系我们静态路径
+  async generateContactStaticPaths(): Promise<StaticPath[]> {
+    const pages = ['contact', 'success'];
+    await this.runForAllLanguages(async (lang: string) => {
+      pages.forEach(page => {
+        this.paths.push({
+          params: { lang, contact: `/${page}` },
+          props: { lang, pages: { item: { title: page, slug: `/${page}` } } }
+        })
+      })
+    })
+    return this.paths;
+  }
+  // 单页静态路径
+  async generateSinglepageStaticPaths(): Promise<StaticPath[]> {
+    return await this.detailStaticPaths('singlepage', 'sp');
   }
   // 生成静态路径
   async generateStaticPaths(contentType: ContentType = 'product'): Promise<StaticPath[]> {
@@ -106,7 +132,7 @@ export default class StaticPaths {
           }
         })
         const uniquePaths = uniqueByParamsLangAndPage(this.paths);
-        console.log(`------------------原始路径数量${this.paths.length}-------------- ---------------- 去重后路径数量${uniquePaths.length}--------------`)
+        console.log(`——————当前语言：${lang}，原始生成路径数量：${this.paths.length}，去重后路径数量：${uniquePaths.length}，去除数量：${this.paths.length - uniquePaths.length}——————`);
         return uniquePaths;
       } catch (error) {
         console.error(`处理语言 ${lang} 失败:`, error);
@@ -143,8 +169,7 @@ export default class StaticPaths {
    * Api 接口中转
    */
   async apiTransfer(lang: string, contentType: ContentType, apiType: ApiTypeEnum): Promise<StaticPath[]> {
-
-    const { api, params: requestParams } = requestMap[contentType]?.[apiType] || {};
+    const { api, params: requestParams } = contentType && requestMap[contentType]?.[apiType] || {};
     if (!api) {
       return [];
     }

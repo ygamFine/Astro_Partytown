@@ -330,31 +330,3 @@ export function joinUrlPaths(segments: Array<string | number | undefined | null>
   if (joined === '') return isAbsolute ? '/' : '';
   return isAbsolute ? `/${joined}` : joined;
 }
-
-/**
- * 序列化嵌套的filters对象为URL查询字符串
- * 例如: {product_category: {url_slug: '/test-code/'}} => filters[product_category][url_slug]=/test-code/
- * @param filters 嵌套的filters对象
- * @returns 序列化后的查询字符串
- */
-export function serializeNestedFilters(filters: Record<string, any>): string {
-  const params: string[] = [];
-  
-  const serializeObject = (obj: Record<string, any>, prefix: string): void => {
-    Object.entries(obj).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        const paramKey = prefix ? `${prefix}[${key}]` : key;
-        if (typeof value === 'object' && !Array.isArray(value)) {
-          // 递归处理嵌套对象
-          serializeObject(value, paramKey);
-        } else {
-          // 最终值
-          params.push(`${paramKey}=${encodeURIComponent(String(value))}`);
-        }
-      }
-    });
-  };
-  
-  serializeObject(filters, 'filters');
-  return params.join('&');
-}

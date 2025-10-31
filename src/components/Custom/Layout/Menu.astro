@@ -1,19 +1,18 @@
 ---
 // SSG静态菜单组件 - 构建时获取菜单数据
 import { getMenus, getSupportedLanguages } from "@apis/common";
-import { getDictionary } from "@i18n/dictionaries.js";
-import { themeConfig } from "@config/theme.js";
+import { getDictionary } from "@i18n/dictionaries";
+import { themeConfig } from "@config/theme";
 import { LanguageSelector } from "../LanguageSelector/index.ts";
-import { getCurrentLanguage } from '@utils/languageUtils';
-import { generateUrl } from '@utils/tools.js';
+import { generateUrl } from '@utils/tools';
+
+const { lang } = Astro.props;
 
 // 获取当前页面路径，用于服务端渲染时设置选中状态
 const currentPath = Astro.url.pathname;
-// 使用工具函数获取当前语言
-const currentLang = getCurrentLanguage(currentPath, Astro.url.hostname);
 
 // 加载翻译数据
-const t = await getDictionary(currentLang);
+const t = await getDictionary(lang);
 
 
 // 在构建时获取菜单数据
@@ -25,7 +24,7 @@ interface MenuItem {
 
 let menuItems: MenuItem[] = [];
 try {
-  menuItems = await getMenus(currentLang);
+  menuItems = await getMenus(lang);
 } catch (error) {
   // 如果接口失败，不显示任何菜单
   menuItems = [];
@@ -54,7 +53,7 @@ try {
         <div class="relative dropdown-container">
           <div class="flex items-center">
             <a
-              href={generateUrl(currentLang, item.path)}
+              href={generateUrl(lang, item.path)}
               class={`menu-item text-white font-semibold text-center py-4 ${
                 currentPath === item.path ||
                 (currentPath === "/" && item.path === "/")
@@ -74,7 +73,7 @@ try {
               {item.children.map((child, index) => (
                 <div class="menu-item-wrapper relative">
                   <a
-                    href={generateUrl(currentLang, item.path, child.path)}
+                    href={generateUrl(lang, item.path, child.path)}
                     class={`product-menu-item flex items-center px-6 py-4 text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border-b border-gray-100 last:border-b-0 ${index === 0 ? "featured-item" : ""}`}
                     style="font-size: 1.5rem;"
                   >
@@ -101,7 +100,7 @@ try {
                       {child.children.map((subChild, subIndex) => (
                         <div class="submenu-item relative">
                           <a
-                            href={generateUrl(currentLang, item.path, subChild.path)}
+                            href={generateUrl(lang, item.path, subChild.path)}
                             class="flex items-center px-6 py-4 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 border-b border-gray-100 last:border-b-0"
                             style="font-size: 1.4rem;"
                           >
@@ -134,7 +133,7 @@ try {
                                 {subChild.children.map(
                                   (thirdChild, thirdIndex) => (
                                     <a
-                                      href={generateUrl(currentLang, item.path, thirdChild.path)}
+                                      href={generateUrl(lang, item.path, thirdChild.path)}
                                       class="flex items-center px-6 py-3 text-gray-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 border-b border-gray-100 last:border-b-0"
                                       style="font-size: 1.3rem;"
                                     >
@@ -212,7 +211,7 @@ try {
     <!-- 语言选择器 -->
     <LanguageSelector
       supportedLanguages={supportedLanguages}
-      currentLang={currentLang}
+      currentLang={lang}
       showLanguageSelector={themeConfig.languageSelector.showLanguageSelector}
       hideWhenSingleLanguage={themeConfig.languageSelector
         .hideWhenSingleLanguage}
@@ -225,7 +224,7 @@ try {
   {
     menuItems.map((item, index) => (
       <a
-        href={generateUrl(currentLang, item.path)}
+        href={generateUrl(lang, item.path)}
         class={`block text-white hover:text-red-400 rounded-lg px-4 py-3 font-semibold focus-visible-ring touch-manipulation mobile-menu-item border-b border-gray-600 last:border-b-0 ${index === 0 ? "mobile-active" : ""}`}
         data-path={item.path}
         data-index={index}
@@ -415,8 +414,8 @@ try {
     const performSearch = () => {
       const query = searchInput.value.trim();
       if (query) {
-        const currentLang = document.documentElement.lang || 'en';
-        window.location.href = `/${currentLang}/search?q=${encodeURIComponent(query)}`;
+        const lang = document.documentElement.lang || 'en';
+        window.location.href = `/${lang}/search?q=${encodeURIComponent(query)}`;
       }
     };
     

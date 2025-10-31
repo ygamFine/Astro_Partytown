@@ -20,7 +20,7 @@ interface BreadcrumbItem {
  * @param children 子页面
  * @returns 面包屑
  */
-const baseBreadcrumbs = async (lang: string, from: PageType, children?: string | BreadcrumbItem[]) => {
+const baseBreadcrumbs = async (lang: string, from: PageType | null, children?: string | BreadcrumbItem[]) => {
   const t = await getDictionary(lang);
 
   const breadcrumbs: BreadcrumbItem[] = [{ label: t.breadcrumb.home, href: generateUrl(lang, '/') }];
@@ -175,7 +175,7 @@ export function generateSearchBreadcrumbs(lang: string, searchTerm: string | nul
 /**
  * 生成分类页面的面包屑 - 支持多级分类
  */
-export async function generateCategoryBreadcrumbs(lang: string, from: PageType = 'products', category?: {path: string, name: string} | {path: string, name: string}[]): Promise<BreadcrumbItem[]> {
+export async function generateCategoryBreadcrumbs(lang: string, from: PageType, category?: {path: string, name: string} | {path: string, name: string}[]): Promise<BreadcrumbItem[]> {
   const newsBreadcrumbs: BreadcrumbItem[] = [];
   if (Array.isArray(category)) {
     category.map(item => {

@@ -1,12 +1,12 @@
 ---
-import Header from "../components/Custom/Layout/Header.astro";
-import FooterSection from "../components/common/layout/FooterSection.astro";
-import MobileBottomMenu from "../components/common/layout/MobileBottomMenu.astro";
-import DynamicScriptLoader from "../components/common/analytics/DynamicScriptLoader.astro";
-import PagefindPreloader from "../components/common/analytics/PagefindPreloader.astro";
-import RightSidebar from "../components/common/RightSidebar.astro";
-import ContactModal from "../components/common/contact/ContactModal.astro";
-import { getSiteConfiguration } from "../apis/common.js";
+import Header from "@components/Custom/Layout/Header.astro";
+import FooterSection from "@components/common/layout/FooterSection.astro";
+import MobileBottomMenu from "@components/common/layout/MobileBottomMenu.astro";
+import DynamicScriptLoader from "@components/common/analytics/DynamicScriptLoader.astro";
+import PagefindPreloader from "@components/common/analytics/PagefindPreloader.astro";
+import RightSidebar from "@components/common/contact/RightSidebar.astro";
+import ContactModal from "@components/common/contact/ContactModal.astro";
+import { getSiteConfiguration } from "@apis/common.js";
 
 // 官方推荐：只在根 Layout 导入一次全局样式
 import "../styles/global.css";
@@ -110,7 +110,7 @@ const htmlDir = isRTL ? "rtl" : "ltr";
     <!-- 🎯 Body Top 位置动态脚本加载器 - 插入到 <body> 标签开始处 -->
     <DynamicScriptLoader position="body-top" pageType={pageType} lang={lang} />
 
-    <Header siteConfiguration={siteConfiguration} />
+    <Header lang={lang} siteConfiguration={siteConfiguration} />
 
     <main data-pagefind-body id="main-content">
       <slot />
@@ -137,7 +137,7 @@ const htmlDir = isRTL ? "rtl" : "ltr";
     <!-- 视图切换功能 -->
     <script type="text/partytown" src="/scripts/viewToggle.js"></script>
 
-    <FooterSection siteConfiguration={siteConfiguration} />
+    <FooterSection lang={lang} siteConfiguration={siteConfiguration} />
     <!-- 🎯 Body Bottom 位置动态脚本加载器 - 插入到 <body> 标签结束前 -->
     <DynamicScriptLoader
       position="body-bottom"

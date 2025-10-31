@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { buildLanguageUrl } from '@utils/languageUtils';
+import { generateUrl } from '@utils/tools';
 
 interface InquiryFormProps {
   lang: string;
@@ -283,7 +283,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
         ...payload,
       };
       
-      const apiEndpoint = buildLanguageUrl(lang, '/api/inquiry');
+      const apiEndpoint = generateUrl(lang, '/api/inquiry');
 
       const response = await fetch(apiEndpoint, {
         method: 'POST',
@@ -304,7 +304,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       if (successMode === "modal") {
         setShowModal(true);
       } else {
-        const contactSuccessPath = buildLanguageUrl(lang, '/contact/success');
+        const contactSuccessPath = generateUrl(lang, '/contact/success');
         window.location.href = contactSuccessPath;
       }
 

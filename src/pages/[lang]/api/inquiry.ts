@@ -1,6 +1,6 @@
 // Astro 多语言 API 路由：与 /api/inquiry 一致，匹配 /en/api/inquiry 等本地化前缀
 import type { APIRoute } from 'astro';
-import { ITALKIN_API } from '../../../apis/apiClient';
+import { ITALKIN_API } from '@apis/apiClient';
 
 export const prerender = false;
 

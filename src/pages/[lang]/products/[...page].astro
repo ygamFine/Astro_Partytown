@@ -6,9 +6,9 @@ import EnhancedGridList from '@components/templates/common/EnhancedGridList.astr
 import ViewToggle from '@components/templates/common/ViewToggle.astro';
 import Pagination from '@components/templates/common/Pagination.astro';
 import EmptyState from '@components/templates/common/EmptyState.astro';
-import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils.js';
-import { getDictionary } from '@i18n/dictionaries.js';
-import { generateUrl } from '@utils/tools.js';
+import { generateCategoryBreadcrumbs } from '@utils/breadcrumbUtils';
+import { getDictionary } from '@i18n/dictionaries';
+import { generateUrl } from '@utils/tools';
 import themeConfig from '@config/theme';
 import StaticPaths, { type PageProps } from '@utils/StaticPaths';
 
@@ -24,7 +24,7 @@ const { path, name } = category;
 // 分页数据
 const { currentPage, totalPages, items } = pages;
 // 面包屑导航
-const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'products', path && name ? category: []);
+const breadcrumbs = await generateCategoryBreadcrumbs(lang, 'product', path && name ? category: []);
 
 const t = await getDictionary(lang);
 
@@ -40,7 +40,6 @@ const t = await getDictionary(lang);
 >
   {items && items.length > 0 ? (
     <>
-      <!-- 视图切换控件 -->
       <ViewToggle 
         currentView="grid"
         translations={t.common}
@@ -49,7 +48,6 @@ const t = await getDictionary(lang);
         showTotal={true}
       />
       
-      <!-- 产品列表 -->
       <EnhancedGridList 
         items={items || []}
         itemsPerRow={3}
