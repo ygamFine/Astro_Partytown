@@ -1,14 +1,12 @@
 {
-  "name": "astro---partytown",
+  "name": "huazhi-customer-website",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.1.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && npm run generate:sitemap && npm run generate:pagefind",
     "preview": "astro preview",
     "astro": "astro",
-    "optimize:images:node": "node scripts/optimize-images-node.js",
-    "download:strapi-images": "node scripts/download-strapi-images.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "generate:pagefind": "sh -c 'if find dist -name \"*.html\" -print -quit | grep -q .; then pagefind --site dist --output-path dist/pagefind --glob \"**/{products,news,case}/**/*.html\"; else echo \"No HTML found; skipping Pagefind\"; fi'",
     "copy:pagefind": "cp -r dist/pagefind .vercel/output/static/ 2>/dev/null || echo 'Pagefind files copied'"
